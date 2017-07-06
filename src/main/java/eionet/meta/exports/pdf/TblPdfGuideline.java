@@ -75,7 +75,7 @@ public class TblPdfGuideline {
         }
 
         // get simple attributes
-        Vector v = searchEngine.getSimpleAttributes(tblID, "T");
+        Vector v = searchEngine.getAttributes(tblID, "T");
         dsTable.setSimpleAttributes(v);
 
         // get data elements (this will set all the simple attributes,
@@ -161,7 +161,7 @@ public class TblPdfGuideline {
             elem.setFixedValues(fxValues);
             Vector fks = searchEngine.getFKRelationsElm(elem.getID(), dstID);
             elem.setFKRelations(fks);
-            Vector attrs = searchEngine.getSimpleAttributes(elem.getID(), "E");
+            Vector attrs = searchEngine.getAttributes(elem.getID(), "E");
             elem.setAttributes(attrs);
 
             elms.add(elem);

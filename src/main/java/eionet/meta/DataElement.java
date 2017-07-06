@@ -42,7 +42,6 @@ public class DataElement implements Comparable {
     private String user = null; // element creator
 
     private Vector simpleAttrs = new Vector();
-    private Vector complexAttrs = new Vector();
     private Vector fixedValues = null;
     private Vector fks = new Vector();
 
@@ -173,23 +172,12 @@ public class DataElement implements Comparable {
     }
 
     public DElemAttribute getAttributeByShortName(String name) {
-
-        // look from simple attributes
         for (int i = 0; i < simpleAttrs.size(); i++) {
             DElemAttribute attr = (DElemAttribute) simpleAttrs.get(i);
             if (attr.getShortName().equalsIgnoreCase(name)) {
                 return attr;
             }
         }
-
-        // if it wasn't in the simple attributes, look from complex ones
-        for (int i = 0; i < complexAttrs.size(); i++) {
-            DElemAttribute attr = (DElemAttribute) complexAttrs.get(i);
-            if (attr.getShortName().equalsIgnoreCase(name)) {
-                return attr;
-            }
-        }
-
         return null;
     }
 
@@ -267,14 +255,6 @@ public class DataElement implements Comparable {
         this.positionInTable = pos;
     }
 
-    public void setComplexAttributes(Vector v) {
-        this.complexAttrs = v;
-    }
-
-    public Vector getComplexAttributes() {
-        return this.complexAttrs;
-    }
-
     public void setVersion(String version) {
         this.version = version;
     }
@@ -344,9 +324,6 @@ public class DataElement implements Comparable {
         return hasImages;
     }
 
-    /*
-     *
-     */
     public void setComparation(String sortString, int sortOrder) {
 
         this.sortString = sortString;
@@ -371,11 +348,7 @@ public class DataElement implements Comparable {
         return this.sortOrder * this.sortString.compareTo(o.toString());
     }
 
-    /*
-     *
-     */
     public String getReferenceURL() {
-
         if (identifier == null || identifier.isEmpty()) {
             return null;
         }
@@ -568,6 +541,5 @@ public class DataElement implements Comparable {
     public void setAllConceptsValid(boolean allConceptsValid) {
         this.allConceptsValid = allConceptsValid;
     }
-
 
 }

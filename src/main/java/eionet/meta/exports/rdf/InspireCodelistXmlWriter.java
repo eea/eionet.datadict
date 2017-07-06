@@ -310,16 +310,6 @@ public class InspireCodelistXmlWriter {
 
                 writeRegisterElement();
 
-                // TODO theme and applicationschema if complex attrs are implemented
-                /*
-                 * //theme writer.writeCharacters("\n"); writer.writeStartElement("theme"); writer.writeAttribute("id",
-                 * generateVocabularyID()); writeLabelEN(vocabulary.getLabel()); writer.writeCharacters("\n");
-                 * writer.writeEndElement(); //theme
-                 *
-                 * //applicationschema writer.writeCharacters("\n"); writer.writeStartElement("applicationschema");
-                 * writer.writeAttribute("id", generateVocabularySetID()); writeLabelEN(vocabulary.getFolderLabel());
-                 * writer.writeCharacters("\n"); writer.writeEndElement(); //applicationschema
-                 */
                 writer.writeCharacters("\n");
                 writer.writeStartElement("codelist");
                 writer.writeAttribute("id", generateVocabularyID());

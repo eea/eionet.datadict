@@ -24,7 +24,6 @@ package eionet.meta.service.data;
 import java.util.List;
 
 import eionet.meta.dao.domain.Attribute;
-import eionet.meta.dao.domain.ComplexAttribute;
 
 /**
  * Dataset search filter.
@@ -38,8 +37,6 @@ public class DatasetFilter implements IObjectWithDynamicAttrs {
     private String identifier;
 
     private List<Attribute> attributes;
-
-    private List<ComplexAttribute> complexAttributes;
 
     private List<String> regStatuses;
 
@@ -88,22 +85,6 @@ public class DatasetFilter implements IObjectWithDynamicAttrs {
     @Override
     public void setAttributes(List<Attribute> attributes) {
         this.attributes = attributes;
-    }
-
-    /**
-     * @return the complexAttributes
-     */
-    @Override
-    public List<ComplexAttribute> getComplexAttributes() {
-        return complexAttributes;
-    }
-
-    /**
-     * @param complexAttributes the complexAttributes to set
-     */
-    @Override
-    public void setComplexAttributes(List<ComplexAttribute> complexAttributes) {
-        this.complexAttributes = complexAttributes;
     }
 
     /**

@@ -13,9 +13,6 @@ import eionet.util.Util;
  */
 public class DElemAttribute {
 
-    public static final String TYPE_SIMPLE = "SIMPLE";
-    public static final String TYPE_COMPLEX = "COMPLEX";
-
     public static final String FIELD_ID = "fld-id";
     public static final String FIELD_NAME = "fld-name";
     public static final String FIELD_DEFN = "fld-defn";
@@ -44,7 +41,6 @@ public class DElemAttribute {
         typeWeights.put("CH2", new Integer(1));
     }
 
-    private String type = null;
     private String name = null;
     private String shortName = null;
     private String id = null;
@@ -79,37 +75,32 @@ public class DElemAttribute {
     private String rdfPropertyName;
     private String rdfPropertyUri;
 
-    public DElemAttribute(String id, String name, String shortName, String type, String value) {
+    public DElemAttribute(String id, String name, String shortName, String value) {
         this.id = id;
         this.name = name;
         this.shortName = shortName;
-        this.type = type;
         this.value = value;
     }
 
-    public DElemAttribute(String id, String name, String shortName, String type, String value, String definition) {
-        this(id, name, shortName, type, value);
+    public DElemAttribute(String id, String name, String shortName, String value, String definition) {
+        this(id, name, shortName, value);
         this.definition = definition;
     }
 
-    public DElemAttribute(String id, String name, String shortName, String type, String value, String definition, String obligation) {
-        this(id, name, shortName, type, value, definition);
+    public DElemAttribute(String id, String name, String shortName, String value, String definition, String obligation) {
+        this(id, name, shortName, value, definition);
         this.obligation = obligation;
     }
 
-    public DElemAttribute(String id, String name, String shortName, String type, String value, String definition,
+    public DElemAttribute(String id, String name, String shortName, String value, String definition,
             String obligation, String multiple) {
-        this(id, name, shortName, type, value, definition, obligation);
+        this(id, name, shortName, value, definition, obligation);
         this.displayMultiple = multiple;
         if (this.displayMultiple.equals("1")) {
             if (!Util.isEmpty(value)) {
                 addValue(value);
             }
         }
-    }
-
-    public String getType() {
-        return type;
     }
 
     public String getName() {
@@ -255,15 +246,6 @@ public class DElemAttribute {
     }
 
     public boolean displayFor(String type) {
-
-        if (this.type.equals(TYPE_COMPLEX)) {
-            if (type.equals("FXV") || type.equals("TBL")) {
-                return false;
-            } else {
-                return true;
-            }
-        }
-
         // if displayWhen == 0, no flag can possible be set
         if (displayWhen == 0) {
             return false;
@@ -327,40 +309,6 @@ public class DElemAttribute {
         return fields;
     }
 
-    /**
-     * A function for getting value of the specified field. Meant for complex attributes only and return the field value as soon as
-     * it finds it in one of the rows.
-     */
-
-    public String getFieldValueByID(String fldID) {
-
-        if (fldID == null) {
-            return null;
-        }
-
-        Vector _rows = getRows();
-        for (int i = 0; _rows != null && i < _rows.size(); i++) {
-            Hashtable rowHash = (Hashtable) _rows.get(i);
-            String value = (String) rowHash.get(fldID);
-            if (value == null) {
-                continue;
-            } else {
-                return value;
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * A function for getting value of the specified field. Meant for complex attributes only and return the field value as soon as
-     * it finds it in one of the rows.
-     */
-
-    public String getFieldValueByName(String fldName) {
-        return getFieldValueByID(getFieldIdByName(fldName));
-    }
-
     public String getFieldIdByName(String fldName) {
 
         if (fldName == null || fields == null) {
@@ -400,12 +348,6 @@ public class DElemAttribute {
         }
 
         DElemAttribute oAttr = (DElemAttribute) o;
-
-        // for now, we don't support complex attributes here
-        String oType = oAttr.getType();
-        if ((type != null && type.equals(TYPE_COMPLEX)) || (oType != null && oType.equals(TYPE_COMPLEX))) {
-            return false;
-        }
 
         // compare the two attr names
         boolean diff = shortName.equals(oAttr.getShortName());

@@ -34,7 +34,7 @@ public class TblSchema extends Schema {
         DsTable dsTable = searchEngine.getDatasetTable(tblID);
         if (dsTable != null) {
             // get simple attributes
-            Vector v = searchEngine.getSimpleAttributes(tblID, "T", null, dsTable.getDatasetID());
+            Vector v = searchEngine.getAttributes(tblID, "T", null, dsTable.getDatasetID());
             processAttributeValues(v,  new DataDictEntity(Integer.parseInt(tblID), DataDictEntity.Entity.T));
             dsTable.setSimpleAttributes(v);
             
@@ -78,7 +78,7 @@ public class TblSchema extends Schema {
 
         //writeElemStart(dsTable.getShortName());
         writeElemStart(dsTable.getIdentifier());
-        writeAnnotation(dsTable.getSimpleAttributes(), dsTable.getComplexAttributes());
+        writeAnnotation(dsTable.getSimpleAttributes());
         writeContent(dsTable);
         writeElemEnd();
 

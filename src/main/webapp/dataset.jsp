@@ -63,7 +63,6 @@
     Vector mAttributes=null;
     Vector attributes=null;
     Dataset dataset=null;
-    Vector complexAttrs=null;
     Vector tables=null;
     Vector otherVersions = null;
     String feedbackValue = null;
@@ -235,7 +234,7 @@
         searchEngine.setUser(user);
 
         // initialize the metadata of attributes
-        mAttributes = searchEngine.getDElemAttributes(null, DElemAttribute.TYPE_SIMPLE, DDSearchEngine.ORDER_BY_M_ATTR_DISP_ORDER);
+        mAttributes = searchEngine.getDElemAttributes(null, DDSearchEngine.ORDER_BY_M_ATTR_DISP_ORDER);
 
         String idfier = "";
         String ds_name = "";
@@ -353,9 +352,7 @@
         DElemAttribute attribute = null;
         String attrID = null;
         String attrValue = null;
-        attributes = searchEngine.getAttributes(ds_id, "DS", DElemAttribute.TYPE_SIMPLE);
-        complexAttrs = searchEngine.getComplexAttributes(ds_id, "DS");
-        if (complexAttrs == null) complexAttrs = new Vector();
+        attributes = searchEngine.getAttributes(ds_id, "DS");
 
         // get the dataset's tables
         tables = searchEngine.getDatasetTables(ds_id, true);
@@ -740,9 +737,6 @@ else if (mode.equals("add"))
                 if (tables != null && tables.size() > 0) {
                     quicklinks.add("Tables | tables");
                 }
-                if (complexAttrs != null && complexAttrs.size() > 0) {
-                    quicklinks.add("Complex attributes | cattrs");
-                }
                 request.setAttribute("quicklinks", quicklinks);
         %>
             <jsp:include page="quicklinks.jsp" flush="true" />
@@ -779,7 +773,6 @@ else if (mode.equals("add"))
                                 if (workingUser!=null && user!=null && workingUser.equals(user.getUserName())) {
                             %>
                                 <li class="edit"><a href="<%=request.getContextPath()%>/datasets/<%=ds_id%>/edit">Edit metadata</a></li>
-                                <li class="edit"><a href="<%=request.getContextPath()%>/complex_attrs.jsp?parent_id=<%=ds_id%>&amp;parent_type=DS&amp;parent_name=<%=Util.processForDisplay(ds_name)%>&amp;ds=true">Edit complex attributes</a></li>
                                 <li class="manage"><a href="<%=request.getContextPath()%>/dstables.jsp?ds_id=<%=ds_id%>&amp;ds_name=<%=Util.processForDisplay(ds_name)%>">Manage tables</a></li>
                                 <li class="manage"><a href="<%=request.getContextPath()%>/dsvisual.jsp?ds_id=<%=ds_id%>">Manage model</a></li>
                                 <li class="checkin"><a href="javascript:checkIn()">Check in</a></li>
@@ -1620,7 +1613,7 @@ else if (mode.equals("add"))
                                                         }
 
                                                         String tblFullName = "";
-                                                        attributes = searchEngine.getAttributes(table.getID(), "T", DElemAttribute.TYPE_SIMPLE);
+                                                        attributes = searchEngine.getAttributes(table.getID(), "T");
                                                         for (int c=0; c<attributes.size(); c++) {
                                                             DElemAttribute attr = (DElemAttribute)attributes.get(c);
                                                                if (attr.getName().equalsIgnoreCase("Name"))
@@ -1650,78 +1643,7 @@ else if (mode.equals("add"))
                                         }
                                         %>
 
-                                        <!-- complex attributes -->
-
                                         <%
-                                        if ((mode.equals("edit") && user!=null) || (mode.equals("view") && complexAttrs!=null && complexAttrs.size()>0)) {
-                                                // the table
-                                                if (mode.equals("view") && complexAttrs!=null && complexAttrs.size()>0) {
-                                                    %>
-                                                <h2 id="cattrs">
-                                                    Complex attributes
-                                                </h2>
-                                                            <table class="datatable results" id="dataset-attributes">
-                                                                <col style="width:30%"/>
-                                                                <col style="width:70%"/>
-                                                                <%
-                                                                displayed = 1;
-                                                                isOdd = Util.isOdd(displayed);
-                                                                for (int i=0; i<complexAttrs.size(); i++) {
-
-                                                                    DElemAttribute attr = (DElemAttribute)complexAttrs.get(i);
-                                                                    attrID = attr.getID();
-                                                                    String attrName = attr.getName();
-                                                                    Vector attrFields = searchEngine.getAttrFields(attrID, DElemAttribute.FIELD_PRIORITY_HIGH);
-                                                                    %>
-
-                                                                    <tr class="<%=isOdd%>">
-                                                                        <td>
-                                                                            <a href="<%=request.getContextPath()%>/complex_attr.jsp?attr_id=<%=attrID%>&amp;parent_id=<%=ds_id%>&amp;parent_type=DS&amp;parent_name=<%=Util.processForDisplay(ds_name)%>&amp;ds=true" title="Click here to view all the fields">
-                                                                                <%=Util.processForDisplay(attrName)%>
-                                                                            </a>
-                                                                            <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?attrid=<%=attrID%>&amp;attrtype=COMPLEX"></a>
-                                                                        </td>
-                                                                        <td>
-                                                                            <%
-                                                                            StringBuffer rowValue=null;
-                                                                            Vector rows = attr.getRows();
-                                                                            for (int j=0; rows!=null && j<rows.size(); j++) {
-
-                                                                                if (j>0) {%>---<br/><%}
-
-                                                                                Hashtable rowHash = (Hashtable)rows.get(j);
-                                                                                rowValue = new StringBuffer();
-
-                                                                                for (int t=0; t<attrFields.size(); t++) {
-                                                                                    Hashtable hash = (Hashtable)attrFields.get(t);
-                                                                                    String fieldID = (String)hash.get("id");
-                                                                                    String fieldValue = fieldID == null ? null : (String)rowHash.get(fieldID);
-                                                                                    if (fieldValue == null) fieldValue = "";
-                                                                                    if (fieldValue.trim().equals("")) continue;
-
-                                                                                    if (t>0 && fieldValue.length()>0  && rowValue.toString().length()>0)
-                                                                                        rowValue.append(", ");
-
-                                                                                    rowValue.append(Util.processForDisplay(fieldValue));
-                                                                                    %>
-                                                                                    <%=Util.processForDisplay(fieldValue)%><br/><%
-                                                                                }
-                                                                            }
-                                                                            %>
-                                                                        </td>
-
-                                                                        <% isOdd = Util.isOdd(++displayed); %>
-                                                                    </tr><%
-                                                                }
-                                                                %>
-                                                            </table>
-                                                    <%
-                                                }
-                                                %>
-
-                                            <!-- end complex attributes -->
-
-                                            <%
                                             // other versions
                                             if (mode.equals("view") && otherVersions!=null && otherVersions.size()>0) {%>
                                                 <h2 id="versions">
@@ -1784,7 +1706,6 @@ else if (mode.equals("add"))
                                                 </table>
                                                 <%
                                             }
-                                        }
                                         %>
 
                                     </div>

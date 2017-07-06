@@ -39,9 +39,9 @@ else{
         conn = ConnectionUtil.getConnection();
         DDSearchEngine searchEngine = new DDSearchEngine(conn, "");
         if (attrid==null || attrid.length()==0)
-            helpText = searchEngine.getAttrHelpByShortName(attrshn, attrtype);
+            helpText = searchEngine.getAttrHelpByShortName(attrshn);
         else
-            helpText = searchEngine.getAttrHelp(attrid, attrtype);
+            helpText = searchEngine.getAttrHelp(attrid);
 
         helpText = helpText==null ? "" : helpText;
     }

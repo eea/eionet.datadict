@@ -30,12 +30,7 @@ public class ElmSchema extends Schema {
         // element's simple attributes + tableID
         DataElement elem = searchEngine.getDataElement(elemID);
         if (elem != null) {
-
-            // get and set the element's complex attributes
-            elem.setComplexAttributes(searchEngine.getComplexAttributes(elemID, "E", null, elem.getTableID(), elem.getDatasetID()));
-
             if (elem.getType().equalsIgnoreCase("CH1") || elem.getType().equalsIgnoreCase("CH3")) {
-
                 Vector fixedValues = searchEngine.getFixedValues(elem.getID(), "elem");
                 elem.setFixedValues(fixedValues);
             }
@@ -77,7 +72,7 @@ public class ElmSchema extends Schema {
         }
         
         writeElemStart(elem);
-        writeAnnotation(elem.getAttributes(), elem.getComplexAttributes());
+        writeAnnotation(elem.getAttributes());
         writeContent(elem);
         writeElemEnd();
     }

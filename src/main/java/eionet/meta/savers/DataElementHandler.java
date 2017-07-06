@@ -26,7 +26,6 @@ import org.apache.log4j.Logger;
 import eionet.acl.AccessController;
 import eionet.acl.SignOnException;
 import eionet.datadict.errors.BadRequestException;
-import eionet.datadict.errors.UserAuthorizationException;
 
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DDUser;
@@ -74,7 +73,6 @@ public class DataElementHandler extends BaseHandler {
     public static String ATTR_MULT_PREFIX = "attr_mult_";
 
     public static String INHERIT_ATTR_PREFIX = "inherit_";
-    public static String INHERIT_COMPLEX_ATTR_PREFIX = "inherit_complex_";
 
     public static String POS_PREFIX = "pos_";
     public static String OLDPOS_PREFIX = "oldpos_";
@@ -193,7 +191,7 @@ public class DataElementHandler extends BaseHandler {
         // loop over all possible attributes, set certain business rules
         try {
             searchEngine = new DDSearchEngine(conn, "");
-            Vector v = searchEngine.getDElemAttributes(null, DElemAttribute.TYPE_SIMPLE);
+            Vector v = searchEngine.getDElemAttributes();
             for (int i = 0; v != null && i < v.size(); i++) {
 
                 DElemAttribute attr = (DElemAttribute) v.get(i);
@@ -626,7 +624,7 @@ public class DataElementHandler extends BaseHandler {
 
         // find ids of attributes whose values must be deleted according to the new datatype's rules
         HashSet deleteAttrs = new HashSet();
-        Vector v = searchEngine.getDElemAttributes(DElemAttribute.TYPE_SIMPLE);
+        Vector v = searchEngine.getDElemAttributes();
         for (i = 0; v != null && i < v.size(); i++) {
             DElemAttribute attr = (DElemAttribute) v.get(i);
             if (eionet.util.Util.skipAttributeByDatatype(attr.getShortName(), newDatatype)) {
@@ -795,7 +793,6 @@ public class DataElementHandler extends BaseHandler {
 
         // delete dependencies
         deleteAttributes();
-        deleteComplexAttributes();
         deleteFixedValues();
         deleteFkRelations();
         deleteTableElem();
@@ -867,49 +864,7 @@ public class DataElementHandler extends BaseHandler {
         }
     }
 
-    private void deleteComplexAttributes() throws SQLException {
-
-        for (int i = 0; delem_ids != null && i < delem_ids.length; i++) {
-
-            Parameters params = new Parameters();
-            params.addParameterValue("mode", "delete");
-            params.addParameterValue("legal_delete", "true");
-            params.addParameterValue("parent_id", delem_ids[i]);
-            params.addParameterValue("parent_type", "E");
-
-            AttrFieldsHandler attrFieldsHandler = new AttrFieldsHandler(conn, params, ctx);
-            attrFieldsHandler.setVersioning(versioning);
-            try {
-                attrFieldsHandler.execute();
-            } catch (Exception e) {
-                throw new SQLException(e.toString());
-            }
-        }
-    }
-
-    private void deleteRelations() throws SQLException {
-
-        INParameters inParams = new INParameters();
-        StringBuffer buf = new StringBuffer("delete from RELATION where ");
-
-        for (int i = 0; i < delem_ids.length; i++) {
-            if (i > 0) {
-                buf.append(" or ");
-            }
-            buf.append("PARENT_ID=");
-            buf.append(inParams.add(delem_ids[i], Types.INTEGER));
-        }
-
-        PreparedStatement stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
-
-        LOGGER.debug(buf.toString());
-
-        stmt.executeUpdate();
-        stmt.close();
-    }
-
     private void deleteFixedValues() throws Exception {
-
         INParameters inParams = new INParameters();
         String q = "select distinct FXV_ID from FXV where ";
         q += "OWNER_TYPE='elem' and (";
@@ -1400,7 +1355,7 @@ public class DataElementHandler extends BaseHandler {
                 for (int i = 0; i < attrValues.length; i++) {
                     insertAttribute(attrID, attrValues[i]);
                 }
-            } else if (parName.startsWith(INHERIT_ATTR_PREFIX) && !parName.startsWith(INHERIT_COMPLEX_ATTR_PREFIX)) {
+            } else if (parName.startsWith(INHERIT_ATTR_PREFIX)) {
 
                 attrID = parName.substring(INHERIT_ATTR_PREFIX.length());
                 if (tableID == null) {
@@ -1410,15 +1365,6 @@ public class DataElementHandler extends BaseHandler {
                 CopyHandler ch = new CopyHandler(conn, ctx, searchEngine);
                 ch.setUser(user);
                 ch.copyAttribute(lastInsertID, tableID, "E", "T", attrID);
-            } else if (parName.startsWith(INHERIT_COMPLEX_ATTR_PREFIX)) {
-
-                attrID = parName.substring(INHERIT_COMPLEX_ATTR_PREFIX.length());
-                if (tableID == null) {
-                    continue;
-                }
-                CopyHandler ch = new CopyHandler(conn, ctx, searchEngine);
-                ch.setUser(user);
-                ch.copyComplexAttrs(lastInsertID, tableID, "T", "E", attrID);
             }
         }
 
@@ -1580,9 +1526,6 @@ public class DataElementHandler extends BaseHandler {
             gen.setField("DATAELEM_ID", lastInsertID);
             copyHandler.copy(gen, "DATAELEM_ID=" + copyElmID + " and PARENT_TYPE='E'");
 
-            // copy complex attributes
-            copyHandler.copyComplexAttrs(lastInsertID, copyElmID, "E");
-
             // copy fixed values
             copyHandler.copyFxv(lastInsertID, copyElmID, "elem");
 
@@ -1680,8 +1623,6 @@ public class DataElementHandler extends BaseHandler {
 //            gen.setField("DATAELEM_ID", lastInsertID);
 //            copyHandler.copy(gen, "DATAELEM_ID=" + copyElmID);
 
-            // copy complex attributes
-            copyHandler.copyComplexAttrs(lastInsertID, copyElmID, "E");
 
             // copy fixed values
             copyHandler.copyFxv(lastInsertID, copyElmID, "elem");
@@ -1848,32 +1789,6 @@ public class DataElementHandler extends BaseHandler {
             gen.setFieldExpr("DATAELEM_ID", newID);
             buf = new StringBuffer(gen.updateStatement());
             buf.append(" where DATAELEM_ID=").append(oldID);
-            stmt.executeUpdate(buf.toString());
-
-            gen.clear();
-            INParameters inParams = new INParameters();
-            gen.setTable("COMPLEX_ATTR_ROW r, COMPLEX_ATTR_FIELD f");
-            gen.setFieldExpr("f.ROW_ID", "md5(concat(" + inParams.add(newID, Types.INTEGER)
-                    + " , r.PARENT_TYPE, r.M_COMPLEX_ATTR_ID, r.POSITION))");
-            buf = new StringBuffer(gen.updateStatement());
-            buf.append(" where r.ROW_ID=f.ROW_ID and r.PARENT_TYPE='E' and r.PARENT_ID=").append(
-                    inParams.add(oldID, Types.INTEGER));
-            stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
-            ((PreparedStatement) stmt).executeUpdate();
-            inParams = new INParameters();
-
-            gen.clear();
-            gen.setTable("COMPLEX_ATTR_ROW");
-            gen.setFieldExpr("PARENT_ID", newID);
-            buf = new StringBuffer(gen.updateStatement());
-            buf.append(" where PARENT_TYPE='E' and PARENT_ID=").append(oldID);
-            stmt.executeUpdate(buf.toString());
-
-            gen.clear();
-            gen.setTable("COMPLEX_ATTR_ROW");
-            gen.setFieldExpr("ROW_ID", "md5(concat(PARENT_ID, PARENT_TYPE, M_COMPLEX_ATTR_ID,POSITION))");
-            buf = new StringBuffer(gen.updateStatement());
-            buf.append(" where PARENT_TYPE='E' and PARENT_ID=").append(newID);
             stmt.executeUpdate(buf.toString());
 
             gen.clear();

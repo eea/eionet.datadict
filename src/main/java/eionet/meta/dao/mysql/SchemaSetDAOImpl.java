@@ -149,7 +149,6 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
              * a.getId()); String value = "%" + a.getValue() + "%"; parameters.put(valueKey, value); } }
              */
             sql.append(getAttributesSqlConstraintAndAppendParams(searchFilter, parameters, "ss.SCHEMA_SET_ID"));
-            sql.append(getComplexAttrsSqlConstraintAndAppendParams(searchFilter, parameters, "ss.SCHEMA_SET_ID"));
         }
 
         // Sorting

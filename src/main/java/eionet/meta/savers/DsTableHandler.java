@@ -22,7 +22,6 @@ import eionet.meta.DDSearchEngine;
 import eionet.meta.DDUser;
 import eionet.meta.DElemAttribute;
 import eionet.meta.DataElement;
-import eionet.meta.DsTable;
 import eionet.meta.dao.IDataElementDAO;
 import eionet.util.RequestMessages;
 import eionet.util.sql.INParameters;
@@ -40,7 +39,6 @@ public class DsTableHandler extends BaseHandler {
     public static String ATTR_MULT_PREFIX = "attr_mult_";
 
     public static String INHERIT_ATTR_PREFIX = "inherit_";
-    public static String INHERIT_COMPLEX_ATTR_PREFIX = "inherit_complex_";
 
     public static String POS_PREFIX = "pos_";
     public static String OLDPOS_PREFIX = "oldpos_";
@@ -415,7 +413,6 @@ public class DsTableHandler extends BaseHandler {
 
         // delete table attributes
         deleteAttributes(del_IDs);
-        deleteComplexAttributes(del_IDs);
 
         // delete table elements
         deleteElements(del_IDs);
@@ -659,30 +656,6 @@ public class DsTableHandler extends BaseHandler {
     /**
      *
      */
-    private void deleteComplexAttributes(String[] del_IDs) throws SQLException {
-
-        for (int i = 0; del_IDs != null && i < del_IDs.length; i++) {
-
-            Parameters params = new Parameters();
-            params.addParameterValue("mode", "delete");
-            params.addParameterValue("legal_delete", "true");
-            params.addParameterValue("parent_id", del_IDs[i]);
-            params.addParameterValue("parent_type", "T");
-
-            AttrFieldsHandler attrFieldsHandler = new AttrFieldsHandler(conn, params, ctx);
-            // attrFieldsHandler.setVersioning(this.versioning);
-            attrFieldsHandler.setVersioning(false);
-            try {
-                attrFieldsHandler.execute();
-            } catch (Exception e) {
-                throw new SQLException(e.toString());
-            }
-        }
-    }
-
-    /**
-     *
-     */
     private void processAttributes() throws SQLException {
         String attrID = null;
         Enumeration parNames = req.getParameterNames();
@@ -713,7 +686,7 @@ public class DsTableHandler extends BaseHandler {
                 for (int i = 0; i < attrValues.length; i++) {
                     insertAttribute(attrID, attrValues[i]);
                 }
-            } else if (parName.startsWith(INHERIT_ATTR_PREFIX) && !parName.startsWith(INHERIT_COMPLEX_ATTR_PREFIX)) {
+            } else if (parName.startsWith(INHERIT_ATTR_PREFIX)) {
                 attrID = parName.substring(INHERIT_ATTR_PREFIX.length());
                 if (dstID == null) {
                     continue;
@@ -721,14 +694,6 @@ public class DsTableHandler extends BaseHandler {
                 CopyHandler ch = new CopyHandler(conn, ctx, searchEngine);
                 ch.setUser(user);
                 ch.copyAttribute(lastInsertID, dstID, "T", "DS", attrID);
-            } else if (parName.startsWith(INHERIT_COMPLEX_ATTR_PREFIX)) {
-                attrID = parName.substring(INHERIT_COMPLEX_ATTR_PREFIX.length());
-                if (dstID == null) {
-                    continue;
-                }
-                CopyHandler ch = new CopyHandler(conn, ctx, searchEngine);
-                ch.setUser(user);
-                ch.copyComplexAttrs(lastInsertID, dstID, "DS", "T", attrID);
             }
         }
     }
@@ -838,7 +803,7 @@ public class DsTableHandler extends BaseHandler {
             searchEngine = new DDSearchEngine(conn, "");
         }
         searchEngine.setUser(user);
-        Vector<DElemAttribute> attributes = searchEngine.getSimpleAttributes(srcTblID, "T");
+        Vector<DElemAttribute> attributes = searchEngine.getAttributes(srcTblID, "T");
         for (String attrId : attributesToBeCopiedFromCopyTable) {
             for (DElemAttribute attribute : attributes){
                 if (attribute.getID().equals(attrId)) {
@@ -1052,21 +1017,6 @@ public class DsTableHandler extends BaseHandler {
             buf.append(" where PARENT_TYPE='T' and DATAELEM_ID=?");
             stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
             stmt.executeUpdate();
-
-            gen = new SQLGenerator();
-            gen.setTable("COMPLEX_ATTR_ROW");
-            gen.setFieldExpr("PARENT_ID", "?");
-            buf = new StringBuffer(gen.updateStatement());
-            buf.append(" where PARENT_TYPE='T' and PARENT_ID=?");
-            stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
-            stmt.executeUpdate();
-
-            gen = new SQLGenerator();
-            gen.setTable("COMPLEX_ATTR_ROW");
-            gen.setFieldExpr("ROW_ID", "md5(concat(PARENT_ID, PARENT_TYPE, M_COMPLEX_ATTR_ID, POSITION))");
-            buf = new StringBuffer(gen.updateStatement());
-            buf.append(" where PARENT_TYPE='T' and PARENT_ID=").append(checkedOutTableID);
-            stmt.executeUpdate(buf.toString());
 
             gen = new SQLGenerator();
             gen.setTable("CACHE");

@@ -36,7 +36,6 @@ public class DsTable implements Comparable {
 
     private Vector elements = new Vector();
     private Vector simpleAttrs = new Vector();
-    private Vector complexAttrs = new Vector();
 
     private int dstVersion = -1;
 
@@ -105,20 +104,7 @@ public class DsTable implements Comparable {
         return simpleAttrs;
     }
 
-    public void setComplexAttributes(Vector v) {
-        this.complexAttrs = v;
-    }
-
-    public Vector getComplexAttributes() {
-        return complexAttrs;
-    }
-
     public Vector simpleAttributesTable() {
-        Vector v = new Vector();
-        return v;
-    }
-
-    public Vector complexAttributesTable() {
         Vector v = new Vector();
         return v;
     }
@@ -212,23 +198,12 @@ public class DsTable implements Comparable {
     }
 
     public DElemAttribute getAttributeByShortName(String name) {
-
-        // look from simple attributes
         for (int i = 0; i < simpleAttrs.size(); i++) {
             DElemAttribute attr = (DElemAttribute) simpleAttrs.get(i);
             if (attr.getShortName().equalsIgnoreCase(name)) {
                 return attr;
             }
         }
-
-        // if it wasn't in the simple attributes, look from complex ones
-        for (int i = 0; i < complexAttrs.size(); i++) {
-            DElemAttribute attr = (DElemAttribute) complexAttrs.get(i);
-            if (attr.getShortName().equalsIgnoreCase(name)) {
-                return attr;
-            }
-        }
-
         return null;
     }
 

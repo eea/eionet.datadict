@@ -181,7 +181,7 @@
                             //String fullName = table.getName();
                             String tblName = "";
 
-                            Vector attributes = searchEngine.getAttributes(table_id, "T", DElemAttribute.TYPE_SIMPLE);
+                            Vector attributes = searchEngine.getAttributes(table_id, "T");
 
                             for (int j=0; j<attributes.size(); j++){
                                 attr = (DElemAttribute)attributes.get(j);

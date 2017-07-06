@@ -168,7 +168,7 @@ public class DatasetMSAccessFile {
             throw new DDException("No dataset found whit this id: " + dstId);
         } else {
             // set the dataset's dynamic attributes
-            dst.setSimpleAttributes(getSearchEngine().getSimpleAttributes(dstId, "DS"));
+            dst.setSimpleAttributes(getSearchEngine().getAttributes(dstId, "DS"));
             fileNameForDownload = dst.getIdentifier() + ".mdb";
         }
 
@@ -199,7 +199,7 @@ public class DatasetMSAccessFile {
             DsTable tbl = (DsTable) tables.get(tblIndex);
 
             // get dynamic attributes and all the elements of this DD table
-            tbl.setSimpleAttributes(getSearchEngine().getSimpleAttributes(tbl.getID(), "T"));
+            tbl.setSimpleAttributes(getSearchEngine().getAttributes(tbl.getID(), "T"));
             Vector elems = searchEngine.getDataElements(null, null, null, null, tbl.getID());
 
             // write table definition row

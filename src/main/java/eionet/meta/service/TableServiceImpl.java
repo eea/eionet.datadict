@@ -84,7 +84,7 @@ public class TableServiceImpl implements ITableService {
     @Override
     public List<Attribute> getTableAttributes() throws ServiceException {
         try {
-            return attributeDAO.getAttributes(DElemAttribute.ParentType.TABLE, DElemAttribute.TYPE_SIMPLE);
+            return attributeDAO.getAttributes(DElemAttribute.ParentType.TABLE);
         } catch (Exception e) {
             throw new ServiceException("Failed to get table attributes: " + e.getMessage(), e);
         }

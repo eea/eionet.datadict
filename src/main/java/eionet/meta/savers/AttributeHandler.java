@@ -23,7 +23,6 @@ import eionet.util.sql.SQL;
 public class AttributeHandler extends BaseHandler {
 
     private String mode = null;
-    private String type = null;
     private String attr_id = null;
     private String lastInsertID = null;
 
@@ -43,7 +42,6 @@ public class AttributeHandler extends BaseHandler {
         this.req = req;
         this.ctx = ctx;
         this.mode = req.getParameter("mode");
-        this.type = req.getParameter("type");
         this.attr_id = req.getParameter("attr_id");
         this.name = req.getParameter("name");
         this.shortName = req.getParameter("short_name");
@@ -63,13 +61,6 @@ public class AttributeHandler extends BaseHandler {
                 !mode.equalsIgnoreCase("edit") &&
                 !mode.equalsIgnoreCase("delete"))) {
             throw new Exception("AttributeHandler mode unspecified!");
-        }
-
-        if (mode.equalsIgnoreCase("add")) {
-            if (type == null || (!type.equalsIgnoreCase(DElemAttribute.TYPE_SIMPLE) &&
-                    !type.equalsIgnoreCase(DElemAttribute.TYPE_COMPLEX))) {
-                throw new Exception("AttributeHandler type unspecified!");
-            }
         }
 
         if (mode.equalsIgnoreCase("add")) {
@@ -111,45 +102,40 @@ public class AttributeHandler extends BaseHandler {
             map.put("INHERIT", inParams.add(inherit));
         }
 
-        // simple attribute specific fields
-        if (type == null || type.equals(DElemAttribute.TYPE_SIMPLE)) {
+        map.put("DISP_WHEN", inParams.add(getDisplayWhen(), Types.INTEGER));
+        map.put("OBLIGATION", inParams.add(obligation));
 
-            map.put("DISP_WHEN", inParams.add(getDisplayWhen(), Types.INTEGER));
-            map.put("OBLIGATION", inParams.add(obligation));
+        String dispType = req.getParameter("dispType");
+        map.put("DISP_TYPE", inParams.add(dispType == null || dispType.length() == 0 ? null : dispType));
 
-            String dispType = req.getParameter("dispType");
-            map.put("DISP_TYPE", inParams.add(dispType == null || dispType.length() == 0 ? null : dispType));
+        String dispWidth = req.getParameter("dispWidth");
+        if (dispWidth != null && dispWidth.length() > 0) {
+            map.put("DISP_WIDTH", inParams.add(dispWidth, Types.INTEGER));
+        }
 
-            String dispWidth = req.getParameter("dispWidth");
-            if (dispWidth != null && dispWidth.length() > 0) {
-                map.put("DISP_WIDTH", inParams.add(dispWidth, Types.INTEGER));
-            }
+        String dispHeight = req.getParameter("dispHeight");
+        if (dispHeight != null && dispHeight.length() > 0) {
+            map.put("DISP_HEIGHT", inParams.add(dispHeight));
+        }
 
-            String dispHeight = req.getParameter("dispHeight");
-            if (dispHeight != null && dispHeight.length() > 0) {
-                map.put("DISP_HEIGHT", inParams.add(dispHeight));
-            }
+        String dispMultiple = req.getParameter("dispMultiple");
+        if (dispMultiple != null && dispMultiple.length() > 0) {
+            map.put("DISP_MULTIPLE", inParams.add(dispMultiple));
+        }
 
-            String dispMultiple = req.getParameter("dispMultiple");
-            if (dispMultiple != null && dispMultiple.length() > 0) {
-                map.put("DISP_MULTIPLE", inParams.add(dispMultiple));
-            }
-
-            String rdfPropertyName = req.getParameter("rdfPropertyName");
-            int rdfNamespaceId = Integer.parseInt(req.getParameter("rdfNamespaceId"));
-            if (StringUtils.isEmpty(rdfPropertyName) || rdfNamespaceId == 0) {
-                map.put("RDF_PROPERTY_NAME", inParams.add(null));
-                map.put("RDF_PROPERTY_NAMESPACE_ID", inParams.add(null));
-            } else {
-                map.put("RDF_PROPERTY_NAME", inParams.add(rdfPropertyName));
-                map.put("RDF_PROPERTY_NAMESPACE_ID", inParams.add(rdfNamespaceId));
-            }
+        String rdfPropertyName = req.getParameter("rdfPropertyName");
+        int rdfNamespaceId = Integer.parseInt(req.getParameter("rdfNamespaceId"));
+        if (StringUtils.isEmpty(rdfPropertyName) || rdfNamespaceId == 0) {
+            map.put("RDF_PROPERTY_NAME", inParams.add(null));
+            map.put("RDF_PROPERTY_NAMESPACE_ID", inParams.add(null));
+        } else {
+            map.put("RDF_PROPERTY_NAME", inParams.add(rdfPropertyName));
+            map.put("RDF_PROPERTY_NAMESPACE_ID", inParams.add(rdfNamespaceId));
         }
 
         PreparedStatement stmt = null;
-        String tableName = (type == null || type.equals(DElemAttribute.TYPE_SIMPLE)) ? "M_ATTRIBUTE" : "M_COMPLEX_ATTR";
         try {
-            stmt = SQL.preparedStatement(SQL.insertStatement(tableName, map), inParams, conn);
+            stmt = SQL.preparedStatement(SQL.insertStatement("M_ATTRIBUTE", map), inParams, conn);
             stmt.executeUpdate();
             setLastInsertID();
         } finally {
@@ -158,15 +144,7 @@ public class AttributeHandler extends BaseHandler {
 
         // add acl
         if (user != null) {
-
-            String idPrefix = "";
-            if (type != null && type.equals(DElemAttribute.TYPE_COMPLEX)) {
-                idPrefix = "c";
-            } else if (type != null && type.equals(DElemAttribute.TYPE_SIMPLE)) {
-                idPrefix = "s";
-            }
-
-
+            String idPrefix = "s";
             String aclPath = "/attributes/" + idPrefix + getLastInsertID();
             String aclDesc = "Short name: " + shortName;
             AccessController.addAcl(aclPath, user.getUserName(), aclDesc);
@@ -178,9 +156,7 @@ public class AttributeHandler extends BaseHandler {
      * @throws SQLException
      */
     private void executeAnUpdate() throws SQLException {
-
         lastInsertID = attr_id;
-        String tableName = (type == null || type.equals(DElemAttribute.TYPE_SIMPLE)) ? "M_ATTRIBUTE" : "M_COMPLEX_ATTR";
 
         INParameters inParams = new INParameters();
         LinkedHashMap map = new LinkedHashMap();
@@ -200,40 +176,35 @@ public class AttributeHandler extends BaseHandler {
         String inherit = req.getParameter("inheritable");
         map.put("INHERIT", inParams.add((inherit != null && inherit.length() > 0) ? inherit : "0"));
 
-        // simple attribute specific fields
-        if (type == null || type.equals(DElemAttribute.TYPE_SIMPLE)) {
+        map.put("OBLIGATION", inParams.add(obligation));
+        map.put("DISP_WHEN", inParams.add(getDisplayWhen(), Types.INTEGER));
 
-            map.put("OBLIGATION", inParams.add(obligation));
-            map.put("DISP_WHEN", inParams.add(getDisplayWhen(), Types.INTEGER));
+        String dispType = req.getParameter("dispType");
+        map.put("DISP_TYPE", inParams.add(dispType == null || dispType.length() == 0 ? null : dispType));
 
-            String dispType = req.getParameter("dispType");
-            map.put("DISP_TYPE", inParams.add(dispType == null || dispType.length() == 0 ? null : dispType));
+        String dispWidth = req.getParameter("dispWidth");
+        map.put("DISP_WIDTH", inParams.add((dispWidth == null || dispWidth.length() == 0) ? "20" : dispWidth, Types.INTEGER));
 
-            String dispWidth = req.getParameter("dispWidth");
-            map.put("DISP_WIDTH", inParams.add((dispWidth == null || dispWidth.length() == 0) ? "20" : dispWidth, Types.INTEGER));
+        String dispHeight = req.getParameter("dispHeight");
+        map.put("DISP_HEIGHT", inParams.add((dispHeight == null || dispHeight.length() == 0) ? "20" : dispHeight, Types.INTEGER));
 
-            String dispHeight = req.getParameter("dispHeight");
-            map.put("DISP_HEIGHT", inParams.add((dispHeight == null || dispHeight.length() == 0) ? "20" : dispHeight, Types.INTEGER));
+        String dispMultiple = req.getParameter("dispMultiple");
+        map.put("DISP_MULTIPLE", inParams.add(dispMultiple != null && dispMultiple.length() > 0 ? dispMultiple : "0"));
 
-            String dispMultiple = req.getParameter("dispMultiple");
-            map.put("DISP_MULTIPLE", inParams.add(dispMultiple != null && dispMultiple.length() > 0 ? dispMultiple : "0"));
-
-            String rdfPropertyName = req.getParameter("rdfPropertyName");
-            int rdfNamespaceId = Integer.parseInt(req.getParameter("rdfNamespaceId"));
-            if (StringUtils.isEmpty(rdfPropertyName) || rdfNamespaceId == 0) {
-                map.put("RDF_PROPERTY_NAME", inParams.add(null));
-                map.put("RDF_PROPERTY_NAMESPACE_ID", inParams.add(null));
-            } else {
-                map.put("RDF_PROPERTY_NAME", inParams.add(rdfPropertyName));
-                map.put("RDF_PROPERTY_NAMESPACE_ID", inParams.add(rdfNamespaceId));
-            }
+        String rdfPropertyName = req.getParameter("rdfPropertyName");
+        int rdfNamespaceId = Integer.parseInt(req.getParameter("rdfNamespaceId"));
+        if (StringUtils.isEmpty(rdfPropertyName) || rdfNamespaceId == 0) {
+            map.put("RDF_PROPERTY_NAME", inParams.add(null));
+            map.put("RDF_PROPERTY_NAMESPACE_ID", inParams.add(null));
+        } else {
+            map.put("RDF_PROPERTY_NAME", inParams.add(rdfPropertyName));
+            map.put("RDF_PROPERTY_NAMESPACE_ID", inParams.add(rdfNamespaceId));
         }
 
         PreparedStatement stmt = null;
         try {
-            StringBuffer buf = new StringBuffer(SQL.updateStatement(tableName, map));
-            buf.append(" where ").append(type == null || type.equals(DElemAttribute.TYPE_SIMPLE) ? "M_ATTRIBUTE_ID" : "M_COMPLEX_ATTR_ID").
-            append("=").append(inParams.add(attr_id, Types.INTEGER));
+            StringBuffer buf = new StringBuffer(SQL.updateStatement("M_ATTRIBUTE", map));
+            buf.append(" where M_ATTRIBUTE_ID=").append(inParams.add(attr_id, Types.INTEGER));
 
             stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
             stmt.executeUpdate();
@@ -247,9 +218,7 @@ public class AttributeHandler extends BaseHandler {
      * @throws Exception
      */
     private void executeADelete() throws Exception {
-
         String[] simpleAttrs = req.getParameterValues("simple_attr_id");
-        String[] complexAttrs = req.getParameterValues("complex_attr_id");
 
         PreparedStatement stmt = null;
         INParameters inParams = new INParameters();
@@ -270,25 +239,6 @@ public class AttributeHandler extends BaseHandler {
                 deleteSimpleAttributeValues(simpleAttrs);
                 deleteFixedValues(simpleAttrs);
             }
-
-            if (complexAttrs != null && complexAttrs.length != 0) {
-
-                inParams = new INParameters();
-                StringBuffer buf = new StringBuffer("delete from M_COMPLEX_ATTR where ");
-                for (int i = 0; i < complexAttrs.length; i++) {
-                    if (i > 0) {
-                        buf.append(" or ");
-                    }
-                    buf.append("M_COMPLEX_ATTR_ID=");
-                    buf.append(inParams.add(complexAttrs[i], Types.INTEGER));
-                }
-
-                SQL.close(stmt);
-                stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
-                stmt.executeUpdate();
-
-                deleteComplexAttributeValues(complexAttrs);
-            }
         } finally {
             SQL.close(stmt);
         }
@@ -297,12 +247,6 @@ public class AttributeHandler extends BaseHandler {
         for (int i = 0; simpleAttrs != null && i < simpleAttrs.length; i++) {
             try {
                 AccessController.removeAcl("/attributes/s" + simpleAttrs[i]);
-            } catch (Exception e) {
-            }
-        }
-        for (int i = 0; complexAttrs != null && i < complexAttrs.length; i++) {
-            try {
-                AccessController.removeAcl("/attributes/c" + complexAttrs[i]);
             } catch (Exception e) {
             }
         }
@@ -333,68 +277,6 @@ public class AttributeHandler extends BaseHandler {
             stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
             stmt.executeUpdate();
         } finally {
-            SQL.close(stmt);
-        }
-    }
-
-    /**
-     *
-     * @param attr_ids
-     * @throws SQLException
-     */
-    private void deleteComplexAttributeValues(String[] attr_ids) throws SQLException {
-
-        INParameters inParams = new INParameters();
-        StringBuffer buf = new StringBuffer("select distinct ROW_ID from COMPLEX_ATTR_ROW where ");
-        for (int i = 0; i < attr_ids.length; i++) {
-            if (i > 0) {
-                buf.append(" or ");
-            }
-            buf.append("M_COMPLEX_ATTR_ID=");
-            buf.append(inParams.add(attr_ids[i], Types.INTEGER));
-        }
-
-        ResultSet rs = null;
-        PreparedStatement stmt = null;
-        try {
-            stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
-            rs = stmt.executeQuery();
-
-            buf = new StringBuffer();
-            inParams = new INParameters();
-            for (int i = 0; rs.next(); i++) {
-
-                if (buf.length() == 0) {
-                    buf.append("delete from COMPLEX_ATTR_FIELD where ");
-                }
-
-                if (i > 0) {
-                    buf.append(" or ");
-                }
-                buf.append("ROW_ID=").append(inParams.add(rs.getString("ROW_ID")));
-            }
-            rs.close();
-
-            if (buf.length() > 0) {
-                SQL.close(stmt);
-                stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
-                stmt.executeUpdate();
-            }
-
-            inParams = new INParameters();
-            buf = new StringBuffer("delete from COMPLEX_ATTR_ROW where ");
-            for (int i = 0; i < attr_ids.length; i++) {
-                if (i > 0) {
-                    buf.append(" or ");
-                }
-                buf.append("M_COMPLEX_ATTR_ID=");
-                buf.append(inParams.add(attr_ids[i], Types.INTEGER));
-            }
-
-            stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
-            stmt.executeUpdate();
-        } finally {
-            SQL.close(rs);
             SQL.close(stmt);
         }
     }

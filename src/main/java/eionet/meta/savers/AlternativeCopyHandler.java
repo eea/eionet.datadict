@@ -283,38 +283,6 @@ public class AlternativeCopyHandler extends OldCopyHandler {
      *
      * @param oldId
      * @param newId
-     * @param parentType
-     * @return
-     */
-    protected static String complexAttrRowsCopyStatement(String oldId, String newId, String parentType) {
-
-        Map<String, Object> newValues = toValueMap("PARENT_ID", newId);
-        newValues.put("ROW_ID", "md5(concat('" + newId + "',PARENT_TYPE,M_COMPLEX_ATTR_ID,POSITION))");
-        String whereClause = "PARENT_TYPE='" + parentType + "' and PARENT_ID=" + oldId;
-        return rowsCopyStatement("COMPLEX_ATTR_ROW", whereClause, newValues);
-    }
-
-    /**
-     *
-     * @param oldId
-     * @param newId
-     * @param parentType
-     * @return
-     */
-    protected static String complexAttrFieldsCopyStatement(String oldId, String newId, String parentType) {
-
-        Map<String, Object> newValues =
-            toValueMap("ROW_ID", "md5(concat('" + newId + "',PARENT_TYPE,M_COMPLEX_ATTR_ID,POSITION))");
-        String fromClause = "COMPLEX_ATTR_FIELD,COMPLEX_ATTR_ROW";
-        String whereClause =
-            "COMPLEX_ATTR_FIELD.ROW_ID=COMPLEX_ATTR_ROW.ROW_ID and PARENT_TYPE='" + parentType + "' and PARENT_ID=" + oldId;
-        return rowsCopyStatement("COMPLEX_ATTR_FIELD", fromClause, whereClause, newValues);
-    }
-
-    /**
-     *
-     * @param oldId
-     * @param newId
      * @param ownerType
      * @return
      */
@@ -591,31 +559,24 @@ public class AlternativeCopyHandler extends OldCopyHandler {
             for (Entry<String, String> entry : oldNewDatasets.entrySet()) {
                 stmt.addBatch(simpleAttrsCopyStatement(entry.getKey(), entry.getValue(), "DS"));
                 isEmptyBatch = false;
-                stmt.addBatch(complexAttrRowsCopyStatement(entry.getKey(), entry.getValue(), "DS"));
-                stmt.addBatch(complexAttrFieldsCopyStatement(entry.getKey(), entry.getValue(), "DS"));
                 stmt.addBatch(documentsCopyStatement(entry.getKey(), entry.getValue(), "dst"));
             }
 
             for (Entry<String, String> entry : oldNewTables.entrySet()) {
                 stmt.addBatch(simpleAttrsCopyStatement(entry.getKey(), entry.getValue(), "T"));
                 isEmptyBatch = false;
-                stmt.addBatch(complexAttrRowsCopyStatement(entry.getKey(), entry.getValue(), "T"));
-                stmt.addBatch(complexAttrFieldsCopyStatement(entry.getKey(), entry.getValue(), "T"));
                 stmt.addBatch(documentsCopyStatement(entry.getKey(), entry.getValue(), "tbl"));
             }
 
             for (Entry<String, String> entry : oldNewElements.entrySet()) {
                 stmt.addBatch(simpleAttrsCopyStatement(entry.getKey(), entry.getValue(), "E"));
                 isEmptyBatch = false;
-                stmt.addBatch(complexAttrRowsCopyStatement(entry.getKey(), entry.getValue(), "E"));
-                stmt.addBatch(complexAttrFieldsCopyStatement(entry.getKey(), entry.getValue(), "E"));
                 stmt.addBatch(fixedValuesCopyStatement(entry.getKey(), entry.getValue()));
                 stmt.addBatch(fkRelationsCopyStatementA(entry.getKey(), entry.getValue()));
                 stmt.addBatch(fkRelationsCopyStatementB(entry.getKey(), entry.getValue()));
                 if (isCopyTbl2ElmRelations) {
                     stmt.addBatch(elmToTblRelationsCopyStatement(entry.getKey(), entry.getValue()));
                 }
-
             }
 
             for (Entry<String, Set<String>> entry : dst2Tables.entrySet()) {

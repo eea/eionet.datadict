@@ -32,11 +32,9 @@ public class DstSchema extends Schema {
         Dataset ds = searchEngine.getDataset(dsID);
         if (ds != null) {
 
-            Vector v = searchEngine.getSimpleAttributes(dsID, "DS");
+            Vector v = searchEngine.getAttributes(dsID, "DS");
             processAttributeValues(v,  new DataDictEntity(Integer.parseInt(dsID), DataDictEntity.Entity.DS));
             ds.setSimpleAttributes(v);
-            v = searchEngine.getComplexAttributes(dsID, "DS");
-            ds.setComplexAttributes(v);
             v = searchEngine.getDatasetTables(dsID, true);
             ds.setTables(v);
 
@@ -68,7 +66,7 @@ public class DstSchema extends Schema {
 
         //writeElemStart(ds.getShortName());
         writeElemStart(ds.getIdentifier());
-        writeAnnotation(ds.getSimpleAttributes(), ds.getComplexAttributes());
+        writeAnnotation(ds.getSimpleAttributes());
         writeContent(ds);
         writeElemEnd();
     }

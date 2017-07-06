@@ -27,8 +27,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
 import eionet.meta.dao.domain.Attribute;
-import eionet.meta.dao.domain.ComplexAttribute;
-import eionet.meta.dao.domain.ComplexAttributeField;
 
 /**
  * Schema set search filter.
@@ -52,9 +50,6 @@ public class SchemaSetFilter extends PagedRequest implements IObjectWithDynamicA
     /** Dynamic search attributes. */
     private List<Attribute> attributes;
 
-    /** Dynamic search complex attributes. */
-    private List<ComplexAttribute> complexAttributes;
-
     /**
      *
      * @return
@@ -70,9 +65,6 @@ public class SchemaSetFilter extends PagedRequest implements IObjectWithDynamicA
             return true;
         }
         if (isAttributesValued()) {
-            return true;
-        }
-        if (isComplexAttributesValued()) {
             return true;
         }
         return false;
@@ -91,25 +83,6 @@ public class SchemaSetFilter extends PagedRequest implements IObjectWithDynamicA
             }
         }
 
-        return false;
-    }
-    /**
-     * Check if any field in complex attributes has value.
-     * @return true if complex attribute field has value.
-     */
-    public boolean isComplexAttributesValued() {
-
-        if (this.complexAttributes != null && this.complexAttributes.size() > 0) {
-            for (ComplexAttribute a : this.complexAttributes) {
-                if (a.getFields() != null) {
-                    for (ComplexAttributeField field : a.getFields()) {
-                        if (StringUtils.isNotEmpty(field.getValue())) {
-                            return true;
-                        }
-                    }
-                }
-            }
-        }
         return false;
     }
 
@@ -172,22 +145,6 @@ public class SchemaSetFilter extends PagedRequest implements IObjectWithDynamicA
      */
     public void setSearchingUser(String searchingUser) {
         this.searchingUser = searchingUser;
-    }
-
-    /**
-     * @return the complexAttributes
-     */
-    @Override
-    public List<ComplexAttribute> getComplexAttributes() {
-        return complexAttributes;
-    }
-
-    /**
-     * @param complexAtributes the complexAttributes to set
-     */
-    @Override
-    public void setComplexAttributes(List<ComplexAttribute> complexAttributes) {
-        this.complexAttributes = complexAttributes;
     }
 
     /**

@@ -224,7 +224,7 @@ public class DDSearchEngine {
                     if (attr == null) {
                         attr =
                                 new DElemAttribute(attrID, attrsRs.getString("M_ATTRIBUTE.NAME"),
-                                        attrsRs.getString("M_ATTRIBUTE.SHORT_NAME"), DElemAttribute.TYPE_SIMPLE,
+                                        attrsRs.getString("M_ATTRIBUTE.SHORT_NAME"),
                                         attrsRs.getString("ATTRIBUTE.VALUE"), attrsRs.getString("M_ATTRIBUTE.DEFINITION"),
                                         attrsRs.getString("M_ATTRIBUTE.OBLIGATION"),
                                         attrsRs.getString("M_ATTRIBUTE.DISP_MULTIPLE"));
@@ -382,7 +382,7 @@ public class DDSearchEngine {
                     if (attr == null) {
                         attr =
                                 new DElemAttribute(attrID, attrsRs.getString("M_ATTRIBUTE.NAME"),
-                                        attrsRs.getString("M_ATTRIBUTE.SHORT_NAME"), DElemAttribute.TYPE_SIMPLE,
+                                        attrsRs.getString("M_ATTRIBUTE.SHORT_NAME"), 
                                         attrsRs.getString("ATTRIBUTE.VALUE"), attrsRs.getString("M_ATTRIBUTE.DEFINITION"),
                                         attrsRs.getString("M_ATTRIBUTE.OBLIGATION"),
                                         attrsRs.getString("M_ATTRIBUTE.DISP_MULTIPLE"));
@@ -735,7 +735,7 @@ public class DDSearchEngine {
                         if (attr == null) {
                             attr =
                                     new DElemAttribute(attrID, attrsRs.getString("M_ATTRIBUTE.NAME"),
-                                            attrsRs.getString("M_ATTRIBUTE.SHORT_NAME"), DElemAttribute.TYPE_SIMPLE,
+                                            attrsRs.getString("M_ATTRIBUTE.SHORT_NAME"), 
                                             attrsRs.getString("ATTRIBUTE.VALUE"), attrsRs.getString("M_ATTRIBUTE.DEFINITION"),
                                             attrsRs.getString("M_ATTRIBUTE.OBLIGATION"),
                                             attrsRs.getString("M_ATTRIBUTE.DISP_MULTIPLE"));
@@ -1038,7 +1038,7 @@ public class DDSearchEngine {
                     if (attr == null) {
                         attr =
                                 new DElemAttribute(attrID, attrsRs.getString("M_ATTRIBUTE.NAME"),
-                                        attrsRs.getString("M_ATTRIBUTE.SHORT_NAME"), DElemAttribute.TYPE_SIMPLE,
+                                        attrsRs.getString("M_ATTRIBUTE.SHORT_NAME"), 
                                         attrsRs.getString("ATTRIBUTE.VALUE"), attrsRs.getString("M_ATTRIBUTE.DEFINITION"),
                                         attrsRs.getString("M_ATTRIBUTE.OBLIGATION"),
                                         attrsRs.getString("M_ATTRIBUTE.DISP_MULTIPLE"));
@@ -1410,8 +1410,8 @@ public class DDSearchEngine {
                 elm.setAllConceptsValid(rs.getBoolean("ALL_CONCEPTS_LEGAL"));
 
                 Vector attributes =
-                        !elmCommon && inheritAttrs ? getSimpleAttributes(elmID, "E", elm.getTableID(), elm.getDatasetID())
-                                : getSimpleAttributes(elmID, "E");
+                        !elmCommon && inheritAttrs ? getAttributes(elmID, "E", elm.getTableID(), elm.getDatasetID())
+                                : getAttributes(elmID, "E");
 
                 elm.setAttributes(attributes);
             } else {
@@ -1436,40 +1436,21 @@ public class DDSearchEngine {
         return getDElemAttributes(null, null, null);
     }
 
-    public Vector getDElemAttributes(String type) throws SQLException {
-        return getDElemAttributes(null, type, null);
+    public Vector getDElemAttributes(String attrId) throws SQLException {
+        return getDElemAttributes(attrId, null);
     }
 
-    public Vector getDElemAttributes(String attrId, String type) throws SQLException {
-        return getDElemAttributes(attrId, type, null);
+    public Vector getDElemAttributes(String attrId, String orderBy) throws SQLException {
+        return getDElemAttributes(attrId, orderBy, null);
     }
 
-    public Vector getDElemAttributes(String attrId, String type, String orderBy) throws SQLException {
-        return getDElemAttributes(attrId, type, orderBy, null);
-    }
-
-    public Vector getDElemAttributes(String attrId, String type, String orderBy, String inheritable) throws SQLException {
-
-        if (type == null) {
-            type = DElemAttribute.TYPE_SIMPLE;
-        }
-
+    public Vector getDElemAttributes(String attrId, String orderBy, String inheritable) throws SQLException {
         INParameters inParams = new INParameters();
         StringBuffer qry = new StringBuffer();
-        if (type.equals(DElemAttribute.TYPE_SIMPLE)) {
-            qry.append("select distinct M_ATTRIBUTE_ID as ID, M_ATTRIBUTE.*, T_RDF_NAMESPACE.URI as RDF_URI, T_RDF_NAMESPACE.ID as RDF_ID from M_ATTRIBUTE ");
-            qry.append("LEFT JOIN T_RDF_NAMESPACE  ON M_ATTRIBUTE.RDF_PROPERTY_NAMESPACE_ID = T_RDF_NAMESPACE.ID");
-            if (attrId != null) {
-                qry.append(" where M_ATTRIBUTE_ID=");
-            }
-        } else {
-            qry.append("select distinct M_COMPLEX_ATTR_ID as ID, M_COMPLEX_ATTR.* from M_COMPLEX_ATTR");
-            if (attrId != null) {
-                qry.append(" where M_COMPLEX_ATTR_ID=");
-            }
-        }
+        qry.append("select distinct M_ATTRIBUTE_ID as ID, M_ATTRIBUTE.*, T_RDF_NAMESPACE.URI as RDF_URI, T_RDF_NAMESPACE.ID as RDF_ID from M_ATTRIBUTE ");
+        qry.append("LEFT JOIN T_RDF_NAMESPACE  ON M_ATTRIBUTE.RDF_PROPERTY_NAMESPACE_ID = T_RDF_NAMESPACE.ID");
         if (attrId != null) {
-            qry.append(inParams.add(attrId, Types.INTEGER));
+            qry.append(" where M_ATTRIBUTE_ID=").append(inParams.add(attrId, Types.INTEGER));;
         }
 
         if (inheritable != null) {
@@ -1498,7 +1479,7 @@ public class DDSearchEngine {
 
             while (rs.next()) {
                 DElemAttribute attr =
-                        new DElemAttribute(rs.getString("ID"), rs.getString("NAME"), rs.getString("SHORT_NAME"), type, null,
+                        new DElemAttribute(rs.getString("ID"), rs.getString("NAME"), rs.getString("SHORT_NAME"), null,
                                 rs.getString("DEFINITION"), rs.getString("OBLIGATION"));
 
                 Namespace ns = getNamespace(rs.getString("NAMESPACE_ID"));
@@ -1506,15 +1487,11 @@ public class DDSearchEngine {
                     attr.setNamespace(ns);
                 }
 
-                if (type.equals(DElemAttribute.TYPE_SIMPLE)) {
-                    attr.setDisplayProps(rs.getString("DISP_TYPE"), rs.getInt("DISP_ORDER"), rs.getInt("DISP_WHEN"),
-                            rs.getString("DISP_WIDTH"), rs.getString("DISP_HEIGHT"), rs.getString("DISP_MULTIPLE"));
-                    attr.setRdfNamespaceId(rs.getInt("RDF_ID"));
-                    attr.setRdfPropertyUri(rs.getString("RDF_URI"));
-                    attr.setRdfPropertyName(rs.getString("RDF_PROPERTY_NAME"));
-                } else {
-                    attr.setDisplayProps(null, rs.getInt("DISP_ORDER"), rs.getInt("DISP_WHEN"), null, null, null);
-                }
+                attr.setDisplayProps(rs.getString("DISP_TYPE"), rs.getInt("DISP_ORDER"), rs.getInt("DISP_WHEN"),
+                        rs.getString("DISP_WIDTH"), rs.getString("DISP_HEIGHT"), rs.getString("DISP_MULTIPLE"));
+                attr.setRdfNamespaceId(rs.getInt("RDF_ID"));
+                attr.setRdfPropertyUri(rs.getString("RDF_URI"));
+                attr.setRdfPropertyName(rs.getString("RDF_PROPERTY_NAME"));
 
                 attr.setInheritable(rs.getString("INHERIT"));
 
@@ -1610,17 +1587,6 @@ public class DDSearchEngine {
     }
 
     /**
-     *
-     * @param attrId
-     * @return
-     * @throws SQLException
-     *             if database query fails
-     */
-    public Vector getAttrFields(String attrId) throws SQLException {
-        return getAttrFields(attrId, null);
-    }
-
-    /**
      * checks if CH3 element.
      * @param elemenID
      * @param type
@@ -1656,431 +1622,6 @@ public class DDSearchEngine {
         }
 
         return result;
-    }
-    /**
-     *
-     * @param attrId
-     * @param priority
-     * @return
-     * @throws SQLException
-     *             if database query fails
-     */
-    public Vector getAttrFields(String attrId, String priority) throws SQLException {
-
-        INParameters inParams = new INParameters();
-
-        StringBuffer buf = new StringBuffer();
-        buf.append("select * from M_COMPLEX_ATTR_FIELD ");
-        buf.append("where M_COMPLEX_ATTR_ID=");
-        buf.append(inParams.add(attrId, Types.INTEGER));
-        if (priority != null) {
-            buf.append(" and PRIORITY=").append(inParams.add(priority));
-        }
-        buf.append(" order by POSITION");
-
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        Vector v = new Vector();
-        try {
-            stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
-            rs = stmt.executeQuery();
-
-            while (rs.next()) {
-
-                Hashtable hash = new Hashtable();
-                hash.put("id", rs.getString("M_COMPLEX_ATTR_FIELD_ID"));
-                hash.put("name", rs.getString("NAME"));
-                hash.put("definition", rs.getString("DEFINITION"));
-                hash.put("position", rs.getString("POSITION"));
-                hash.put("priority", rs.getString("PRIORITY"));
-
-                v.add(hash);
-            }
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (stmt != null) {
-                    stmt.close();
-                }
-            } catch (SQLException sqle) {
-            }
-        }
-
-        return v;
-    }
-
-    /**
-     *
-     * @param field_id
-     * @return
-     * @throws SQLException
-     *             if database query fails
-     */
-    public Hashtable getAttrField(String field_id) throws SQLException {
-
-        INParameters inParams = new INParameters();
-        StringBuffer buf = new StringBuffer();
-        buf.append("select * from M_COMPLEX_ATTR_FIELD ");
-        buf.append("where M_COMPLEX_ATTR_FIELD_ID=");
-        buf.append(inParams.add(field_id, Types.INTEGER));
-
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        Hashtable hash = new Hashtable();
-
-        try {
-            stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
-            rs = stmt.executeQuery();
-
-            while (rs.next()) {
-
-                hash.put("id", rs.getString("M_COMPLEX_ATTR_FIELD_ID"));
-                hash.put("name", rs.getString("NAME"));
-                hash.put("definition", rs.getString("DEFINITION"));
-                hash.put("position", rs.getString("POSITION"));
-                hash.put("priority", rs.getString("PRIORITY"));
-            }
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (stmt != null) {
-                    stmt.close();
-                }
-            } catch (SQLException sqle) {
-            }
-        }
-
-        return hash;
-    }
-
-    /**
-     *
-     * @param attrId
-     * @param parentId
-     * @param parent_type
-     * @return
-     * @throws SQLException
-     *             if database query fails
-     */
-    public Vector getComplexAttribute(String attrId, String parentId, String parent_type) throws SQLException {
-        return getComplexAttributes(parentId, parent_type, attrId);
-    }
-
-    /**
-     *
-     * @param parentId
-     * @param parent_type
-     * @return
-     * @throws SQLException
-     *             if database query fails
-     */
-    public Vector getComplexAttributes(String parentId, String parent_type) throws SQLException {
-        return getComplexAttributes(parentId, parent_type, null);
-    }
-
-    /**
-     *
-     * @param parentId
-     * @param parent_type
-     * @param attrId
-     * @return
-     * @throws SQLException
-     *             if database query fails
-     */
-    public Vector getComplexAttributes(String parentId, String parent_type, String attrId) throws SQLException {
-        return getComplexAttributes(parentId, parent_type, attrId, null, null);
-    }
-
-    /**
-     *
-     * @param parentId
-     * @param parent_type
-     * @param attr_id
-     * @param inheritTblID
-     * @param inheritDstID
-     * @return
-     * @throws SQLException
-     *             if database query fails
-     */
-    public Vector getComplexAttributes(String parentId, String parent_type, String attr_id, String inheritTblID,
-            String inheritDstID) throws SQLException {
-
-        INParameters inParams = new INParameters();
-        StringBuffer buf = new StringBuffer();
-        buf.append("select ");
-        buf.append("M_COMPLEX_ATTR.M_COMPLEX_ATTR_ID as ATTR_ID, ");
-        buf.append("M_COMPLEX_ATTR.SHORT_NAME as ATTR_NAME, ");
-        buf.append("M_COMPLEX_ATTR.NAME as NAME, ");
-        buf.append("M_COMPLEX_ATTR.INHERIT as INHERIT, ");
-        buf.append("M_COMPLEX_ATTR.OBLIGATION as OBLIGATION, ");
-        buf.append("NAMESPACE.SHORT_NAME as NS, ");
-        buf.append("COMPLEX_ATTR_ROW.POSITION as ROW_POS, ");
-        buf.append("COMPLEX_ATTR_ROW.ROW_ID as ROW_ID, ");
-        buf.append("COMPLEX_ATTR_ROW.PARENT_TYPE as PARENT_TYPE, ");
-        buf.append("COMPLEX_ATTR_FIELD.M_COMPLEX_ATTR_FIELD_ID as FIELD_ID, ");
-        buf.append("COMPLEX_ATTR_FIELD.VALUE as FIELD_VALUE ");
-        buf.append("from ");
-        buf.append("COMPLEX_ATTR_ROW ");
-        buf.append("left outer join COMPLEX_ATTR_FIELD on ");
-        buf.append("COMPLEX_ATTR_ROW.ROW_ID=COMPLEX_ATTR_FIELD.ROW_ID, ");
-
-        buf.append("M_COMPLEX_ATTR left outer join NAMESPACE ");
-        buf.append("on M_COMPLEX_ATTR.NAMESPACE_ID=NAMESPACE.NAMESPACE_ID ");
-        buf.append("where ");
-        buf.append("((COMPLEX_ATTR_ROW.PARENT_ID=");
-        buf.append(inParams.add(parentId, Types.INTEGER));
-        buf.append(" and COMPLEX_ATTR_ROW.PARENT_TYPE=");
-        buf.append(inParams.add(parent_type));
-        buf.append(")");
-
-        // EK291003 search inhrted attributes from table and/or dataset level
-        if (!Util.isEmpty(inheritTblID)) {
-            buf.append(" or (COMPLEX_ATTR_ROW.PARENT_ID=");
-            buf.append(inParams.add(inheritTblID));
-            buf.append(" and COMPLEX_ATTR_ROW.PARENT_TYPE='T' and M_COMPLEX_ATTR.INHERIT!='0')");
-        }
-        if (!Util.isEmpty(inheritDstID)) {
-            buf.append(" or (COMPLEX_ATTR_ROW.PARENT_ID=");
-            buf.append(inParams.add(inheritDstID));
-            buf.append(" and COMPLEX_ATTR_ROW.PARENT_TYPE='DS' and M_COMPLEX_ATTR.INHERIT!='0')");
-        }
-        buf.append(")");
-
-        // set attribute id if looking for a concrete attribute
-        if (attr_id != null) {
-            buf.append(" and COMPLEX_ATTR_ROW.M_COMPLEX_ATTR_ID=");
-            buf.append(inParams.add(attr_id, Types.INTEGER));
-        }
-
-        buf.append(" and COMPLEX_ATTR_ROW.M_COMPLEX_ATTR_ID=");
-        buf.append("M_COMPLEX_ATTR.M_COMPLEX_ATTR_ID ");
-        buf.append("order by ATTR_ID, PARENT_TYPE, ROW_POS");
-
-        LOGGER.debug(buf.toString());
-
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        Vector v = new Vector();
-        DElemAttribute attr = null;
-        Hashtable rowHash = null;
-        try {
-            stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
-            rs = stmt.executeQuery();
-
-            Hashtable attrs = new Hashtable();
-            Hashtable fields = new Hashtable();
-
-            int prvRow = -1;
-            String prvType = "";
-            while (rs.next()) {
-
-                String attrID = rs.getString("ATTR_ID");
-                String parentType = rs.getString("COMPLEX_ATTR_ROW.PARENT_TYPE");
-                String inherited = parentType.equals(parent_type) ? null : parentType;
-                if (attrs.containsKey(attrID)) {
-                    attr = (DElemAttribute) attrs.get(attrID);
-                } else {
-                    if (attr != null) { // this is true, when there are multiple attr_ids and we have found one already
-
-                        addRowHash(attr, rowHash);
-                        v.add(attr);
-                        rowHash = null;
-                        prvRow = -1;
-                        prvType = "";
-                    }
-
-                    attr =
-                            new DElemAttribute(attrID, rs.getString("NAME"), rs.getString("ATTR_NAME"),
-                                    DElemAttribute.TYPE_COMPLEX, null, null, rs.getString("OBLIGATION"));
-                    attr.setInheritable(rs.getString("INHERIT"));
-
-                    Namespace ns = new Namespace(null, rs.getString("NS"), null, null, null);
-                    attr.setNamespace(ns);
-
-                    attrs.put(attrID, attr);
-                }
-
-                int row = rs.getInt("ROW_POS");
-                if (row != prvRow || !parentType.equals(prvType)) {
-                    if (prvRow != -1 && !prvType.equals("")) {
-                        addRowHash(attr, rowHash);
-                    }
-
-                    rowHash = new Hashtable();
-                    rowHash.put("rowid", rs.getString("ROW_ID"));
-                    rowHash.put("position", rs.getString("ROW_POS"));
-                    if (inherited != null) {
-                        rowHash.put("inherited", inherited);
-                    }
-                }
-
-                String fldID = rs.getString("FIELD_ID");
-                String fldValue = rs.getString("FIELD_VALUE");
-
-                if (fldID != null && fldValue != null) {
-                    rowHash.put(fldID, fldValue);
-                }
-
-                prvRow = row;
-                prvType = parentType;
-            }
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (stmt != null) {
-                    stmt.close();
-                }
-            } catch (SQLException sqle) {
-            }
-        }
-
-        if (attr != null) {
-            addRowHash(attr, rowHash);
-            v.add(attr);
-        }
-
-        return v;
-    }
-
-    /**
-     *
-     * @param attr
-     * @param rowHash
-     */
-    private void addRowHash(DElemAttribute attr, Hashtable rowHash) {
-        String inherited = null;
-        if (rowHash.containsKey("inherited")) {
-            inherited = (String) rowHash.get("inherited");
-        }
-
-        if (inherited != null) {
-            if (attr.getInheritable().equals("1")) { // inheritance type 1 - show all values from upper levels
-                attr.addRow(rowHash);
-                attr.addInheritedValue(rowHash);
-                attr.setInheritedLevel(inherited);
-            } else { // inheritance type 2 - show values from upper levels or if current level has values then onlycurrent level
-                if (attr.getInheritedLevel() == null) {
-                    attr.addInheritedValue(rowHash);
-                    attr.setInheritedLevel(inherited);
-                } else {
-                    if (attr.getInheritedLevel().equals("DS") && inherited.equals("T")) {
-                        attr.clearInherited(); // element should inherit table values if exists and then dataset values
-                    }
-                    if (attr.getInheritedLevel().equals(inherited) || inherited.equals("T")) {
-                        attr.addInheritedValue(rowHash);
-                        attr.setInheritedLevel(inherited);
-                    }
-                }
-            }
-        } else { // get values from original level
-            attr.addRow(rowHash);
-            attr.addOriginalValue(rowHash);
-        }
-
-    }
-
-    /**
-     *
-     * @param attr_id
-     * @return
-     * @throws SQLException
-     *             if database query fails
-     */
-    public Vector getComplexAttributeValues(String attr_id) throws SQLException {
-
-        if (attr_id == null) {
-            return null;
-        }
-
-        INParameters inParams = new INParameters();
-
-        StringBuffer buf = new StringBuffer();
-        buf.append("select ");
-        buf.append("M_COMPLEX_ATTR.M_COMPLEX_ATTR_ID as ATTR_ID, ");
-        buf.append("M_COMPLEX_ATTR.SHORT_NAME as ATTR_NAME, ");
-        buf.append("NAMESPACE.SHORT_NAME as NS, ");
-        buf.append("COMPLEX_ATTR_ROW.POSITION as ROW_POS, ");
-        buf.append("COMPLEX_ATTR_ROW.ROW_ID as ROW_ID, ");
-        buf.append("COMPLEX_ATTR_FIELD.M_COMPLEX_ATTR_FIELD_ID as FIELD_ID, ");
-        buf.append("COMPLEX_ATTR_FIELD.VALUE as FIELD_VALUE ");
-        buf.append("from ");
-        buf.append("COMPLEX_ATTR_ROW, ");
-        buf.append("M_COMPLEX_ATTR left outer join NAMESPACE ");
-        buf.append("on M_COMPLEX_ATTR.NAMESPACE_ID=NAMESPACE.NAMESPACE_ID, ");
-        buf.append("COMPLEX_ATTR_FIELD ");
-        buf.append("where ");
-        buf.append("COMPLEX_ATTR_ROW.M_COMPLEX_ATTR_ID=M_COMPLEX_ATTR.M_COMPLEX_ATTR_ID and ");
-        buf.append("COMPLEX_ATTR_FIELD.ROW_ID=COMPLEX_ATTR_ROW.ROW_ID ");
-
-        if (attr_id != null) {
-            buf.append(" and COMPLEX_ATTR_ROW.M_COMPLEX_ATTR_ID=");
-            buf.append(inParams.add(attr_id, Types.INTEGER));
-        }
-        buf.append(" order by ROW_ID");
-
-        LOGGER.debug(buf.toString());
-
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-        Vector v = new Vector();
-        Hashtable rowHash = null;
-        boolean hasVal = false;
-        boolean ok = true;
-        String row = "";
-
-        try {
-            stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
-            rs = stmt.executeQuery();
-
-            String prvRow = "-1";
-            while (ok) {
-                ok = rs.next();
-                if (ok) {
-                    row = rs.getString("ROW_ID");
-                }
-
-                if (!row.equals(prvRow) || !ok) {
-                    if (!prvRow.equals("-1")) {
-                        for (int i = 0; i < v.size(); i++) {
-                            Hashtable h = (Hashtable) v.get(i);
-                            if (h.equals(rowHash)) {
-                                hasVal = true;
-                                break;
-                            }
-                        }
-                        if (!hasVal) {
-                            v.add(rowHash);
-                        }
-                        hasVal = false;
-                    }
-
-                    if (!ok) {
-                        break;
-                    }
-                    rowHash = new Hashtable();
-                }
-                rowHash.put(rs.getString("FIELD_ID"), rs.getString("FIELD_VALUE"));
-                prvRow = row;
-            }
-        } finally {
-            try {
-                if (rs != null) {
-                    rs.close();
-                }
-                if (stmt != null) {
-                    stmt.close();
-                }
-            } catch (SQLException sqle) {
-            }
-        }
-
-        return v;
     }
 
     /**
@@ -3152,40 +2693,8 @@ public class DDSearchEngine {
      * @throws SQLException
      *             if database query fails
      */
-    public Vector getAttributes(String parentID, String parentType, String attrType) throws SQLException {
-        return getAttributes(parentID, parentType, attrType, null, null);
-    }
-
-    /**
-     *
-     * @param parentID
-     * @param parentType
-     * @param attrType
-     * @param inheritTblID
-     * @param inheritDsID
-     * @return
-     * @throws SQLException
-     *             if database query fails
-     */
-    public Vector getAttributes(String parentID, String parentType, String attrType, String inheritTblID, String inheritDsID)
-            throws SQLException {
-        if (attrType.equals(DElemAttribute.TYPE_SIMPLE)) {
-            return getSimpleAttributes(parentID, parentType, inheritTblID, inheritDsID);
-        } else {
-            return getComplexAttributes(parentID, parentType, null, inheritTblID, inheritDsID);
-        }
-    }
-
-    /**
-     *
-     * @param parentID
-     * @param parentType
-     * @return
-     * @throws SQLException
-     *             if database query fails
-     */
-    public Vector getSimpleAttributes(String parentID, String parentType) throws SQLException {
-        return getSimpleAttributes(parentID, parentType, null, null);
+    public Vector getAttributes(String parentID, String parentType) throws SQLException {
+        return getAttributes(parentID, parentType, null, null);
     }
 
     /**
@@ -3198,7 +2707,7 @@ public class DDSearchEngine {
      * @throws SQLException
      *             if database query fails
      */
-    public Vector getSimpleAttributes(String parentID, String parentType, String inheritTblID, String inheritDstID)
+    public Vector getAttributes(String parentID, String parentType, String inheritTblID, String inheritDstID)
             throws SQLException {
 
         INParameters inParams = new INParameters();
@@ -3241,7 +2750,7 @@ public class DDSearchEngine {
                 if (attr == null) {
                     attr =
                             new DElemAttribute(rs.getString("M_ATTRIBUTE.M_ATTRIBUTE_ID"), rs.getString("M_ATTRIBUTE.NAME"),
-                                    rs.getString("M_ATTRIBUTE.SHORT_NAME"), DElemAttribute.TYPE_SIMPLE, null,
+                                    rs.getString("M_ATTRIBUTE.SHORT_NAME"), null, 
                                     rs.getString("M_ATTRIBUTE.DEFINITION"), rs.getString("M_ATTRIBUTE.OBLIGATION"),
                                     rs.getString("M_ATTRIBUTE.DISP_MULTIPLE"));
                     attr.setInheritable(rs.getString("INHERIT"));
@@ -3562,27 +3071,12 @@ public class DDSearchEngine {
         return false;
     }
 
-    /**
-     *
-     * @param attrID
-     *            - attribute ID
-     * @param attrType
-     * @return
-     * @throws SQLException
-     *             if database query fails
-     */
-    public int getAttributeUseCount(String attrID, String attrType) throws SQLException {
-
+    public int getAttributeUseCount(String attrID) throws SQLException {
         INParameters inParams = new INParameters();
 
         StringBuffer sql = new StringBuffer();
-        if (attrType.equals(DElemAttribute.TYPE_COMPLEX)) {
-            sql.append("select count(distinct PARENT_TYPE, PARENT_ID) from COMPLEX_ATTR_ROW where M_COMPLEX_ATTR_ID=").append(
-                    inParams.add(attrID, Types.INTEGER));
-        } else {
-            sql.append("select count(distinct PARENT_TYPE, DATAELEM_ID) from ATTRIBUTE where M_ATTRIBUTE_ID=").append(
-                    inParams.add(attrID, Types.INTEGER));
-        }
+        sql.append("select count(distinct PARENT_TYPE, DATAELEM_ID) from ATTRIBUTE where M_ATTRIBUTE_ID=").
+                append(inParams.add(attrID, Types.INTEGER));
 
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -3915,44 +3409,26 @@ public class DDSearchEngine {
     /**
      *
      * @param shortName
-     * @param attrType
      * @return
      */
-    public String getAttrHelpByShortName(String shortName, String attrType) {
+    public String getAttrHelpByShortName(String shortName) {
         if (shortName == null) {
             return "";
         }
-        if (attrType == null) {
-            return getSimpleAttrHelpByShortName(shortName);
-        } else if (attrType.equals(DElemAttribute.TYPE_SIMPLE)) {
-            return getSimpleAttrHelpByShortName(shortName);
-        } else if (attrType.equals(DElemAttribute.TYPE_COMPLEX)) {
-            return getComplexAttrHelpByShortName(shortName);
-        } else {
-            return getSimpleAttrHelpByShortName(shortName);
-        }
+        return getSimpleAttrHelpByShortName(shortName);
     }
 
     /**
      *
      * @param attrID
      *            - attribute ID
-     * @param attrType
      * @return
      */
-    public String getAttrHelp(String attrID, String attrType) {
+    public String getAttrHelp(String attrID) {
         if (attrID == null) {
             return "";
         }
-        if (attrType == null) {
-            return getSimpleAttrHelp(attrID);
-        } else if (attrType.equals(DElemAttribute.TYPE_SIMPLE)) {
-            return getSimpleAttrHelp(attrID);
-        } else if (attrType.equals(DElemAttribute.TYPE_COMPLEX)) {
-            return getComplexAttrHelp(attrID);
-        } else {
-            return getSimpleAttrHelp(attrID);
-        }
+        return getSimpleAttrHelp(attrID);
     }
 
     /**
@@ -3990,66 +3466,6 @@ public class DDSearchEngine {
 
         if (field != null && value != null) {
 
-            PreparedStatement stmt = null;
-            ResultSet rs = null;
-            try {
-                stmt = SQL.preparedStatement(qryBuf.toString(), inParams, conn);
-                rs = stmt.executeQuery();
-                if (rs.next()) {
-                    retBuf.append("<br/><b>").append(rs.getString("NAME")).append("</b><br/><br/>")
-                            .append(rs.getString("DEFINITION"));
-                }
-            } catch (SQLException e) {
-            } finally {
-                try {
-                    if (rs != null) {
-                        rs.close();
-                    }
-                    if (stmt != null) {
-                        stmt.close();
-                    }
-                } catch (SQLException e) {
-                }
-            }
-        }
-
-        return retBuf.toString();
-    }
-
-    /**
-     *
-     * @param attrID
-     *            - attribute ID
-     * @return
-     */
-    public String getComplexAttrHelp(String attrID) {
-        return getComplexAttrHelp("M_COMPLEX_ATTR_ID", attrID);
-    }
-
-    /**
-     *
-     * @param shortName
-     * @return
-     */
-    public String getComplexAttrHelpByShortName(String shortName) {
-        return getComplexAttrHelp("SHORT_NAME", SQL.toLiteral(shortName));
-    }
-
-    /**
-     *
-     * @param field
-     * @param value
-     * @return
-     */
-    public String getComplexAttrHelp(String field, String value) {
-
-        StringBuffer retBuf = new StringBuffer();
-        INParameters inParams = new INParameters();
-
-        StringBuffer qryBuf = new StringBuffer("select * from M_COMPLEX_ATTR where ");
-        qryBuf.append(field).append("=").append(inParams.add(value, Types.VARCHAR));
-
-        if (field != null && value != null) {
             PreparedStatement stmt = null;
             ResultSet rs = null;
             try {
@@ -4167,61 +3583,6 @@ public class DDSearchEngine {
                     stmt.close();
                 }
             } catch (SQLException e) {
-            }
-        }
-
-        return result;
-    }
-
-    /**
-     *
-     * @param attrShortName
-     * @param parentID
-     * @param parentType
-     * @return
-     * @throws Exception
-     */
-    public Vector getComplexAttrValueRowHashes(String attrShortName, String parentID, String parentType) throws Exception {
-
-        Vector result = new Vector();
-
-        Vector complexAttrs = getComplexAttributes(parentID, parentType);
-        for (int i = 0; complexAttrs != null && i < complexAttrs.size(); i++) {
-            DElemAttribute attr = (DElemAttribute) complexAttrs.get(i);
-            String attrID = attr.getID();
-            String sname = attr.getShortName();
-            if (sname == null || !sname.equalsIgnoreCase(attrShortName)) {
-                continue;
-            }
-
-            Vector attrFields = getAttrFields(attrID);
-            Vector rows = attr.getRows();
-            for (int j = 0; rows != null && j < rows.size(); j++) {
-                Hashtable rowHash = (Hashtable) rows.get(j);
-                Hashtable resultHash = new Hashtable();
-                for (int t = 0; t < attrFields.size(); t++) {
-
-                    Hashtable fieldHash = (Hashtable) attrFields.get(t);
-                    String fieldID = (String) fieldHash.get("id");
-                    String fieldValue = null;
-                    if (fieldID != null) {
-                        fieldValue = (String) rowHash.get(fieldID);
-                    }
-                    String fieldName = (String) fieldHash.get("name");
-
-                    if (fieldName == null || fieldName.length() == 0) {
-                        continue;
-                    }
-                    if (fieldValue == null || fieldValue.trim().length() == 0) {
-                        continue;
-                    }
-
-                    resultHash.put(fieldName, fieldValue);
-                }
-
-                if (resultHash.size() > 0) {
-                    result.add(resultHash);
-                }
             }
         }
 
@@ -4535,15 +3896,14 @@ public class DDSearchEngine {
      * @return
      * @throws DAOException
      */
-    public LinkedHashMap<Integer, DElemAttribute> getObjectAttributes(int objectId, DElemAttribute.ParentType objectType,
-            String attributeType) throws DAOException {
+    public LinkedHashMap<Integer, DElemAttribute> getObjectAttributes(int objectId, DElemAttribute.ParentType objectType) throws DAOException {
 
         LinkedHashMap<Integer, DElemAttribute> resultMap = new LinkedHashMap<Integer, DElemAttribute>();
 
         try {
 
             // First get the metadata of all possible attributes for this object type
-            List<DElemAttribute> attributes = getDElemAttributes(null, attributeType, DDSearchEngine.ORDER_BY_M_ATTR_DISP_ORDER);
+            List<DElemAttribute> attributes = getDElemAttributes(null, DDSearchEngine.ORDER_BY_M_ATTR_DISP_ORDER);
             if (attributes != null && !attributes.isEmpty()) {
 
                 for (DElemAttribute attribute : attributes) {
@@ -4555,7 +3915,7 @@ public class DDSearchEngine {
                 // Now, if the object id is given, get the values of attributes of this particular object,
                 // place them into the above-constructed map
                 if (objectId > 0) {
-                    attributes = getAttributes(String.valueOf(objectId), objectType.toString(), attributeType);
+                    attributes = getAttributes(String.valueOf(objectId), objectType.toString());
                     if (attributes != null && !attributes.isEmpty()) {
                         for (DElemAttribute attribute : attributes) {
                             resultMap.put(Integer.valueOf(attribute.getID()), attribute);

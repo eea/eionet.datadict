@@ -17,7 +17,6 @@ ServletContext ctx = null;
     DDUser user = SecurityUtil.getUser(request);
 
     String attr_id = request.getParameter("attr_id");
-    String type = request.getParameter("type");
     String short_name = request.getParameter("short_name");
 
     if (request.getMethod().equals("POST")){
@@ -47,8 +46,8 @@ ServletContext ctx = null;
         return;
     }
 
-    if (attr_id==null || type==null){
-        %><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"><body><h1>Error</h1><b>Attribute type or attribute id is not specified!</b></body></html><%
+    if (attr_id==null){
+        %><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"><body><h1>Error</h1><b>Attribute id is not specified!</b></body></html><%
         return;
     }
 
@@ -62,8 +61,8 @@ ServletContext ctx = null;
 
         DDSearchEngine searchEngine = new DDSearchEngine(conn, "");
 
-        objects = null;//searchEngine.getAttributeObjects(attr_id, type);
-        attrUseCount = searchEngine.getAttributeUseCount(attr_id, type);
+        objects = null;
+        attrUseCount = searchEngine.getAttributeUseCount(attr_id);
         if (attrUseCount<=0)
             throw new Exception("Attribute not use at all, so this page should not have been reached");
 %>
@@ -160,19 +159,7 @@ ServletContext ctx = null;
 
                     <div style="display:none">
                         <input type="hidden" name="mode" value="delete"/>
-                        <input type="hidden" name="type" value="<%=type%>"/>
-                        <%
-                        if (type!=null && type.equals(DElemAttribute.TYPE_SIMPLE)){
-                            %>
-                            <input type="hidden" name="simple_attr_id" value="<%=attr_id%>"/>
-                            <%
-                        }
-                        else{
-                            %>
-                            <input type="hidden" name="complex_attr_id" value="<%=attr_id%>"/>
-                            <%
-                        }
-                        %>
+                        <input type="hidden" name="simple_attr_id" value="<%=attr_id%>"/>
                         <input type="hidden" name="attr_id" value="<%=attr_id%>"/>
                     </div>
                 </form>

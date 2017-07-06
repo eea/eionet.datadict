@@ -19,7 +19,6 @@ import javax.servlet.ServletContext;
 
 import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import eionet.meta.notif.Subscriber;
 import eionet.meta.notif.UNSEventSender;
@@ -632,8 +631,8 @@ public class VersionManager {
         // load the element we need to check in
         DataElement elm = loadElm(elmID);
 
-        // check the requirements for checking in a dataset
-        checkRequirements(elm, status);
+        // check the requirements for checking in an element
+        checkRequirements(elm);
 
         // init the SQL statement object and SQL generator
         SQLGenerator gen = new SQLGenerator();
@@ -898,14 +897,8 @@ public class VersionManager {
         return this.searchEngine.getDataElements(null, null, null, null, null, dataSetId);
     }
 
-    private void checkRequirements(DataElement elm, String status) throws Exception {
-        // check Submitting Org
-        DElemAttribute submOrg = elm.getAttributeByShortName("SubmitOrganisation");
-        if (submOrg == null) {
-            throw new Exception("SubmitOrganisation complex attribute required!");
-        }
-
-        //CH3 must have linked vocabulary
+    private void checkRequirements(DataElement elm) throws Exception {
+        // CH3 must have linked vocabulary
         if (elm.getType().equals("CH3") && elm.getVocabularyId() == null) {
             throw new Exception("Vocabulary as the source for element values is not speciefied!");
         }
@@ -914,24 +907,7 @@ public class VersionManager {
     /**
      * Check status requirements of the specified table
      */
-    private void checkRequirements(DsTable tbl, String status) throws Exception {
-        // check Submitting Org
-        DElemAttribute submOrg = tbl.getAttributeByShortName("SubmitOrganisation");
-        if (submOrg == null) {
-            throw new Exception("SubmitOrganisation complex attribute required!");
-        }
-    }
-
-    /**
-     * Check status requirements of the specified table
-     */
     private void checkRequirements(Dataset dst, String status) throws Exception {
-        // check Submitting Org
-        DElemAttribute submOrg = dst.getAttributeByShortName("SubmitOrganisation");
-        if (submOrg == null) {
-            throw new Exception("SubmitOrganisation complex attribute required!");
-        }
-
         //if dataset has non-released elements refuse check in
         if ((status != null && status.equalsIgnoreCase("Released")) || dst.getStatus().equalsIgnoreCase("Released")) {
             initDataService();
@@ -944,14 +920,9 @@ public class VersionManager {
                 throw e;
             }
         }
-
     }
 
-    /**
-     *
-     */
     private DataElement loadElm(String elmID) throws Exception {
-
         if (Util.isEmpty(elmID)) {
             throw new Exception("Data element ID not specified!");
         }
@@ -962,18 +933,12 @@ public class VersionManager {
             throw new Exception("Element not found!");
         }
 
-        // get and set the element's complex attributes
-        elem.setComplexAttributes(searchEngine.getComplexAttributes(elmID, "E", null, elem.getTableID(), elem.getDatasetID()));
-
         // set fixed values
         elem.setFixedValues(searchEngine.getFixedValues(elmID, "elem"));
 
         return elem;
     }
 
-    /**
-     *
-     */
     private DsTable loadTbl(String tblID) throws Exception {
 
         if (Util.isEmpty(tblID)) {
@@ -987,11 +952,8 @@ public class VersionManager {
         }
 
         // get simple attributes
-        Vector v = searchEngine.getSimpleAttributes(tblID, "T");
+        Vector v = searchEngine.getAttributes(tblID, "T");
         dsTable.setSimpleAttributes(v);
-
-        // get & set complex attributes
-        dsTable.setComplexAttributes(searchEngine.getComplexAttributes(tblID, "T", null, null, dsTable.getDatasetID()));
 
         // get data elements (this will also return simple attributes, but no fixed values!)
         dsTable.setElements(searchEngine.getDataElements(null, null, null, null, tblID));
@@ -999,9 +961,6 @@ public class VersionManager {
         return dsTable;
     }
 
-    /**
-     *
-     */
     private Dataset loadDst(String dstID) throws Exception {
 
         if (Util.isEmpty(dstID)) {
@@ -1013,22 +972,14 @@ public class VersionManager {
             throw new Exception("Dataset not found!");
         }
 
-        // get & set simple attributes, compelx attributes and tables
-        ds.setSimpleAttributes(searchEngine.getSimpleAttributes(dstID, "DS"));
-        ds.setComplexAttributes(searchEngine.getComplexAttributes(dstID, "DS"));
+        // get & set simple attributes and tables
+        ds.setSimpleAttributes(searchEngine.getAttributes(dstID, "DS"));
         ds.setTables(searchEngine.getDatasetTables(dstID, false));
 
         return ds;
     }
 
-    /**
-     *
-     */
     public String getLatestElmID(DataElement elm) throws SQLException {
-
-        // see if this is a common element and behave relevantly
-        boolean elmCommon = elm.getNamespace() == null || elm.getNamespace().getID() == null;
-
         StringBuffer buf = new StringBuffer("select DATAELEM.DATAELEM_ID from DATAELEM");
         if (elm.getNamespace() != null && elm.getNamespace().getID() != null) { // non-common element
             buf.append(", TBL2ELEM, DST2TBL, DATASET ").append("where ").append("DATAELEM.DATAELEM_ID=TBL2ELEM.DATAELEM_ID and ")
@@ -1133,17 +1084,6 @@ public class VersionManager {
         }
 
         return null;
-    }
-
-    /**
-     *
-     */
-    private String composeNewVersion(String oldVersion) {
-        if (oldVersion == null) {
-            oldVersion = "0";
-        }
-        int oldVer = Integer.parseInt(oldVersion);
-        return String.valueOf(oldVer + 1);
     }
 
     /**

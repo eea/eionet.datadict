@@ -28,7 +28,6 @@ import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
 
 import eionet.meta.DDSearchEngine;
-import eionet.meta.DElemAttribute;
 import eionet.meta.DataElement;
 import eionet.meta.Dataset;
 import eionet.meta.DsTable;
@@ -143,15 +142,13 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
 
         fileName = datasetInstance.getIdentifier() + FILE_EXT;
 
-        Vector v = searchEngine.getSimpleAttributes(dstId, "DS");
+        Vector v = searchEngine.getAttributes(dstId, "DS");
         datasetInstance.setSimpleAttributes(v);
-        v = searchEngine.getComplexAttributes(dstId, "DS");
-        datasetInstance.setComplexAttributes(v);
         v = searchEngine.getDatasetTables(dstId, true);
         DsTable tbl = null;
         for (int i = 0; v != null && i < v.size(); i++) {
             tbl = (DsTable) v.get(i);
-            tbl.setSimpleAttributes(searchEngine.getSimpleAttributes(tbl.getID(), "T"));
+            tbl.setSimpleAttributes(searchEngine.getAttributes(tbl.getID(), "T"));
         }
         datasetInstance.setTables(v);
 
@@ -192,19 +189,6 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
         addElement(prg);
 
         addElement(new Paragraph("\n"));
-
-        // set up complex attributes to retrieve SubmitOrg, RespOrg and Contact information
-        Vector cattrs = ds.getComplexAttributes();
-        if (cattrs != null && cattrs.size() > 0) {
-            DElemAttribute attr = null;
-            for (int i = 0; i < cattrs.size(); i++) {
-                attr = (DElemAttribute) cattrs.get(i);
-                attr.setFields(searchEngine.getAttrFields(attr.getID()));
-            }
-        }
-
-        this.submitOrg = ds.getCAttrByShortName("SubmitOrganisation");
-        this.respOrg = ds.getCAttrByShortName("RespOrganisation");
 
         // write simple attributes
         addElement(new Paragraph("Basic metadata:\n", Fonts.get(Fonts.HEADING_0)));

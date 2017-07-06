@@ -13,7 +13,6 @@ import javax.servlet.ServletContext;
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DDUser;
 import eionet.meta.DElemAttribute;
-import eionet.meta.savers.AttrFieldsHandler;
 import eionet.meta.savers.DataElementHandler;
 import eionet.meta.savers.DatasetHandler;
 import eionet.meta.savers.DsTableHandler;
@@ -46,12 +45,10 @@ public class DatasetImport {
     private String lastInsertID = null;
     private Hashtable tables;
     private Vector dbSimpleAttrs;
-    private Vector dbComplexAttrs;
 
     /** */
     private Hashtable allParams = null;
     private Hashtable tblMap = null;
-    private Vector complexAttrs = null;
     private Hashtable unknownTbl = null;
 
     /** */
@@ -152,8 +149,6 @@ public class DatasetImport {
             saveTables();
             saveDElem();
             saveFixedValues();
-            saveComplexAttrs();
-
 
             responseText.append(RESPONSE_NEW_LINE);
             responseText.append(RESPONSE_NEW_LINE).append("Datasets found:" + countDatasetsFound + "; successfully imported:" + countDatasetsImported);
@@ -396,72 +391,6 @@ public class DatasetImport {
 
     /**
      *
-     *
-     */
-    private void saveComplexAttrs() {
-        AttrFieldsHandler saveHandler;
-        Parameters par;
-        String parent_id;
-        String parent_type;
-
-        if (complexAttrs == null) {
-            return;
-        }
-        if (complexAttrs.size() == 0) {
-            return;
-        }
-
-        for (int i = 0; i < complexAttrs.size(); i++) {
-            par = (Parameters) complexAttrs.get(i);
-            parent_id = par.getParameter("parent_id");
-            parent_type = par.getParameter("parent_type");
-
-            if (parent_type.equals("E")) {  //element
-                if (elmID.containsKey(parent_id)) {
-                    par.removeParameter("parent_id");
-                    par.addParameterValue("parent_id", (String) elmID.get(parent_id));
-                } else {
-                    responseText.append("Data element id was not found for complex attribute.").append(RESPONSE_NEW_LINE);
-                    continue;
-                }
-            } else if (parent_type.equals("DS")) {  //dataset
-                if (dstID.containsKey(parent_id)) {
-                    par.removeParameter("parent_id");
-                    par.addParameterValue("parent_id", (String) dstID.get(parent_id));
-                } else {
-                    responseText.append("Data element id was not found for complex attribute.").append(RESPONSE_NEW_LINE);
-                    continue;
-                }
-            } else {
-                continue;
-            }
-            try {
-                saveHandler = new AttrFieldsHandler(conn, par, ctx);
-                saveHandler.setVersioning(false);
-                saveHandler.execute();
-            } catch (Exception e) {
-                handleError(e, "Could not store complex attributes into database, " + e.toString() + RESPONSE_NEW_LINE);
-            }
-        }
-    }
-
-    /**
-     *
-     * @param impAttrs
-     * @param params
-     */
-    private void replaceAttributes(Hashtable impAttrs, Parameters params) {
-
-        String attrName;
-        Enumeration attrKeys = impAttrs.keys();
-        while (attrKeys.hasMoreElements()) {
-            attrName = (String) attrKeys.nextElement();
-            String attrValue = (String) impAttrs.get(attrName);
-        }
-    }
-
-    /**
-     *
      * @param table
      * @param hasAttrs
      * @param type
@@ -511,20 +440,10 @@ public class DatasetImport {
                 params.addParameterValue((String) fieldMap.get("param"), importValue);
             }
             if (hasAttrs) {
-
                 if (type == null || table.equals("DATAELEM")) {
                     type = params.getParameter("type");
                 }
-
                 getSimpleAttrs(row, params, type, params.getParameter(context));
-                if (parent_type != null) {
-                    try {
-                        getComplexAttrs(row, params.getParameter(id_field), parent_type);
-                    } catch (Exception e) {
-                        handleError(e, "Failed reading complex attributes: " + params.getParameter("context") + RESPONSE_NEW_LINE
-                                + e.toString() + RESPONSE_NEW_LINE);
-                    }
-                }
             }
 
             addUnknown(table, row);
@@ -602,103 +521,10 @@ public class DatasetImport {
 
     /**
      *
-     * @param row
-     * @param parent_id
-     * @param parent_type
-     * @throws Exception
-     */
-    private void  getComplexAttrs(Hashtable row, String parent_id, String parent_type) throws Exception {
-
-        String attrName;
-        String attrValue;
-        String attr_id;
-        Enumeration impAttrKeys;
-        String impFieldName = null;
-        Parameters par;
-        String fieldName;
-        Vector attrFields = null;
-        Hashtable field;
-        String impAttrValue;
-        boolean bHasAttr = false;
-        boolean bHasField = true;
-
-        if (complexAttrs == null) {
-            complexAttrs = new Vector();
-        }
-
-        for (int i = 0; i < dbComplexAttrs.size(); i++) {
-
-            bHasAttr = false;
-            DElemAttribute delemAttr = (DElemAttribute) dbComplexAttrs.get(i);
-            attrName = delemAttr.getShortName();
-            attr_id = delemAttr.getID();
-            impAttrKeys = row.keys();
-            while (impAttrKeys.hasMoreElements()) {
-                impFieldName = (String) impAttrKeys.nextElement();
-                bHasAttr = (impFieldName.startsWith(attrName.toLowerCase() + SEPARATOR)) ? true : false;
-                if (bHasAttr) {
-                    break;
-                }
-            }
-            if (bHasAttr) {
-                attrFields = searchEngine.getAttrFields(attr_id);
-                if (attrFields == null) {
-                    continue;
-                }
-                for (int c = 1; bHasField; c++) {
-                    bHasField = false;
-                    par = new Parameters();
-                    for (int j = 0; j < attrFields.size(); j++) {
-                        field =  (Hashtable) attrFields.get(j);
-                        fieldName = (String) field.get("name");
-                        impFieldName = attrName.toLowerCase() + SEPARATOR + fieldName.toLowerCase() + SEPARATOR + Integer.toString(c);
-                        if (row.containsKey(impFieldName)) {
-                            impAttrValue = (String) row.get(impFieldName);
-                            if (impAttrValue == null || impAttrValue.length() == 0) {
-                                row.remove(impFieldName);
-                                continue;
-                            }
-
-                            par.addParameterValue(AttrFieldsHandler.FLD_PREFIX + (String) field.get("id"), impAttrValue);
-                            bHasField = true;
-                        }
-                    }
-
-                    if (bHasField) {
-                        par.addParameterValue("mode", "add");
-                        par.addParameterValue("parent_type", parent_type);
-                        par.addParameterValue("parent_id",  parent_id);
-                        par.addParameterValue("position", Integer.toString(c));
-                        par.addParameterValue("attr_id", attr_id);
-
-                        complexAttrs.add(par);
-                    }
-                }
-                bHasField = true;
-            }
-
-            //remove empty attributes rows
-            impAttrKeys = row.keys();
-            while (impAttrKeys.hasMoreElements()) {
-                impFieldName = (String) impAttrKeys.nextElement();
-                for (int j = 0; j < attrFields.size(); j++) {
-                    field =  (Hashtable) attrFields.get(j);
-                    fieldName = (String) field.get("name");
-                    if (impFieldName.startsWith(attrName.toLowerCase() + SEPARATOR + fieldName.toLowerCase())) {
-                        row.remove(impFieldName);
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     *
      * @throws SQLException
      */
     private void setDBAttrs() throws SQLException {
-        dbSimpleAttrs = searchEngine.getDElemAttributes(DElemAttribute.TYPE_SIMPLE);
-        dbComplexAttrs = searchEngine.getDElemAttributes(DElemAttribute.TYPE_COMPLEX);
+        dbSimpleAttrs = searchEngine.getDElemAttributes();
     }
 
     /**
