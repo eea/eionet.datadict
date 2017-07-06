@@ -73,7 +73,6 @@ public class AttributeHandlerTest extends DDDatabaseTestCase {
         // This is what we expect for the request object
         expect(request.getRequestedSessionId()).andReturn("92834kejwh89");
         expect(request.getParameter("mode")).andReturn("delete");
-        expect(request.getParameter("type")).andReturn("SIMPLE");
         expect(request.getParameter("attr_id")).andReturn(attribute_to_delete);
         expect(request.getParameter("name")).andReturn("Keywords");
         expect(request.getParameter("short_name")).andReturn("Keyword");
@@ -84,7 +83,6 @@ public class AttributeHandlerTest extends DDDatabaseTestCase {
         String[] vs = new String[1];
         vs[0] = attribute_to_delete;
         expect(request.getParameterValues("simple_attr_id")).andReturn(vs);
-        expect(request.getParameterValues("complex_attr_id")).andReturn(null);
 
         // start the replay for all mock objects
         replay(request);

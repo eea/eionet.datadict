@@ -21,7 +21,7 @@ public class FixedValueTest {
         String VALUE = "Ηλέκτρα";
 
         FixedValue fv = new FixedValue("testid");
-        DElemAttribute attr = new DElemAttribute("id", "name", "shortName", "type", VALUE);
+        DElemAttribute attr = new DElemAttribute("id", "name", "shortName", VALUE);
         fv.addAttribute(attr);
         String result = fv.getAttributeValueByShortName("shortName");
         //String s = result.getShortName();
