@@ -1,12 +1,11 @@
 package eionet.datadict.dal.impl;
 
 import eionet.datadict.dal.FixedValuesDao;
-import eionet.datadict.model.Attribute;
-import eionet.datadict.model.AttributeValue;
-import eionet.datadict.model.DataDictEntity;
-import eionet.datadict.model.DataSet;
-import eionet.datadict.model.DatasetTable;
+import eionet.datadict.model.DataElement;
+import eionet.datadict.model.DataElementWithFixedValues;
+import eionet.datadict.model.DataElementWithQuantitativeValues;
 import eionet.datadict.model.FixedValue;
+import eionet.datadict.model.FixedValuesOwnerType;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -14,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
@@ -31,44 +31,43 @@ public class FixedValuesDaoImpl extends JdbcDaoBase implements FixedValuesDao {
 
     @Override
     public List<FixedValue> getValueListCodesOfDataElementsInTable(int tableId) {
-        String sql = "select * "
-                + "from FXV "
-                + "where OWNER_TYPE = :ownerType and OWNER_ID = :tableId";
+        String sql = "SELECT FXV.*, DATAELEM.*\n"
+                + "FROM FXV\n"
+                + " LEFT JOIN DATAELEM ON FXV.OWNER_ID = DATAELEM.DATAELEM_ID WHERE FXV.OWNER_ID=:tableId";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("tableId", tableId);
-        
-        return null;
-        
+        params.put("ownerType", FixedValuesOwnerType.Type.elem);
+        try {
+            return this.getNamedParameterJdbcTemplate().query(sql, params, new FixedValuesDaoImpl.FixedValueRowMapper());
+        } catch (IncorrectResultSizeDataAccessException ex) {
+            return null;
+        }
+
     }
 
-    
-        public static class FixedValueRowMapper implements RowMapper {
+    public static class FixedValueRowMapper implements RowMapper {
 
         @Override
         public Object mapRow(ResultSet rs, int i) throws SQLException {
             FixedValue fixedValue = new FixedValue();
-              fixedValue.setId(rs.getInt("FXV_ID"));
-                fixedValue.setValue(rs.getString("VALUE"));
-                 String ownerType = rs.getString("OWNER_TYPE");
-            Integer ownerId = rs.getInt("OWNER_ID");
-        //    DataDictEntity parentEntity = new DataDictEntity(ownerId, DataDictEntity.Entity.getFromString(parentType));
-            /**
-            switch(DataDictEntity.Entity.getFromString(parentType)) {
-            
-                case DS:  attrValue.setOwner((DataSet)new DataSet(parentId));
-                          break;
-               case T:  attrValue.setOwner((DatasetTable)new DatasetTable(parentId));
-                          break;
-            
+            fixedValue.setId(rs.getInt("FXV.FXV_ID"));
+            fixedValue.setValue(rs.getString("FXV.VALUE"));
+            Integer ownerId = rs.getInt("FXV.OWNER_ID");
+            fixedValue.setDefinition(rs.getString("FXV.DEFINITION"));
+            fixedValue.setShortDescription(rs.getString("FXV.SHORT_DESC"));
+            String dataElementOwnerType = rs.getString("DATAELEM.TYPE");
+            switch (DataElement.DataElementType.resolveTypeFromName(dataElementOwnerType)) {
+
+                case CH1:
+                    fixedValue.setOwner(new DataElementWithFixedValues(ownerId));
+                    break;
+                case CH2:
+                    fixedValue.setOwner(new DataElementWithQuantitativeValues(ownerId));
+                    break;
+
             }
-            **/
-           // attrValue.setParentEntity(parentEntity);
-         //   attrValue.setValue(rs.getString("VALUE"));
-            Attribute at= new Attribute();
-            at.setId(rs.getInt("M_ATTRIBUTE_ID"));
-         //   attrValue.setAttribute(at);
-          //  return attrValue;
-          return null;
+
+            return fixedValue;
         }
 
     }

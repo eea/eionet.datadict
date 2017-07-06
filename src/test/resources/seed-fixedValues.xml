@@ -1,7 +1,12 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <dataset>
-	<FXV FXV_ID="1" OWNER_ID="1" OWNER_TYPE="elem" VALUE="element first fixed value" IS_DEFAULT="N" DEFINITION="definition 1" SHORT_DESC="description 1" />
-	<FXV FXV_ID="2" OWNER_ID="1" OWNER_TYPE="elem" VALUE="element second fixed value" IS_DEFAULT="N" DEFINITION="definition 2" SHORT_DESC="description 2" />
+	<FXV FXV_ID="1" OWNER_ID="8880" OWNER_TYPE="elem" VALUE="element first fixed value" IS_DEFAULT="N" DEFINITION="definition 1" SHORT_DESC="description 1" />
+	<FXV FXV_ID="2" OWNER_ID="8880" OWNER_TYPE="elem" VALUE="element second fixed value" IS_DEFAULT="N" DEFINITION="definition 2" SHORT_DESC="description 2" />
 	<FXV FXV_ID="3" OWNER_ID="1" OWNER_TYPE="attr" VALUE="attribute first fixed value" IS_DEFAULT="Y" DEFINITION="definition 3" SHORT_DESC="description 3" />
 	<FXV FXV_ID="4" OWNER_ID="1" OWNER_TYPE="attr" VALUE="attribute second fixed value" IS_DEFAULT="N" DEFINITION="definition 4" SHORT_DESC="description 4" />
+
+<DATAELEM TYPE='CH1' DATAELEM_ID='8880' NAMESPACE_ID='494' SHORT_NAME='Area_ownership' WORKING_COPY='N' REG_STATUS='Incomplete' VERSION='1' DATE='0' PARENT_NS='53' TOP_NS='12' IDENTIFIER='Area_ownership'  ALL_CONCEPTS_LEGAL='1' />
+
+
+
 </dataset>
