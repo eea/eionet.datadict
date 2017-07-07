@@ -1,19 +1,14 @@
 
 package eionet.meta.exports.schema;
 
-import eionet.datadict.errors.EmptyParameterException;
-import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.model.DataDictEntity;
 import java.io.PrintWriter;
 import java.util.Vector;
 
 import eionet.meta.DDSearchEngine;
-import eionet.meta.DElemAttribute;
 import eionet.meta.Dataset;
 import eionet.meta.Namespace;
-import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.util.Util;
-import java.util.List;
 
 public class DstSchema extends Schema {
 
