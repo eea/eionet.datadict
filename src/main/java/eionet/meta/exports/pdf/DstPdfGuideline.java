@@ -33,13 +33,10 @@ import eionet.meta.DElemAttribute;
 import eionet.meta.DataElement;
 import eionet.meta.Dataset;
 import eionet.meta.DsTable;
-import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.exports.CachableIF;
 import eionet.util.Util;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 
