@@ -1990,7 +1990,7 @@
                                                                 if(dispType.equals("vocabulary")) {
                                                                     DataDictEntity ddEntity = new DataDictEntity(Integer.parseInt(delem_id), DataDictEntity.Entity.E);
                                                                     if(mode.equals("view")){
-                                                                        List<VocabularyConcept> concepts = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity, attribute.getInheritable());
+                                                                        List<VocabularyConcept> concepts = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity, (elmCommon? "0" : attribute.getInheritable()));
                                                                         if (concepts!=null && !concepts.isEmpty()) { %>
                                                                             <ul class="stripedmenu">
                                                                             <%
