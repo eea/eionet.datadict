@@ -79,7 +79,6 @@ public class TblPdfGuideline {
 
         // get simple attributes
         Vector v = searchEngine.getAttributes(tblID, "T");
-        owner.populateVocabularyAttributes(v, Integer.parseInt(tblID), DataDictEntity.Entity.T);
         dsTable.setSimpleAttributes(v);
 
         // get data elements (this will set all the simple attributes,
@@ -156,7 +155,6 @@ public class TblPdfGuideline {
             Vector fks = searchEngine.getFKRelationsElm(elem.getID(), dstID);
             elem.setFKRelations(fks);
             Vector attrs = searchEngine.getAttributes(elem.getID(), "E");
-            owner.populateVocabularyAttributes(attrs, Integer.parseInt(elem.getID()), DataDictEntity.Entity.E, elem.isCommon());
             elem.setAttributes(attrs);
 
             elms.add(elem);
@@ -215,9 +213,6 @@ public class TblPdfGuideline {
         showedAttrs.add("Definition");
         showedAttrs.add("ShortDescription");
         showedAttrs.add("Methodology");
-        showedAttrs.add("Owner");
-        showedAttrs.add("Responsible");
-        showedAttrs.add("obligation");
     }
 
 }

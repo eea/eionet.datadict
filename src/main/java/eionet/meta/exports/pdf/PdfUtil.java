@@ -24,13 +24,12 @@ import eionet.meta.DataElement;
 import eionet.meta.DsTable;
 import eionet.meta.FixedValue;
 import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.dao.domain.util.FixedValuesOrdinalComparator;
-import eionet.util.Props;
-import eionet.util.PropsIF;
+import eionet.util.StringEncoder;
 import eionet.util.UnicodeEscapes;
 import eionet.util.Util;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -145,8 +144,11 @@ public class PdfUtil {
                 if (displayType != null && displayType.equals("vocabulary")) {
                     for (VocabularyConcept vocabularyConcept : attribute.getVocabularyConcepts()) {
                         values.add(vocabularyConcept.getLabel());
-                        String link = Props.getRequiredProperty(PropsIF.DD_URL) + "/vocabularyconcept/" + attribute.getVocabularyBinding().getFolderName() + "/" + 
-                                attribute.getVocabularyBinding().getIdentifier() + "/" + vocabularyConcept.getIdentifier() + "/view";
+                        String baseUri = VocabularyFolder.getBaseUri(attribute.getVocabularyBinding());
+                        if (!baseUri.endsWith("/") && !baseUri.endsWith("#") && !baseUri.endsWith(":")) {
+                            baseUri += "/";
+                        }
+                        String link = StringEncoder.encodeToIRI(baseUri + vocabularyConcept.getIdentifier());
                         links.add(link);
                     }
                 } else {
@@ -336,23 +338,6 @@ public class PdfUtil {
             if (!Util.isEmpty(pori)) {
                 phr.add(new Chunk("\n" + pori, FontFactory.getFont(FontFactory.HELVETICA_OBLIQUE, 10)));
             }
-            List<String>visibleVocabularyAttributesKeys = Arrays.asList(new String [] {"Owner", "Responsible", "obligation"});
-            for (String key : visibleVocabularyAttributesKeys) {
-                DElemAttribute attribute = elem.getAttributeByShortName(key);
-                if (attribute != null) {
-                    phr.add(new Chunk("\n" + attribute.getName() + ":\n", FontFactory.getFont(FontFactory.HELVETICA_OBLIQUE, 10)));
-                    for (Iterator<VocabularyConcept> it = attribute.getVocabularyConcepts().iterator(); it.hasNext();) {
-                        VocabularyConcept vocabularyConcept = it.next();
-                        Anchor anchor = new Anchor(new Chunk(vocabularyConcept.getLabel(), Fonts.get(Fonts.ANCHOR)));
-                        String link = Props.getRequiredProperty(PropsIF.DD_URL) + "/vocabularyconcept/" + attribute.getVocabularyBinding().getFolderName() + "/" + 
-                                attribute.getVocabularyBinding().getIdentifier() + "/" + vocabularyConcept.getIdentifier() + "/view";
-                        anchor.setReference(link);
-                        phr.add(anchor);
-                        phr.add(new Chunk("\n"));
-                    }
-                }
-            }
-           
             if (fks != null && fks.size() > 0) {
                 phr.add(new Chunk("\nForeign key", FontFactory.getFont(FontFactory.HELVETICA_OBLIQUE, 10)));
             }
