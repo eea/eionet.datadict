@@ -16,7 +16,6 @@ import java.util.Vector;
 
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.apache.xmlrpc.XmlRpcClient;
 
 import eionet.meta.DDRuntimeException;
@@ -27,6 +26,8 @@ import eionet.meta.notif.util.XmlRpcCallThread;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author jaanus
@@ -34,7 +35,7 @@ import eionet.util.Util;
 public class UNSEventSender {
 
     /** */
-    private static final Logger LOGGER = Logger.getLogger(UNSEventSender.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(UNSEventSender.class);
 
     /** */
     public static final String PROP_UNS_EVENTS_NAMESPACE = "uns.events-namespace";

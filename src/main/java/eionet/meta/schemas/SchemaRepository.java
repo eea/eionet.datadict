@@ -8,7 +8,8 @@ import net.sourceforge.stripes.action.FileBean;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import eionet.meta.DDRuntimeException;
@@ -27,7 +28,7 @@ import org.springframework.context.annotation.DependsOn;
 public class SchemaRepository {
 
     /** */
-    private static final Logger LOGGER = Logger.getLogger(SchemaRepository.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SchemaRepository.class);
 
     /** */
     public static final String WORKING_COPY_DIR = ".workingCopy";
@@ -560,7 +561,7 @@ public class SchemaRepository {
             try {
                 file.delete();
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.error(e.getMessage(), e);
             }
         }
     }

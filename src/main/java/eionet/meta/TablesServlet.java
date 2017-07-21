@@ -9,10 +9,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 import eionet.meta.exports.rdf.Rdf;
 import eionet.util.DDServletRequestWrapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -22,7 +23,7 @@ import eionet.util.DDServletRequestWrapper;
 public class TablesServlet extends HttpServlet {
 
     /** */
-    private static final Logger LOGGER = Logger.getLogger(TablesServlet.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TablesServlet.class);
 
     /*
      * (non-Javadoc)

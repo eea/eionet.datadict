@@ -35,7 +35,8 @@ import eionet.meta.dao.mysql.valueconverters.BooleanToYesNoConverter;
 import eionet.meta.service.data.DataElementsFilter;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
@@ -69,7 +70,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     /**
      * Logger.
      */
-    protected static final Logger LOGGER = Logger.getLogger(DataElementDAOImpl.class);
+    protected static final Logger LOGGER = LoggerFactory.getLogger(DataElementDAOImpl.class);
 
     /**
      * {@inheritDoc}

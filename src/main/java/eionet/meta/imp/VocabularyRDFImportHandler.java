@@ -37,7 +37,6 @@ import java.util.Set;
 import net.sourceforge.stripes.util.StringUtil;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.openrdf.model.Literal;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
@@ -56,6 +55,8 @@ import eionet.util.Pair;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Implementation of OpenRDF's {@link RDFHandler} that will be used by implementations of
@@ -69,7 +70,7 @@ import eionet.util.Util;
 public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler implements RDFHandler {
 
     /** Static logger for this class. */
-    private static final Logger LOGGER = Logger.getLogger(VocabularyRDFImportHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(VocabularyRDFImportHandler.class);
 
     /* static constants */
     /**

@@ -4,8 +4,6 @@ import eionet.meta.ActionBeanUtils;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.Properties;
-
-import org.apache.log4j.Logger;
 import org.dbunit.DatabaseTestCase;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
@@ -16,12 +14,14 @@ import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 
 import eionet.util.Props;
 import eionet.util.PropsIF;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public abstract class DDDatabaseTestCase extends DatabaseTestCase {
 
     /** Logger. */
-    protected static final Logger LOGGER = Logger.getLogger(DDDatabaseTestCase.class);
+    protected static final Logger LOGGER = LoggerFactory.getLogger(DDDatabaseTestCase.class);
 
     /** File name of seed to load with getDataSet() */
     private String seedFilename;

@@ -26,11 +26,12 @@ import eionet.meta.ActionBeanUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.unitils.UnitilsJUnit4;
 import org.unitils.spring.annotation.SpringApplicationContext;
 import org.unitils.spring.annotation.SpringBeanByType;
@@ -47,7 +48,7 @@ import eionet.meta.dao.domain.VocabularyConcept;
 // @DataSet({"seed-vocabularies.xml"})
 public class VocabularyServiceRelationsTest extends UnitilsJUnit4 {
 
-    protected static final Logger LOGGER = Logger.getLogger(VocabularyServiceTest.class);
+    protected static final Logger LOGGER = LoggerFactory.getLogger(VocabularyServiceTest.class);
 
     @SpringBeanByType
     private IVocabularyService vocabularyService;

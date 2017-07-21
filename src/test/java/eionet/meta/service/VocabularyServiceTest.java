@@ -40,10 +40,11 @@ import eionet.meta.service.data.VocabularyResult;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.Triple;
-import org.apache.log4j.Logger;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.unitils.UnitilsJUnit4;
 import org.unitils.spring.annotation.SpringApplicationContext;
 import org.unitils.spring.annotation.SpringBeanByType;
@@ -68,7 +69,7 @@ import static org.junit.Assert.*;
 @SpringApplicationContext("mock-spring-context.xml")
 public class VocabularyServiceTest extends UnitilsJUnit4 {
 
-    protected static final Logger LOGGER = Logger.getLogger(VocabularyServiceTest.class);
+    protected static final Logger LOGGER = LoggerFactory.getLogger(VocabularyServiceTest.class);
 
     private final String SITE_PREFIX = Props.getProperty(PropsIF.DD_URL);
 

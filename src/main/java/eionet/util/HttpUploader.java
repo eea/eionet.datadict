@@ -20,6 +20,9 @@
  */
 package eionet.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -33,6 +36,8 @@ import javax.servlet.http.HttpServletRequest;
 
 
 public class HttpUploader {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(HttpUploader.class);
 
     private static final int BUF_SIZE = 1024;
 
@@ -145,7 +150,7 @@ public class HttpUploader {
             System.out.println("DONE!");
         }
         catch (Exception e) {
-            e.printStackTrace(System.out);
+            LOGGER.error(e.getMessage(), e);
         }
     }
 }

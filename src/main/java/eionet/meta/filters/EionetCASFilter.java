@@ -8,9 +8,9 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import org.apache.log4j.Logger;
-
 import edu.yale.its.tp.cas.client.filter.CASFilter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -20,7 +20,7 @@ import edu.yale.its.tp.cas.client.filter.CASFilter;
 public class EionetCASFilter extends CASFilter {
 
     /** Static logger for this class. */
-    private static final Logger LOGGER = Logger.getLogger(EionetCASFilter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(EionetCASFilter.class);
 
     /** FQN of this class. */
     private static final String CLASS_NAME = EionetCASFilter.class.getName();

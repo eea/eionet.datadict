@@ -18,7 +18,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
 import org.apache.xmlrpc.XmlRpcClient;
 import org.apache.xmlrpc.XmlRpcException;
 
@@ -26,6 +25,8 @@ import eionet.meta.DDUser;
 import eionet.util.Props;
 import eionet.util.SecurityUtil;
 import eionet.util.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -39,7 +40,7 @@ public class Subscriber extends HttpServlet {
     private static final long serialVersionUID = -556025189112999203L;
 
     /** */
-    private static final Logger LOGGER = Logger.getLogger(Subscriber.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Subscriber.class);
 
     /** */
     public static final String PROP_UNS_EVENTTYPE_PREDICATE = "uns.eventtype.predicate";
@@ -92,8 +93,8 @@ public class Subscriber extends HttpServlet {
                 initialize();
             }
         } catch (Exception e) {
-            e.printStackTrace(System.out);
-            throw new ServletException(e);
+            LOGGER.error(e.getMessage(), e);
+            throw new ServletException(e.getMessage(), e);
         }
     }
 

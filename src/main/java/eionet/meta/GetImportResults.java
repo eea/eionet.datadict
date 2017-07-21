@@ -12,8 +12,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import eionet.meta.exports.pdf.ImportResults;
 import eionet.meta.exports.pdf.PdfHandoutIF;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GetImportResults extends HttpServlet {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(GetImportResults.class);
 
     protected void service(HttpServletRequest req, HttpServletResponse res)
                                 throws ServletException, IOException {
@@ -37,6 +41,7 @@ public class GetImportResults extends HttpServlet {
             pdf.flush();
         } catch (Exception e) {
             e.printStackTrace(new PrintStream(res.getOutputStream()));
+            LOGGER.error(e.getMessage(), e);
         }
 
         // flush the document to the servlet output stream

@@ -23,7 +23,8 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
 import eionet.meta.dao.DAOException;
@@ -58,7 +59,7 @@ import eionet.util.sql.SQL;
 public class DDSearchEngine {
 
     /** */
-    private static final Logger LOGGER = Logger.getLogger(DDSearchEngine.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DDSearchEngine.class);
 
     /** */
     public static final String ORDER_BY_M_ATTR_NAME = "SHORT_NAME";
@@ -3055,7 +3056,7 @@ public class DDSearchEngine {
             // return true;
             // }
         } catch (SQLException sqle) {
-            LOGGER.fatal(sqle.toString(), sqle);
+            LOGGER.error(sqle.toString(), sqle);
         } finally {
             try {
                 if (rs != null) {
@@ -3984,7 +3985,7 @@ public class DDSearchEngine {
         try {
             return xmlConvService.getSchemaConversionsData(schemaUrl);
         } catch (ServiceException e) {
-            LOGGER.error(e);
+            LOGGER.error(e.getMessage(), e);
             return null;
         }
     }
@@ -3997,7 +3998,7 @@ public class DDSearchEngine {
         try {
             return attributeDAO.getRdfNamespaces();
         } catch (Exception e) {
-            LOGGER.error(e);
+            LOGGER.error(e.getMessage(), e);
             return null;
         }
     }
