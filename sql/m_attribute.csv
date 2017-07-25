@@ -1,0 +1,22 @@
+M_ATTRIBUTE_ID,NAME,OBLIGATION,DEFINITION,SHORT_NAME,NAMESPACE_ID,DISP_TYPE,DISP_ORDER,DISP_WHEN,DISP_WIDTH,DISP_HEIGHT,DISP_MULTIPLE,INHERIT,LANGUAGE_USED,DATA_TYPE,RDF_PROPERTY_NAME,RDF_PROPERTY_NAMESPACE_ID
+1,Name,M,Single or multi word designation assigned to a data element. Source: ISO 11179.,Name,2,text,1,459,80,1,0,0,0,string,NULL,NULL
+2,Definition,O,Statement that expresses the essential nature of a data element and permits its differentiation from all other data elements. Source: ISO 11179.,Definition,2,textarea,8,459,60,4,0,0,0,string,NULL,NULL
+3,Keywords,O,One or more significant words used for retrieval of data elements. Source: ISO 11179.,Keyword,2,text,5,75,40,1,1,1,0,string,NULL,NULL
+4,Minimum size,M,The minimum number of storage units to represent the data element value.\r\nSource: ISO 11179.,MinSize,2,text,31,1,5,1,0,0,0,decimal,NULL,NULL
+5,Short Description,O,Brief text about the content of the dataset.,ShortDescription,3,textarea,7,72,60,1,0,0,0,string,NULL,NULL
+6,Methodology for obtaining data,O,Brief descritpion of methodology for obtaining data in dataset.,Methodology,3,textarea,20,75,60,6,0,0,0,string,NULL,NULL
+7,Planned updating frequency,O,Planned update frequency for the definitions in the dataset.,PlannedUpdFreq,3,text,51,8,10,1,0,0,0,string,NULL,NULL
+8,Maximum size,M,The maximum number of storage units to represent the data element value.\r\nSource: ISO 11179.,MaxSize,2,text,32,1,5,1,0,0,0,decimal,NULL,NULL
+9,Datatype,M,A set of distinct values for representing the data element value. Source: ISO 11179.,Datatype,2,select,30,3,15,1,0,0,0,string,NULL,NULL
+10,Public or Internal,O,The information is either public or for database administration.,PublicOrInternal,3,select,39,3,15,1,0,0,0,string,NULL,NULL
+11,Decimal precision,O,This attribute is the number of decimal places.,DecimalPrecision,3,text,33,1,20,1,0,0,0,integer,NULL,NULL
+12,Unit,O,The unit of measurment for data elements (where appropriate).,Unit,3,text,34,1,20,1,0,0,0,string,NULL,NULL
+13,Minimum inclusive value,O,,MinInclusiveValue,3,text,35,1,20,1,0,0,0,decimal,NULL,NULL
+14,Maximum inclusive value,O,,MaxInclusiveValue,3,text,37,1,20,1,0,0,0,decimal,NULL,NULL
+15,EEA Issue,O,An issue form the EEA environmental issues list.,EEAissue,3,select,6,75,20,1,1,1,0,string,NULL,NULL
+16,Version,O,This attribute refers to the version number used by the submit organisation in their guidelines/documents.,Version,3,text,57,8,20,1,0,0,0,string,NULL,NULL
+17,Descriptive image,O,,Descriptive_image,3,image,999,67,20,1,1,0,0,string,NULL,NULL
+18,Minimum exclusive value,O,,MinExclusiveValue,3,text,36,1,20,1,0,0,0,decimal,NULL,NULL
+19,Maximum exclusive value,O,,MaxExclusiveValue,3,text,38,1,20,1,0,0,0,decimal,NULL,NULL
+20,Is language used,O,Indicates if the resource can have values in different languages,languageUsed,3,select,999,1,20,1,0,0,0,boolean,NULL,NULL
+21,Source,O,A related resource from which the described resource is derived.,Source,3,text,999,1024,60,4,0,0,0,string,NULL,3

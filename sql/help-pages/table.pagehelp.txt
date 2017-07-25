@@ -1,0 +1,48 @@
+<h2>Table view page</h2>
+<p>
+    This page provides a view to a table definition.
+</p>
+<p>
+    If you have authenticated yourself and this table is in a dataset working copy and it is your working copy then you can see
+    the following buttons in the upper right corner:
+    <ul>
+        <li>
+            <strong>Edit</strong> leads to the edit page this table.
+        </li>
+        <li>
+            <strong>Delete</strong> deletes this table from this dataset working copy and redirects you to the view page
+            of the dataset working copy.
+        </li>
+    </ul>
+</p>
+<p>
+    <p>
+        This page is divided into sections which you can quickly access by using the <strong>quicklinks</strong> at the top
+        of the page.
+    </p>
+    <p>
+        Below the quicklinks is a section that lists the table's <strong>attributes</strong>. Every attribute is a name/value
+        pair. Some attributes can have several values at the same time. Help on every attribute is available by the help
+        icons in their titles.
+        <br/> The <strong>Dataset</strong> attribute indicates the dataset this table belongs to. If this is a dataset working
+        copy and it is your working copy, the dataset name is followed by this marker: <span style="color:red">(Working copy)</span>.
+        If it is somebody else's working copy, the dataset name is followed by this marker: <span style="color:red">(checked out by <em>username</em>)</span>.
+        The dataset name is clickable and the click leads to teh dataset's view page.
+    </p>
+    <p>
+        Following the attributes is either a section titled <strong>Elements</strong> or a section titled
+        <strong>Metadata elements</strong> or both. They both list the elements in this table. Elements lists NON-GIS elements
+        while as Metadata elements lists GIS elements.
+        <br/> Each element is given by its short name, GIS type (only in the Metadata elements section), data type and element
+        type. The latter can be either <strong>Quantitative</strong> or <strong>Fixed values</strong>. The first one means
+        elements that can have any value within their data type. The second one means elements whose value-set is pre-determined.
+        If the element type is Fixed values, you can see those values by clicking the Fixed values link.<br/> Elements in
+        a table can be common elements and non-common elements. The common ones are <strong>marked by <span class="commonelm"><sup>C</sup></strong></span>.<br/>
+        A non-common element in a table can also have foreign key relations to elements in other tables in this dataset.
+        Such elements are <strong>marked by <span class="barfont"><em>(FK)</em></span></strong>.
+    </p>
+    <p>
+        The upper right corner of the page has a <strong>Subscribe</strong> action link. This will subscribe you to any changes
+        made to this table in its dataset's any version. EIONET's Unified Notification System (UNS) will send you notifications
+        about those changes.
+    </p>

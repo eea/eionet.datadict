@@ -1,0 +1,14 @@
+<h2>Add a dataset</h2>
+<p>
+    This page enables you to define a new dataset, i.e. add a new dataset definition.
+</p>
+<p>
+    The page lists the definition's <strong>attributes</strong> whose values you can specify. Every attribute is a name/value
+    pair. Some attributes can have several values at the same time. You can define or remove such values by using the +/-
+    icons next to the inputs. '+' adds a new value, '-' removes selected values.
+    <br/> Help on every attribute is available by clicking their help icons.
+</p>
+<p>
+    The rest of this dataset definition you can edit once you've submitted these attributes by clicking <strong>Add</strong> 
+    on top of the page. DD will create the dataset definition and lead you to its edit page.
+</p>

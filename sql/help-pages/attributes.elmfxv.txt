@@ -1,0 +1,3 @@
+<p>
+    Indicates whether the attribute is available for definitions of elements with fixed values.
+</p>

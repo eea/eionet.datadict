@@ -1,0 +1,38 @@
+<h2>Table edit page</h2>
+<p>
+    This page enables you to edit the given table.
+</p>
+<p>
+    The upper right section of the page contains the following buttons:
+    <ul>
+        <li>
+            <strong>Save</strong> saves whatever you have entered into the inputs on this page. But they will not be seen
+            by anybody else, until you check in the dataset working copy where this table belongs to.
+        </li>
+        <li>
+            <strong>Save & close</strong> does the same as Save, but it also leads you back to the view page of this table.
+        </li>
+        <li>
+            <strong>Cancel</strong> leads you to the view page of this table, without saving anything you entered into the
+            inputs.
+        </li>
+    </ul>
+</p>
+<p>
+    Below the above-mentioned buttons, the page is divided into the following sections.
+</p>
+<p>
+    First is a section listing the table's <strong>attributes</strong> whose values you can edit. Every attribute is a name/value
+    pair. Some attributes can have several values at the same time. You can define or remove such values by using the <strong>+/-</strong> 
+    icons next to the inputs.
+    <strong>+</strong> adds a new value, <strong>-</strong> removes selected values.
+    <br/> Help on every attribute is available by the help icons in their titles.
+</p>
+<p>
+    The next section lists the links to other editable parts of this table:
+    <ul>
+        <li>
+            <strong>Elements</strong> link leads you to the page where you can manage the elements that belong to this table.
+        </li>
+    </ul>
+</p>

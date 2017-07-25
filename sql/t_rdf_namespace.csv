@@ -1,0 +1,4 @@
+ID,URI,NAME_PREFIX
+1,http://xmlns.com/foaf/0.1/,foaf
+2,http://www.w3.org/2003/01/geo/wgs84_pos#,geo
+3,http://purl.org/dc/terms/,dct

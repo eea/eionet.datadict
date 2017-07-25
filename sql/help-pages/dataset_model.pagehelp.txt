@@ -1,0 +1,17 @@
+<p>
+    The role of data model is to visually describe the dataset structure (down to the level of elements if needed) in a modeling
+    language. For now, models can be attached to datasets only as simple image files. The DD recognizes three image types-
+    JPG, GIF and PNG. So in order to provide a dataset definition also with its data model, you should first draw the model
+    with your modeling tool and then save it as a file of one of those 3 types.
+</p>
+<p>
+    There can be two models given to a dataset. A simple model should describe the structure only on the tables level, while
+    in the detailed model you can add as many details as you would like. The two models are situated on the model view's
+    separate tabs.
+</p>
+<p>
+    To add a model, click on its tab (simple or detailed) and specify the image file location either on your local file system
+    or in the web. And then press Upload. As a result, the image is downloaded from given location and stored into DD file
+    system.<br/> To remove the added model, click the Remove button.<br/> Note that there can be only one simple model
+    and only one detailed model.<br/> Uploading a model without removing the previous one will overwrite the latter.
+</p>

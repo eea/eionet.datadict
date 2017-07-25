@@ -1,7 +1,7 @@
 <h2>Datasets</h2>
 <p>
 This page lists the <strong>latest versions</strong> of datasets in any status or
-datastes matching your search criteria if you reached this page
+datasets matching your search criteria if you reached this page
 by submitting the dataset search form. The latter is accessible by clicking the
 <strong>Search</strong> link in the upper right corner.
 </p>

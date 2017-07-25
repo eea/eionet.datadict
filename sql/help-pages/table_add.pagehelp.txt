@@ -1,0 +1,33 @@
+<h2>Table add page</h2>
+<p>
+    This page enables you to create a new table in the given dataset.
+</p>
+<p>
+    The upper right section of the page contains the following buttons:
+    <ul>
+        <li>
+            <strong>Add</strong> creates the new table with the values you entered into the form below. It will lead you
+            to the edit page of that new table where you can edit the rest of the table's definition.
+        </li>
+        <li>
+            <strong>Copy</strong> enables you to create a new table by copying the basic attributes and non-common elements
+            from another, already existing table. It will open a view where you can search for the table you want to copy.
+            Once you've clicked the desired table in the search results, DD will create a new table where the basic attributes
+            and non-common elements have been taken from the table you selected to copy. It will lead you to the edit page
+            of that newly created table where you can edit the rest of the table's definition.
+        </li>
+    </ul>
+    <br/> Please note that both Add and Copy buttons require you to
+    <strong>specify the mandatory attributes</strong> marked with M.
+    </ul>
+</p>
+<p>
+    Inputs on this page represent the table's <strong>attributes</strong>. Every attribute is a name/value pair. Some attributes
+    can have several values at the same time. You can define or remove such values by using the +/- icons next to the inputs.
+    '+' adds a new value, '-' removes selected values.<br/>Help on every attribute is available by clicking their help icons.<br/>
+    The <strong>Dataset</strong> attribute indicates the dataset where the new table will belong to. It is clickable and
+    leads to the view page of that dataset.
+</p>
+<p>
+    Once you've entered the data, you are ready to press either Add or Copy.
+</p>

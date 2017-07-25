@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+     You can run this change log on your database as many times as you want, it will ignore the
+     changes that are already applied. It also means that you can't modify an existing revision.
+     Always add to the end.
+
+     Use the maven goals: liquibase:update and liquibase:status
+     changeLogFile as to be overridden in the property if seed data is installed:
+
+     mvn -Dliquibase.changeLogFile=sql/dd-seeddata.xml liquibase:update
+
+     $Id$
+ -->
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+    <changeSet author="stamojoh" id="rev-1" context="initial">
+        <preConditions>
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM NAMESPACE</sqlCheck>
+        </preConditions>
+        <loadData tableName="NAMESPACE" file="namespace.csv"/>
+    </changeSet>
+
+    <changeSet author="stamojoh" id="rev-2" context="initial">
+        <preConditions>
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM T_RDF_NAMESPACE</sqlCheck>
+        </preConditions>
+        <loadData tableName="T_RDF_NAMESPACE" file="t_rdf_namespace.csv"/>
+    </changeSet>
+
+    <changeSet author="stamojoh" id="rev-3" context="initial">
+        <preConditions>
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM M_ATTRIBUTE</sqlCheck>
+        </preConditions>
+        <loadData tableName="M_ATTRIBUTE" file="m_attribute.csv"/>
+    </changeSet>
+
+    <changeSet author="stamojoh" id="rev-4" context="initial">
+        <preConditions>
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM FXV</sqlCheck>
+        </preConditions>
+        <loadData tableName="FXV" file="fxv.csv"/>
+    </changeSet>
+ 
+    <changeSet author="stamojoh" id="rev-5" context="initial">
+        <preConditions>
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM DATAELEM</sqlCheck>
+        </preConditions>
+        <loadData tableName="DATAELEM" file="dataelem.csv"/>
+    </changeSet>
+
+    <changeSet author="stamojoh" id="rev-6" context="initial">
+        <preConditions>
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM ATTRIBUTE</sqlCheck>
+        </preConditions>
+        <loadData tableName="ATTRIBUTE" file="attribute.csv"/>
+    </changeSet>
+
+    <changeSet author="stamojoh" id="rev-7" context="initial">
+        <preConditions>
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM ACLS</sqlCheck>
+        </preConditions>
+        <loadData tableName="ACLS" file="acls.csv"/>
+    </changeSet>
+
+    <changeSet author="stamojoh" id="rev-8" context="initial">
+        <preConditions>
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM ACL_ROWS</sqlCheck>
+        </preConditions>
+        <loadData tableName="ACL_ROWS" file="acl_rows.csv"/>
+    </changeSet>
+
+    <changeSet author="stamojoh" id="rev-9" context="initial">
+        <preConditions>
+            <sqlCheck expectedResult="0">SELECT COUNT(*) FROM INFERENCE_RULE</sqlCheck>
+        </preConditions>
+        <loadData tableName="INFERENCE_RULE" file="inference_rule.csv"/>
+    </changeSet>
+      
+</databaseChangeLog>
+

@@ -1,0 +1,20 @@
+<h2>Dataset tables</h2>
+<p>
+    This page lists the tables in this dataset.
+</p>
+<p>
+    If you have authenticated yourself and this dataset is your working copy then you will see the following buttons on top of
+    the list:
+    <ul>
+        <li>
+            <strong>Add new</strong> leads you to the page where you can add a new table to this dataset.
+        </li>
+        <li>
+            <strong>Remove selected</strong> removes the selected tables from this dataset and will refreshes this page.
+            As a result, the removed tables should be gone.
+        </li>
+    </ul>
+</p>
+<p>
+    If you see no tables in this list, it means the dataset has no tables.
+</p>

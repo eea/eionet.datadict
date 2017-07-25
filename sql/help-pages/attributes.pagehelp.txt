@@ -1,0 +1,12 @@
+<p>
+    An attribute in Data Dictionary's context is an attribute of a definition of a dataset, table or data element. Most common
+    attribute of all is 'Name', standing for the name of the defined object. Other attributes could be for example 'Definition',
+    'Keyword', etc. Every attribute is uniquely identified by its <b>Short name</b>.
+</p>
+<p>
+    Every attribute in its instance is a name/value pair. For example 'Name', 'Definition' and 'Keyword' are a good example of
+    attributes.<br/> Note that attributes can have pre-fixed sets of allowable values. Often these values are some kind
+    of codes. For example an attribute called 'Datatype' can have values like 'Text', 'Integer' and 'Boolean'.<br/> Also,
+    an attribute in its instance can have multiple values at the same time. For example 'Keyword' could be 'environment',
+    'water' and 'lake' all at the same time.
+</p>

@@ -1,0 +1,2 @@
+A data element's <b>Type</b> defines if it's an element with quantitative values or fixed values.<br/>
+Please see for more on types in help for <b>Element</b> column.

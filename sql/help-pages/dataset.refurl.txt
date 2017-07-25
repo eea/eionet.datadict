@@ -1,0 +1,4 @@
+<h2>Reference URL</h2>
+<p>
+    This is a stable URL that always refers to the latest version of this definition!
+</p>

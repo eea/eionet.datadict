@@ -1,0 +1,13 @@
+<p>
+    This page lists and enabls to edit the <b>details of a foreign key relation</b>.
+    <br/>
+    <br/> A foreign key relation in DD's terms is the same as it is in terms of relational databases, because in principal
+    a DD dataset is a database. A foreign key relation exists between two columns of separate tables in the same database.
+    So in DD a foreign key relation exists between two elements of separate tables in the same dataset.
+    <br/> The relation is described by its <b>Description<b> and its <b>Cardinality</b>. The latter indicates if the relation
+    is 0-to-1, 0-to-one-or-more, 1-to-1, etc. Please keep in mind that in Data Dictionary a foreign key relation is <b>direction-less</b>.
+    Nevertheless, the sides of the relation are marked by <b>A</b> and <b>B</b>, just to notify that we're tlaking about
+    sides.
+    <br/>
+    <br/> To save changes, click 'Save'. To delete the relation, click 'Delete'.
+</p>

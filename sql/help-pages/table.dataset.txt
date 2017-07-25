@@ -1,0 +1,5 @@
+<h2>Dataset</h2>
+<p>
+    This attribute indicates the dataset where this table or element belongs to. 
+    It is clickable and leads to the dataset definition's view.
+</p>

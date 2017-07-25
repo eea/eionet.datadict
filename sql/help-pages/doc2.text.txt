@@ -1,0 +1,92 @@
+<h1>Concepts & terms - datasets, tables, data elements</h1>
+<h2>Datasets</h2>
+<p>
+    In Reportnet and DD's context a dataset is a collection of tables containing the reported data. Often the "tables" will actually
+    recede to a single table only. In a way DD datasets are stand-alone databases. Usually they come as MS Access databases
+    or MS Excel files. They are subject to certain data flows and obliged to be reported by Reportnet players according to
+    legislation. In many cases a dataset corresponds to a dataflow. For example there is the CDDA dataset defined in DD,
+    which contains the information about reported data within that same-named data flow
+</p>
+
+<h2>Tables</h2>
+<p>
+    A table in DD's context is a table in dataset. Columns in a table stand for data elements, rows stand for their values.
+</p>
+<p><img src="images/delem_description.gif"></p>
+
+<h2>Data elements</h2>
+<p>
+    A data element in Data Dictionary's context is a column in a table. The figure above provides a visual representation of
+    what a table and its elements (columns) are.<br/> On the highest level there are two classes of data elements in
+    DD:
+</p>
+<ul>
+    <li>
+        <b>non-common elements</b> belong into a certain single table and they cannot be used in any other tables. They are
+        defined within that certain table and they do not have a life outside of that table.
+    </li>
+    <li>
+        <b>common elements</b> do not belong into a certain single table. They can be used in many tables, i.e. they can
+        be part of many tables. You could also call them harmonised elements. They are potential candidates to be used in
+        many datasets and tables and thus have been harmonised to avoid repetitions. A perfect example of a common element
+        is for example CountryCode. It is obvious that CountryCode is probably needed in all datasets and many tables.
+    </li>
+</ul>
+<p>
+    Data elements could be for example StationCode, StationType, Longitude, etc. And while Longitude can be measured and StationCode
+    could be anything, StationType would probably have values from a pre-fixed set. These differences represent the 2 distinct
+    data element types that DD recognizes:
+</p>
+<ul>
+    <li>
+        <b>Element with fixed values (aka allowable values or code lists)</b><br/> An element where predefined values are
+        the only accepted values. In ISO 11179 terms referred as "characteristic 1" or "characteristic of type 1".
+    </li>
+    <li>
+        <b>Element with quantitative values (aka measured values)</b><br/> An element that can have any values within the
+        element's data type. In ISO 11179 terms referred as "characteristic 2" or "characteristic of type 2". DD enables
+        to define <b>suggested values</b> for these elements.
+    </li>
+</ul>
+
+<h2>Attributes</h2>
+<p>
+    Datasets, tables and elements in DD are defined by a set of attributes, the core set of which corresponds to ISO 11179 standard
+    for describing data elements. The rest of the attributes are usually specific to Reportnet business rules and in any
+    case the attribute set is flexible- an administrator can dynamically add/remove attributes to/from the system. Most common
+    attribute of all is 'Name', standing for the name of the defined object. Other attributes could be for example 'Definition',
+    'Version', etc. There are two types of attributes recognized by DD:
+</p>
+<ul>
+    <li>
+        <b>Attribute</b><br/> Every such attribute in its instance is a name/value pair. They represent the same concept
+        of attribute as in ISO 11179 part 3. For example the mentioned 'Name', 'Definition' and 'Version' are a good examples
+        of attributes.
+        <b>NB!</b> Note that attributes can have pre-fixed sets of allowable values, just like the elements. Often these
+        values are some kind of codes.
+    </li>
+    <li>
+</ul>
+
+Important attributes when defining a data element are:
+<ul>
+    <li>
+        <b>Datatype</b><br/> Indicates if the element's values are strings, integers, booleans, etc. Also specifies if decimals
+        are to be used, and how many decimals are accepted.
+    </li>
+    <li>
+        <b>MaxSize/MinSize</b><br/> The max/min length of a data element value in terms of digits or characters. For example
+        if an element's MaxSize is 4, its value 'hello' is one char too long. Or if an element's MinSize is 5, its value
+        '146' is one digit too short.
+    </li>
+    <li>
+        <b>MaxValue/MinValue</b><br/> Can be applied only to data elements of numeric Datatype and limits the element's numeric
+        value. i.e. value '9.55' is too much if MaxValue is '9'.
+    </li>
+</ul>
+<p>
+    <b>
+        You can learn more about each and every attribute through using the DD, because each and every attribute in the DD user pages is
+        provided with online help about its meaning and point.
+    </b>
+</p>

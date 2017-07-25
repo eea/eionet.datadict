@@ -1,0 +1,15 @@
+<h2>Data element type</h2>
+<p>
+    Indicates the data element type from the value domain's point of view. It can be one of the two following:
+    <ul>
+        <li>
+            <b>Element with fixed values (aka allowable values or code lists)</b><br/> An element where predefined values
+            are the only accepted values. In ISO 11179 terms referred as "characteristic 1" or "characteristic of type 1".
+        </li>
+        <li>
+            <b>Element with quantitative values (aka measured values)</b><br/> An element that can have any values within
+            the element's data type. In ISO 11179 terms referred as "characteristic 2" or "characteristic of type 2". DD
+            enables to define <b>suggested values</b> for these elements.
+        </li>
+    </ul>
+</p>

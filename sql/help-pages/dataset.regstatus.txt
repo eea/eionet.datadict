@@ -1,0 +1,30 @@
+<h2>Registration status</h2>
+<p>
+    Each dataset and common element definition in Data Dictionary goes through a life-cycle. Its phases are marked by Registration
+    status (aka simply status). The Registration status of a dataset or common element definition is specified by the data
+    definers and can be any one of the following:
+</p>
+
+<h3>Released (5 ticks)</h3>
+<p>
+    The definition is accepted by ETCs and EEA and is released for countries to use for download of technical guidelines and
+    templates.<br/> Definitions in this status can be accessed by countries.
+</p>
+<h3>Qualified (4 ticks)</h3>
+<p>
+    This level is for closing discussions between ETCs and EEA.<br/> Definitions in this status <b>cannot be accessed by countries.</b>
+</p>
+<h3>Recorded (3 ticks)</h3>
+<p>
+    This level is for discussions between ETCs and countries if applicable. Otherwise the definition will skip this status and
+    move directly to the Qualified status.<br/> Definitions in Recorded status can be accessed by countries.</p>
+<h3>Candidate (2 ticks)</h3>
+<p>
+    Definitions that are included in the Data Dictionary by the EEA or ETC data managers. This level is for opening discussions
+    between ETCs and EEA.<br/> Definitions in this status <b>cannot be accessed by countries.</b>
+</p>
+<h3>Incomplete (1 tick)</h3>
+<p>
+    This can be existing definitions under consideration to be included in the Data Dictionary or new definitions under development
+    where the Data Dictionary is used as a structuring tool or to test dataflows.<br/> Definitions in this status <b>cannot be accessed by countries.</b>
+</p>

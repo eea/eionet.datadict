@@ -1,0 +1,61 @@
+<h2>Dataset view page</h2>
+<p>
+    This page provides a view to a dataset definition.
+    <p>
+        If you have authenticated yourself and you have the required permissions, the upper right corner of the page may contain
+        the following buttons:
+        <ul>
+            <li>
+                <strong>New version</strong> will create a new version of this dataset. You will be instantly led to the
+                view page of that new version where you can start editing it. It will be a working copy until you check it
+                in.
+            </li>
+            <li><strong>Check out</strong> will do the same as New version, the only difference is that the working copy will
+                not become a new version when checked in. Instead, it will simply overwrite the current dataset copy.
+            </li>
+            <li>
+                <strong>Delete</strong> deletes this dataset copy. This does not mean that if you are viewing a Lakes dataset
+                and you press Delete, then all versions of Lakes dataset will be deleted. Only the version you are viewing
+                will be deleted!
+            </li>
+        </ul>
+        <br/> Also in the upper right corner you may find these action links:
+        <ul>
+            <li>
+                <strong>Go to newest</strong> leads you the view page of the newest version of this dataset. Seeing this
+                action link indicates that you are viewing an historic version of this dataset.
+            </li>
+            <li>
+                <strong>Subscribe</strong> will subscribe you to any changes made to any version of this dataset. EIONET's
+                Unified Notification System (UNS) will send you notifications about those changes.
+            </li>
+        </ul>
+    </p>
+    <p>
+        This view page is divided into sections which you can quickly access by using the <strong>quicklinks</strong> at
+        the top of the page.
+    </p>
+    <p>
+        Below the quicklinks is a section with links to <strong>documents & templates</strong> available for this dataset.
+        If you have the right to modify this dataset definition then you can also see the links for uploading new documents
+        and managing the documents' cache. You can find more help when you get there.
+    </p>
+    <p>
+        The next section lists all the <strong>attributes</strong> of this definition. Every attribute is a name/value pair.
+        Some attributes can have several values at the same time. Help on every attribute is available by the help icons
+        in their titles.
+    </p>
+    <p>
+        If the dataset has a <strong>data model</strong> specified, the attributes are followed by a section that displayes
+        the thumbnail of the data model image.
+    </p>
+    <p>
+        Following the data model is the section that lists the <strong>tables</strong> in this dataset. Each table is given
+        by its full name and short name, is clickable and the click leads to the table's definition view page.
+    </p>
+    <p>
+        At the very bottom of the page is the list of <strong>other versions</strong> of this dataset definition. Every version
+        is uniquely identified by the dataset number in the left-most column. The list also has indicating the version's
+        Registration status and the date is was released (relevant only when the Registration status is <em>Released</em>).
+        The right-most column of this list provides the link to the view page of that version.
+    </p>

@@ -1,0 +1,12 @@
+<div id="box1" class="TeaserBox" width="302">
+    <h2>News</h2>
+    <p>The data specifications for the 2004 Eurowaternet data collection are released in the data dictionary.</p>
+    <p>
+        The data dictionary contains detailed information on the content, format and structure of each water data set: rivers,
+        lakes, groundwater, transitional, coastal and marine waters, and water quantity.
+    </p>
+    <p>
+        Specifications for each water data set can be downloaded in pdf format from the list above (press the pdf icon). Excel
+        templates and XML schema files can be downloaded from the dataset pages.
+    </p>
+</div>

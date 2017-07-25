@@ -1,0 +1,67 @@
+<h2>Generating MS Access templates for datasets</h2>
+<p>
+    MS Access is among the most popular formats of reporting data in Reportnet. To help to ease the task of producing this format,
+    Data Dictionary enables to generate templates for the MS Access files to be reported.
+</p>
+<p>
+    The relation between the generated MS Access templates and datasets in DD is quite straight-forward and logical.
+</p>
+<p>
+    Every generated MS Access template corresponds to a concrete dataset definition in DD. Tables in that template represent
+    the tables in DD. And columns in those MS Access tables represent the data elements in DD.
+</p>
+<p>
+    Tables and columns in generated MS Access files are titled by the identifiers of their counterparts in DD.
+</p>
+<p>
+    The columns in generated MS Access have their data types set according to the data types of their counterparts. Here's the
+    mapping between DD data types and data types in generated MS Access files:
+</p>
+<table>
+    <caption>
+        Mapping between DD data types and data types in generated MS Access files
+    </caption>
+    <thead>
+        <tr>
+            <th>DD data type</th>
+            <th>MS Access data type</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>string</td>
+            <td>text</td>
+        </tr>
+        <tr>
+            <td>boolean</td>
+            <td>boolean</td>
+        </tr>
+        <tr>
+            <td>integer</td>
+            <td>int</td>
+        </tr>
+        <tr>
+            <td>date</td>
+            <td>text</td>
+        </tr>
+        <tr>
+            <td>float</td>
+            <td>float</td>
+        </tr>
+    </tbody>
+    <tr>
+</table>
+<p>
+    <b>
+At the moment the utility DD is using to generate its MS Access outputs
+does not unfortunately enable to set fixed values for the generated columns!
+</b>
+</p>
+<p>
+    About each and every column you can find out more specifications by looking at the corresponding data element in DD or its
+    description in generated PDF output.
+</p>
+<p>
+    <b>NB!</b> Please note that GIS tables in DD are represented in MS Access as two separate tables. The one for GIS elements
+    is titled <i>tablename</i> and the one for non-GIS elements is titled <i>tablename_meta</i>.
+</p>

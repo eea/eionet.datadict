@@ -1,0 +1,41 @@
+<h2>Restore datasets</h2>
+<p>
+    This page lists the datasets versions that have been non-completely deleted. The latter means that they can be restored.
+    And it is here on this page where you can restore them.
+</p>
+<p>
+    The upper left corner has 2 buttons:
+    <ul>
+        <li>
+            <strong>Restore selected</strong> restores the selected dataset versions.
+        </li>
+        <li>
+            <strong>Delete selected</strong> deletes the selected dataset versions permanently. They latter means they cannot
+            be restored.
+        </li>
+    </ul>
+</p>
+<p>
+    The list has 4 columns:
+    <ul>
+        <li>
+            The <strong>left-most</strong> column contains the checkboxes enabling selection of dataset versions that you
+            want to restore or delete for good.
+        </li>
+        <li>
+            <strong>Dataset</strong> indicates the name of the dataset version.
+        </li>
+        <li>
+            <strong>Version</strong> indicates the version identifier of the particular dataset version listed. Note that
+            version identifier 2405 does not mean that this is the 2405th version of the dataset. It is simply the unique
+            identifier of the particular dataset version and it simply happens to be numeric.
+        </li>
+        <li>
+            <strong>Tables</strong> listing the dataset's tables by their full names.
+        </li>
+    </ul>
+</p>
+<p>
+    If you place the mouse over column header and the latter activates, it means the list is <strong>sortable</strong> by
+    that column. Click the column header to perform the sorting.
+</p>

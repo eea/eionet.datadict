@@ -1,0 +1,74 @@
+<h2>Non-common element view page</h2>
+<p>
+    <strong>Non-common elements</strong> belong into a certain single table and they cannot be used in any other tables.
+    They are defined within that certain table and they do not have a life outside of that table.
+    <br/>
+    <strong>Common elements</strong> do not belong into a certain single table. They can be used in many tables. A perfect
+    example of a common element is for example CountryCode. It is obvious that CountryCode is probably needed in many datasets.
+</p>
+<p>
+    The view page of non-common elements is slightly different from the view page of common ones.
+</p>
+<p>
+    If you have authenticated yourself and this element is in a dataset working copy and it is your working copy then you can
+    see the following buttons in the upper right corner:
+    <ul>
+        <li>
+            <strong>Edit</strong> leads to the edit page this element.
+        </li>
+        <li>
+            <strong>Delete</strong> deletes this element from this table in this dataset working copy and redirects you to
+            the view page this table.
+        </li>
+    </ul>
+</p>
+<p>
+    This page is divided into sections which you can quickly access by using the <strong>quicklinks</strong> at the top of
+    the page.
+</p>
+<p>
+    Below the quicklinks is a section with links to <strong>XML schema</strong> and possibly other formats of this element
+    definition.
+</p>
+<p>
+    Next is a section that states the element's type. It can be one of two:
+    <ul>
+        <li>
+            <strong>DATA ELEMENT WITH FIXED VALUES</strong> is an element where predefined values are the only accepted values.
+        </li>
+        <li>
+            <strong>DATA ELEMENT WITH QUANTITATIVE VALUES</strong> can have any values within the element's data type. DD
+            enables to define suggested values for these elements.
+        </li>
+    </ul>
+</p>
+<p>
+    Following the element's type is a section that lists the element's <strong>attributes</strong>. Every attribute is a
+    name/value pair. Some attributes can have several values at the same time. Help on every attribute is available by the
+    help icons in their titles.
+    <br/> The <strong>Table</strong> and <strong>Dataset</strong> attributes indicate the table and dataset the element belongs
+    to. If this is a dataset working copy and it is your working copy, the dataset name is followed by this marker:
+    <span
+        style="color:red">(Working copy)</span>. If it is somebody else's working copy, the dataset name is followed by this marker: <span style="color:red">(checked out by <em>username</em>)</span>.
+        <br/> Both the dataset and table name are clickable and the click leads to their view pages.
+</p>
+<p>
+    Following the attributes is a section that lists one of two:
+    <ul>
+        <li>
+            <strong>Allowable values</strong> are a synonym of fixed values and they are listed if the element's type is
+            fixed values.
+        </li>
+        <li>
+            <strong>Suggested values</strong> are listed if the element's type is quantitative values. They are values suggested
+            to the data supplier if he does not know or is not sure what to enter. The data supplier is not obliged to use
+            them.
+        </li>
+    </ul>
+</p>
+<p>
+    If this element has <strong>foreign key relations</strong> to some other elements in this dataset, the allowable/fixed
+    values section is followed by a section that lists those relations. The 1st column contains the name of the related element
+    (it is clickable and the click leads to the view page of that element). The 2nd column contains the name of the table
+    where the related element resides.
+</p>

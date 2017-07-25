@@ -1,0 +1,15 @@
+<div id="box2" class="TeaserBox" width="302">
+    <h2>Documentation</h2>
+    <p>
+        <a href="doc1.jsp">Data Dictionary - functions, services and users</a>
+    </p>
+    <p>
+        <a href="doc2.jsp">Concepts & terms - datasets, tables, data elements, code lists </a>
+    </p>
+    <p>
+        <a href="doc3.jsp">Data Dictionary - administrative tools - login mode</a>
+    </p>
+    <p>
+        <a href="http://eea.eionet.eu.int/Members/irc/eionet-circle/eionet-telematics/library?l=/reportnet/dd">Data Dictionary userguide (Eionet login required)</a>
+    </p>
+</div>
