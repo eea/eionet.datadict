@@ -23,6 +23,8 @@ import eionet.util.sql.ConnectionUtil;
 import eionet.util.sql.DDConnectionException;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -31,6 +33,7 @@ import eionet.util.sql.SQL;
  */
 public class DocUpload extends HttpServlet {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(DocUpload.class);
     public  static final String REQPAR_FILE   = "file";
     public  static final String REQPAR_DSID   = "ds_id";
     public  static final String REQPAR_TITLE  = "title";
@@ -86,9 +89,9 @@ public class DocUpload extends HttpServlet {
         } catch (Exception e) {
             if (e instanceof SQLException) {
                 int errCode = ((SQLException) e).getErrorCode();
-                System.out.println(errCode);
+                LOGGER.warn(new Integer(errCode).toString());
             }
-            e.printStackTrace();
+            LOGGER.error(e.getMessage(), e);
             throw new ServletException(e.getMessage() == null ? "" : e.getMessage(), e);
         } finally {
             closeConnection();

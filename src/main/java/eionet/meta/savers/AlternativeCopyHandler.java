@@ -15,13 +15,13 @@ import java.util.Set;
 
 import javax.servlet.ServletContext;
 
-import org.apache.log4j.Logger;
-
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DDUser;
 import eionet.meta.dbschema.DbSchema;
 import eionet.util.Util;
 import eionet.util.sql.SQL;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -31,7 +31,7 @@ import eionet.util.sql.SQL;
 public class AlternativeCopyHandler extends OldCopyHandler {
 
     /** */
-    private static final Logger LOGGER = Logger.getLogger(AlternativeCopyHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AlternativeCopyHandler.class);
 
     /**  */
     private DDUser user = null;

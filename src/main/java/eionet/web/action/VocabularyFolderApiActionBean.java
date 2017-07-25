@@ -52,6 +52,8 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.StopWatch;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -72,6 +74,8 @@ import java.util.Map;
  */
 @UrlBinding("/api/vocabulary/{vocabularyFolder.folderName}/{vocabularyFolder.identifier}/{$event}")
 public class VocabularyFolderApiActionBean extends AbstractActionBean {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(VocabularyFolderApiActionBean.class);
 
     //Constants
     /**
@@ -454,7 +458,7 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
         try {
             httpClient.executeMethod(post);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage(), e);
         }
         return null;
     } // end of method testUploadRdf

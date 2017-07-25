@@ -18,7 +18,8 @@ import java.util.List;
 import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.CharEncoding;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -47,7 +48,7 @@ public class VocabularyCsvImportTask implements AsyncTask {
         return parameters;
     }
     
-    private static final Logger LOGGER = Logger.getLogger(VocabularyCsvImportTask.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(VocabularyCsvImportTask.class);
     
     private final IVocabularyService vocabularyService;
     private final ICSVVocabularyImportService vocabularyCsvImportService;

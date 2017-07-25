@@ -8,11 +8,12 @@ import java.io.Reader;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
 
 import eionet.meta.DownloadServlet;
 import eionet.util.Props;
 import eionet.util.PropsIF;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class provides services related to the DD file store. This is the store where all user-uploaded files should be stored.
@@ -29,7 +30,7 @@ import eionet.util.PropsIF;
 public class FileStore {
 
     /** Static logger. */
-    private static final Logger LOGGER = Logger.getLogger(FileStore.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FileStore.class);
 
     /** Full path to the file store's root directory. */
     public static final String PATH = Props.getRequiredProperty(PropsIF.FILESTORE_PATH);

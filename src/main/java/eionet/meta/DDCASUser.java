@@ -1,9 +1,8 @@
 package eionet.meta;
-
-import org.apache.log4j.Logger;
-
 import eionet.acl.AuthMechanism;
 import eionet.acl.SignOnException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -13,7 +12,7 @@ import eionet.acl.SignOnException;
 public class DDCASUser extends DDUser {
 
     /** */
-    private static final Logger LOGGER = Logger.getLogger(DDCASUser.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DDCASUser.class);
 
     /**
      *

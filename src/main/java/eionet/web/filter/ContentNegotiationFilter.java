@@ -32,7 +32,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 /**
@@ -43,7 +44,7 @@ import org.springframework.util.StringUtils;
 public class ContentNegotiationFilter implements Filter {
 
     /** Logger. */
-    private static final Logger LOGGER = Logger.getLogger(ContentNegotiationFilter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ContentNegotiationFilter.class);
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {

@@ -10,11 +10,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.log4j.Logger;
-
 import eionet.util.sql.ConnectionUtil;
 import eionet.util.sql.DDConnectionException;
 import eionet.util.sql.SQL;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /*
  *
@@ -24,7 +24,7 @@ import eionet.util.sql.SQL;
 public class DbSchema {
 
     /** */
-    private static final Logger LOGGER = Logger.getLogger(DbSchema.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DbSchema.class);
 
     /** */
     private static DbSchema instance = new DbSchema();
@@ -40,9 +40,9 @@ public class DbSchema {
         try {
             init();
         } catch (DDConnectionException e) {
-            LOGGER.fatal("Failed to get connection", e);
+            LOGGER.error("Failed to get connection", e);
         } catch (SQLException e) {
-            LOGGER.fatal("Failed to initialize " + DbSchema.class.getSimpleName(), e);
+            LOGGER.error("Failed to initialize " + DbSchema.class.getSimpleName(), e);
         }
     }
 

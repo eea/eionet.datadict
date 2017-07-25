@@ -9,7 +9,8 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import eionet.meta.DDRuntimeException;
 import eionet.util.Props;
@@ -23,7 +24,7 @@ import eionet.util.PropsIF;
 public class ConnectionUtil {
 
     /** */
-    private static final Logger LOGGER = Logger.getLogger(ConnectionUtil.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConnectionUtil.class);
 
     /** */
     private static final String DATASOURCE_NAME = "jdbc/datadict";

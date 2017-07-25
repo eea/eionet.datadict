@@ -27,7 +27,9 @@ import java.util.List;
 import java.util.Map;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import org.apache.log4j.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.HttpEntity;
@@ -79,7 +81,7 @@ public class VocabularyRdfImportFromUrlTask implements AsyncTask {
         return parameters;
     }
 
-    private static final Logger LOGGER = Logger.getLogger(VocabularyRdfImportFromUrlTask.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(VocabularyRdfImportFromUrlTask.class);
 
     private final IVocabularyService vocabularyService;
     private final IRDFVocabularyImportService vocabularyRdfImportService;

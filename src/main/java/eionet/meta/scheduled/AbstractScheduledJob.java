@@ -25,13 +25,14 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.quartz.CronExpression;
 import org.quartz.Job;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
 
 import eionet.util.Props;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Abstract class for scheduled job.
@@ -52,7 +53,7 @@ public abstract class AbstractScheduledJob implements ServletContextListener, Jo
     /**
      * local logger.
      */
-    private static final Logger LOGGER = Logger.getLogger(AbstractScheduledJob.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractScheduledJob.class);
 
     /**
      * Job Name.

@@ -36,7 +36,7 @@ import net.sourceforge.stripes.validation.SimpleError;
 import nl.bitwalker.useragentutils.Browser;
 import nl.bitwalker.useragentutils.BrowserType;
 import org.apache.commons.collections.MapUtils;
-import org.apache.log4j.Logger;
+
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Enumeration;
@@ -45,6 +45,8 @@ import net.sourceforge.stripes.action.Message;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.integration.spring.SpringBean;
 import net.sourceforge.stripes.validation.ValidationErrors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Root class for all DD ActionBeans.
@@ -56,7 +58,7 @@ public abstract class AbstractActionBean implements ActionBean {
     /**
      * Logger.
      */
-    protected static final Logger LOGGER = Logger.getLogger(AbstractActionBean.class);
+    protected static final Logger LOGGER = LoggerFactory.getLogger(AbstractActionBean.class);
     /**
      * Tag for system messages.
      */

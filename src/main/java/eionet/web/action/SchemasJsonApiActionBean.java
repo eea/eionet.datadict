@@ -45,6 +45,8 @@ import eionet.meta.service.ITableService;
 import eionet.meta.service.ServiceException;
 import eionet.util.Props;
 import eionet.util.PropsIF;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Action bean for serving RESTful API methods for retrieving information related to XML Schemas.
@@ -53,6 +55,8 @@ import eionet.util.PropsIF;
  */
 @UrlBinding("/api/schemas/{$event}")
 public class SchemasJsonApiActionBean extends AbstractActionBean {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SchemasJsonApiActionBean.class);
 
     /** Table search service. */
     @SpringBean
@@ -108,7 +112,7 @@ public class SchemasJsonApiActionBean extends AbstractActionBean {
             }
 
         } catch (ServiceException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage(), e);
             return new ErrorResolution(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "System error occurred.");
         }
     }

@@ -23,11 +23,12 @@ package eionet.meta.scheduled;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
@@ -49,7 +50,7 @@ public class VocabularyReferenceMatchJob extends AbstractScheduledJob {
     /**
      * Logging instance.
      */
-    private static final Logger LOGGER = Logger.getLogger(VocabularyReferenceMatchJob.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(VocabularyReferenceMatchJob.class);
     /**
      * Elements key.
      */

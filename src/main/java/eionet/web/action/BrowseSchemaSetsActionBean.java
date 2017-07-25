@@ -33,7 +33,6 @@ import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.integration.spring.SpringBean;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 import eionet.meta.dao.domain.RegStatus;
 import eionet.meta.dao.domain.Schema;
@@ -42,6 +41,8 @@ import eionet.meta.service.ISchemaService;
 import eionet.meta.service.ServiceException;
 import eionet.meta.service.ValidationException;
 import eionet.util.SecurityUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Action bean for browsing schema sets.
@@ -52,7 +53,7 @@ import eionet.util.SecurityUtil;
 public class BrowseSchemaSetsActionBean extends AbstractActionBean {
 
     /** */
-    private static final Logger LOGGER = Logger.getLogger(BrowseSchemaSetsActionBean.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BrowseSchemaSetsActionBean.class);
 
     /** */
     private static final String BROWSE_SCHEMA_SETS_JSP = "/pages/schemaSets/browseSchemaSets.jsp";

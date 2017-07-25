@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.annotation.PostConstruct;
-import org.apache.log4j.Logger;
 import org.quartz.JobBuilder;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
@@ -32,6 +31,8 @@ import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import static org.quartz.TriggerBuilder.newTrigger;
 import org.quartz.impl.matchers.GroupMatcher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -40,7 +41,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class AsyncTaskManagerImpl implements AsyncTaskManager {
 
-    private static final Logger LOGGER = Logger.getLogger(AsyncTaskManagerImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AsyncTaskManagerImpl.class);
 
     private final Scheduler scheduler;
     private final AsyncJobKeyBuilder asyncJobKeyBuilder;

@@ -1,6 +1,7 @@
 package eionet.util;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -10,7 +11,7 @@ import org.apache.log4j.Logger;
 public class IsJUnitRuntime {
 
     /** */
-    private static Logger LOGGER = Logger.getLogger(IsJUnitRuntime.class);
+    private static Logger LOGGER = LoggerFactory.getLogger(IsJUnitRuntime.class);
 
     /** */
     public static final boolean VALUE = isJUnitRuntime();

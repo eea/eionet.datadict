@@ -14,12 +14,11 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
-
 import javax.servlet.ServletContext;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
-
 import eionet.meta.notif.Subscriber;
 import eionet.meta.notif.UNSEventSender;
 import eionet.meta.savers.CopyHandler;
@@ -44,7 +43,7 @@ import org.apache.commons.lang.StringUtils;
 public class VersionManager {
 
     /** Static logger for this class. */
-    private static final Logger LOGGER = Logger.getLogger(VersionManager.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(VersionManager.class);
 
     /** Possible registration statuses of a dataset or common data element. */
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -706,7 +705,7 @@ public class VersionManager {
                 Subscriber.subscribeToElement(usersToSubscribe, elm.getIdentifier());
             }
         } catch (Throwable t) {
-            t.printStackTrace(System.out);
+            LOGGER.error(t.getMessage(), t);
         }
         String eventType =
                 checkedoutCopyID != null && checkedoutCopyID.length() > 0 ? Subscriber.COMMON_ELEMENT_CHANGED_EVENT

@@ -34,8 +34,9 @@ import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.displaytag.properties.SortOrderEnum;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
@@ -58,7 +59,7 @@ import eionet.util.Util;
 public class SchemaDAOImpl extends GeneralDAOImpl implements ISchemaDAO {
 
     /** Logger. */
-    private static final Logger LOGGER = Logger.getLogger(SchemaDAOImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SchemaDAOImpl.class);
 
     /** */
     private static final String REPLACE_ID_SQL = "update T_SCHEMA set SCHEMA_ID=:substituteId where SCHEMA_ID=:replacedId";

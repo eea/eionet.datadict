@@ -15,13 +15,15 @@ import java.util.Map.Entry;
 import javax.servlet.ServletContext;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DDUser;
 import eionet.meta.dbschema.DbSchema;
 import eionet.util.Util;
 import eionet.util.sql.SQL;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  *
@@ -31,7 +33,7 @@ import eionet.util.sql.SQL;
 public class CopyHandler extends OldCopyHandler {
 
     /** */
-    private static final Logger LOGGER = Logger.getLogger(CopyHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CopyHandler.class);
 
     /**  */
     private DDUser user = null;

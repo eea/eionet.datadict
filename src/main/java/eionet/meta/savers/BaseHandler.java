@@ -5,7 +5,8 @@ import java.sql.Connection;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
 import eionet.meta.DDUser;
@@ -21,7 +22,7 @@ import eionet.util.sql.SQLTransaction;
 public abstract class BaseHandler {
 
     /** */
-    private static final Logger LOGGER = Logger.getLogger(BaseHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BaseHandler.class);
 
     /** */
     protected Connection conn = null;
