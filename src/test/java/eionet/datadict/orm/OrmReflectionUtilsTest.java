@@ -68,7 +68,7 @@ public class OrmReflectionUtilsTest {
     }
     
     @Test
-    @Ignore
+    //@Ignore
     public void testInferRelationInfo() {
         RelationInfo info1 = OrmReflectionUtils.inferParentChildRelationInfo(ParentEntityWithReferenceToChildren.class, ChildEntityReferencedByParent.class);
         assertThat(info1, is(notNullValue()));

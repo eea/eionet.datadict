@@ -3,6 +3,7 @@ package eionet.datadict.web;
 import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.errors.XmlExportException;
 import eionet.datadict.services.DataSetService;
+import eionet.datadict.services.DataSetTableService;
 import java.io.IOException;
 import javax.servlet.ServletException;
 import javax.xml.parsers.ParserConfigurationException;
@@ -31,13 +32,15 @@ public class DatasetControllerTest {
 
     @Mock
     private DataSetService dataSetService;
+    @Mock
+    private DataSetTableService dataSetTableService;
 
     DataSetController dataSetController;
 
     @Before
     public void setup() throws Exception {
         MockitoAnnotations.initMocks(this);
-        this.dataSetController = new DataSetController(dataSetService);
+        this.dataSetController = new DataSetController(dataSetService,dataSetTableService);
         mockMvc = MockMvcBuilders.standaloneSetup(dataSetController).build();
     }
 

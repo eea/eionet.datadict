@@ -21,8 +21,8 @@ public class Vocabulary implements Iterable<Concept>, AttributeOwner {
     private Set<AttributeValue> attributesValues;
 
     @Override
-    public AttributeOwnerCategory getAttributeOwnerCategory() {
-        return AttributeOwnerCategory.VOCABULARY;
+    public AttributeOwnerType getAttributeOwnerType() {
+        return new AttributeOwnerType(id,AttributeOwnerType.Type.VCF);
     }
 
     @Override

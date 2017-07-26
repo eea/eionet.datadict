@@ -8,11 +8,12 @@ import java.util.Set;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-
+import javax.persistence.Table;
 
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @JsonIgnoreProperties(ignoreUnknown=true)
+@Table(name="DS_TABLE")
 public class DatasetTable implements AttributeOwner {
 
     @Id
@@ -51,8 +52,8 @@ public class DatasetTable implements AttributeOwner {
     
 
     @Override
-    public AttributeOwnerCategory getAttributeOwnerCategory() {
-        return AttributeOwnerCategory.DATA_SET_TABLE;
+    public AttributeOwnerType getAttributeOwnerType() {
+        return new AttributeOwnerType(id,AttributeOwnerType.Type.T);
     }
 
     public Integer getId() {

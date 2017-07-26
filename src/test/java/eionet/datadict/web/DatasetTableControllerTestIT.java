@@ -61,7 +61,7 @@ public class DatasetTableControllerTestIT {
     public void testFailToGetDatasetTableXMLSchemaBecauseOfNotFoundDatasetTableWithGivenId() throws Exception {
         MockHttpServletRequestBuilder request = get("/datasetTable/4242/schema");
         request.contentType(MediaType.APPLICATION_JSON);
-        mockMvc.perform(request).andExpect(status().isNotFound());
+        mockMvc.perform(request).andExpect(status().is3xxRedirection());
         mockMvc.perform(request).andDo(print());
     }
 
@@ -84,7 +84,7 @@ public class DatasetTableControllerTestIT {
     public void testFailToGetDatasetTableXMLInstanceBecauseOfNotFoundDatasetTableWithGivenId() throws Exception {
         MockHttpServletRequestBuilder request = get("/datasetTable/4242/instance");
         request.contentType(MediaType.APPLICATION_JSON);
-        mockMvc.perform(request).andExpect(status().isNotFound());
+        mockMvc.perform(request).andExpect(status().is3xxRedirection());
         mockMvc.perform(request).andDo(print());
     }
 

@@ -15,7 +15,6 @@ import eionet.datadict.model.DatasetTable;
 import eionet.datadict.model.Namespace;
 import eionet.datadict.services.DataSetTableService;
 import eionet.datadict.services.data.DatasetTableDataService;
-import eionet.meta.dao.domain.DataSetTable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -100,11 +99,8 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                 }
                 dsDocumentation.appendChild(attributeElement);
             }
-
             Element complexType = elMaker.createElement(DataDictXMLConstants.COMPLEX_TYPE);
-
             tableRootElement.appendChild(complexType);
-
             Element sequence = elMaker.createElement(DataDictXMLConstants.SEQUENCE);
             complexType.appendChild(sequence);
             Element rowElement = elMaker.createElement(DataDictXMLConstants.ELEMENT);
@@ -162,6 +158,8 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                         MaxInclusiveValue = attributeValue.getValue();
                         continue;
                     }
+                    System.out.println("Attribute ShortName :" +attribute.getShortName());
+                    System.out.println("Attribute Namespace :" +attribute.getNamespace().getShortName().replace("_", ""));
                     Element attributeElement = elMaker.createElement(attribute.getShortName().replace(" ", ""), null, attribute.getNamespace().getShortName().replace("_", ""));
                     attributeElement.appendChild(doc.createTextNode(attributeValue.getValue()));
                     elemDocumentation.appendChild(attributeElement);
@@ -194,11 +192,8 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                     Element maxLengthElement = elMaker.createElement("maxLength");
                     maxLengthElement.setAttribute("value", MaxSize);
                     dataElementRestriction.appendChild(maxLengthElement);
-
                 }
-
             }
-
             doc.appendChild(schemaRoot);
             return doc;
         } catch (ParserConfigurationException ex) {
@@ -233,7 +228,6 @@ public class DataSetTableServiceImpl implements DataSetTableService {
         } catch (ParserConfigurationException ex) {
             Logger.getLogger(DataSetTableServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
             throw new XmlExportException(ex);
-
         }
 
     }
@@ -288,7 +282,6 @@ public class DataSetTableServiceImpl implements DataSetTableService {
         public Element createElement(String elementName) {
             return createElement(elementName, null, null, null);
         }
-
     }
 
 }

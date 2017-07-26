@@ -1,11 +1,9 @@
 package eionet.datadict.dal.impl;
 
-import eionet.datadict.commons.util.IterableUtils;
 import eionet.datadict.dal.AttributeValueDao;
 import eionet.datadict.model.Attribute;
 import eionet.datadict.model.AttributeValue;
 import eionet.datadict.model.DataDictEntity;
-import eionet.datadict.model.DataElement;
 import eionet.datadict.model.DataSet;
 import eionet.datadict.model.DatasetTable;
 import java.sql.ResultSet;

@@ -1,9 +1,11 @@
 package eionet.datadict.model;
 
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 
+@Table(name="ATTRIBUTE")
 public class AttributeValue {
 
     private Integer attributeId;
@@ -39,6 +41,22 @@ public class AttributeValue {
         this.parentEntity = parentEntity;
     }
 
+    public AttributeOwner getOwner() {
+        return owner;
+    }
+
+    public void setOwner(AttributeOwner owner) {
+        this.owner = owner;
+    }
+
+    public Attribute getAttribute() {
+        return attribute;
+    }
+
+    public void setAttribute(Attribute attribute) {
+        this.attribute = attribute;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -63,21 +81,4 @@ public class AttributeValue {
                 toHashCode();
 
     }
-
-    public Attribute getAttribute() {
-        return attribute;
-    }
-
-    public void setAttribute(Attribute attribute) {
-        this.attribute = attribute;
-    }
-
-    public AttributeOwner getOwner() {
-        return owner;
-    }
-
-    public void setOwner(AttributeOwner owner) {
-        this.owner = owner;
-    }
-
 }

@@ -1,6 +1,5 @@
 package eionet.web.action;
 
-import eionet.web.action.AttributeActionBean;
 import eionet.datadict.errors.BadRequestException;
 import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.model.Attribute;

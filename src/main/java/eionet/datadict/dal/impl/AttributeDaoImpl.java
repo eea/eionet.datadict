@@ -14,7 +14,6 @@ import eionet.datadict.model.AttributeValue;
 import eionet.datadict.model.DataDictEntity;
 import eionet.datadict.model.Namespace;
 import eionet.datadict.model.RdfNamespace;
-import eionet.datadict.model.SimpleAttributeValues;
 import eionet.datadict.util.data.DataConverter;
 import eionet.meta.dao.domain.VocabularyFolder;
 import java.util.HashMap;
@@ -182,7 +181,7 @@ public class AttributeDaoImpl extends JdbcDaoBase implements AttributeDao {
 
     @Override
     public Map<DataDictEntity.Entity, Integer> getConceptsWithAttributeValues(int attributeId) {
-        String sql = "select PARENT_TYPE, count(DISTINCT(DATAELEM_ID)) as COUNT_RES from ATTRIBUTE where M_ATTRIBUTE_ID = :id and not PARENT_TYPE = ''group by PARENT_TYPE";
+        String sql = "select PARENT_TYPE, count(DISTINCT(DATAELEM_ID)) as COUNT_RES from ATTRIBUTE where M_ATTRIBUTE_ID = :id and not PARENT_TYPE = '' group by PARENT_TYPE";
         Map<String, Object> params = this.createParameterMap();
         params.put("id", attributeId);
         List<Map<DataDictEntity.Entity, Integer>> listOfMaps = getNamedParameterJdbcTemplate().query(sql, params, new MapRowMapper());
@@ -247,10 +246,6 @@ public class AttributeDaoImpl extends JdbcDaoBase implements AttributeDao {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    @Override
-    public List<SimpleAttributeValues> getSimpleAttributesValuesOfDataElementsInTable(int tableId) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
 
     @Override
     public List<Attribute> getByDataDictEntity(DataDictEntity ownerEntity) {
