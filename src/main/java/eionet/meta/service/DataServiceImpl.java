@@ -19,7 +19,8 @@ import eionet.meta.service.data.DataElementsFilter;
 import eionet.util.IrrelevantAttributes;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -65,7 +66,7 @@ public class DataServiceImpl implements IDataService {
     private IVocabularyConceptDAO vocabularyConceptDao;
 
     /** logger. */
-    protected static final Logger LOGGER = Logger.getLogger(DataServiceImpl.class);
+    protected static final Logger LOGGER = LoggerFactory.getLogger(DataServiceImpl.class);
 
     /**
      * {@inheritDoc}
@@ -485,9 +486,8 @@ public class DataServiceImpl implements IDataService {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            LOGGER.error("", e);
-            throw new ServiceException(e.getMessage());
+            LOGGER.error(e.getMessage(), e);
+            throw new ServiceException(e.getMessage(), e);
         }
     }
 }

@@ -1,0 +1,52 @@
+<h2>Data element search page</h2>
+<p>
+    This page enables you to search for common or non-common elements.
+</p>
+<p>
+    More about <strong>search criteria</strong> is available by clicking the information icons in their titles.<br/> You
+    can add more search criteria by using the blue '+' sign at the bottom part of the page. You can remove added criteria
+    by clicking the blue '-' sign that will appear next to them.
+</p>
+<p>
+    The radio buttons below the criteria enable to set the <strong>search type</strong>. Possible options are:
+    <ul>
+        <li>
+            <strong>Substring search.</strong> This will interpret your inputs as substrings of what you're searching for.
+        </li>
+        <li>
+            <strong>Exact search.</strong> This will interpret your inputs as the exact phrase you're looking for.
+        </li>
+        <li>
+            <strong>Free text search.</strong> This will interpret your inputs as free text.
+        </li>
+    </ul>
+</p>
+<p>
+    There are also radio buttons for specifying if you want to search only for <strong>common elements</strong> or only for
+    <strong>non-common elements</strong>. The latter is the default.
+    <br/>
+    <strong>If you check 'common elements', the dataset select box becomes disabled</strong>, because common elements are
+    not strictly related to one single dataset. <strong>If you check 'non-common' elements, the dataset select box
+is enabled, but the 'Working copies only' checkbox becomes disabled</strong>, because there can be no working copies of non-common
+    elements.
+</p>
+<p>
+    If you have authenticated yourself then you will see the <strong>Working copies only</strong> checkbox. If this is checked,
+    only working copies are searched for.
+</p>
+<p>
+    Both authenticated and un-authenticated users should see the <strong>Include historic versions</strong> checkbox. If
+    this is checked, DD returns also all the historic element versions matching your search criteria.
+</p>
+<p>
+    <strong>Search</strong> button speaks for itself. <strong>Reset</strong> clears your search criteria.
+</p>
+<p>
+    <strong>NB!</strong> If all the criteria are blank, DD resturns all the latest common element versions or non-common
+    elements from all the latest dataset versions, depending on which radio button you checked.
+</p>
+<p>
+    If you have authenticated yourself and you have the required permissions, you will see the
+    <strong>New common element</strong> action link in the upper right corner of the page. This will lead you the page where
+    you can start creating a new common element.
+</p>

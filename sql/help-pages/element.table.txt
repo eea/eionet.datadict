@@ -1,0 +1,4 @@
+<h2>Table</h2>
+<p>
+    This attribute indicates the table where this element belongs to. It is clickable and leads to the table definition's view.
+</p>

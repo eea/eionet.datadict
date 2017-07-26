@@ -14,27 +14,31 @@
                     <c:out value="${actionBean.viewModel.owner.entityName}" />
                 </c:when>
                 <c:otherwise>
-                    <table class="datatable">
-                        <tr>
-                            <th>Code</th>
-                            <c:if test="${actionBean.viewModel.defaultValueRequired}">
-                                <th>Default</th>
-                            </c:if>
-                            <th>Label</th>
-                            <th>Definition</th>
-                        </tr>
-                        <c:forEach items="${actionBean.viewModel.fixedValues}" var="fixedValue">
+                    <table class="datatable results">
+                        <thead>
                             <tr>
-                                <td>${fixedValue.value}</td>
+                                <th>Code</th>
                                 <c:if test="${actionBean.viewModel.defaultValueRequired}">
-                                    <td>
-                                        ${ddfn:checkmark(fixedValue.defaultValue)}
-                                    </td>
+                                    <th>Default</th>
                                 </c:if>
-                                <td>${fixedValue.shortDescription}</td>
-                                <td>${fixedValue.definition}</td>
+                                <th>Label</th>
+                                <th>Definition</th>
                             </tr>
-                        </c:forEach>
+                        </thead>
+                        <tbody>
+                            <c:forEach items="${actionBean.viewModel.fixedValues}" var="fixedValue">
+                                <tr>
+                                    <td>${fixedValue.value}</td>
+                                    <c:if test="${actionBean.viewModel.defaultValueRequired}">
+                                        <td>
+                                            ${ddfn:checkmark(fixedValue.defaultValue)}
+                                        </td>
+                                    </c:if>
+                                    <td>${fixedValue.shortDescription}</td>
+                                    <td>${fixedValue.definition}</td>
+                                </tr>
+                            </c:forEach>
+                        </tbody>
                     </table>
                 </c:otherwise>
             </c:choose>

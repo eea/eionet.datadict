@@ -1,0 +1,34 @@
+<h1>Data Dictionary - functions, services and users</h1>
+
+<p>The Data Dictionary is used to support the delivery of environmental data by countries to Reportnet. The contents in the
+    data dictionary are used to generate pdfs of the technical specifications for dataflows as well as Excel templates. The
+    Data Dictionary also introduces the possibility of simple automated validation of deliveries by countries and facilitates
+    the development of data submission interfaces.
+</p>
+<p>
+    Data Dictionary holds definitions of datasets, tables and data elements. Each of these three levels is defined by a set of
+    attributes, the core set of which corresponds to <a href="http://isotc.iso.ch/livelink/livelink/fetch/2000/2489/Ittf_Home/PubliclyAvailableStandards.htm">ISO 11179
+    standard</a> for describing data elements. The whole attribute set is flexible and attributes can be added / removed from/to
+    the system.
+</p>
+
+<p>The Data Dictionary provides:</p>
+<ul>
+    <li>
+        countries with detailed specifications of what to produce and report, on a website as well as in pdf documents for download;</li>
+    <li>
+        data reporters with Excel templates to facilitate reporting;</li>
+    <li>
+        definitions of parameters as input for technical quality control and automated validation of the reported data;</li>
+    <li>
+        those using data reported by countries with a single point of reference for obtaining information about the specifications;</li>
+    <li>
+        a platform for harmonisation discussions and processes;</li>
+    <li>
+        a simple means to reuse existing specifications when reporting obligations are revised or new ones are defined.</li>
+</ul>
+
+<p>Reporting obligations are usually long-lasting. The definitions found in the Data Dictionary, therefore, are relatively stable,
+    but are updated prior to a new dataflow collection.</p>
+
+<p>The users of the Data Dictionary are data reporters and data definers as well as dataflow administrators.</p>

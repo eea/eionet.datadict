@@ -1,0 +1,12 @@
+<h2>Dataset number</h2>
+<p>
+    Data Dictionary enables to create different versions of logically the same dataset. For example there can be different versions
+    of the Lakes dataset. Every such version is stored as a separate dataset copy in the DD database and is uniquely identifed
+    by the <strong>Dataset number</strong>.
+</p>
+<p>
+    If you see a Lakes dataset whose dataset number is 2405, it does mean that this the 2405th version of the Lakes dataset.
+    It simply means that the unique id number of that dataset copy in DD is 2405. 2406 might already be assigned to a copy
+    of Groundawater dataset and 2407 might again be assigned to a new version of Lakes dataset. So the number basically indicates
+    the sequence in which the dataset copies in DD are created. The bigger the number, the newer the dataset is.
+</p>

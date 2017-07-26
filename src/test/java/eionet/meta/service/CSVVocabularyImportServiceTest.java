@@ -36,6 +36,8 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.test.annotation.Rollback;
 import org.unitils.reflectionassert.ReflectionAssert;
 import org.unitils.reflectionassert.ReflectionComparatorMode;
@@ -58,6 +60,8 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
     /**
      * Vocabulary folder CSV import service.
      */
+    private static final Logger LOGGER = LoggerFactory.getLogger(CSVVocabularyImportServiceTest.class);
+
     @SpringBeanByType
     private ICSVVocabularyImportService vocabularyImportService;
 
@@ -115,7 +119,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         try {
             vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, false, false);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage(), e);
             fail("Was not expecting this exception: " + e);
         }
 
@@ -172,7 +176,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         try {
             vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, false, false);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage(), e);
             fail("Was not expecting this exception: " + e);
 
         }
@@ -251,7 +255,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         try {
             vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, false, false);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage(), e);
             fail("Was not expecting this exception: " + e);
         }
 
@@ -338,7 +342,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         try {
             vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, false, false);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage(), e);
             fail("Was not expecting this exception: " + e);
         }
 
@@ -424,7 +428,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         try {
             vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, true, false);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage(), e);
             fail("Was not expecting this exception: " + e);
         }
 
@@ -512,7 +516,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         try {
             vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, true, false);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage(), e);
             fail("Was not expecting this exception: " + e.toString());
         }
 
@@ -587,7 +591,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         try {
             vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, true, false);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage(), e);
             fail("Was not expecting this exception: " + e);
         }
 
@@ -638,7 +642,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         try {
             vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, true, true);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage(), e);
             fail("Was not expecting this exception: " + e);
         }
 
@@ -689,7 +693,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         try {
             vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, true, true);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage(), e);
             fail("Was not expecting this exception: " + e);
         }
 
@@ -943,7 +947,7 @@ public class CSVVocabularyImportServiceTest extends VocabularyImportServiceTestB
         try {
             logMessages = vocabularyImportService.importCsvIntoVocabulary(reader, vocabularyFolder, false, true);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage(), e);
             fail("Was not expecting this exception: " + e);
         }
 

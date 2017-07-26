@@ -14,6 +14,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 
 import eionet.meta.DDException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -21,6 +23,8 @@ import eionet.meta.DDException;
  *
  */
 public class MSAccessServlet extends HttpServlet {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MSAccessServlet.class);
 
     /*
      * (non-Javadoc)
@@ -66,7 +70,8 @@ public class MSAccessServlet extends HttpServlet {
                     generatedFile.delete();
                 }
             } catch (SecurityException e) {
-                new DDException("Security exception when deleting generated MSAccess file", e).printStackTrace();
+                DDException dde = new DDException("Security exception when deleting generated MSAccess file", e);
+                LOGGER.error(dde.getMessage(), dde);
             }
         }
     }

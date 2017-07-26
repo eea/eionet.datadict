@@ -1,0 +1,5 @@
+<h2>Link to suggested values</h2>
+<p>
+    This links opens the view from where you can manage suggested values of this data element.<br/> 
+    There you will also find more help on what the suggested values actually are and how you can manage them.
+</p>

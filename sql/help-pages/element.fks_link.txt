@@ -1,0 +1,5 @@
+<h2>Link to foreign keys</h2>
+<p>
+    This links opens the view from where you can manage foreign key realtionships of this data element.<br/> 
+    There you will also find more help on what the foreign key realtionships actually are and how you can manage them.
+</p>

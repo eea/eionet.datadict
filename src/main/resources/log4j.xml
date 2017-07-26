@@ -18,7 +18,6 @@
             <param name="ConversionPattern" value="[%-5p] %d{dd.MM.yy HH:mm:ss} - %c - %m%n" />
         </layout>
     </appender>
-
     <logger name="eionet">
         <level value="debug" />
     </logger>

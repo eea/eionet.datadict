@@ -27,7 +27,7 @@
 <div id="switchTypeDialog" title="Switch data element type">
     <p>
         Use the below buttons to switch the type of this element to something else.<br/>
-        Please note that this might result in the loss of simple attributes that are<br/>
+        Please note that this might result in the loss of attributes that are<br/>
         found irrelevant for the new type.
     </p>
 

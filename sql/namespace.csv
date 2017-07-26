@@ -1,0 +1,4 @@
+NAMESPACE_ID,SHORT_NAME,FULL_NAME,DEFINITION,PARENT_NS,WORKING_USER
+1,datasets,Datasets namespace,The parent namespace for all DD datasets and attributes,NULL,NULL
+2,iso_attrs,ISO11179 attributes namespace,The parent namespace for attributes originating from ISO11179,1,NULL
+3,dd_attrs','DD attributes namespace,The parent namespace for DD-specific attributes,1,NULL

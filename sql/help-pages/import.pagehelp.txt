@@ -1,0 +1,19 @@
+<h2>Data import</h2>
+<p>
+    This page enables to import the data created by DD <b>Import tool</b>.
+    <br/>
+    <br/> DD has an MS Access-based helper tool called <b>Import tool</b>.<br/> This tool enables to define datasets, tables
+    and elements (but no attributes!) in a flat table and then afterwards populate the definitions into DD database, using
+    <b>XML</b> as an intermediate format.<br/> The reason for such a tool is simply because when entering a large amount
+    of definitions,<br/> a flat table might be handier than the web-based user interface with its many different views<br/> 
+    and clicking back and forth in between them.<br/> More on how to use Import tool is available
+    <br/>
+    <br/> The output of Import tool is an XML file. This page enables to import that XML file. Locating the file by using
+    the 'Browse' button or provide the file's URL if it's available on the web. Then press <b>'Import' button</b>.<br/> The
+    'Clear' button will clear the inputs.<br/> Import will result in the list of import results which are rather informative.
+    <br/>
+    <br/> If you came to this page by clicking 'Import...' on the list of some element's
+    <b>allowable values</b>, there will be a red text notifying that you are about to import allowable values for the selected
+    element. Import tool enables to generate an XML file with allowable values only and this here is the page where you can
+    import them.
+</p>

@@ -1,0 +1,63 @@
+<h2>Common element search results</h2>
+<p>
+    This page lists the common elements matching the search criteria you provided in the data element search page.
+</p>
+<p>
+    <strong>Common elements NOT in Recorded or Released status are inaccessible
+for un-authenticated users!</strong>
+</p>
+<p>
+    All users can see at least 3 columns here:
+    <ul>
+        <li>
+            <strong>Element</strong> indicating the element's short name.
+        </li>
+        <li>
+            <strong>Type</strong> indicating the element's type. It can be one of two: <em>Fixed values</em> or <em>Quantitative</em>.
+            The first means an element where predefined values are the only allowed values. The second means an element that
+            can have any values within the element's data type.
+        </li>
+        <li>
+            <strong>Status</strong> indicating the element's Registration status. The different statuses are marked by certain
+            icons. The status names are dispalyed when placing the mouse over those icons.
+        </li>
+    </ul>
+    <br/> If you chose to search for historic versions too, then you can also see a 4th column:<br/>
+    <strong>Version</strong> indicating the version identifier of the particular element version.
+    <strong>Note that version identifier 2405 does not mean that this is the 2405th version of the element.
+It is simply the unique identifier of the particular element version and it simply happens to be numeric.
+</strong>
+</p>
+<p>
+    If you place the mouse over column header and the latter activates, it means the list is <strong>sortable</strong> by
+    that column. Click the column header to perform the sorting.
+</p>
+<p>
+    As mentioned above, statuses are marked by certain icons and you can see the status name by placing the mouse over the icon.
+    Here's what different status names mean:
+    <ul>
+        <li>
+            <strong>Released</strong> (5 ticks) means the definition is accepted by ETCs and EEA and is released for countries
+            to use for download of technical guidelines and templates. Definitions in this status can be accessed by countries.
+        </li>
+        <li>
+            <strong>Qualified</strong> (4 ticks) level is for closing discussions between ETCs and EEA. Definitions in this
+            status <em>cannot be accessed by countries.</em>
+        </li>
+        <li>
+            <strong>Recorded</strong> (3 ticks) level is for discussions between ETCs and countries if applicable. Otherwise
+            the definition will skip this status and move directly to the Qualified status. Definitions in Recorded status
+            can be accessed by countries.
+        </li>
+        <li>
+            <strong>Candidate</strong> (2 ticks) means definitions that are included in the Data Dictionary by the EEA or
+            ETC data managers. This level is for opening discussions between ETCs and EEA. Definitions in this status <em>cannot be accessed by countries</em>.
+        </li>
+        <li>
+            <strong>Incomplete</strong> (1 tick) means either existing definitions under consideration to include them into
+            Data Dictionary or new definitions under development where the Data Dictionary is used as a structuring tool
+            or to test dataflows. Definitions in this status
+            <em>cannot be accessed by countries</em>.
+        </li>
+    </ul>
+</p>

@@ -15,8 +15,6 @@ import java.util.Vector;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
-
 import eionet.meta.savers.DataElementHandler;
 import eionet.meta.savers.DatasetHandler;
 import eionet.meta.savers.DsTableHandler;
@@ -24,6 +22,8 @@ import eionet.meta.savers.Parameters;
 import eionet.util.Util;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -33,7 +33,7 @@ import eionet.util.sql.SQL;
 public class MrProper {
 
     /** */
-    private static final Logger LOGGER = Logger.getLogger(MrProper.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MrProper.class);
 
     /** */
     public static final String FUNCTIONS_PAR = "functs";
@@ -153,7 +153,7 @@ public class MrProper {
                 wasExc = true;
                 String stackTrace = eionet.util.Util.getStack(e);
                 if (stackTrace == null) stackTrace = e.toString();
-                LOGGER.fatal(stackTrace);
+                LOGGER.error(stackTrace);
                 response.add((String) funNames.get(fun) +
                         " failed: <b>" + stackTrace + "</b>");
                 continue;

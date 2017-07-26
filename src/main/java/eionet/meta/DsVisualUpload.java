@@ -21,7 +21,6 @@ import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
 
 import eionet.meta.savers.DatasetHandler;
 import eionet.util.Props;
@@ -30,6 +29,8 @@ import eionet.util.SecurityUtil;
 import eionet.util.Util;
 import eionet.util.sql.ConnectionUtil;
 import eionet.util.sql.SQL;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -39,7 +40,7 @@ import eionet.util.sql.SQL;
 public class DsVisualUpload extends HttpServlet {
 
     /** */
-    private static final Logger LOGGER = Logger.getLogger(DsVisualUpload.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DsVisualUpload.class);
 
     /*
      * (non-Javadoc)
@@ -60,12 +61,9 @@ public class DsVisualUpload extends HttpServlet {
 
         try {
             processRequest(request, response);
-        } catch (ServletException servletException) {
-            LOGGER.error(servletException);
-            throw servletException;
-        } catch (IOException ioException) {
-            LOGGER.error(ioException);
-            throw ioException;
+        } catch (ServletException | IOException e) {
+            LOGGER.error(e.getMessage(), e);
+            throw e;
         }
     }
 

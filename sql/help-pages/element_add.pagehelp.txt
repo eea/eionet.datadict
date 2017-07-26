@@ -1,0 +1,51 @@
+<h2>Non-common element add page</h2>
+<p>
+    This page enables you to create a new non-common element in the given table in the given dataset.
+</p>
+<p>
+    The upper right section of the page contains the following buttons:
+    <ul>
+        <li>
+            <strong>Add</strong> creates the new element with the values you entered into the form below. It will lead you
+            to the edit page of that new element where you can edit the rest of the element's definition.
+        </li>
+        <li>
+            <strong>Copy</strong> enables you to create a new non-common element by copying the basic attributes from another,
+            already existing non-common element. It will open a view where you can search for the element you want to copy.
+            Once you've clicked the desired element in the search results, DD will create a new non-common element where
+            the basic attributes have been taken from the element you selected to copy. It will lead you to the edit page
+            of that newly created element where you can edit the rest of the element's definition.
+        </li>
+    </ul>
+    <br/> Please note that both Add and Copy buttons require you to
+    <strong>specify the mandatory attributes</strong> marked with M.
+    </ul>
+</p>
+<br/>
+<p>
+    Having reached this page, you must have already specified the element's Type which is one of two:
+    <ul>
+        <li>
+            <strong>DATA ELEMENT WITH FIXED VALUES</strong> is an element where predefined values are the only accepted values.
+        </li>
+        <li>
+            <strong>DATA ELEMENT WITH QUANTITATIVE VALUES</strong> can have any values within the element's data type. DD
+            enables to define suggested values for these elements.
+        </li>
+    </ul>
+    <br/>
+    <strong>
+If this element's type is QUANTITATIVE VALUES then the first thing you must do on this page
+is to select the new element's Datatype. </strong> This is emphasized because that selection reloads the page with empty
+    inputs, so you will lose anything you entered prior to performing that selection.
+</p>
+<p>
+    Inputs on this page represent the element's <strong>attributes</strong>. Every attribute is a name/value pair. Some attributes
+    can have several values at the same time. You can define or remove such values by using the +/- icons next to the inputs.
+    '+' adds a new value, '-' removes selected values.<br/>Help on every attribute is available by clicking their help icons.<br/> 
+    The <strong>Table</strong> and <strong>Dataset</strong> attributes indicate the table and dataset the element belongs
+    to. Both are clickable and the click leads to their view pages.
+</p>
+<p>
+    Once you've entered the data, you are ready to press either Add or Copy.
+</p>

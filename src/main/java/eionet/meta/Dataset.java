@@ -29,7 +29,6 @@ public class Dataset implements Comparable {
 
     private Vector tables = new Vector();
     private Vector simpleAttrs = new Vector();
-    private Vector complexAttrs = new Vector();
 
     private int displayCreateLinks = -1;
     private static Hashtable createLinkWeights = null;
@@ -108,14 +107,6 @@ public class Dataset implements Comparable {
         return simpleAttrs;
     }
 
-    public void setComplexAttributes(Vector v) {
-        this.complexAttrs = v;
-    }
-
-    public Vector getComplexAttributes() {
-        return complexAttrs;
-    }
-
     public String getAttributeValueByShortName(String name) {
 
         for (int i = 0; i < simpleAttrs.size(); i++) {
@@ -129,23 +120,12 @@ public class Dataset implements Comparable {
     }
 
     public DElemAttribute getAttributeByShortName(String name) {
-
-        // look from simple attributes
         for (int i = 0; i < simpleAttrs.size(); i++) {
             DElemAttribute attr = (DElemAttribute) simpleAttrs.get(i);
             if (attr.getShortName().equalsIgnoreCase(name)) {
                 return attr;
             }
         }
-
-        // if it wasn't in the simple attributes, look from complex ones
-        for (int i = 0; i < complexAttrs.size(); i++) {
-            DElemAttribute attr = (DElemAttribute) complexAttrs.get(i);
-            if (attr.getShortName().equalsIgnoreCase(name)) {
-                return attr;
-            }
-        }
-
         return null;
     }
 
@@ -209,51 +189,6 @@ public class Dataset implements Comparable {
 
     public String getDate() {
         return this.date;
-    }
-
-    public Hashtable getCAttrByShortName(String shn) {
-
-        Hashtable hash = new Hashtable();
-
-        if (shn == null) {
-            return hash;
-        }
-
-        DElemAttribute attr = null;
-        for (int i = 0; complexAttrs != null && i < complexAttrs.size(); i++) {
-            DElemAttribute a = (DElemAttribute) complexAttrs.get(i);
-            if (a.getShortName().equals(shn)) {
-                attr = a;
-                break;
-            }
-        }
-
-        Vector rows = attr == null ? null : attr.getRows();
-        Hashtable row = new Hashtable();
-        if (rows != null && rows.size() > 0) {
-            row = (Hashtable) rows.get(0);
-        }
-
-        Vector flds = attr == null ? null : attr.getFields();
-        for (int i = 0; flds != null && i < flds.size(); i++) {
-            Hashtable fld = (Hashtable) flds.get(i);
-            String fldID = (String) fld.get("id");
-            if (fldID != null) {
-                String value = (String) row.get(fldID);
-                if (value != null) {
-                    String fldName = (String) fld.get("name");
-                    if (fldName != null) {
-                        hash.put(fldName, value);
-                    }
-                }
-            }
-        }
-
-        if (flds != null) {
-            hash.put("fields", flds);
-        }
-
-        return hash;
     }
 
     public String getRelativeTargetNs() {

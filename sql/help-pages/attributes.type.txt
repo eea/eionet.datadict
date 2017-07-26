@@ -1,0 +1,3 @@
+<p>
+    Indicates the attribute's type. See page help for more.
+</p>

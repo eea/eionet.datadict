@@ -195,7 +195,7 @@
 
         // get the table's elements and metadata of attributes
         elems = searchEngine.getDataElements(null, null, null, null, tableID);
-        mAttributes = searchEngine.getDElemAttributes(null, DElemAttribute.TYPE_SIMPLE, DDSearchEngine.ORDER_BY_M_ATTR_DISP_ORDER);
+        mAttributes = searchEngine.getDElemAttributes(null, DDSearchEngine.ORDER_BY_M_ATTR_DISP_ORDER);
 
         int colCount = 4;
 %>

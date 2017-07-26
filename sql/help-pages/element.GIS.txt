@@ -1,0 +1,28 @@
+<h2>GIS elements and GIS tables</h2>
+<p>
+    Some of the tables defined in Data Dictionary might contain GIS (Geographic Information System) data.<br/> In Data Dictionary
+    terms, data elements (i.e. table columns) containing such data are called <b>GIS elements</b>.<br/> Tables containing
+    such elements are called <b>GIS tables</b>.<br/> You can distinguish GIS elements in Data Dictionary by the value of
+    the GIS field in their definitions.<br/> If such a field is missing from the definition's detailed view then it means
+    that the defined data element<br/> is not a GIS element. Otherwise the GIS field can have one of the following values,
+    called the GIS types:
+    <ul>
+        <li>
+            [blank]
+        </li>
+        <li>
+            class
+        </li>
+        <li>
+            subclass
+        </li>
+        <li>
+            subtype
+        </li>
+    </ul>
+    You can assign these values in the edit views of data elements.<br/> The moment an element in a table is defined as a
+    GIS element, the moment the table becomes a GIS table<br/> and it's detailed view becomes slightly changed. More precisely,
+    the list of elements is split into two:<br/> one for the so-called normal elements and one for the GIS elements. The
+    1st one is titled <b>Metadata elements</b>,<br/> the 2nd one is titled simply <b>Elements</b> where the GIS type is reflected
+    in the Type column.
+</p>

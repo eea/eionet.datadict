@@ -1,0 +1,14 @@
+<h2>Allowable values</h2>
+<p>
+    This page lists the allowable values (aka fixed values) for this element.
+    <br/>
+    <br/> An element's allowable values are a set of pre-fixed values which the element can have. It cannot have any other
+    values once these are specified. And they can be specified only if the element is set to be of fixed values type.
+    <br/>
+    <br/> Every allowable value here in this list is represented first by the value itself and then the value's definition
+    and the value's short description. The latter two help to understand the meaning of the value. Values are clickable and
+    they lead to the value's detailed page.
+    <br/>
+    <br/> If the element whose values you are looking at is in edit mode, then you can also see here in this page the 'Edit'
+    button. Use this button to go into mode where you can add/remove new/existing values.
+</p>

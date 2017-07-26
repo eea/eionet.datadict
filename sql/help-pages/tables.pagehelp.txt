@@ -1,0 +1,65 @@
+<h2>Tables</h2>
+<p>
+    This page lists <strong>tables from latest versions of datasets in any status</strong> or
+    <strong>tables matching your search criteria</strong> if you reached this page by submitting the table. The latter is
+    accessible by clicking the <strong>Search</strong> link in the upper right corner.
+</p>
+<p>
+    <strong>Tables from datasets NOT in Recorded or Released status are inaccessible
+for un-authenticated users!</strong>
+</p>
+<p>
+    All users can see 4 columns here:
+    <ul>
+        <li>
+            <strong>Full name</strong> indicates the table's full name.
+        </li>
+        <li>
+            <strong>Short name</strong> indicates the table's short name.
+        </li>
+        <li>
+            <strong>Dataset</strong> indicates the dataset where the table belongs to. Note that if a dataset name is marked
+            by a red asterisk (<span style="color:red">*</span>), it means the dataset has been checked out by somebody
+            and the EIONET user name of that somebody is displayed if you point the mouse over the asterisk.
+        </li>
+        <li>
+            <strong>Dataset status</strong> indicates the Registration status of the dataset where the table belongs to.
+            The different statuses are marked by certain icons. The status names are dispalyed when placing the mouse over
+            those icons.
+        </li>
+    </ul>
+</p>
+<p>
+    If you place the mouse over column header and the latter activates, it means the list is <strong>sortable</strong> by
+    that column. Click the column header to perform the sorting.
+</p>
+<p>
+    As mentioned above, dataset statuses are marked by certain icons and you can see the status name by placing the mouse over
+    the icon. Here's what different status names mean:
+    <ul>
+        <li>
+            <strong>Released</strong> (5 ticks) means the definition is accepted by ETCs and EEA and is released for countries
+            to use for download of technical guidelines and templates. Definitions in this status can be accessed by countries.
+        </li>
+        <li>
+            <strong>Qualified</strong> (4 ticks) level is for closing discussions between ETCs and EEA. Definitions in this
+            status <em>cannot be accessed by countries.</em>
+        </li>
+        <li>
+            <strong>Recorded</strong> (3 ticks) level is for discussions between ETCs and countries if applicable. Otherwise
+            the definition will skip this status and move directly to the Qualified status. Definitions in Recorded status
+            can be accessed by countries.
+        </li>
+        <li>
+            <strong>Candidate</strong> (2 ticks) means definitions that are included in the Data Dictionary by the EEA or
+            ETC data managers. This level is for opening discussions between ETCs and EEA. Definitions in this status
+            <em>cannot be accessed by countries</em>.
+        </li>
+        <li>
+            <strong>Incomplete</strong> (1 tick) means either existing definitions under consideration to include them into
+            Data Dictionary or new definitions under development where the Data Dictionary is used as a structuring tool
+            or to test dataflows. Definitions in this status
+            <em>cannot be accessed by countries</em>.
+        </li>
+    </ul>
+</p>

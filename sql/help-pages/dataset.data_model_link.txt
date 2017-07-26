@@ -1,0 +1,5 @@
+<h2>Link to data model</h2>
+<p>
+    This links opens the view from where you can manage the data model of this dataset definition.<br/> 
+    There you will also find more help on what the data model actually is and how you can manage it.
+</p>

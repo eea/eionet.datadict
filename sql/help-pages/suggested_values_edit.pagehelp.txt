@@ -1,0 +1,15 @@
+<h2>Suggested values edit page</h2>
+<p>
+    This page lists the suggested values for this element and provides features to edit them.
+    <br/>
+    <br/> An element's suggested values are a set of values that the Data Dictionary suggests to use if the data provider
+    is not sure about which value to provide. These values are by no means mandatory to use. You serve a helping function
+    only. Note that suggested values can only be specified for data elements with quantitative values, i.e. not elements
+    with fixed values.
+    <br/>
+    <br/> Every suggested value here in this list is represented by the value itself and the value's definition which helps
+    to understand the value's meaning. Values are clickable and they lead to the value's detailed page.
+    <br/>
+    <br/> To <b>add new values</b>, use the new value's input box and Add button. For <b>deletion</b>, use checkboxes to
+    select the desired values and press Delete. The Remove all button speaks for itself.
+</p>

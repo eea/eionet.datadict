@@ -72,7 +72,6 @@ public class CopyHandlerTest extends DDDatabaseTestCase {
 
         compareDefinitionRows("DATASET", "DATASET_ID", oldDstId, newDstId);
         compareSimpleAttributes("DS", oldDstId, newDstId);
-        compareComplexAttributes("DS", oldDstId, newDstId);
         compareDocs("dst", oldDstId, newDstId);
 
         Map<String, String> oldNewTables = copyHandler.getOldNewTables();
@@ -91,7 +90,6 @@ public class CopyHandlerTest extends DDDatabaseTestCase {
 
             compareDefinitionRows("DS_TABLE", "TABLE_ID", oldTblId, newTblId);
             compareSimpleAttributes("T", oldTblId, newTblId);
-            compareComplexAttributes("T", oldTblId, newTblId);
             compareDocs("tbl", oldTblId, newTblId);
             compareTbl2Elm(oldTblId, newTblId, oldNewElements);
         }
@@ -103,7 +101,6 @@ public class CopyHandlerTest extends DDDatabaseTestCase {
 
             compareDefinitionRows("DATAELEM", "DATAELEM_ID", oldElmId, newElmId);
             compareSimpleAttributes("E", oldElmId, newElmId);
-            compareComplexAttributes("E", oldElmId, newElmId);
             compareFixedValues(oldElmId, newElmId);
             compareFkRelations(oldElmId, newElmId, oldNewElements);
         }
@@ -130,7 +127,6 @@ public class CopyHandlerTest extends DDDatabaseTestCase {
 
         compareDefinitionRows("DATAELEM", "DATAELEM_ID", oldElmId, newElmId);
         compareSimpleAttributes("DS", oldElmId, newElmId);
-        compareComplexAttributes("DS", oldElmId, newElmId);
         compareFixedValues(oldElmId, newElmId);
         compareFkRelations(oldElmId, newElmId, oldNewElements);
         compareElmToTblRelations(oldElmId, newElmId);
@@ -182,43 +178,6 @@ public class CopyHandlerTest extends DDDatabaseTestCase {
         assertEquals(tableOld.getRowCount(), tableNew.getRowCount());
 
         DbUnitAssert dbUnitAssert = new DbUnitAssert();
-        dbUnitAssert.assertEquals(tableOld, tableNew);
-    }
-
-    /**
-     *
-     * @param parentType
-     * @param oldId
-     * @param newId
-     * @throws Exception
-     */
-    private void compareComplexAttributes(String parentType, String oldId, String newId) throws Exception {
-
-        QueryDataSet queryDataSet = new QueryDataSet(getConnection());
-        queryDataSet.addTable("OLD_ROWS", "select * from COMPLEX_ATTR_ROW where PARENT_ID=" + oldId + " and PARENT_TYPE='"
-                + parentType + "'");
-        queryDataSet.addTable("NEW_ROWS", "select * from COMPLEX_ATTR_ROW where PARENT_ID=" + newId + " and PARENT_TYPE='"
-                + parentType + "'");
-        queryDataSet.addTable("OLD_FIELDS", "select COMPLEX_ATTR_FIELD.* from COMPLEX_ATTR_FIELD,COMPLEX_ATTR_ROW "
-                + "where COMPLEX_ATTR_FIELD.ROW_ID=COMPLEX_ATTR_ROW.ROW_ID and PARENT_ID=" + oldId + " and PARENT_TYPE='"
-                + parentType + "'");
-        queryDataSet.addTable("NEW_FIELDS", "select COMPLEX_ATTR_FIELD.* from COMPLEX_ATTR_FIELD,COMPLEX_ATTR_ROW "
-                + "where COMPLEX_ATTR_FIELD.ROW_ID=COMPLEX_ATTR_ROW.ROW_ID and PARENT_ID=" + newId + " and PARENT_TYPE='"
-                + parentType + "'");
-
-        ColumnFilterImpl colFilter = new ColumnFilterImpl("PARENT_ID", "ROW_ID");
-        ITable tableOld = new SortedTable(new ColumnFilterTable(queryDataSet.getTable("OLD_ROWS"), colFilter));
-        ITable tableNew = new SortedTable(new ColumnFilterTable(queryDataSet.getTable("NEW_ROWS"), colFilter));
-
-        assertEquals(tableOld.getRowCount(), tableNew.getRowCount());
-
-        DbUnitAssert dbUnitAssert = new DbUnitAssert();
-        dbUnitAssert.assertEquals(tableOld, tableNew);
-
-        tableOld = new SortedTable(new ColumnFilterTable(queryDataSet.getTable("OLD_FIELDS"), colFilter));
-        tableNew = new SortedTable(new ColumnFilterTable(queryDataSet.getTable("NEW_FIELDS"), colFilter));
-
-        assertEquals(tableOld.getRowCount(), tableNew.getRowCount());
         dbUnitAssert.assertEquals(tableOld, tableNew);
     }
 

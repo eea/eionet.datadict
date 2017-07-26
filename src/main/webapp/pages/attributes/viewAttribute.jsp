@@ -20,11 +20,6 @@
         <table class="datatable results">
             <c:set var="rowStatus" value="0"/>
             <tr class="${(rowStatus + 1) % 2 != 0 ? 'odd' : 'even'}">
-                <th scope="row" class="scope-row">Type</th>
-                <td><b>Simple Attribute</b></td>
-                <c:set var="rowStatus" value="${rowStatus + 1}" />
-            </tr>
-            <tr class="${(rowStatus + 1) % 2 != 0 ? 'odd' : 'even'}">
                 <th scope="row" class="scope-row">Short name</th>
                 <td>
                     <em><c:out value="${actionBean.attribute.shortName}" /></em>

@@ -15,7 +15,9 @@ import eionet.meta.exports.codelist.ExportStatics.ExportType;
 import eionet.util.sql.ConnectionUtil;
 import java.sql.Connection;
 import java.sql.SQLException;
-import org.apache.log4j.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -24,7 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class Codelist {
 
-    private static final Logger LOGGER = Logger.getLogger(Codelist.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Codelist.class);
     private ObjectMapper mapper = null;
     private final ExportType exportType;
     

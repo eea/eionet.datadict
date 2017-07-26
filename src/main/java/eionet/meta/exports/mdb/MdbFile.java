@@ -25,11 +25,15 @@ import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.sql.ConnectionUtil;
 import eionet.util.sql.SQL;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author jaanus
  */
 public class MdbFile {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MdbFile.class);
 
     /** */
     public static final String PROP_TMP_FILE_PATH = "mdb.tmp-file-path";
@@ -409,10 +413,7 @@ public class MdbFile {
         } catch (Throwable t) {
             try {
                 SQL.close(conn);
-                System.err.println("============>");
-                System.err.println(t.getMessage());
-                t.printStackTrace(System.err);
-                System.err.println("============>");
+                LOGGER.error(t.getMessage(), t);
             } finally {
                 System.exit(1);
             }

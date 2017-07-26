@@ -8,14 +8,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Hashtable;
 import java.util.Vector;
-
-import org.apache.log4j.Logger;
-
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DElemAttribute;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
 import eionet.util.sql.SQLGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -25,7 +24,7 @@ import eionet.util.sql.SQLGenerator;
 public abstract class OldCopyHandler {
 
     /** */
-    private static final Logger LOGGER = Logger.getLogger(OldCopyHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(OldCopyHandler.class);
 
     /**  */
     protected Connection conn = null;
@@ -214,118 +213,6 @@ public abstract class OldCopyHandler {
         }
 
         stmt.close();
-    }
-
-    /**
-     *
-     *
-     * @param newID
-     * @param oldID
-     * @param type
-     * @throws SQLException if database access fails.
-     */
-    public void copyComplexAttrs(String newID, String oldID, String type) throws SQLException {
-        copyComplexAttrs(newID, oldID, type, null, null);
-    }
-
-    /**
-     *
-     * @param newID
-     * @param oldID
-     * @param type
-     * @param newType
-     * @param mAttrID
-     * @throws SQLException if database access fails.
-     */
-    public void copyComplexAttrs(String newID, String oldID, String type, String newType, String mAttrID) throws SQLException {
-
-        if (newID == null || oldID == null || type == null) {
-            return;
-        }
-
-        // get the attributes of the parent to copy and loop over them
-        Vector v = searchEngine.getComplexAttributes(oldID, type, mAttrID);
-        for (int i = 0; v != null && i < v.size(); i++) {
-
-            DElemAttribute attr = (DElemAttribute) v.get(i);
-            String attrID = attr.getID();
-
-            // get the attribute fields
-            Vector fields = searchEngine.getAttrFields(attrID);
-            if (fields == null || fields.size() == 0) {
-                continue;
-            }
-
-            Statement stmt = null;
-            try {
-                stmt = conn.createStatement();
-
-                // get the attribute rows
-                Vector valueRows = attr.getRows();
-                for (int j = 0; valueRows != null && j < valueRows.size(); j++) {
-
-                    Hashtable rowHash = (Hashtable) valueRows.get(j);
-                    String rowPos = (String) rowHash.get("position");
-                    rowPos = rowPos == null ? "0" : rowPos;
-
-                    // insert a new row
-                    if (newType != null) {
-                        type = newType;
-                    }
-                    String rowID = "md5('" + newID + type + attrID + rowPos + "')";
-
-                    SQLGenerator gen = new SQLGenerator();
-                    gen.setTable("COMPLEX_ATTR_ROW");
-                    gen.setField("PARENT_ID", newID);
-                    gen.setField("PARENT_TYPE", type);
-                    gen.setField("M_COMPLEX_ATTR_ID", attrID);
-                    gen.setFieldExpr("ROW_ID", rowID);
-                    gen.setFieldExpr("POSITION", rowPos);
-
-                    stmt.executeUpdate(gen.insertStatement());
-
-                    // get the value of each field in the given row
-                    int insertedFields = 0;
-                    for (int t = 0; rowID != null && t < fields.size(); t++) {
-                        Hashtable fieldHash = (Hashtable) fields.get(t);
-                        String fieldID = (String) fieldHash.get("id");
-                        String fieldValue = (String) rowHash.get(fieldID);
-
-                        // insert the field
-                        if (fieldID != null && fieldValue != null) {
-
-                            gen.clear();
-                            gen.setTable("COMPLEX_ATTR_FIELD");
-                            gen.setFieldExpr("ROW_ID", rowID);
-                            gen.setField("M_COMPLEX_ATTR_FIELD_ID", fieldID);
-                            gen.setField("VALUE", fieldValue);
-
-                            StringBuffer buf =
-                                new StringBuffer(gen.insertStatement()).append(" on duplicate key update VALUE=").append(
-                                        eionet.util.sql.SQL.toLiteral(fieldValue));
-
-                            stmt.executeUpdate(buf.toString());
-                            insertedFields++;
-                        }
-                    }
-
-                    // if no fields were actually inserted, delete the row
-                    if (insertedFields == 0) {
-                        stmt.executeUpdate("delete from COMPLEX_ATTR_ROW " + "where ROW_ID=" + rowID);
-                    }
-                }
-            } catch (SQLException e) {
-                e.printStackTrace(System.out);
-                throw e;
-            } finally {
-                try {
-                    if (stmt != null) {
-                        stmt.close();
-                    }
-                } catch (SQLException e) {
-                }
-            }
-        }
     }
 
     /**

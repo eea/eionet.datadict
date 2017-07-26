@@ -1,0 +1,17 @@
+<h2>Generating MS Excel templates for tables</h2>
+<p>
+    MS Excel is one of the most popular formats of data reporting in Reportnet.
+    To help to ease the task of producing them, Data Dictionary enables to
+    generate templates for the MS Excel files to be reported.
+    <br/>
+    <br/>
+    An MS Excel template for a given table is a workbook, where there's only
+    one sheet and <b>it is the sheet representing the table</b>. It has titled columns
+    where <b>every such column and title represents a data element in this table</b>.
+    The titles are the short names of data elements. For further information about the
+    elements you have to look at the definitions in DD or the PDF you might have generated.
+    <br/>
+    <br/>
+    <b>NB!</b> Please note that for GIS tables the one sheet is split into two! One for GIS
+    elements, titled <i>tablename</i> and one for non-GIS elements, titled <i>tablename-meta</i>.
+</p>

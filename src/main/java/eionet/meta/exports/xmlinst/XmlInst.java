@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DataElement;
@@ -14,10 +13,12 @@ import eionet.meta.Namespace;
 import eionet.meta.dao.DAOException;
 import eionet.meta.dao.IRdfNamespaceDAO;
 import eionet.meta.dao.domain.RdfNamespace;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class XmlInst implements XmlInstIF {
     /** */
-    private static final Logger LOGGER = Logger.getLogger(XmlInst.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(XmlInst.class);
 
     protected static final int ROW_COUNT = 1;
 

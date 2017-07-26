@@ -222,7 +222,7 @@
             String tblDef = "";
             DsTable table = (DsTable)tables.get(i);
             String tableLink = request.getContextPath() + "/tables/" + table.getID();
-            attributes = searchEngine.getAttributes(table.getID(), "T", DElemAttribute.TYPE_SIMPLE);
+            attributes = searchEngine.getAttributes(table.getID(), "T");
 
             for (int c=0; c<attributes.size(); c++){
                 attr = (DElemAttribute)attributes.get(c);

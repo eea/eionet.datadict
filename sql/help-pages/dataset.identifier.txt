@@ -1,0 +1,10 @@
+<h2>Identifier</h2>
+<p>
+    Identifier is a unique identifier that is mainly used for internal purposes in the Data Dictionary. It is a character string
+    used to distinguish different elements, tables and datasets within the same context. It's maximum length is 50 characters
+    and it must have no blank spaces. Identifiers are also used as tag names to distinguish elements in XML-formatted data,
+    so their syntax must apply to the same rules as those of XML tags.
+    <br/><br/>
+    <b>NB!</b> A table identifier must be unique within its parent dataset. A data element identifier must be unique within
+    its parent table.
+</p>

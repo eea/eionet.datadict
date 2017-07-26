@@ -14,8 +14,9 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.bea.xml.stream.XMLOutputFactoryBase;
 
@@ -37,6 +38,8 @@ import eionet.util.PropsIF;
  *
  */
 public class Rdf {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(Rdf.class);
 
     public static final String TABLE_TYPE = "table";
     public static final String CODE_LIST_TYPE = "code_list";
@@ -398,7 +401,7 @@ public class Rdf {
         try {
             propertyType = dataService.getDataElementDataType(Integer.parseInt(element.getID()));
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage(), e);
         }
 
         streamWriter.writeStartElement(RDF_NS, "Property");

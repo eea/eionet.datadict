@@ -18,6 +18,8 @@ import eionet.meta.exports.schema.SchemaIF;
 import eionet.meta.exports.schema.TblSchema;
 import eionet.util.Util;
 import eionet.util.sql.ConnectionUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -26,6 +28,7 @@ import eionet.util.sql.ConnectionUtil;
  */
 public class GetSchema extends HttpServlet {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(GetSchema.class);
     /** */
     public static final String DST = "DST";
     public static final String TBL = "TBL";
@@ -117,13 +120,15 @@ public class GetSchema extends HttpServlet {
             writer.close();
             osw.close();
         } catch (Exception e) {
-            e.printStackTrace(System.out);
-            throw new ServletException(e.toString());
+            LOGGER.error(e.getMessage(), e);
+            throw new ServletException(e.toString(), e);
         } finally {
             try {
                 if (writer != null) writer.close();
                 if (conn != null) conn.close();
-            } catch (Exception ee) {}
+            } catch (Exception e) {
+                LOGGER.error(e.getMessage(), e);
+            }
         }
     }
 }

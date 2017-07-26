@@ -1,0 +1,68 @@
+<h2>Table elements</h2>
+<p>
+    This page lists the elements in the given table.
+</p>
+<p>
+    If you have authenticated yourself and this table belongs to your dataset working copy then on top of the page you will see
+    inputs and buttons enabling you to add new elements to this table or remove existing ones.
+    <ul>
+        <li>
+            To <strong>add a new non-common element</strong> enter the new element's alphanumeric identifier into the <em>Identifier</em> box, select the element's Type and click Add or Copy. The element's type can be either either <strong>Quantitative</strong> or <strong>Fixed values</strong>. The first one means elements that can have any value within their data type.
+            The second one means elements whose value-set is pre-determined.
+            <br/>
+            <strong>Add</strong> creates a new element with the Identifier and Type you selected and it will lead you to
+            the element's edit page where you can enter the rest of the element's attributes.
+            <br/>
+            <strong>Copy</strong> too creates a new element with the Identifier and Type you selected, but it will prompt
+            you to select another element from which to copy the rest of the new element's attributes. The prompt will open
+            a view where you can search for the element whose attributes you want to copy. Once you've clicked the desired
+            element in the search results, DD will create a new non-common element where the attributes have been taken from
+            the element you selected to copy, but the Identifier and Type are the ones you entered above. It will then lead
+            you to the edit page of that newly created element where you can edit the rest of the element's definition.
+        </li>
+        <li>
+            To <strong>add an existing common element</strong> click the <strong>Link</strong> button. It will open a search
+            page where you can search for the common element you want to add to this table. In the search results, click
+            the desired element and you will be led back to this view where you will see the selected common element among
+            the table's elements.
+        </li>
+        <li>
+            To <strong>remove existing elements</strong> from this table, select the elements with the help of checkboxes
+            in the left-most column and click <strong>Remove selected</strong>. As a result, the page is refreshed and the
+            selected elements should be gone.
+            <nr/>
+            <strong>Note that removing a common element does not delete it from the DD. It will simply be removed
+from this table, but it remains in DD to be used by other tables and datasets.</strong>
+        </li>
+        <li>
+            The <strong>Save order</strong> button saves the order of the elements. You can change the order by clicking
+            on the row of the element you want to move up or down. This will paint the row to blue. Once this is done, use
+            the moving buttons on the table's right. One arrow will move by one position, two arrows will move the selected
+            row to the beginning or the end. Just like CD player. Click Save order to save the changes.
+        </li>
+    </ul>
+</p>
+<br/>
+<br/>
+<p>
+    The list of elements is given by 4 columns:
+    <ul>
+        <li>
+            <strong>Short name</strong> is the element's short name.
+        </li>
+        <li>
+            <strong>GIS</strong> indicates the element's GIS type. If the element is not a GIS element, the value says 'no
+            GIS'. If it's a GIS element, but the GIS type is unknown, the value is simply empty.
+        </li>
+        <li>
+            <strong>Datatype</strong> indicates the element's data type.
+        </li>
+        <li>
+            <strong>Element type</strong> indicates the element's data type. It is either <strong>Quantitative</strong> or
+            <strong>Fixed values</strong>. See above for what those types mean.
+        </li>
+    </ul>
+    <br/> Common elements are <strong>marked by <span class="commonelm"><sup>C</sup></strong></span>.<br/> If a non-common
+    element has foreign key relations to elements in other tables in this dataset, it is
+    <strong>marked by <span class="barfont"><em>(FK)</em></span></strong>.
+</p>

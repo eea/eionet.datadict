@@ -1,0 +1,4 @@
+<p>
+    Short name is an attribute's unique identifier. It should be as short as possible, while still representing the attribute's
+    meaning as much as possible too.
+</p>

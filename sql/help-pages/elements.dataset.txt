@@ -1,0 +1,4 @@
+<h2>Dataset</h2>
+<p>
+    This column indicates the short name of the dataset where this element belongs to.
+</p>

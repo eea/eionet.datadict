@@ -1,0 +1,8 @@
+<h2>Allowable value</h2>
+<p>
+    This page lists the details of the selected allowable value (aka fixed value). If you're in view mode, those details will
+    not be editable. If you're in edit mode, you find them editable and you can submit your edits by clicking 'Save'. The
+    'Delete' button will delete this allowable value.
+    <br/> Both Definition and Short description should describe the value's meaning, but Definition should be a bit broader
+    than Short description.
+</p>

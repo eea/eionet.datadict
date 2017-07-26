@@ -22,7 +22,8 @@ import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.Util;
 import eionet.util.sql.ConnectionUtil;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -34,7 +35,7 @@ public class GetPrintout extends HttpServlet {
     public static final String PDF_LOGO_PATH = "images/pdf_logo.png";
 
     private static final String DEFAULT_HANDOUT_TYPE = PdfHandoutIF.GUIDELINE;
-        protected static final Logger LOGGER = Logger.getLogger(GetPrintout.class);
+        protected static final Logger LOGGER = LoggerFactory.getLogger(GetPrintout.class);
 
         private static Connection conn = null;
 
@@ -113,8 +114,7 @@ public class GetPrintout extends HttpServlet {
                         try {
                         handout = new DstPdfGuideline(conn, barray);    
                         } catch (Exception e) {
-                          e.printStackTrace();
-                          LOGGER.info(e.getMessage(), e.getCause());
+                          LOGGER.info(e.getMessage(), e);
                         }
                         
                         
@@ -158,6 +158,7 @@ public class GetPrintout extends HttpServlet {
                 conn.close();
             }
         } catch (Exception e) {
+            LOGGER.error(e.getMessage(), e);
             e.printStackTrace(new PrintStream(res.getOutputStream()));
             res.setContentType(null);
             res.sendError(500, e.getMessage());
@@ -168,6 +169,7 @@ public class GetPrintout extends HttpServlet {
                     conn.close();
                 }
             } catch (Exception e) {
+                LOGGER.error(e.getMessage(), e);
             }
         }
     }

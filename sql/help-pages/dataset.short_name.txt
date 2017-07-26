@@ -1,0 +1,7 @@
+<h2>Short name</h2>
+<p>
+    A short name is a character string used to operationally identify content components within the Data Dictionary. ie how users
+    and data definers commonly refer to a table or an element or a dataset. A short name is not used as a unique identifier
+    in Data Dictionary. For example, several tables in a dataset can have the same short name. A short name can contain any
+    characters, including white space.
+</p>

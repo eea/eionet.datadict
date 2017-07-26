@@ -36,6 +36,8 @@ import eionet.meta.service.data.VocabularyResult;
 import eionet.util.Pair;
 import eionet.util.Util;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
@@ -54,6 +56,8 @@ import java.util.Set;
  */
 @Configurable
 public abstract class VocabularyImportBaseHandler {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(VocabularyImportBaseHandler.class);
 
     /**
      * log message list.
@@ -286,7 +290,7 @@ public abstract class VocabularyImportBaseHandler {
                 }
             }
         } catch (ServiceException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage(), e);
         }
 
         return foundRelatedConcept;

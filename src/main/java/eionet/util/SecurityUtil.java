@@ -34,7 +34,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 import eionet.acl.AccessControlListIF;
 import eionet.acl.AccessController;
@@ -46,6 +45,8 @@ import eionet.meta.DDRuntimeException;
 import eionet.meta.DDUser;
 import eionet.meta.LoginServlet;
 import eionet.meta.filters.CASFilterConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This is a class containing several utility methods for keeping security.
@@ -62,7 +63,7 @@ public final class SecurityUtil {
     private static String casServerName;
 
     /** logger. */
-    private static final Logger LOGGER = Logger.getLogger(SecurityUtil.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SecurityUtil.class);
 
     /**
      *

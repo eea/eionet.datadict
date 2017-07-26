@@ -1,0 +1,7 @@
+<p>
+    To find out more about the search criteria provided below, please click on their titles. It is possible to add more criteria
+    by clicking the '+' button underneath. To remove added criteria, use the "-" buttons appearing next to them.
+</p>
+<p>
+    Please use the dataset search page, for searching tables using dataset attributes as search criteria:
+</p>

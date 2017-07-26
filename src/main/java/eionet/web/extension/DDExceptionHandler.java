@@ -32,11 +32,11 @@ import net.sourceforge.stripes.action.RedirectResolution;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.exception.DefaultExceptionHandler;
 
-import org.apache.log4j.Logger;
-
 import eionet.meta.service.ServiceException;
 import eionet.web.action.ErrorActionBean;
 import eionet.web.action.ErrorActionBean.ErrorType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Data Dictionary stripes exception handler.
@@ -46,7 +46,7 @@ import eionet.web.action.ErrorActionBean.ErrorType;
 public class DDExceptionHandler extends DefaultExceptionHandler {
 
     /** Logger. */
-    private static final Logger LOGGER = Logger.getLogger(DDExceptionHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DDExceptionHandler.class);
 
     /**
      * Handles unexpected exception.

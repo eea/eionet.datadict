@@ -1,0 +1,27 @@
+<h2>Foreign key relations</h2>
+<p>
+    Datsets consist of tables and it is only natural that tables can be in foreign key relations with each other. In Data Dictionary
+    foreign key relations are represented by defining a foreign key relation between an elements in one table and an element
+    in another table. The tables have to reside in one and the same dataset.
+    <br/>
+    <br/> This page is a list of elements which the selected element is in foreign key relations with. The list is given
+    by 3 columns:
+    <ul>
+        <li>
+            <b>Element</b>: the element's short name.<br/> It is clickable. The click opens the foreign key element's view
+            page.
+        </li>
+        <li>
+            <b>Table</b>: the element's table's short name
+        </li>
+        <li>
+            <b>Cardinality</b>: the type of relationship.<br/> This can be 0-to-1, 0-to-one-or-more, 1-to-1, etc. Just like
+            in terms of relational databases. See more in the help of the relation's detailed view.
+        </li>
+    </ul>
+    If the elemenet whose foreign keys you are looking at is in edit mode, then you should also see the buttons for adding new
+    relations and deleting existing ones.<br/> To <b>add</b> new relations, click the 'Add' button and this will open
+    a window where you can search for elements in this dataset. When you get the search result list, click the desired element
+    and it will copied to the list of foreign key relations.<br/> To <b>delete</b> existing relations, use the checkboxes
+    in front of rows and the 'Remove' button on top of the table.
+</p>

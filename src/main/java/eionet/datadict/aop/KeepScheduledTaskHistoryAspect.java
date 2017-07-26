@@ -3,10 +3,11 @@ package eionet.datadict.aop;
 import eionet.datadict.dal.AsyncTaskHistoryDao;
 import eionet.datadict.model.AsyncTaskExecutionEntry;
 import eionet.meta.spring.SpringApplicationContext;
-import org.apache.log4j.Logger;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 /**
@@ -18,7 +19,7 @@ import org.springframework.stereotype.Component;
 public class KeepScheduledTaskHistoryAspect {
 
     private AsyncTaskHistoryDao asyncTaskHistoryDao;
-    private static final Logger LOGGER = Logger.getLogger(KeepScheduledTaskHistoryAspect.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(KeepScheduledTaskHistoryAspect.class);
 
     @AfterReturning(
             pointcut = "execution(* eionet.datadict.dal.AsyncTaskDao.updateScheduledDate(..))",

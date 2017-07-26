@@ -14,7 +14,8 @@ import java.util.Calendar;
 import java.util.Date;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +30,7 @@ public class WebApiAuthServiceImpl implements WebApiAuthService {
     public static final String API_KEY_IDENTIFIER_IN_JSON = "API_KEY";
     public static final String TOKEN_CREATED_TIME_IDENTIFIER_IN_JSON = "iat";
 
-    private static final Logger LOGGER = Logger.getLogger(WebApiAuthServiceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(WebApiAuthServiceImpl.class);
 
     private final IJWTService jwtService;
     private final IApiKeyService apiKeyService;

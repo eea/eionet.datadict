@@ -28,6 +28,8 @@ import com.auth0.jwt.JWTVerifyException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -46,6 +48,8 @@ import java.util.Map;
 @Service
 public class Auth0JWTServiceImpl implements IJWTService {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(Auth0JWTServiceImpl.class);
+
     /**
      * {@inheritDoc}
      */
@@ -55,23 +59,8 @@ public class Auth0JWTServiceImpl implements IJWTService {
             JWTVerifier jwtVerifier = new JWTVerifier(secretKey, audience);
             Map<String, Object> decodedPayload = jwtVerifier.verify(jsonWebToken);
             return JSONObject.fromObject(decodedPayload);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            throw new ServiceException(e.getMessage(), e);
-        } catch (InvalidKeyException e) {
-            e.printStackTrace();
-            throw new ServiceException(e.getMessage(), e);
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new ServiceException(e.getMessage(), e);
-        } catch (IllegalStateException e) {
-            e.printStackTrace();
-            throw new ServiceException(e.getMessage(), e);
-        } catch (SignatureException e) {
-            e.printStackTrace();
-            throw new ServiceException(e.getMessage(), e);
-        } catch (JWTVerifyException e) {
-            e.printStackTrace();
+        } catch (NoSuchAlgorithmException | InvalidKeyException | IOException | IllegalStateException | SignatureException | JWTVerifyException e) {
+            LOGGER.error(e.getMessage(), e);
             throw new ServiceException(e.getMessage(), e);
         }
     }//end of method verify
@@ -85,7 +74,7 @@ public class Auth0JWTServiceImpl implements IJWTService {
             Map result = new ObjectMapper().readValue(jsonString, HashMap.class);
             return sign(secretKey, audience, result, expiryInMinutes, algorithm);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage(), e);
             throw new ServiceException(e.getMessage(), e);
         }
     }//end of method sign

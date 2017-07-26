@@ -1,0 +1,50 @@
+<h2>Dataset working copy view page</h2>
+<p>
+    This page provides view to dataset working copy.
+</p>
+<p>
+    When you check out a dataset or create new version of it, DD creates a new copy of that dataset and that will be your 
+    <strong>working copy</strong>. This is the copy where you do your changes and once you're done, you check it in. The check-in makes your
+    changes visible to others. If you checked in with the Registration status of <em>Released</em> or
+    <em>Recorded</em>, your changes will become visible to everybody, including un-authenticated users. If the Registration
+    status was anything else, your changes will be visible to authenticated users only.
+</p>
+<p>
+    The upper right corner of the page contains the following buttons:
+    <ul>
+        <li><strong>Edit</strong> will open the dataset's edit form.</li>
+        <li><strong>Check in</strong> will check in all edits that you did.</li>
+        <li><strong>Undo checkout</strong> cancels the checkout and deletes the working copy.</li>
+    </ul>
+    <br/> The <strong>Subscribe</strong> action also available in the upper right corner will subscribe you to any changes
+    made to any version of this dataset. EIONET's Unified Notification System (UNS) will send you notifications about those
+    changes.
+</p>
+<p>
+    This view page is divided into sections which you can quickly access by using the <strong>quicklinks</strong> at the
+    top of the page.
+</p>
+<p>
+    Below the quicklinks is a section with links to <strong>documents & templates</strong> available for this dataset. If
+    you have the right to modify this dataset definition then you can also see the links for uploading new documents and
+    managing the documents' cache. You can find more help when you get there.
+</p>
+<p>
+    The next section lists all the <strong>attributes</strong> of this definition. Every attribute is a name/value pair.
+    Some attributes can have several values at the same time. Help on every attribute is available by the help icons in their
+    titles.
+</p>
+<p>
+    If the dataset has a <strong>data model</strong> specified, the attributes are followed by a section that displayes the
+    thumbnail of the data model image.
+</p>
+<p>
+    Following the data model is the section that lists the <strong>tables</strong> in this dataset. Each table is given by
+    its full name and short name, is clickable and the click leads to the table's definition view page.
+</p>
+<p>
+    At the very bottom of the page is the list of <strong>other versions</strong> of this dataset definition. Every version
+    is uniquely identified by the dataset number in the left-most column. The list also indicates the version's Registration
+    status and the date is was released (relevant only when the Registration status is <em>Released</em>). The right-most
+    column of this list provides the link to the view page of that version.
+</p>

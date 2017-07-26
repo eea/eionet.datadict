@@ -14,15 +14,16 @@ import java.util.Map.Entry;
 
 import javax.servlet.ServletContext;
 
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DDUser;
 import eionet.meta.dbschema.DbSchema;
 import eionet.util.Util;
 import eionet.util.sql.SQL;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  *
@@ -32,7 +33,7 @@ import eionet.util.sql.SQL;
 public class CopyHandler extends OldCopyHandler {
 
     /** */
-    private static final Logger LOGGER = Logger.getLogger(CopyHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(CopyHandler.class);
 
     /**  */
     private DDUser user = null;
@@ -106,7 +107,6 @@ public class CopyHandler extends OldCopyHandler {
         LOGGER.debug("Going to run various copy statements ...");
 
         copySimpleAttributes();
-        copyComplexAttributes();
         copyDocuments();
         copyFixedValues();
         copyFkRelations();
@@ -142,7 +142,6 @@ public class CopyHandler extends OldCopyHandler {
         if (newId != null) {
 
             copySimpleAttributes();
-            copyComplexAttributes();
             copyFixedValues();
             copyFkRelations();
 
@@ -618,117 +617,6 @@ public class CopyHandler extends OldCopyHandler {
 
        }
    }
-
-
-    /**
-     *
-     * @throws SQLException if database access fails
-     */
-    private void copyComplexAttributes() throws SQLException {
-
-        LOGGER.debug("Copying all complex attributes ...");
-
-        if (oldNewDatasets.isEmpty() && oldNewTables.isEmpty() && oldNewElements.isEmpty()) {
-            return;
-        }
-
-        String possibleOR = "";
-        String selectSQL =
-            "select COMPLEX_ATTR_ROW.*,COMPLEX_ATTR_FIELD.M_COMPLEX_ATTR_FIELD_ID,VALUE"
-            + " from COMPLEX_ATTR_ROW inner join COMPLEX_ATTR_FIELD on COMPLEX_ATTR_ROW.ROW_ID=COMPLEX_ATTR_FIELD.ROW_ID where";
-
-        if (!oldNewDatasets.isEmpty()) {
-            selectSQL = selectSQL + " (PARENT_TYPE='DS' and PARENT_ID in (" + Util.toCSV(oldNewDatasets.keySet()) + "))";
-            possibleOR = " or";
-        }
-        if (!oldNewTables.isEmpty()) {
-            selectSQL = selectSQL + possibleOR + " (PARENT_TYPE='T' and PARENT_ID in (" + Util.toCSV(oldNewTables.keySet()) + "))";
-            possibleOR = " or";
-        }
-        if (!oldNewElements.isEmpty()) {
-            selectSQL =
-                selectSQL + possibleOR + " (PARENT_TYPE='E' and PARENT_ID in (" + Util.toCSV(oldNewElements.keySet()) + "))";
-        }
-        selectSQL = selectSQL + " order by COMPLEX_ATTR_ROW.ROW_ID";
-
-        String insertRowSQL =
-            "insert into COMPLEX_ATTR_ROW (PARENT_ID,PARENT_TYPE,M_COMPLEX_ATTR_ID,POSITION,ROW_ID) values ";
-        String insertFldSQL = "insert into COMPLEX_ATTR_FIELD (M_COMPLEX_ATTR_FIELD_ID,VALUE,ROW_ID) values ";
-        int insertRowSQLLengthBefore = insertRowSQL.length();
-        int insertFldSQLLengthBefore = insertFldSQL.length();
-
-        ResultSet rs = null;
-        Statement stmt = null;
-        try {
-            stmt = conn.createStatement();
-            rs = stmt.executeQuery(selectSQL);
-
-            String newRowId = null;
-            String currentRowId = null;
-            String previousRowId = "";
-            for (; rs.next(); previousRowId = currentRowId) {
-
-                String oldId = rs.getString("PARENT_ID");
-                String parentType = rs.getString("PARENT_TYPE");
-                String newId = null;
-                if (parentType != null) {
-                    if (parentType.equals("DS")) {
-                        newId = oldNewDatasets.get(oldId);
-                    } else if (parentType.equals("T")) {
-                        newId = oldNewTables.get(oldId);
-                    } else if (parentType.equals("E")) {
-                        newId = oldNewElements.get(oldId);
-                    }
-
-                }
-
-                if (newId != null) {
-
-                    String mAttrId = rs.getString("M_COMPLEX_ATTR_ID");
-                    String position = rs.getString("POSITION");
-                    currentRowId = rs.getString("ROW_ID");
-
-                    if (!currentRowId.equals(previousRowId)) {
-
-                        String md5Input = newId + parentType + mAttrId + position;
-                        newRowId = DigestUtils.md5Hex(md5Input);
-                        if (LOGGER.isTraceEnabled()) {
-                            LOGGER.trace("Created MD5 hash for '" + md5Input + "': " + newRowId);
-                        }
-
-                        if (insertRowSQL.length() > insertRowSQLLengthBefore) {
-                            insertRowSQL = insertRowSQL + ",";
-                        }
-                        insertRowSQL =
-                            insertRowSQL + "(" + newId + "," + SQL.toLiteral(parentType) + "," + mAttrId + "," + position
-                            + "," + SQL.toLiteral(newRowId) + ")";
-                    }
-
-                    if (newRowId != null) {
-                        String mFieldId = rs.getString("M_COMPLEX_ATTR_FIELD_ID");
-                        String value = rs.getString("VALUE");
-
-                        if (insertFldSQL.length() > insertFldSQLLengthBefore) {
-                            insertFldSQL = insertFldSQL + ",";
-                        }
-                        insertFldSQL =
-                            insertFldSQL + "(" + mFieldId + "," + SQL.toLiteral(value) + "," + SQL.toLiteral(newRowId) + ")";
-                    }
-                }
-            }
-            SQL.close(rs);
-
-            if (insertRowSQL.length() > insertRowSQLLengthBefore) {
-                stmt.executeUpdate(insertRowSQL);
-            }
-            if (insertFldSQL.length() > insertFldSQLLengthBefore) {
-                stmt.executeUpdate(insertFldSQL);
-            }
-        } finally {
-            SQL.close(rs);
-            SQL.close(stmt);
-        }
-    }
 
     /**
      *

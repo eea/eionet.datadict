@@ -31,7 +31,8 @@ import java.util.Map;
 import org.apache.commons.beanutils.BeanToPropertyValueTransformer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.stereotype.Repository;
 
@@ -51,7 +52,7 @@ import org.springframework.jdbc.core.RowMapper;
 public class TableDAOImpl extends GeneralDAOImpl implements ITableDAO {
 
     /** Logger. */
-    private static final Logger LOGGER = Logger.getLogger(TableDAOImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TableDAOImpl.class);
 
     /**
      * {@inheritDoc}

@@ -5,6 +5,8 @@ import java.util.Vector;
 
 import org.apache.xmlrpc.XmlRpcClient;
 import org.apache.xmlrpc.XmlRpcException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -12,6 +14,8 @@ import org.apache.xmlrpc.XmlRpcException;
  *
  */
 public class XmlRpcCallThread extends Thread {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(XmlRpcCallThread.class);
 
     /** */
     private XmlRpcClient client;
@@ -41,9 +45,9 @@ public class XmlRpcCallThread extends Thread {
         try {
             client.execute(methodName, params);
         } catch (XmlRpcException e) {
-            e.printStackTrace(System.out);
+            LOGGER.error(e.getMessage(), e);
         } catch (IOException e) {
-            e.printStackTrace(System.out);
+            LOGGER.error(e.getMessage(), e);
         }
     }
 

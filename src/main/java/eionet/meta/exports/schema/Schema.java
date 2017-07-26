@@ -239,7 +239,7 @@ public abstract class Schema implements SchemaIF {
         addString("</xs:element>");
     }
 
-    protected void writeAnnotation(Vector simpleAttrs, Vector complexAttrs) throws Exception {
+    protected void writeAnnotation(Vector simpleAttrs) throws Exception {
 
         addString("\t<xs:annotation>");
         newLine();

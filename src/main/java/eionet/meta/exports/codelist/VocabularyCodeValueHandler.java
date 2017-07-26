@@ -5,17 +5,19 @@ import eionet.meta.dao.IVocabularyConceptDAO;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.StandardGenericStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.apache.log4j.Logger;
 
 /**
  * @author Lena KARGIOTI eka@eworx.gr
  */
 public class VocabularyCodeValueHandler extends CodeValueHandler {
 
-    private static final Logger LOGGER = Logger.getLogger(VocabularyCodeValueHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(VocabularyCodeValueHandler.class);
 
     private final IVocabularyConceptDAO vocabularyConceptDAO;
     private List<String> relationshipNames;
