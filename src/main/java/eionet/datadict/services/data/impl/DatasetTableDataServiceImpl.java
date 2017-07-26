@@ -91,7 +91,7 @@ public class DatasetTableDataServiceImpl implements DatasetTableDataService {
 
         OrmUtils.link(dataSetTableAttributes, datasetTableAttributeValues);
         datasetTable.setAttributesValues(OrmCollectionUtils.createChildCollection(datasetTableAttributeValues));
-        OrmUtils.link(datasetTable, datasetTableAttributeValues);
+      //  OrmUtils.link(datasetTable, datasetTableAttributeValues);
         return datasetTable;
     }
 

@@ -6,6 +6,7 @@ import eionet.datadict.errors.XmlExportException;
 import eionet.datadict.services.DataSetService;
 import eionet.datadict.services.DataSetTableService;
 import java.io.IOException;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -45,6 +46,8 @@ public class DataSetController {
     private static final String GENERIC_DD_ERROR_PAGE_URL = "/error.action?type=INTERNAL_SERVER_ERROR&message=";
     private static final String SCHEMA_DATASET_TABLE_FILE_NAME_PREFIX = "schema-tbl-";
     private static final String SCHEMA_DATASET_FILE_NAME_PREFIX = "schema-dst-";
+    private static final String DATASET_INSTANCE_FILE_NAME = "dataset-instance";
+    private static final String DATASET_TABLE_INSTANCE_FILE_NAME = "table-(.*?)-instance.xml";
 
     @Autowired
     public DataSetController(DataSetService dataSetService, DataSetTableService dataSetTableService) {
@@ -95,10 +98,14 @@ public class DataSetController {
         Document xml = null;
         Pattern TableFileNamePattern = Pattern.compile("\\b" + SCHEMA_DATASET_TABLE_FILE_NAME_PREFIX + "\\d+.xsd");
         Pattern DataSetFileNamePattern = Pattern.compile("\\b" + SCHEMA_DATASET_FILE_NAME_PREFIX + "\\d+.xsd");
+        Pattern DataSetInstanceFileNamePattern = Pattern.compile("\\b" + DATASET_INSTANCE_FILE_NAME + ".xml");
+        Pattern DatasetTableInstanceFileNamePattern = Pattern.compile("table-(.*?)-instance.xml");
+        Matcher DatasetTableInstanceFileNamePatternMatcher = DatasetTableInstanceFileNamePattern.matcher(variable);
 
         if (DataSetFileNamePattern.matcher(variable).matches()) {
             int dataSetId = Integer.parseInt(variable.replace(SCHEMA_DATASET_FILE_NAME_PREFIX, "").replace(".xsd", "").trim());
             String fileName = SCHEMA_DATASET_FILE_NAME_PREFIX.concat(String.valueOf(dataSetId)).concat(".xsd");
+            xml = this.dataSetService.getDataSetXMLSchema(id);
             response.setContentType("application/xml");
             response.setHeader("Content-Disposition", "attachment;filename=" + fileName);
         } else if (TableFileNamePattern.matcher(variable).matches()) {
@@ -107,10 +114,21 @@ public class DataSetController {
             String fileName = SCHEMA_DATASET_TABLE_FILE_NAME_PREFIX.concat(String.valueOf(tableId)).concat(".xsd");
             response.setContentType("application/xml");
             response.setHeader("Content-Disposition", "attachment;filename=" + fileName);
+        } else if (DataSetInstanceFileNamePattern.matcher(variable).matches()) {
+            xml = this.dataSetService.getDataSetXMLInstance(id);
+            String fileName = "dataset-instance.xml";
+            response.setContentType("application/xml");
+            response.setHeader("Content-Disposition", "attachment;filename=" + fileName);
+        } else if (DatasetTableInstanceFileNamePatternMatcher.find()) {
+            String tableId = DatasetTableInstanceFileNamePatternMatcher.group(1);
+            xml = this.dataSetTableService.getDataSetTableXMLInstance(Integer.parseInt(tableId));
+            String fileName = "table" + id + "-instance.xml";
+            response.setContentType("application/xml");
+            response.setHeader("Content-Disposition", "attachment;filename=" + fileName);
+
         } else {
             throw new BadRequestException("Schema File Name:" + variable + " is incorrect format.");
         }
-
         ServletOutputStream outStream = response.getOutputStream();
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
         Transformer transformer = transformerFactory.newTransformer();
