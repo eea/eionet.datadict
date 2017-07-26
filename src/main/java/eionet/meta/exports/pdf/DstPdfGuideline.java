@@ -26,6 +26,7 @@ import com.lowagie.text.Image;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
+import eionet.datadict.model.DataDictEntity;
 
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DElemAttribute;
@@ -36,6 +37,8 @@ import eionet.meta.exports.CachableIF;
 import eionet.util.Util;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
+import java.util.Map;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * PDF guidelines generator for a dataset.
@@ -53,10 +56,6 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
     private Hashtable tblElms = new Hashtable();
     @SuppressWarnings("rawtypes")
     private Hashtable tblNames = new Hashtable();
-    @SuppressWarnings("rawtypes")
-    private Hashtable submitOrg = new Hashtable();
-    @SuppressWarnings("rawtypes")
-    private Hashtable respOrg = new Hashtable();
 
     private String cachePath = null;
     private String cacheFileName = null;
@@ -143,15 +142,15 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
 
         fileName = datasetInstance.getIdentifier() + FILE_EXT;
 
-        Vector v = searchEngine.getSimpleAttributes(dstId, "DS");
+        Vector v = searchEngine.getAttributes(dstId, "DS");
+        populateVocabularyAttributes(v, Integer.parseInt(dstId), DataDictEntity.Entity.DS);
         datasetInstance.setSimpleAttributes(v);
-        v = searchEngine.getComplexAttributes(dstId, "DS");
-        datasetInstance.setComplexAttributes(v);
+
         v = searchEngine.getDatasetTables(dstId, true);
         DsTable tbl = null;
         for (int i = 0; v != null && i < v.size(); i++) {
             tbl = (DsTable) v.get(i);
-            tbl.setSimpleAttributes(searchEngine.getSimpleAttributes(tbl.getID(), "T"));
+            tbl.setSimpleAttributes(searchEngine.getAttributes(tbl.getID(), "T"));
         }
         datasetInstance.setTables(v);
 
@@ -172,7 +171,6 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     protected void write(Dataset ds) throws Exception {
-
         // defensive check
         if (ds == null) {
             throw new Exception("Dataset object is null!");
@@ -193,45 +191,21 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
 
         addElement(new Paragraph("\n"));
 
-        // set up complex attributes to retrieve SubmitOrg, RespOrg and Contact information
-        Vector cattrs = ds.getComplexAttributes();
-        if (cattrs != null && cattrs.size() > 0) {
-            DElemAttribute attr = null;
-            for (int i = 0; i < cattrs.size(); i++) {
-                attr = (DElemAttribute) cattrs.get(i);
-                attr.setFields(searchEngine.getAttrFields(attr.getID()));
-            }
-        }
-
-        this.submitOrg = ds.getCAttrByShortName("SubmitOrganisation");
-        this.respOrg = ds.getCAttrByShortName("RespOrganisation");
-
         // write simple attributes
         addElement(new Paragraph("Basic metadata:\n", Fonts.get(Fonts.HEADING_0)));
 
-        Vector attrs = ds.getSimpleAttributes();
+        Map<String, DElemAttribute> attributes = new HashMap<>();
 
-        Hashtable hash = new Hashtable();
-        hash.put("name", "Short name");
-        hash.put("value", ds.getShortName());
-        attrs.add(hash);
-
+        // create dummy DElemAttribute's and populate map for easier processing
+        attributes.put("ShortName", new DElemAttribute("", "Short name", "Short name", ds.getShortName()));
         if (!Util.isEmpty(dsVersion)) {
-            hash = new Hashtable();
-            hash.put("name", "Version");
-            hash.put("value", dsVersion);
-            attrs.add(hash);
+            attributes.put("Version", new DElemAttribute("", "Version", "Version", dsVersion));
+        }
+        for (Object attribute : ds.getSimpleAttributes()) {
+            attributes.put(((DElemAttribute) attribute).getShortName(), (DElemAttribute) attribute);
         }
 
-        String contactInfo = getContactInfo();
-        if (contactInfo != null) {
-            hash = new Hashtable();
-            hash.put("name", "Contact information");
-            hash.put("value", contactInfo);
-            attrs.add(hash);
-        }
-
-        addElement(PdfUtil.simpleAttributesTable(attrs, showedAttrs));
+        addElement(PdfUtil.simpleAttributesTable(attributes, showedAttrs));
         addElement(new Phrase("\n"));
 
         // write tables list
@@ -761,8 +735,11 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
 
         font = Fonts.getUnicode(9);
         font.setColor(Color.lightGray);
-        prg.add(new Chunk("Dataset specification for " + dsName + " * Version " + dsVersion, font));
-        prg.add(new Chunk(" * created " + Util.pdfDate(System.currentTimeMillis()), font));
+        prg.add(new Chunk("Dataset specification for " + dsName, font));
+        if (StringUtils.isNotBlank(dsVersion)) {
+            prg.add(new Chunk(" * Version " + dsVersion + "*", font));
+        }
+        prg.add(new Chunk(" created " + Util.pdfDate(System.currentTimeMillis()), font));
 
         this.header = new HeaderFooter(prg, false);
         this.header.setBorder(com.lowagie.text.Rectangle.BOTTOM);
@@ -851,41 +828,6 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
 
         Phrase phr = new Phrase();
 
-        String submOrgName = (String) submitOrg.get("name");
-        if (!Util.isEmpty(submOrgName)) {
-            font = Fonts.getUnicode(9, Font.BOLD);
-            font.setColor(Color.gray);
-            phr.add(new Chunk(submOrgName, font));
-
-            String submOrgUrl = (String) submitOrg.get("url");
-            if (!Util.isEmpty(submOrgUrl)) {
-                font = Fonts.getUnicode(9);
-                font.setColor(Color.lightGray);
-                phr.add(new Chunk("  *  " + submOrgUrl, font));
-            }
-
-            phr.add(new Chunk("     ", font));
-            phr.setLeading(10 * 1.2f);
-        } else {
-            submOrgName = "";
-        }
-
-        if (respOrg != null) {
-            String respOrgName = (String) respOrg.get("name");
-            if (!Util.isEmpty(respOrgName) && !respOrgName.equals(submOrgName)) {
-                font = Fonts.getUnicode(9, Font.BOLD);
-                font.setColor(Color.gray);
-                phr.add(new Chunk("\n" + respOrgName, font));
-
-                String respOrgUrl = (String) respOrg.get("url");
-                if (!Util.isEmpty(respOrgUrl)) {
-                    font = Fonts.getUnicode(9);
-                    font.setColor(Color.lightGray);
-                    phr.add(new Chunk("  *  " + respOrgUrl, font));
-                }
-            }
-        }
-
         phr.add(new Chunk("   ", font));
 
         footer = new HeaderFooter(phr, true);
@@ -909,51 +851,15 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
     @SuppressWarnings("unchecked")
     @Override
     protected void setShowedAttributes() {
-
-        showedAttrs.add("Short name");
+        showedAttrs.add("ShortName");
         showedAttrs.add("Version");
         showedAttrs.add("Definition");
         showedAttrs.add("ShortDescription");
-        showedAttrs.add("Contact information");
         showedAttrs.add("PlannedUpdFreq");
         showedAttrs.add("Methodology");
-    }
-
-    /**
-     * 
-     * @return
-     */
-    @SuppressWarnings("rawtypes")
-    private String getContactInfo() {
-
-        if (submitOrg == null) {
-            return null;
-        }
-
-        Vector flds = (Vector) submitOrg.get("fields");
-        if (flds == null || flds.size() == 0) {
-            return null;
-        }
-
-        StringBuffer buf = null;
-        for (int i = 0; i < flds.size(); i++) {
-            Hashtable fld = (Hashtable) flds.get(i);
-            String fldName = (String) fld.get("name");
-            if (fldName != null) {
-                String fldValue = (String) submitOrg.get(fldName);
-                if (!Util.isEmpty(fldValue)) {
-                    if (buf == null) {
-                        buf = new StringBuffer();
-                    }
-                    if (buf.length() > 0) {
-                        buf.append("\n");
-                    }
-                    buf.append(fldValue);
-                }
-            }
-        }
-
-        return buf == null ? null : buf.toString();
+        showedAttrs.add("Owner");
+        showedAttrs.add("Responsible");
+        showedAttrs.add("obligation");
     }
 
     /*

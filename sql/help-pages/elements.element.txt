@@ -1,0 +1,4 @@
+<h2></h2>
+<p>
+    This column contains the short name of the element.
+</p>

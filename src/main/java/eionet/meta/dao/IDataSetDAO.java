@@ -43,7 +43,7 @@ public interface IDataSetDAO {
 
     /**
      * Search datasets by search criteria defined in DatasetFilter. The methods searches datasets by short name, identifier,
-     * registrations statuses, attributes and complex attributes.
+     * registrations statuses and attributes.
      * @param datasetFilter DatasetFilter object defining search criteria
      * @return List of DataSet objects.
      */

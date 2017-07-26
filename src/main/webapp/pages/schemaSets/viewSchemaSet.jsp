@@ -107,10 +107,6 @@
         </div>
     </c:if>
 
-    <stripes:url var="viewUrl" beanclass="${actionBean['class'].name}" event="view">
-        <stripes:param name="schemaSet.identifier" value="${actionBean.schemaSet.identifier}"/>
-    </stripes:url>
-
     <%-- Dropdown operations menu --%>
 
     <c:if test="${not empty actionBean.userName}">
@@ -123,13 +119,6 @@
                             <stripes:link beanclass="${actionBean['class'].name}" event="edit">Edit metadata
                                 <stripes:param name="schemaSet.identifier" value="${actionBean.schemaSet.identifier}"/>
                             </stripes:link>
-                        </li>
-                        <li class="edit">
-                            <stripes:url var="viewUrl" beanclass="${actionBean['class'].name}" event="view">
-                                <stripes:param name="schemaSet.identifier" value="${actionBean.schemaSet.identifier}"/>
-                                <stripes:param name="workingCopy" value="true"/>
-                            </stripes:url>
-                            <a href="${pageContext.request.contextPath}/complex_attrs.jsp?parent_id=${actionBean.schemaSet.id}&parent_type=SCS&parent_name=${actionBean.schemaSet.identifier}&parent_link=${viewUrl}">Edit complex attributes</a>
                         </li>
                         <li class="edit">
                             <stripes:link beanclass="${actionBean['class'].name}" event="editSchemas">Edit schemas
@@ -296,40 +285,6 @@
             </display:column>
             <display:column title="Name"><c:out value="${ddfn:join(schema.attributeValues['Name'],',')}"/></display:column>
         </display:table>
-    </c:if>
-
-    <%-- Display complex attributes if any. --%>
-    <c:if test="${not empty actionBean.complexAttributes}">
-        <h2>
-            Complex attributes
-        </h2>
-        <table class="datatable results">
-
-            <col style="width:30%"/>
-            <col style="width:70%"/>
-
-            <c:forEach items="${actionBean.complexAttributes}" var="complexAttr" varStatus="complexAttrsLoop">
-                <tr class="${(complexAttrsLoop.index + 1) % 2 != 0 ? 'odd' : 'even'}">
-                    <td>
-                        <a href="${pageContext.request.contextPath}/complex_attr.jsp?attr_id=${complexAttr.ID}&amp;parent_id=${actionBean.schemaSet.id}&amp;parent_type=SCS&amp;parent_name=${actionBean.schemaSet.identifier}&amp;parent_link=${viewUrl}">
-                            <c:out value="${complexAttr.name}"/>
-                        </a>
-                        <a class="helpButton" href="${pageContext.request.contextPath}/help.jsp?attrid=${complexAttr.ID}&amp;attrtype=COMPLEX"></a>
-                    </td>
-                    <td>
-                        <c:forEach items="${complexAttr.rows}" var="complexAttrRow" varStatus="complexAttrRowsLoop">
-                            <c:if test="${complexAttrRowsLoop.index > 0}">---<br/></c:if>
-                            <c:forEach items="${actionBean.complexAttributeFields[complexAttr.ID]}" var="complexAttrField" varStatus="complexAttrFieldLoop">
-                                <c:if test="${not empty complexAttrField['id'] && not empty complexAttrRow[complexAttrField['id']]}">
-                                    <dd:linkify value="${complexAttrRow[complexAttrField['id']]}" /><br/>
-                                </c:if>
-                            </c:forEach>
-                        </c:forEach>
-                    </td>
-               </tr>
-            </c:forEach>
-
-        </table>
     </c:if>
 
     <%-- The section that displays versions of this schema set. --%>

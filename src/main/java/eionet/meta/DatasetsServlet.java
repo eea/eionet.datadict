@@ -10,10 +10,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
-import org.apache.log4j.Logger;
 
 import eionet.meta.exports.rdf.RdfServlet;
 import eionet.util.DDServletRequestWrapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -24,7 +25,7 @@ public class DatasetsServlet extends HttpServlet {
 
     private static final String DATASET_JSP = "/dataset.jsp";
     /** */
-    private static final Logger LOGGER = Logger.getLogger(DatasetsServlet.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DatasetsServlet.class);
 
     /*
      * (non-Javadoc)

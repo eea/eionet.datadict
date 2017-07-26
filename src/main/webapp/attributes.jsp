@@ -62,11 +62,7 @@
 
     DDSearchEngine searchEngine = new DDSearchEngine(conn, "");
 
-    Vector attributes = searchEngine.getDElemAttributes(null, DElemAttribute.TYPE_SIMPLE, DDSearchEngine.ORDER_BY_M_ATTR_DISP_ORDER);
-    Vector complexAttributes = searchEngine.getDElemAttributes(null, DElemAttribute.TYPE_COMPLEX, DDSearchEngine.ORDER_BY_M_ATTR_DISP_ORDER);
-    for (int i=0; complexAttributes!=null && i<complexAttributes.size(); i++)
-        attributes.add(complexAttributes.get(i));
-
+    Vector attributes = searchEngine.getDElemAttributes(null, DDSearchEngine.ORDER_BY_M_ATTR_DISP_ORDER);
 
     int iCurrPage=0;
     try {
@@ -145,7 +141,6 @@
         <table class="datatable results">
             <thead>
                 <th>Short name</th>
-                <th>Type</th>
                 <th>Datasets</th>
                 <th>Tables</th>
                 <th>Data elements<br/>with fixed values</th>
@@ -174,8 +169,6 @@
                 if (attr_name.length() == 0) attr_name = "empty";
                 String attr_oblig = attribute.getObligation();
 
-                String attrType = attribute.getType();
-
                 String displayOblig = "Mandatory";
                 if (attr_oblig.equals("M")){
                     displayOblig = "Mandatory";
@@ -187,24 +180,13 @@
                     displayOblig = "Conditional";
                 }
 
-                String attrTypeDisp = "Simple";
                 String zebraClass = (i + 1) % 2 != 0 ? "odd" : "even";
                 %>
                 <tbody>
                     <tr class="<%=zebraClass%>">
-                        <%
-                        if (attrType.equals(DElemAttribute.TYPE_COMPLEX))
-                            attrTypeDisp = "Complex";
-                        %>
                         <td>
-                            <%if(attrType.equals(DElemAttribute.TYPE_SIMPLE)) {%>
-                            <a href="attribute/view/<%=attr_id%>"> <%
-                             } else { %>
-                             <a href="delem_attribute.jsp?attr_id=<%=attr_id%>&amp;type=<%=attrType%>"> <%
-                                 }%>
-                            <%=Util.processForDisplay(attr_name)%></a>
+                            <a href="attribute/view/<%=attr_id%>"><%=Util.processForDisplay(attr_name)%></a>
                         </td>
-                        <td><%=Util.processForDisplay(attrTypeDisp)%></td>
                         <td class="center">
                             <% if (attribute.displayFor("DST")){ %><span class="check">Yes</span><%}%>
                         </td>

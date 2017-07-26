@@ -9,11 +9,6 @@
         <stripes:form beanclass="${actionBean['class']}">
             <table class="datatable results">
                 <tr>
-                    <th scope="row" class="scope-row">Type</th>
-                    <td><img src="<stripes:url value="/images/mandatory.gif"/>" alt="Mandatory" name="Mandatory"/></td>
-                    <td><b>SIMPLE ATTRIBUTE</b></td>
-                </tr>
-                <tr>
                     <th scope="row" class="scope-row">Short name</th>
                     <td><img src="<stripes:url value="/images/mandatory.gif"/>" alt="Mandatory" name="Mandatory"/></td>
                     <td>

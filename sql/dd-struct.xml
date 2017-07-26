@@ -2730,4 +2730,14 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
         </sql>
     </changeSet>
 
+    <changeSet author="stamojoh" id="rev-197">
+        <comment>
+            Refs #85610 Remove complex attributes
+        </comment>
+        <dropTable tableName="M_COMPLEX_ATTR_FIELD" />
+        <dropTable tableName="M_COMPLEX_ATTR" />
+        <dropTable tableName="COMPLEX_ATTR_FIELD" />
+        <dropTable tableName="COMPLEX_ATTR_ROW" />
+    </changeSet>
+
 </databaseChangeLog>

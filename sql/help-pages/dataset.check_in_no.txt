@@ -1,0 +1,6 @@
+<h2>CheckInNo</h2>
+<p>
+    The Data Dictionary keeps history of datasets and common elements.<br/> The version numbers are called <b>CheckInNo</b> 
+    and they are incremented every time a definition of a dataset or common element is checked in and the user has selected
+    the option for updating the dataset's or element's version (see more in helps of dataset, table and element edit pages).
+</p>

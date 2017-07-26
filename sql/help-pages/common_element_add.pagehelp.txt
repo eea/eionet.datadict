@@ -1,0 +1,54 @@
+<h2>Common element add page</h2>
+<p>
+    This page enables you to create a new common element.
+</p>
+<p>
+    The upper right section of the page contains the following buttons:
+    <ul>
+        <li>
+            <strong>Add</strong> creates the new common element with the values you entered into the form below. It will
+            lead you to the edit page of that new element where you can edit the rest of the element's definition.
+        </li>
+        <li>
+            <strong>Copy</strong> enables you to create a new common element by copying the basic attributes from another,
+            already existing common element. It will open a view where you can search for the element you want to copy. Once
+            you've clicked the desired element in the search results, DD will create a new common element where the basic
+            attributes have been taken from the element you selected to copy. It will lead you the edit page of that newly
+            created element where you can edit the rest of the element's definition.
+        </li>
+    </ul>
+    <br/> Please note that both Add and Copy buttons require you to
+    <strong>specify the mandatory attributes</strong> marked with M.
+    </ul>
+</p>
+<br/>
+<p>
+    <strong>
+        The first thing you must do on this page is to select the new element's Type.<br/>
+        If you selected the element's type to be quantitative values, the second thing you must do is to select the element's Datatype.
+    </strong>
+    <br/> This is emphasized because both selections reload the page with empty inputs, so you will lose anything
+    you entered prior to performing any of these two selections.
+</p>
+<p>
+    The element's type can be one of two:
+    <ul>
+        <li>
+            <strong>DATA ELEMENT WITH FIXED VALUES</strong> is an element where predefined values are the only accepted values.
+        </li>
+        <li>
+            <strong>DATA ELEMENT WITH QUANTITATIVE VALUES</strong> can have any values within the element's data type. DD
+            enables to define suggested values for these elements.
+        </li>
+    </ul>
+</p>
+<p>
+    Once you've done the above mentioned selections, you can enter data into the rest of inputs which represent the element's
+    <strong>attributes</strong>. Every attribute is a name/value pair. Some attributes can have several values at the same time. You
+    can define or remove such values by using the +/- icons next to the inputs. '+' adds a new value, '-' removes selected
+    values.
+    <br/> Help on every attribute is available by clicking their help icons.
+</p>
+<p>
+    Once you've entered the data, you are ready to press either Add or Copy.
+</p>

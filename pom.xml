@@ -541,6 +541,16 @@
             <groupId>displaytag</groupId>
             <artifactId>displaytag</artifactId>
             <version>1.2</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>jcl104-over-slf4j</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -605,6 +615,12 @@
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
             <version>1.1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
@@ -640,11 +656,6 @@
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
             <version>3.15</version>
-        </dependency>
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>1.2.17</version>
         </dependency>
         <dependency>
             <groupId>xmlrpc</groupId>
@@ -689,6 +700,12 @@
             <groupId>eionet</groupId>
             <artifactId>documentation.core</artifactId>
             <version>2.0-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>eionet</groupId>
@@ -699,6 +716,12 @@
             <groupId>eionet</groupId>
             <artifactId>acl</artifactId>
             <version>4.0-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>eionet</groupId>
@@ -767,12 +790,38 @@
             <version>1.0.1</version>
         </dependency>
 
-        <!--Not directly used by DD but other libs dependent to these-->
+        <!--Start of log4j dependencies-->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.8.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>2.0.1</version>
+        </dependency>
+
         <dependency>
             <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>1.5.6</version>
+            <artifactId>log4j-over-slf4j</artifactId>
+            <version>1.7.25</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.25</version>
+        </dependency>
+        <!--GELF-->
+        <dependency>
+            <groupId>biz.paluch.logging</groupId>
+            <artifactId>logstash-gelf</artifactId>
+            <version>1.11.1</version>
+        </dependency>
+        <!--End of log4j dependencies-->
+
         <dependency>
             <groupId>xalan</groupId>
             <artifactId>xalan</artifactId>
@@ -1067,6 +1116,8 @@
             <version>6.0</version>
             <scope>test</scope>
         </dependency-->
+
+
     </dependencies>
 
     <reporting>

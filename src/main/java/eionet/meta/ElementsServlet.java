@@ -10,10 +10,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
-import org.apache.log4j.Logger;
 
 import eionet.meta.exports.rdf.Rdf;
 import eionet.util.DDServletRequestWrapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -25,7 +26,7 @@ public class ElementsServlet extends HttpServlet {
     /** */
     private static final String DATA_ELEMENT_JSP = "/data_element.jsp";
     /** */
-    private static final Logger LOGGER = Logger.getLogger(ElementsServlet.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ElementsServlet.class);
 
     /*
      * (non-Javadoc)

@@ -1,0 +1,8 @@
+DATAELEM_ID, RULE, TARGET_ELEM_ID
+18,owl:inverseOf,19
+17,owl:inverseOf,17
+2,owl:inverseOf,10
+3,owl:inverseOf,11
+7,owl:inverseOf,7
+14,owl:inverseOf,14
+15,owl:inverseOf,15

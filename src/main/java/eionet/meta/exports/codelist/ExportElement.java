@@ -12,9 +12,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import eionet.meta.exports.DDObjectMapperProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import static eionet.meta.exports.codelist.ExportStatics.*;
 import java.util.List;
-import org.apache.log4j.Logger;
 
 /**
  *
@@ -23,7 +25,7 @@ import org.apache.log4j.Logger;
 @JsonRootName(namespace = DD_NAMESPACE, value = "value-lists")
 public class ExportElement {
 
-    private static final Logger LOGGER = Logger.getLogger(ExportElement.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExportElement.class);
 
     //@JsonIgnore
     private ObjectMapper mapper;

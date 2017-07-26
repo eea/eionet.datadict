@@ -16,9 +16,12 @@ import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.Util;
 import eionet.util.sql.ConnectionUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class XlsServlet extends HttpServlet {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(XlsServlet.class);
     private HashSet<String> validObjTypes = null;
 
     @Override
@@ -76,13 +79,13 @@ public class XlsServlet extends HttpServlet {
             os.flush();
             os.close();
         } catch (Exception e) {
-            e.printStackTrace(System.out);
+            LOGGER.error(e.getMessage(), e);
             res.setContentType(null);
             res.sendError(500, e.getMessage());
             // this exception is not caught by DDexceptinHandler hence this class is plain HttpServlet not a subclass of Stripes
             // framework
             // when content type is not set and error is sent, then browser is redirected to application server's error page
-            throw new ServletException(e.getMessage());
+            throw new ServletException(e.getMessage(), e);
         } finally {
             try {
                 if (os != null) {
@@ -91,7 +94,8 @@ public class XlsServlet extends HttpServlet {
                 if (conn != null) {
                     conn.close();
                 }
-            } catch (Exception ee) {
+            } catch (Exception e) {
+                LOGGER.error(e.getMessage(), e);
             }
         }
     }

@@ -31,7 +31,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 import au.com.bytecode.opencsv.CSVReader;
 import eionet.meta.dao.domain.DataElement;
@@ -45,6 +44,8 @@ import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.Util;
 import eionet.util.VocabularyCSVOutputHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Includes code for parsing and handling CSV lines.
@@ -55,7 +56,7 @@ import eionet.util.VocabularyCSVOutputHelper;
 public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
 
     /** Static logger for this class. */
-    private static final Logger LOGGER = Logger.getLogger(VocabularyCSVImportHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(VocabularyCSVImportHandler.class);
 
     /**
      * URI prefix to check related concept.
@@ -358,16 +359,16 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
             } // end of row iterator (while loop on rows)
             processUnseenConceptsForRelatedElements();
         } catch (IOException e) {
-            e.printStackTrace();
-            throw new ServiceException(e.getMessage());
+            LOGGER.error(e.getMessage(), e);
+            throw new ServiceException(e.getMessage(), e);
         } catch (RuntimeException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage(), e);
             throw new ServiceException(e.getMessage(), e);
         } finally {
             try {
                 reader.close();
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.error(e.getMessage(), e);
             }
         }
     }

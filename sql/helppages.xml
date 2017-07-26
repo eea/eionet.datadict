@@ -21,10 +21,6 @@
       <column name="DESCRIPTION" value="search datasets"/>
     </insert>
     <insert tableName="HLP_SCREEN">
-      <column name="SCREEN_ID" value="complex_attr_edit"/>
-      <column name="DESCRIPTION" value="Complex attribute value edit page"/>
-    </insert>
-    <insert tableName="HLP_SCREEN">
       <column name="SCREEN_ID" value="search_table"/>
       <column name="DESCRIPTION" value="search table"/>
     </insert>
@@ -67,14 +63,6 @@
     <insert tableName="HLP_SCREEN">
       <column name="SCREEN_ID" value="simple_attr_def_view"/>
       <column name="DESCRIPTION" value="Simple attribute definition view"/>
-    </insert>
-    <insert tableName="HLP_SCREEN">
-      <column name="SCREEN_ID" value="complex_attr_def_view"/>
-      <column name="DESCRIPTION" value="Complex attribute definition view"/>
-    </insert>
-    <insert tableName="HLP_SCREEN">
-      <column name="SCREEN_ID" value="complex_attr_view"/>
-      <column name="DESCRIPTION" value="Complex attribute value view page"/>
     </insert>
     <insert tableName="HLP_SCREEN">
       <column name="SCREEN_ID" value="import"/>
@@ -125,28 +113,12 @@
       <column name="DESCRIPTION" value="Element add page"/>
     </insert>
     <insert tableName="HLP_SCREEN">
-      <column name="SCREEN_ID" value="complex_attr_def_edit"/>
-      <column name="DESCRIPTION" value="Compelx attribute definition edit page."/>
-    </insert>
-    <insert tableName="HLP_SCREEN">
-      <column name="SCREEN_ID" value="complex_attr_def_add"/>
-      <column name="DESCRIPTION" value="Complex attribute definition add page"/>
-    </insert>
-    <insert tableName="HLP_SCREEN">
-      <column name="SCREEN_ID" value="attr_def_add"/>
-      <column name="DESCRIPTION" value="The page for defining a new attribute"/>
-    </insert>
-    <insert tableName="HLP_SCREEN">
       <column name="SCREEN_ID" value="simple_attr_def_edit"/>
       <column name="DESCRIPTION" value="Simple attribute definition edit page"/>
     </insert>
     <insert tableName="HLP_SCREEN">
       <column name="SCREEN_ID" value="simple_attr_def_add"/>
       <column name="DESCRIPTION" value="Simple attribute definition add page"/>
-    </insert>
-    <insert tableName="HLP_SCREEN">
-      <column name="SCREEN_ID" value="complex_attrs"/>
-      <column name="DESCRIPTION" value="The list of complex attributes, with edit buttons"/>
     </insert>
     <insert tableName="HLP_SCREEN">
       <column name="SCREEN_ID" value="fixed_values_view"/>
@@ -169,14 +141,6 @@
       <column name="DESCRIPTION" value="Suggested values edit page"/>
     </insert>
     <insert tableName="HLP_SCREEN">
-      <column name="SCREEN_ID" value="complex_attr_fields"/>
-      <column name="DESCRIPTION" value="The list of complex attribute fields"/>
-    </insert>
-    <insert tableName="HLP_SCREEN">
-      <column name="SCREEN_ID" value="complex_attr_field"/>
-      <column name="DESCRIPTION" value="Complex attribute field view"/>
-    </insert>
-    <insert tableName="HLP_SCREEN">
       <column name="SCREEN_ID" value="front_page"/>
       <column name="DESCRIPTION" value="DD opening page"/>
     </insert>
@@ -191,10 +155,6 @@
     <insert tableName="HLP_SCREEN">
       <column name="SCREEN_ID" value="doc3"/>
       <column name="DESCRIPTION" value="The first section of general DD docs (doc3.jsp)"/>
-    </insert>
-    <insert tableName="HLP_SCREEN">
-      <column name="SCREEN_ID" value="dataset_rod"/>
-      <column name="DESCRIPTION" value="The page of dataset-rod links"/>
     </insert>
     <insert tableName="HLP_SCREEN">
       <column name="SCREEN_ID" value="dataset_working_copy"/>
@@ -229,11 +189,901 @@
     </preConditions>
 
     <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="dataset"/>
+      <column name="SCREEN_ID" value="datasets"/>
+      <column name="DESCRIPTION" value="column"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/datasets.dataset.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="tables"/>
+      <column name="SCREEN_ID" value="datasets"/>
+      <column name="DESCRIPTION" value="column"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/datasets.tables.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
       <column name="AREA_ID" value="pagehelp"/>
       <column name="SCREEN_ID" value="datasets"/>
       <column name="DESCRIPTION" value="pagehelp"/>
       <column name="LANGUAGE" value=""/>
-      <column name="HTML" valueClobFile="datasets.pagehelp.txt" encoding="UTF-8"/>
+      <column name="HTML" valueClobFile="help-pages/datasets.pagehelp.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="pagehelp"/>
+      <column name="SCREEN_ID" value="tables"/>
+      <column name="DESCRIPTION" value="pagehelp"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/datasets.pagehelp.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="pagehelp"/>
+      <column name="SCREEN_ID" value="search_dataset"/>
+      <column name="DESCRIPTION" value="pagehelp"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/search_dataset.pagehelp.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="criteria"/>
+      <column name="SCREEN_ID" value="search_dataset"/>
+      <column name="DESCRIPTION" value="below the +, no popup"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/search_dataset.criteria.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="pagehelp"/>
+      <column name="SCREEN_ID" value="search_table"/>
+      <column name="DESCRIPTION" value="pagehelp"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/search_table.pagehelp.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="criteria"/>
+      <column name="SCREEN_ID" value="search_table"/>
+      <column name="DESCRIPTION" value="below the +, no popup"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/search_table.criteria.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="GIS"/>
+      <column name="SCREEN_ID" value="element"/>
+      <column name="DESCRIPTION" value="gis attribute"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/element.GIS.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="pagehelp"/>
+      <column name="SCREEN_ID" value="search_element"/>
+      <column name="DESCRIPTION" value="pagehelp"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/search_element.pagehelp.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="shortname"/>
+      <column name="SCREEN_ID" value="tables"/>
+      <column name="DESCRIPTION" value="column"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/tables.shortname.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="dataset"/>
+      <column name="SCREEN_ID" value="tables"/>
+      <column name="DESCRIPTION" value="column"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/tables.dataset.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="refurl"/>
+      <column name="SCREEN_ID" value="dataset"/>
+      <column name="DESCRIPTION" value='The "Reference URL" attribute'/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/dataset.refurl.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="identifier"/>
+      <column name="SCREEN_ID" value="dataset"/>
+      <column name="DESCRIPTION" value='The "Identifier" attribute'/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/dataset.identifier.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="pagehelp"/>
+      <column name="SCREEN_ID" value="attributes"/>
+      <column name="DESCRIPTION" value="pagehelp"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/attributes.pagehelp.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="pagehelp"/>
+      <column name="SCREEN_ID" value="history"/>
+      <column name="DESCRIPTION" value="pagehelp"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/history.pagehelp.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="pagehelp"/>
+      <column name="SCREEN_ID" value="dataset_tables"/>
+      <column name="DESCRIPTION" value="pagehelp"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/dataset_tables.pagehelp.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="pagehelp"/>
+      <column name="SCREEN_ID" value="table_elements"/>
+      <column name="DESCRIPTION" value="pagehelp"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/table_elements.pagehelp.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="pagehelp"/>
+      <column name="SCREEN_ID" value="dataset_model"/>
+      <column name="DESCRIPTION" value="pagehelp"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/dataset_model.pagehelp.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="pagehelp"/>
+      <column name="SCREEN_ID" value="fixed_value"/>
+      <column name="DESCRIPTION" value="pagehelp"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/fixed_value.pagehelp.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="pagehelp"/>
+      <column name="SCREEN_ID" value="suggested_value"/>
+      <column name="DESCRIPTION" value="pagehelp"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/suggested_value.pagehelp.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="pagehelp"/>
+      <column name="SCREEN_ID" value="suggested_values_edit"/>
+      <column name="DESCRIPTION" value="pagehelp"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/suggested_values_edit.pagehelp.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="pagehelp"/>
+      <column name="SCREEN_ID" value="suggested_values_view"/>
+      <column name="DESCRIPTION" value="pagehelp"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/suggested_values_view.pagehelp.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="excel"/>
+      <column name="SCREEN_ID" value="dataset"/>
+      <column name="DESCRIPTION" value="Help for MS Excel generation"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/dataset.excel.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="excel"/>
+      <column name="SCREEN_ID" value="table"/>
+      <column name="DESCRIPTION" value="Generation of MS Excel template"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/table.excel.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="pagehelp"/>
+      <column name="SCREEN_ID" value="foreign_keys"/>
+      <column name="DESCRIPTION" value="pagehelp"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/foreign_keys.pagehelp.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="pagehelp"/>
+      <column name="SCREEN_ID" value="simple_attr_def_view"/>
+      <column name="DESCRIPTION" value="pagehelp"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/simple_attr_def_view.pagehelp.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="access"/>
+      <column name="SCREEN_ID" value="dataset"/>
+      <column name="DESCRIPTION" value="Help for MS Access generation"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/dataset.access.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="pagehelp"/>
+      <column name="SCREEN_ID" value="import"/>
+      <column name="DESCRIPTION" value="pagehelp"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/import.pagehelp.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="table"/>
+      <column name="SCREEN_ID" value="tables"/>
+      <column name="DESCRIPTION" value="column"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/tables.table.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="pagehelp"/>
+      <column name="SCREEN_ID" value="elements"/>
+      <column name="DESCRIPTION" value="General help on this screen"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/elements.pagehelp.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="element"/>
+      <column name="SCREEN_ID" value="elements"/>
+      <column name="DESCRIPTION" value="column"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/elements.element.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="table"/>
+      <column name="SCREEN_ID" value="elements"/>
+      <column name="DESCRIPTION" value='The "Table" column'/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/elements.table.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="dataset"/>
+      <column name="SCREEN_ID" value="elements"/>
+      <column name="DESCRIPTION" value='The "Dataset" column'/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/elements.dataset.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="type"/>
+      <column name="SCREEN_ID" value="elements"/>
+      <column name="DESCRIPTION" value="column"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/elements.type.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="pagehelp"/>
+      <column name="SCREEN_ID" value="restore_datasets"/>
+      <column name="DESCRIPTION" value="pagehelp"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/restore_datasets.pagehelp.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="pagehelp"/>
+      <column name="SCREEN_ID" value="dataset"/>
+      <column name="DESCRIPTION" value="pagehelp"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/dataset.pagehelp.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="pagehelp"/>
+      <column name="SCREEN_ID" value="dataset_edit"/>
+      <column name="DESCRIPTION" value="pagehelp"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/dataset_edit.pagehelp.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="pagehelp"/>
+      <column name="SCREEN_ID" value="dataset_add"/>
+      <column name="DESCRIPTION" value="pagehelp"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/dataset_add.pagehelp.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="pagehelp"/>
+      <column name="SCREEN_ID" value="table"/>
+      <column name="DESCRIPTION" value="pagehelp"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/table.pagehelp.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="pagehelp"/>
+      <column name="SCREEN_ID" value="table_edit"/>
+      <column name="DESCRIPTION" value="pagehelp"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/table_edit.pagehelp.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="pagehelp"/>
+      <column name="SCREEN_ID" value="table_add"/>
+      <column name="DESCRIPTION" value="pagehelp"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/table_add.pagehelp.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="pagehelp"/>
+      <column name="SCREEN_ID" value="element"/>
+      <column name="DESCRIPTION" value="pagehelp"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/element.pagehelp.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="pagehelp"/>
+      <column name="SCREEN_ID" value="element_edit"/>
+      <column name="DESCRIPTION" value="pagehelp"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/element_edit.pagehelp.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="pagehelp"/>
+      <column name="SCREEN_ID" value="element_add"/>
+      <column name="DESCRIPTION" value="pagehelp"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/element_add.pagehelp.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="pagehelp"/>
+      <column name="SCREEN_ID" value="simple_attr_def_edit"/>
+      <column name="DESCRIPTION" value="pagehelp"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/simple_attr_def_edit.pagehelp.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="pagehelp"/>
+      <column name="SCREEN_ID" value="simple_attr_def_add"/>
+      <column name="DESCRIPTION" value="pagehelp"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/simple_attr_def_add.pagehelp.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="pagehelp"/>
+      <column name="SCREEN_ID" value="fixed_values_view"/>
+      <column name="DESCRIPTION" value="pagehelp"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/fixed_values_view.pagehelp.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="pagehelp"/>
+      <column name="SCREEN_ID" value="fixed_values_edit"/>
+      <column name="DESCRIPTION" value="pagehelp"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/fixed_values_edit.pagehelp.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="shortname"/>
+      <column name="SCREEN_ID" value="attributes"/>
+      <column name="DESCRIPTION" value="column"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/attributes.shortname.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="type"/>
+      <column name="SCREEN_ID" value="attributes"/>
+      <column name="DESCRIPTION" value="column"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/attributes.type.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="datasets"/>
+      <column name="SCREEN_ID" value="attributes"/>
+      <column name="DESCRIPTION" value="column"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/attributes.datasets.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="tables"/>
+      <column name="SCREEN_ID" value="attributes"/>
+      <column name="DESCRIPTION" value="column"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/attributes.tables.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="elmfxv"/>
+      <column name="SCREEN_ID" value="attributes"/>
+      <column name="DESCRIPTION" value="column"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/attributes.elmfxv.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="elmquant"/>
+      <column name="SCREEN_ID" value="attributes"/>
+      <column name="DESCRIPTION" value="column"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/attributes.elmquant.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="pagehelp"/>
+      <column name="SCREEN_ID" value="foreign_key_rel"/>
+      <column name="DESCRIPTION" value="pagehelp"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/foreign_key_rel.pagehelp.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="cardinality"/>
+      <column name="SCREEN_ID" value="foreign_key_rel"/>
+      <column name="DESCRIPTION" value="Information about cardinality values"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/foreign_key_rel.cardinality.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="support"/>
+      <column name="SCREEN_ID" value="front_page"/>
+      <column name="DESCRIPTION" value="The Support area"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/front_page.support.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="documentation"/>
+      <column name="SCREEN_ID" value="front_page"/>
+      <column name="DESCRIPTION" value="The Documentation area"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/front_page.documentation.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="news"/>
+      <column name="SCREEN_ID" value="front_page"/>
+      <column name="DESCRIPTION" value="The News area"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/front_page.news.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="text"/>
+      <column name="SCREEN_ID" value="doc1"/>
+      <column name="DESCRIPTION" value="The documentation text (in the dotted square)"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/doc1.text.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="text"/>
+      <column name="SCREEN_ID" value="doc2"/>
+      <column name="DESCRIPTION" value="The documentation text (in the dotted square)"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/doc2.text.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="text"/>
+      <column name="SCREEN_ID" value="doc3"/>
+      <column name="DESCRIPTION" value="The documentation text (in the dotted square)"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/doc3.text.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="public_outputs"/>
+      <column name="SCREEN_ID" value="dataset"/>
+      <column name="DESCRIPTION" value='The "Public outputs" attribute'/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/dataset.public_outputs.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="dataset"/>
+      <column name="SCREEN_ID" value="table"/>
+      <column name="DESCRIPTION" value='The "Dataset" attribute'/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/table.dataset.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="table"/>
+      <column name="SCREEN_ID" value="element"/>
+      <column name="DESCRIPTION" value='The "Table" attribute'/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/element.table.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="check_in_no"/>
+      <column name="SCREEN_ID" value="dataset"/>
+      <column name="DESCRIPTION" value='The "CheckInNo" attribute'/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/dataset.check_in_no.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="short_name"/>
+      <column name="SCREEN_ID" value="dataset"/>
+      <column name="DESCRIPTION" value='The "Short name" attribute'/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/dataset.short_name.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="regstatus"/>
+      <column name="SCREEN_ID" value="dataset"/>
+      <column name="DESCRIPTION" value='The "Registration status" attribute'/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/dataset.regstatus.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="type"/>
+      <column name="SCREEN_ID" value="element"/>
+      <column name="DESCRIPTION" value='The "type" attribute'/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/element.type.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="fks_link"/>
+      <column name="SCREEN_ID" value="element"/>
+      <column name="DESCRIPTION" value="The link to foreign keys in element edit view"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/element.fks_link.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="suggested_values_link"/>
+      <column name="SCREEN_ID" value="element"/>
+      <column name="DESCRIPTION" value="The link to suggested values in element edit view"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/element.suggested_values_link.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="allowable_values_link"/>
+      <column name="SCREEN_ID" value="element"/>
+      <column name="DESCRIPTION" value="The link to allowable values in element edit views"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/element.allowable_values_link.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="data_model_link"/>
+      <column name="SCREEN_ID" value="dataset"/>
+      <column name="DESCRIPTION" value="The link to data model in dataset edit view"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/dataset.data_model_link.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="dataset_number"/>
+      <column name="SCREEN_ID" value="dataset"/>
+      <column name="DESCRIPTION" value="The dataset number"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/dataset.dataset_number.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="pagehelp"/>
+      <column name="SCREEN_ID" value="dataset_working_copy"/>
+      <column name="DESCRIPTION" value="pagehelp"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/dataset_working_copy.pagehelp.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="pagehelp"/>
+      <column name="SCREEN_ID" value="common_element"/>
+      <column name="DESCRIPTION" value="pagehelp"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/common_element.pagehelp.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="pagehelp"/>
+      <column name="SCREEN_ID" value="common_element_working_copy"/>
+      <column name="DESCRIPTION" value="pagehelp"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/common_element_working_copy.pagehelp.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="pagehelp"/>
+      <column name="SCREEN_ID" value="common_element_add"/>
+      <column name="DESCRIPTION" value="pagehelp"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/common_element_add.pagehelp.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="pagehelp"/>
+      <column name="SCREEN_ID" value="common_element_edit"/>
+      <column name="DESCRIPTION" value="pagehelp"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/common_element_edit.pagehelp.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="pagehelp"/>
+      <column name="SCREEN_ID" value="common_element_search_results"/>
+      <column name="DESCRIPTION" value="pagehelp"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/common_element_search_results.pagehelp.txt" encoding="UTF-8"/>
+      <column name="MD5" value=""/>
+      <column name="POPUP_WIDTH" value="600"/>
+      <column name="POPUP_LENGTH" value="600"/>
+    </insert>
+
+    <insert tableName="HLP_AREA">
+      <column name="AREA_ID" value="dataset"/>
+      <column name="SCREEN_ID" value="search_element"/>
+      <column name="DESCRIPTION" value="The dataset selection box"/>
+      <column name="LANGUAGE" value=""/>
+      <column name="HTML" valueClobFile="help-pages/search_element.dataset.txt" encoding="UTF-8"/>
       <column name="MD5" value=""/>
       <column name="POPUP_WIDTH" value="600"/>
       <column name="POPUP_LENGTH" value="600"/>

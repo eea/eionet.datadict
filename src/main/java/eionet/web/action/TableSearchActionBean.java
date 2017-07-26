@@ -29,8 +29,6 @@ import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.integration.spring.SpringBean;
 
-import org.apache.log4j.Logger;
-
 import eionet.meta.service.ITableService;
 import eionet.meta.service.ServiceException;
 import eionet.meta.service.data.TableFilter;
@@ -40,6 +38,8 @@ import java.util.List;
 import net.sourceforge.stripes.action.ForwardResolution;
 import org.apache.commons.lang.StringUtils;
 import org.displaytag.properties.SortOrderEnum;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Table search action bean.
@@ -50,7 +50,7 @@ import org.displaytag.properties.SortOrderEnum;
 public class TableSearchActionBean extends AbstractActionBean {
 
     /** Logger. */
-    private static final Logger LOGGER = Logger.getLogger(TableSearchActionBean.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TableSearchActionBean.class);
 
     /** Table search result. */
     private TableResult tableResult;
@@ -70,6 +70,7 @@ public class TableSearchActionBean extends AbstractActionBean {
      */
     @DefaultHandler
     public Resolution search() throws ServiceException {
+
         if (tableFilter == null) {
             initTableFilter();
         }
@@ -96,7 +97,7 @@ public class TableSearchActionBean extends AbstractActionBean {
                 tableResult.setList(Collections.EMPTY_LIST);
             } else {
                 int paginationLimit = tableFilter.getOffset()+ tableFilter.getPageSize();
-                List<DataSetTable> paginatedItems = tableResult.getList().subList(tableFilter.getOffset(), 
+                List<DataSetTable> paginatedItems = tableResult.getList().subList(tableFilter.getOffset(),
                         dataSetTablesSize <= paginationLimit ? dataSetTablesSize : paginationLimit);
                 tableResult.setList(paginatedItems);
             }

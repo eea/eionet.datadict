@@ -1,0 +1,4 @@
+<h2>Table</h2>
+<p>
+    This column contains the table\'s full name.
+</p>

@@ -34,7 +34,6 @@ import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.integration.spring.SpringBean;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.displaytag.properties.SortOrderEnum;
 
 import eionet.meta.dao.domain.RegStatus;
@@ -45,6 +44,8 @@ import eionet.meta.service.ValidationException;
 import eionet.meta.service.data.SchemaSetFilter;
 import eionet.meta.service.data.SchemaSetsResult;
 import eionet.util.SecurityUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Schema sets action bean.
@@ -55,7 +56,7 @@ import eionet.util.SecurityUtil;
 public class SearchSchemaSetsActionBean extends AbstractActionBean {
 
     /** */
-    private static final Logger LOGGER = Logger.getLogger(SearchSchemaSetsActionBean.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SearchSchemaSetsActionBean.class);
 
     /** */
     private static final String SEARCH_SCHEMA_SETS_JSP = "/pages/schemaSets/searchSchemaSets.jsp";

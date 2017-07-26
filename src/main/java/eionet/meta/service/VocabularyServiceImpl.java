@@ -29,7 +29,8 @@ import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.StopWatch;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Service;
@@ -92,7 +93,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
     /**
      * Logger.
      */
-    protected static final Logger LOGGER = Logger.getLogger(VocabularyServiceImpl.class);
+    protected static final Logger LOGGER = LoggerFactory.getLogger(VocabularyServiceImpl.class);
 
     /**
      * Vocabulary folder DAO.
@@ -333,7 +334,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
             }
             return vocabularyConceptDAO.createVocabularyConcept(vocabularyFolderId, vocabularyConcept);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage(), e);
             throw new ServiceException("Failed to create vocabulary concept: " + e.getMessage(), e);
         }
     }
@@ -463,7 +464,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage(), e);
             throw new ServiceException("Handling related element bindings failed " + e);
         }
     }
@@ -1229,12 +1230,9 @@ public class VocabularyServiceImpl implements IVocabularyService {
                                 + ") was sent to CR for reharvesting vocabulary folder: " + crPingUrl);
                     }
                 }
-            } catch (MalformedURLException e) {
-                LOGGER.error("Unable to ping CR: " + crPingUrl);
-                e.printStackTrace();
             } catch (IOException e) {
                 LOGGER.error("Unable to ping CR: " + crPingUrl);
-                e.printStackTrace();
+                LOGGER.error(e.getMessage(), e);
             }
         }
     }

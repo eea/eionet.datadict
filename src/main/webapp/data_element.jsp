@@ -188,7 +188,6 @@
     Vector mAttributes = null;
     DataElement dataElement = null;
     DataElement newDataElement = null;
-    Vector complexAttrs = null;
     Vector fixedValues = null;
     String feedbackValue = null;
     ArrayList<InferenceRule> dataElementRules = null;
@@ -455,9 +454,7 @@
             searchEngine.setUser(user);
 
             // get metadata of attributes
-            mAttributes = searchEngine.getDElemAttributes(null,
-                    DElemAttribute.TYPE_SIMPLE,
-                    DDSearchEngine.ORDER_BY_M_ATTR_DISP_ORDER);
+            mAttributes = searchEngine.getDElemAttributes(null, DDSearchEngine.ORDER_BY_M_ATTR_DISP_ORDER);
 
             // if not in add mode, get the element object, set some parameters based on it
             if (!mode.equals("add")) {
@@ -509,12 +506,6 @@
 
                 vocabularyId = dataElement.getVocabularyId();
                 allowAllConcepts = dataElement.isAllConceptsValid();
-
-
-                complexAttrs = searchEngine.getComplexAttributes(delem_id,
-                        "E", null, tableID, dsID);
-                if (complexAttrs == null)
-                    complexAttrs = new Vector();
 
                 // set parameters specific to NON-COMMON elements
                 if (!elmCommon) {
@@ -662,8 +653,7 @@
                     newDataElement = new DataElement();
                     newDataElement.setDatasetID(dsID);
                     newDataElement.setTableID(tableID);
-                    newDataElement.setAttributes(searchEngine
-                            .getSimpleAttributes(null, "E", tableID, dsID));
+                    newDataElement.setAttributes(searchEngine.getAttributes(null, "E", tableID, dsID));
                 }
             }
 
@@ -1382,9 +1372,6 @@
                         if (fKeys != null && fKeys.size() > 0) {
                             quicklinks.add("Foreign key relations | fkeys");
                         }
-                        if (complexAttrs != null && complexAttrs.size() > 0) {
-                            quicklinks.add("Complex attributes | cattrs");
-                        }
                         request.setAttribute("quicklinks", quicklinks);
                 %>
                     <jsp:include page="quicklinks.jsp" flush="true" />
@@ -2003,7 +1990,7 @@
                                                                 if(dispType.equals("vocabulary")) {
                                                                     DataDictEntity ddEntity = new DataDictEntity(Integer.parseInt(delem_id), DataDictEntity.Entity.E);
                                                                     if(mode.equals("view")){
-                                                                        List<VocabularyConcept> concepts = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity, attribute.getInheritable());
+                                                                        List<VocabularyConcept> concepts = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity, (elmCommon? "0" : attribute.getInheritable()));
                                                                         if (concepts!=null && !concepts.isEmpty()) { %>
                                                                             <ul class="stripedmenu">
                                                                             <%
@@ -2723,118 +2710,6 @@ String helpAreaName = "";
                                             <%
                                                 }
                                             %>
-
-                                        <!-- complex attributes -->
-
-                                        <%
-                                            if ((mode.equals("edit") && user != null)
-                                                        || (mode.equals("view") && complexAttrs != null && complexAttrs
-                                                                .size() > 0)) {
-                                        %>
-
-
-                                                <h2>
-                                                        Complex attributes<a id="cattrs"></a>
-
-                                                    <%
-                                                        if (!mode.equals("view")) {
-                                                    %>
-                                                        <span class="simple_attr_help">
-                                                            <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=complex_attrs_link"></a>
-                                                        </span>
-                                                        <span class="simple_attr_help">
-                                                            <img style="border:0" src="<%=request.getContextPath()%>/images/mandatory.gif" width="16" height="16" alt="mandatory"/>
-                                                        </span><%
-                                                            }
-
-                                                                    // the link
-                                                                    if (mode.equals("edit") && user != null) {
-                                                        %>
-                                                        <span class="barfont_bordered">
-                                                            <a href="<%=request.getContextPath()%>/complex_attrs.jsp?parent_id=<%=delem_id%>&amp;parent_type=E&amp;parent_name=<%=Util.processForDisplay(delem_name)%>&amp;table_id=<%=tableID%>&amp;dataset_id=<%=dsID%>">[Click to manage complex attributes of this element]</a>
-                                                        </span><%
-                                                            }
-                                                        %>
-                                                </h2>
-
-                                                <%
-                                                    // the table
-                                                            if (mode.equals("view") && complexAttrs != null
-                                                                    && complexAttrs.size() > 0) {
-                                                %>
-                                                            <table class="datatable results" id="dataset-attributes">
-                                                                <col style="width: 30%"/>
-                                                                <col style="width: 70%"/>
-                                                                <%
-                                                                    displayed = 1;
-                                                                                isOdd = Util.isOdd(displayed);
-                                                                                for (int i = 0; i < complexAttrs.size(); i++) {
-
-                                                                                    DElemAttribute attr = (DElemAttribute) complexAttrs
-                                                                                            .get(i);
-                                                                                    attrID = attr.getID();
-                                                                                    String attrName = attr.getName();
-                                                                                    Vector attrFields = searchEngine.getAttrFields(
-                                                                                            attrID, DElemAttribute.FIELD_PRIORITY_HIGH);
-                                                                %>
-
-                                                                    <tr class="<%=isOdd%>">
-                                                                        <td>
-                                                                            <a href="<%=request.getContextPath()%>/complex_attr.jsp?attr_id=<%=attrID%>&amp;parent_id=<%=delem_id%>&amp;parent_type=E&amp;parent_name=<%=Util.processForDisplay(delem_name)%>&amp;table_id=<%=tableID%>&amp;dataset_id=<%=dsID%>" title="Click here to view all the fields">
-                                                                                <%=Util.processForDisplay(attrName)%>
-                                                                                <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?attrid=<%=attrID%>&amp;attrtype=COMPLEX"></a>
-                                                                            </a>
-                                                                        </td>
-                                                                        <td>
-                                                                            <%
-                                                                                StringBuffer rowValue = null;
-                                                                                                Vector rows = attr.getRows();
-                                                                                                for (int j = 0; rows != null && j < rows.size(); j++) {
-
-                                                                                                    if (j > 0) {
-                                                                            %>---<br/><%
-                                                                                }
-
-                                                                                                    Hashtable rowHash = (Hashtable) rows.get(j);
-                                                                                                    rowValue = new StringBuffer();
-
-                                                                                                    for (int t = 0; t < attrFields.size(); t++) {
-                                                                                                        Hashtable hash = (Hashtable) attrFields
-                                                                                                                .get(t);
-                                                                                                        String fieldID = (String) hash.get("id");
-                                                                                                        String fieldValue = fieldID == null ? null
-                                                                                                                : (String) rowHash.get(fieldID);
-                                                                                                        if (fieldValue == null)
-                                                                                                            fieldValue = "";
-                                                                                                        if (fieldValue.trim().equals(""))
-                                                                                                            continue;
-
-                                                                                                        if (t > 0 && fieldValue.length() > 0
-                                                                                                                && rowValue.toString().length() > 0)
-                                                                                                            rowValue.append(", ");
-
-                                                                                                        rowValue.append(Util.processForDisplay(fieldValue));
-                                                                            %>
-                                                                                    <%=Util.processForDisplay(fieldValue)%><br/><%
-                                                                                        }
-                                                                                                        }
-                                                                                    %>
-                                                                        </td>
-
-                                                                        <%
-                                                                            isOdd = Util.isOdd(++displayed);
-                                                                        %>
-                                                                    </tr><%
-                                                                        }
-                                                                    %>
-                                                            </table>
-                                                    <%
-                                                        }
-                                                    %>
-                                            <%
-                                            }
-                                            %>
-                                        <!-- end complex attributes -->
 
                                         <!-- Inference Rules -->
                                         <% if(mode.equals("edit")){ %>

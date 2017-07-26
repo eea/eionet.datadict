@@ -15,7 +15,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -39,7 +38,8 @@ import net.sourceforge.stripes.validation.ValidationMethod;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 import eionet.meta.DDException;
@@ -71,7 +71,7 @@ import eionet.util.XmlValidator;
 public class SchemaSetActionBean extends AbstractActionBean {
 
     /** */
-    private static final Logger LOGGER = Logger.getLogger(SchemaSetActionBean.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SchemaSetActionBean.class);
 
     /** */
     private static final String ADD_SCHEMA_SET_JSP = "/pages/schemaSets/addSchemaSet.jsp";
@@ -101,12 +101,6 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
     /** */
     private LinkedHashMap<Integer, DElemAttribute> attributes;
-
-    /** Complex attributes of this schema set. */
-    private Vector complexAttributes;
-
-    /** For every complex attribute in {@link #complexAttributes} maps the Vector of its fields. */
-    private HashMap<String, Vector> complexAttributeFields;
 
     /** */
     private List<Schema> schemas;
@@ -825,9 +819,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
                 searchEngine = DDSearchEngine.create();
                 int schemaSetId = schemaSet == null ? 0 : schemaSet.getId();
 
-                attributes =
-                        searchEngine.getObjectAttributes(schemaSetId, DElemAttribute.ParentType.SCHEMA_SET,
-                                DElemAttribute.TYPE_SIMPLE);
+                attributes = searchEngine.getObjectAttributes(schemaSetId, DElemAttribute.ParentType.SCHEMA_SET);
 
                 // If this is a POST request of "add", "save" or "saveAndClose",
                 // then substitute the values we got from database with the values
@@ -1029,7 +1021,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
             try {
                 searchEngine = DDSearchEngine.create();
                 LinkedHashMap<Integer, DElemAttribute> attrsMap =
-                        searchEngine.getObjectAttributes(0, DElemAttribute.ParentType.SCHEMA, DElemAttribute.TYPE_SIMPLE);
+                        searchEngine.getObjectAttributes(0, DElemAttribute.ParentType.SCHEMA);
                 if (attrsMap != null) {
                     for (DElemAttribute attribute : attrsMap.values()) {
                         if (attribute.isMandatory() && !attribute.getDisplayType().equals("vocabulary")) {
@@ -1117,43 +1109,6 @@ public class SchemaSetActionBean extends AbstractActionBean {
             return StringUtils.isNotBlank(schemaSet.getWorkingUser()) && !schemaSet.isWorkingCopy()
                     && schemaSet.getWorkingUser().equals(getUserName());
         }
-    }
-
-    /**
-     * @return the complexAttributes
-     * @throws DAOException
-     */
-    public Vector getComplexAttributes() throws DAOException {
-
-        if (complexAttributes == null) {
-
-            DDSearchEngine searchEngine = null;
-            try {
-                searchEngine = DDSearchEngine.create();
-                complexAttributes =
-                        schemaSet == null ? new Vector() : searchEngine.getComplexAttributes(String.valueOf(schemaSet.getId()),
-                                DElemAttribute.ParentType.SCHEMA_SET.toString());
-
-                complexAttributeFields = new HashMap<String, Vector>();
-                for (Iterator iter = complexAttributes.iterator(); iter.hasNext();) {
-                    DElemAttribute attr = (DElemAttribute) iter.next();
-                    String attrId = attr.getID();
-                    complexAttributeFields.put(attrId, searchEngine.getAttrFields(attrId, DElemAttribute.FIELD_PRIORITY_HIGH));
-                }
-            } catch (SQLException e) {
-                throw new DAOException(e.getMessage(), e);
-            } finally {
-                DDSearchEngine.close(searchEngine);
-            }
-        }
-        return complexAttributes;
-    }
-
-    /**
-     * @return the complexAttributeFields
-     */
-    public HashMap<String, Vector> getComplexAttributeFields() {
-        return complexAttributeFields;
     }
 
     public Integer getVocabularyBinding(int attributeId) {

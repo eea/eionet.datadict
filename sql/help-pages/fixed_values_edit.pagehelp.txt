@@ -1,0 +1,16 @@
+<h2>Allowable values edit page</h2>
+<p>
+    This page lists the allowable values (aka fixed values) for this element and provides features to edit them.
+    <br/>
+    <br/> An element's allowable values are a set of pre-fixed values which the element can have. It cannot have any other
+    values once these are specified. And they can be specified only if the element is set to be of fixed values type.
+    <br/>
+    <br/> Every allowable value here in this list is represented by the value itself and the value's definition which helps
+    to understand the value's meaning. Values are clickable and they lead to the value's detailed page.
+    <br/>
+    <br/> To <b>add new values</b>, use the new value's input box and Add button. For <b>deletion</b>, use checkboxes to
+    select the desired values and press Delete. The Remove all button speaks for itself.
+    <br/>
+    <br/> It is also possible to <b>import</b> new values from an XML-formatted file extracted from Data Dictionary's Import
+    tool. More help will be availabale if you click the Import... button.
+</p>

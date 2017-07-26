@@ -1,6 +1,5 @@
 package eionet.meta.exports.pdf;
 
-import java.util.Hashtable;
 import java.util.Vector;
 
 import com.lowagie.text.Chunk;
@@ -9,12 +8,16 @@ import com.lowagie.text.Font;
 import com.lowagie.text.FontFactory;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
+import eionet.datadict.model.DataDictEntity;
 
 import eionet.meta.DDSearchEngine;
+import eionet.meta.DElemAttribute;
 import eionet.meta.DataElement;
 import eionet.meta.DsTable;
 import eionet.meta.savers.Parameters;
 import eionet.util.Util;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The generator of the PDF guidelines for a table.
@@ -75,7 +78,7 @@ public class TblPdfGuideline {
         }
 
         // get simple attributes
-        Vector v = searchEngine.getSimpleAttributes(tblID, "T");
+        Vector v = searchEngine.getAttributes(tblID, "T");
         dsTable.setSimpleAttributes(v);
 
         // get data elements (this will set all the simple attributes,
@@ -122,30 +125,20 @@ public class TblPdfGuideline {
         addElement(prg);
 
         // write simple attributes
-
-        Hashtable hash = null;
         Vector v = dsTable.getSimpleAttributes();
 
-        // name
-        String name = dsTable.getName();
-        if (!Util.isEmpty(name)) {
-            hash = new Hashtable();
-            hash.put("name", "Name");
-            hash.put("value", name);
-            v.add(0, hash);
+        Map<String, DElemAttribute> attributes = new HashMap<>();
+
+        // create dummy DElemAttribute's and populate map for easier processing
+        attributes.put("ShortName", new DElemAttribute("", "Short name", "Short name", dsTable.getShortName()));
+        for (Object attribute : v) {
+            attributes.put(((DElemAttribute) attribute).getShortName(), (DElemAttribute) attribute);
         }
 
-        // short name
-        hash = new Hashtable();
-        hash.put("name", "Short name");
-        hash.put("value", dsTable.getShortName());
-        v.add(0, hash);
-
-        addElement(PdfUtil.simpleAttributesTable(v, showedAttrs));
+        addElement(PdfUtil.simpleAttributesTable(attributes, showedAttrs));
         addElement(new Phrase("\n"));
 
         // Write table elements fact-list, but first get fixed values and foreign-key relations.
-
         v = dsTable.getElements();
         if (v == null || v.size() == 0) {
             return;
@@ -161,7 +154,7 @@ public class TblPdfGuideline {
             elem.setFixedValues(fxValues);
             Vector fks = searchEngine.getFKRelationsElm(elem.getID(), dstID);
             elem.setFKRelations(fks);
-            Vector attrs = searchEngine.getSimpleAttributes(elem.getID(), "E");
+            Vector attrs = searchEngine.getAttributes(elem.getID(), "E");
             elem.setAttributes(attrs);
 
             elms.add(elem);
@@ -216,10 +209,10 @@ public class TblPdfGuideline {
      */
     @SuppressWarnings("unchecked")
     protected void setShowedAttributes() {
-
-        showedAttrs.add("Short name");
+        showedAttrs.add("ShortName");
         showedAttrs.add("Definition");
         showedAttrs.add("ShortDescription");
         showedAttrs.add("Methodology");
     }
+
 }

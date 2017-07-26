@@ -16,6 +16,9 @@ import eionet.util.SecurityUtil;
 import eionet.util.Util;
 import java.io.OutputStream;
 import javax.servlet.ServletConfig;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.web.context.WebApplicationContext;
@@ -29,6 +32,8 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  *
  */
 public class CodelistServlet extends HttpServlet {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(CodelistServlet.class);
 
     @Autowired
     private CodeValueHandlerProvider codeValueHandlerProvider;
@@ -104,7 +109,7 @@ public class CodelistServlet extends HttpServlet {
             writer.close();
             osw.close();
         } catch (Exception e) {
-            e.printStackTrace(System.out);
+            LOGGER.error(e.getMessage(), e);
             throw new ServletException(e.toString());
         }
     }

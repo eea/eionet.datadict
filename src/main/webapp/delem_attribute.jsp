@@ -3,10 +3,8 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<%!private String type=null;%>
 <%!private String mode=null;%>
 <%!private DElemAttribute attribute=null;%>
-<%!private Vector attrFields=null;%>
 <%!private DDSearchEngine  searchEngine=null;%>
 <%@ include file="history.jsp" %>
 
@@ -57,22 +55,12 @@
                 return;
             }
 
-            String type = request.getParameter("type");
-            if (type!=null && type.length()==0)
-                type = null;
-
-            String idPrefix = "";
-            if (type!=null && type.equals(DElemAttribute.TYPE_COMPLEX))
-                idPrefix = "c";
-            else if (type!=null && type.equals(DElemAttribute.TYPE_SIMPLE))
-                idPrefix = "s";
-
             // check permissions
             boolean editPrm = false;
             boolean deletePrm = false;
             if (!mode.equals("add")){
-                editPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/attributes/" + idPrefix + attr_id, "u");
-                deletePrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/attributes/" + idPrefix + attr_id, "d");
+                editPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/attributes/s" + attr_id, "u");
+                deletePrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/attributes/s" + attr_id, "d");
             }
             if (mode.equals("edit") && !editPrm){ %>
                 <b>Not allowed!</b> <%
@@ -94,10 +82,10 @@
                     // if mode==delete, check whether the attribute is used somewhere. if Yes, then prompt user
                     if (mode.equals("delete")){
                         searchEngine = new DDSearchEngine(userConn, "");
-                        int attrUseCount = searchEngine.getAttributeUseCount(attr_id, type);
+                        int attrUseCount = searchEngine.getAttributeUseCount(attr_id);
                         if (attrUseCount>0){
                             String sName = request.getParameter("short_name");
-                            response.sendRedirect("dialog_delete_attr.jsp?mode=delete&attr_id=" + attr_id + "&type=" + type + "&short_name=" + sName);
+                            response.sendRedirect("dialog_delete_attr.jsp?mode=delete&attr_id=" + attr_id + "&short_name=" + sName);
                             return;
                         }
                     }
@@ -109,12 +97,7 @@
                     if (mode.equals("add")){
                         String id = handler.getLastInsertID();
                         if (id != null && id.length()!=0){
-                            if (type.equals(DElemAttribute.TYPE_SIMPLE)){
-                                redirUrl = redirUrl + "attribute/edit/" + id;
-                            }
-                            else {
-                                redirUrl = redirUrl + "delem_attribute.jsp?mode=edit&attr_id=" + id + "&type=" + type;
-                            }
+                            redirUrl = redirUrl + "attribute/edit/" + id;
                         }
                         if (history!=null){
                             int idx = history.getCurrentIndex();
@@ -158,22 +141,16 @@
             Namespace attrNamespace = null;
 
             if (!mode.equals("add")){
-                Vector v = searchEngine.getDElemAttributes(attr_id,type);
+                Vector v = searchEngine.getDElemAttributes(attr_id);
                 if (v!=null && v.size()!=0)
                     attribute = (DElemAttribute)v.get(0);
-                if (attribute!=null){
-                    type = attribute.getType();
+                if (attribute!=null) {
                     attr_name = attribute.getName();
                     attr_shortname = attribute.getShortName();
                     if (attr_name == null) attr_name = "unknown";
                     if (attr_shortname == null) attr_shortname = "unknown";
 
                     attrNamespace = attribute.getNamespace();
-
-                    if (type!=null && type.equals(DElemAttribute.TYPE_COMPLEX)){
-                        attrFields = searchEngine.getAttrFields(attr_id);
-                        if (attrFields == null) attrFields = new Vector();
-                    }
                 }
                 else{ %>
                     <b>Attribute was not found!</b> <%
@@ -186,25 +163,13 @@
             // init page title
             StringBuffer pageTitle = new StringBuffer();
             if (mode.equals("edit")){
-                if (type==null)
-                    pageTitle.append("Edit attribute");
-                else if (type.equals(DElemAttribute.TYPE_COMPLEX))
-                    pageTitle.append("Edit complex attribute");
-                else if (type.equals(DElemAttribute.TYPE_SIMPLE))
-                    pageTitle.append("Edit simple attribute");
+                pageTitle.append("Edit attribute");
+            } else {
+                pageTitle.append("Attribute");
             }
-            else{
-                if (type==null)
-                    pageTitle.append("Attribute");
-                else if (type.equals(DElemAttribute.TYPE_COMPLEX))
-                    pageTitle.append("Complex attribute");
-                else if (type.equals(DElemAttribute.TYPE_SIMPLE))
-                    pageTitle.append("Simple attribute");
-            }
-            if (attribute!=null && attribute.getShortName()!=null)
+            if (attribute!=null && attribute.getShortName()!=null) {
                 pageTitle.append(" - ").append(attribute.getShortName());
-
-
+            }
             %>
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
@@ -241,17 +206,11 @@
             var oName = document.forms["form1"].name;
             var name = oName==null ? null : oName.value;
 
-            <%
-            if (type!=null && !type.equals(DElemAttribute.TYPE_COMPLEX)){
-                %>
-                var oOblig = document.forms["form1"].obligation;
-                var i = oOblig.selectedIndex;
-                var oblig = oOblig==null ? null : oOblig.options[i].value;
+            var oOblig = document.forms["form1"].obligation;
+            var i = oOblig.selectedIndex;
+            var oblig = oOblig==null ? null : oOblig.options[i].value;
 
-                if (oblig == null || oblig.length==0) return false;
-                <%
-            }
-            %>
+            if (oblig == null || oblig.length==0) return false;
 
             var oShort = document.forms["form1"].short_name;
             var shortn = oShort==null ? null : oShort.value;
@@ -332,23 +291,7 @@
         }
 
         function goToEdit(){
-            if ('<%=type%>' === 'SIMPLE') {
-                 document.location.assign("attribute/edit/<%=attr_id%>");
-            } else {
-                document.location.assign("delem_attribute.jsp?attr_id=<%=attr_id%>&type=<%=type%>&mode=edit");
-            }
-        }
-
-        function fixType(){
-            var type = document.forms["form1"].typeSelect.value;
-            if (type == null || type.length==0)
-                return;
-            if (type=='SIMPLE'){
-                document.location.assign("attribute/add");
-            }
-            else {
-                document.location.assign("delem_attribute.jsp?mode=add&type=" + type);
-            }
+            document.location.assign("attribute/edit/<%=attr_id%>");
         }
 
         function openFxValues(){
@@ -369,18 +312,13 @@
 
 <%
 String hlpScreen = "simple_attr_def_";
-if (type!=null && type.equals(DElemAttribute.TYPE_COMPLEX))
-    hlpScreen = "complex_attr_def_";
 
 if (mode.equals("view"))
     hlpScreen = hlpScreen + "view";
 else if (mode.equals("edit"))
     hlpScreen = hlpScreen + "edit";
 else if (mode.equals("add")){
-    if (type==null)
-        hlpScreen = "attr_def_add";
-    else
-        hlpScreen = hlpScreen + "add";
+    hlpScreen = hlpScreen + "add";
 }
 else
     hlpScreen = hlpScreen + "view";
@@ -399,17 +337,10 @@ else
                 <div style="display:none">
                     <%
                     if (!mode.equals("add")){
-                        %>
-                        <input type="hidden" name="attr_id" value="<%=attr_id%>" /><%
-
-                        if (type!=null && type.equals(DElemAttribute.TYPE_SIMPLE)){
-                            %>
-                            <input type="hidden" name="simple_attr_id" value="<%=attr_id%>" /><%
-                        }
-                        else{
-                            %>
-                            <input type="hidden" name="complex_attr_id" value="<%=attr_id%>" /><%
-                        }
+                    %>
+                        <input type="hidden" name="attr_id" value="<%=attr_id%>" />
+                        <input type="hidden" name="simple_attr_id" value="<%=attr_id%>" />
+                    <%
                     }
                     %>
                 </div>
@@ -430,51 +361,15 @@ else
                     %>
                     <div id="drop-operations">
                         <ul>
-                            <li class="edit"><a href="javascript:goToEdit()">Edit</a></li>
+                            <li class="edit"><a href="<%=request.getContextPath()%>/attribute/edit/<%=attr_id%>">Edit</a></li>
                         </ul>
                     </div><%
-                }
-
-                if (!mode.equals("view") && type==null){ %>
-                    <p class="attention">NB! Please select the attribute type first. Otherwise your entries will be lost.</p><%
                 }
 
             int displayed = 1;
 
             %>
             <table class="datatable results">
-            <tr <% if (mode.equals("view")) %> class="<%=Util.isOdd(displayed)%>" <%;%>>
-                <th scope="row" class="scope-row">Type</th>
-                <%
-                displayed++;
-                if (!mode.equals("view")){
-                    %>
-                    <td><img src="images/mandatory.gif" alt="Mandatory" title="Mandatory"/></td>
-                    <%
-                }
-                %>
-                <td>
-                    <%
-                    if (mode.equals("add") && type==null){ %>
-                        <select class="small" name="typeSelect" onchange="fixType()">
-                            <option value="">-- Select attribute type --</option>
-                            <option value="SIMPLE">Simple attribute</option>
-                            <option value="COMPLEX">Complex attribute</option>
-                        </select> <%
-                    }
-                    else{
-                        if(type.equals(DElemAttribute.TYPE_SIMPLE)){ %>
-                            <b>SIMPLE ATTRIBUTE</b>
-                        <% }else if (type.equals(DElemAttribute.TYPE_COMPLEX)){ %>
-                            <b>COMPLEX ATTRIBUTE</b>
-                        <% } else{ %>
-                            <b>SIMPLE ATTRIBUTE</b>
-                        <% }
-                    }
-                    %>
-                </td>
-            </tr>
-
             <tr <% if (mode.equals("view")) %> class="<%=Util.isOdd(displayed)%>" <%;%>>
                 <th scope="row" class="scope-row">Short name</th>
                         <%
@@ -640,93 +535,89 @@ else
                 </td>
             </tr>
 
-            <%
-            if (type!=null && !type.equals(DElemAttribute.TYPE_COMPLEX)){
-                %>
-
-                <tr <% if (mode.equals("view")) %> class="<%=Util.isOdd(displayed)%>" <%;%>>
-                    <th scope="row" class="scope-row">Obligation</th>
-                            <%
-                            displayed++;
-                            if (!mode.equals("view")){
-                                %>
-                                <td><img src="images/mandatory.gif" alt="Mandatory" title="Mandatory"/></td>
-                                <%
-                            }
-                            %>
-                    <td>
+            <tr <% if (mode.equals("view")) %> class="<%=Util.isOdd(displayed)%>" <%;%>>
+                <th scope="row" class="scope-row">Obligation</th>
                         <%
-                        if (mode.equals("view")){
-                            String dispOblig = "";
-                            if (obligation != null && obligation.equals("M"))
-                                dispOblig = "Mandatory";
-                            else if (obligation != null && obligation.equals("O"))
-                                dispOblig = "Optional";
-                            else if (obligation != null && obligation.equals("C"))
-                                dispOblig = "Conditional";
+                        displayed++;
+                        if (!mode.equals("view")){
                             %>
-                            <%=dispOblig%>
-                            <%
-                        }
-                        else{
-                            %>
-                            <select <%=disabled%> class="small" name="obligation">
-                                <option selected="selected" value="M">Mandatory</option>
-                                <option value="O">Optional</option>
-                                <option value="C">Conditional</option>
-                            </select>
+                            <td><img src="images/mandatory.gif" alt="Mandatory" title="Mandatory"/></td>
                             <%
                         }
                         %>
-                    </td>
-                </tr>
-
-                <tr <% if (mode.equals("view")) %> class="<%=Util.isOdd(displayed)%>" <%;%>>
-                    <th scope="row" class="scope-row">Display type</th>
-                            <%
-                            displayed++;
-                            if (!mode.equals("view")){
-                                %>
-                                <td><img src="images/optional.gif" alt="Optional" title="Optional"/></td>
-                                <%
-                            }
-                            %>
-                    <td>
+                <td>
+                    <%
+                    if (mode.equals("view")){
+                        String dispOblig = "";
+                        if (obligation != null && obligation.equals("M"))
+                            dispOblig = "Mandatory";
+                        else if (obligation != null && obligation.equals("O"))
+                            dispOblig = "Optional";
+                        else if (obligation != null && obligation.equals("C"))
+                            dispOblig = "Conditional";
+                        %>
+                        <%=dispOblig%>
                         <%
-                        if (mode.equals("view")){
-                            String dispDispType = "Not specified";
-                            if (dispType.equals("text"))
-                                dispDispType = "Text box";
-                            else if (dispType.equals("textarea"))
-                                dispDispType = "Text area";
-                            else if (dispType.equals("select"))
-                                dispDispType = "Select box";
-                            else if (dispType.equals("image"))
-                                dispDispType = "Image";
+                    }
+                    else{
+                        %>
+                        <select <%=disabled%> class="small" name="obligation">
+                            <option selected="selected" value="M">Mandatory</option>
+                            <option value="O">Optional</option>
+                            <option value="C">Conditional</option>
+                        </select>
+                        <%
+                    }
+                    %>
+                </td>
+            </tr>
+
+            <tr <% if (mode.equals("view")) %> class="<%=Util.isOdd(displayed)%>" <%;%>>
+                <th scope="row" class="scope-row">Display type</th>
+                        <%
+                        displayed++;
+                        if (!mode.equals("view")){
                             %>
-                            <%=dispDispType%>
+                            <td><img src="images/optional.gif" alt="Optional" title="Optional"/></td>
                             <%
-                        }
-                        else{
-                            %>
-                            <select <%=disabled%> class="small" name="dispType">
-                                <option value="">- Do not display at all -</option>
-                                <option selected="selected" value="text">Text box</option>
-                                <option value="textarea">Text area</option>
-                                <option value="select">Select box</option>
-                                <option value="image">Image</option>
-                            </select>
-                            <%
-                            if (mode.equals("edit") && dispType!=null && dispType.equals("select")){
-                                %>
-                                &nbsp;<span class="smallfont"><a href="<%=request.getContextPath()%>/fixedvalues/attr/<%=attr_id%>/edit">
-                                <b>FIXED VALUES</b></a></span>
-                                <%
-                            }
                         }
                         %>
-                    </td>
-                </tr>
+                <td>
+                    <%
+                    if (mode.equals("view")){
+                        String dispDispType = "Not specified";
+                        if (dispType.equals("text"))
+                            dispDispType = "Text box";
+                        else if (dispType.equals("textarea"))
+                            dispDispType = "Text area";
+                        else if (dispType.equals("select"))
+                            dispDispType = "Select box";
+                        else if (dispType.equals("image"))
+                            dispDispType = "Image";
+                        %>
+                        <%=dispDispType%>
+                        <%
+                    }
+                    else{
+                        %>
+                        <select <%=disabled%> class="small" name="dispType">
+                            <option value="">- Do not display at all -</option>
+                            <option selected="selected" value="text">Text box</option>
+                            <option value="textarea">Text area</option>
+                            <option value="select">Select box</option>
+                            <option value="image">Image</option>
+                        </select>
+                        <%
+                        if (mode.equals("edit") && dispType!=null && dispType.equals("select")){
+                            %>
+                            &nbsp;<span class="smallfont"><a href="<%=request.getContextPath()%>/fixedvalues/attr/<%=attr_id%>/edit">
+                            <b>FIXED VALUES</b></a></span>
+                            <%
+                        }
+                    }
+                    %>
+                </td>
+            </tr>
                 <%
                 if (mode.equals("view") && dispType!=null && dispType.equals("select")){
                 %>
@@ -789,9 +680,6 @@ else
                     %>
                 </td>
             </tr>
-                <%
-            }
-            %>
             <tr <% if (mode.equals("view")) %> class="<%=Util.isOdd(displayed)%>" <%;%>>
                 <th scope="row" class="scope-row">Inheritance</th>
                         <%
@@ -866,155 +754,143 @@ else
                 </td>
             </tr>
 
-            <%
-            if (type!=null && !type.equals(DElemAttribute.TYPE_COMPLEX)){ %>
-
-                <tr <% if (mode.equals("view")) %> class="<%=Util.isOdd(displayed)%>" <%;%>>
-                    <th scope="row" class="scope-row">Display for</th>
-                            <%
-                            displayed++;
-                            if (!mode.equals("view")){
-                                %>
-                                <td><img src="images/mandatory.gif" alt="Mandatory" title="Mandatory"/></td>
-                                <%
-                            }
-                            %>
-                    <td>
+            <tr <% if (mode.equals("view")) %> class="<%=Util.isOdd(displayed)%>" <%;%>>
+                <th scope="row" class="scope-row">Display for</th>
                         <%
-                        String ch1Checked = (!mode.equals("add") && attribute.displayFor("CH1")) ? "checked=\"checked\"" : "";
-                        String ch2Checked = (!mode.equals("add") && attribute.displayFor("CH2")) ? "checked=\"checked\"" : "";
-                        //String dclChecked = (!mode.equals("add") && attribute.displayFor("DCL")) ? "checked" : "";
-                        String dstChecked = (!mode.equals("add") && attribute.displayFor("DST")) ? "checked=\"checked\"" : "";
-                        String tblChecked = (!mode.equals("add") && attribute.displayFor("TBL")) ? "checked=\"checked\"" : "";
-                        String fxvChecked = (!mode.equals("add") && attribute.displayFor("FXV")) ? "checked=\"checked\"" : "";
-                        String schChecked = (!mode.equals("add") && attribute.displayFor(DElemAttribute.ParentType.SCHEMA.toString())) ? "checked=\"checked\"" : "";
-                        String scsChecked = (!mode.equals("add") && attribute.displayFor(DElemAttribute.ParentType.SCHEMA_SET.toString())) ? "checked=\"checked\"" : "";
-                        String vcfChecked = (!mode.equals("add") && attribute.displayFor(DElemAttribute.ParentType.VOCABULARY_FOLDER.toString())) ? "checked=\"checked\"" : "";
-
-                        if (mode.equals("view")){
-                            boolean hasOne = false;
-                            if (ch1Checked.equals("checked=\"checked\"")) { hasOne = true; %>
-                                Data elements with fixed values (code list and elements from a vocabulary) <%
-                            }
-                            if (ch2Checked.equals("checked=\"checked\"")) { hasOne = true; %>
-                                <br/>Data elements with quanitative values <%
-                            }
-                            if (dstChecked.equals("checked=\"checked\"")) { hasOne = true; %>
-                                <br/>Datasets <%
-                            }
-                            if (tblChecked.equals("checked=\"checked\"")) { hasOne = true; %>
-                                <br/>Dataset tables <%
-                            }
-                            if (fxvChecked.equals("checked=\"checked\"")) { hasOne = true; %>
-                                <br/>Fixed values (code list and vocabulary)<%
-                            }
-                            if (schChecked.equals("checked=\"checked\"")) { hasOne = true; %>
-                                <br/>Schemas <%
-                            }
-                            if (scsChecked.equals("checked=\"checked\"")) { hasOne = true; %>
-                                <br/>Schema sets <%
-                            }
-                            if (vcfChecked.equals("checked=\"checked\"")) { hasOne = true; %>
-                                <br/>Vocabulary folders <%
-                            }
-                            if (!hasOne){ %>
-                                Not specified<%
-                            }
-                        }
-                        else {
+                        displayed++;
+                        if (!mode.equals("view")){
                             %>
-                            <input <%=disabled%> type="checkbox" <%=ch1Checked%> name="dispWhen" id="dispCH1" value="CH1"/><label for="dispCH1">Data elements with fixed values</label><br/>
-                            <input <%=disabled%> type="checkbox" <%=ch2Checked%> name="dispWhen" id="dispCH2" value="CH2"/><label for="dispCH2">Data elements with quanitative values</label><br/>
-                            <input <%=disabled%> type="checkbox" <%=dstChecked%> name="dispWhen" id="dispDST" value="DST"/><label for="dispDST">Datasets</label><br/>
-                            <input <%=disabled%> type="checkbox" <%=tblChecked%> name="dispWhen" id="dispTBL" value="TBL"/><label for="dispTBL">Dataset tables</label><br/>
-                            <input <%=disabled%> type="checkbox" <%=schChecked%> name="dispWhen" id="dispSCH" value="<%=DElemAttribute.ParentType.SCHEMA.toString()%>"/><label for="dispSCH">Schemas</label><br/>
-                            <input <%=disabled%> type="checkbox" <%=scsChecked%> name="dispWhen" id="dispSCS" value="<%=DElemAttribute.ParentType.SCHEMA_SET.toString()%>"/><label for="dispSCS">Schema sets</label><br/>
-                            <input <%=disabled%> type="checkbox" <%=vcfChecked%> name="dispWhen" id="dispVCF" value="<%=DElemAttribute.ParentType.VOCABULARY_FOLDER.toString()%>"/><label for="dispVCF">Vocabulary folders</label><br/>
+                            <td><img src="images/mandatory.gif" alt="Mandatory" title="Mandatory"/></td>
                             <%
                         }
                         %>
+                <td>
+                    <%
+                    String ch1Checked = (!mode.equals("add") && attribute.displayFor("CH1")) ? "checked=\"checked\"" : "";
+                    String ch2Checked = (!mode.equals("add") && attribute.displayFor("CH2")) ? "checked=\"checked\"" : "";
+                    //String dclChecked = (!mode.equals("add") && attribute.displayFor("DCL")) ? "checked" : "";
+                    String dstChecked = (!mode.equals("add") && attribute.displayFor("DST")) ? "checked=\"checked\"" : "";
+                    String tblChecked = (!mode.equals("add") && attribute.displayFor("TBL")) ? "checked=\"checked\"" : "";
+                    String fxvChecked = (!mode.equals("add") && attribute.displayFor("FXV")) ? "checked=\"checked\"" : "";
+                    String schChecked = (!mode.equals("add") && attribute.displayFor(DElemAttribute.ParentType.SCHEMA.toString())) ? "checked=\"checked\"" : "";
+                    String scsChecked = (!mode.equals("add") && attribute.displayFor(DElemAttribute.ParentType.SCHEMA_SET.toString())) ? "checked=\"checked\"" : "";
+                    String vcfChecked = (!mode.equals("add") && attribute.displayFor(DElemAttribute.ParentType.VOCABULARY_FOLDER.toString())) ? "checked=\"checked\"" : "";
 
-                    </td>
-                </tr>
-            <%
-            }
-            %>
-            <%
-            if (type!=null && !type.equals(DElemAttribute.TYPE_COMPLEX)){
-                %>
-                <tr <% if (mode.equals("view")) %> class="<%=Util.isOdd(displayed)%>" <%;%>>
-                    <th scope="row" class="scope-row">Display width</th>
-                            <%
-                            displayed++;
-                            if (!mode.equals("view")){
-                                %>
-                                <td><img src="images/optional.gif" alt="Optional" title="Optional"/></td>
-                                <%
-                            }
-                            %>
-                    <td>
-                        <%
-                        if (!mode.equals("add")){
-                            String dispWidth = attribute.getDisplayWidth();
-                            if (mode.equals("edit")){
-                                %>
-                                <input <%=disabled%> type="text" class="smalltext" size="5" name="dispWidth" value="<%=dispWidth%>" />
-                                <%
-                            }
-                            else{
-                                %>
-                                <%=dispWidth%>
-                                <%
-                            }
+                    if (mode.equals("view")){
+                        boolean hasOne = false;
+                        if (ch1Checked.equals("checked=\"checked\"")) { hasOne = true; %>
+                            Data elements with fixed values (code list and elements from a vocabulary) <%
                         }
-                        else {
+                        if (ch2Checked.equals("checked=\"checked\"")) { hasOne = true; %>
+                            <br/>Data elements with quanitative values <%
+                        }
+                        if (dstChecked.equals("checked=\"checked\"")) { hasOne = true; %>
+                            <br/>Datasets <%
+                        }
+                        if (tblChecked.equals("checked=\"checked\"")) { hasOne = true; %>
+                            <br/>Dataset tables <%
+                        }
+                        if (fxvChecked.equals("checked=\"checked\"")) { hasOne = true; %>
+                            <br/>Fixed values (code list and vocabulary)<%
+                        }
+                        if (schChecked.equals("checked=\"checked\"")) { hasOne = true; %>
+                            <br/>Schemas <%
+                        }
+                        if (scsChecked.equals("checked=\"checked\"")) { hasOne = true; %>
+                            <br/>Schema sets <%
+                        }
+                        if (vcfChecked.equals("checked=\"checked\"")) { hasOne = true; %>
+                            <br/>Vocabulary folders <%
+                        }
+                        if (!hasOne){ %>
+                            Not specified<%
+                        }
+                    }
+                    else {
+                        %>
+                        <input <%=disabled%> type="checkbox" <%=ch1Checked%> name="dispWhen" id="dispCH1" value="CH1"/><label for="dispCH1">Data elements with fixed values</label><br/>
+                        <input <%=disabled%> type="checkbox" <%=ch2Checked%> name="dispWhen" id="dispCH2" value="CH2"/><label for="dispCH2">Data elements with quanitative values</label><br/>
+                        <input <%=disabled%> type="checkbox" <%=dstChecked%> name="dispWhen" id="dispDST" value="DST"/><label for="dispDST">Datasets</label><br/>
+                        <input <%=disabled%> type="checkbox" <%=tblChecked%> name="dispWhen" id="dispTBL" value="TBL"/><label for="dispTBL">Dataset tables</label><br/>
+                        <input <%=disabled%> type="checkbox" <%=schChecked%> name="dispWhen" id="dispSCH" value="<%=DElemAttribute.ParentType.SCHEMA.toString()%>"/><label for="dispSCH">Schemas</label><br/>
+                        <input <%=disabled%> type="checkbox" <%=scsChecked%> name="dispWhen" id="dispSCS" value="<%=DElemAttribute.ParentType.SCHEMA_SET.toString()%>"/><label for="dispSCS">Schema sets</label><br/>
+                        <input <%=disabled%> type="checkbox" <%=vcfChecked%> name="dispWhen" id="dispVCF" value="<%=DElemAttribute.ParentType.VOCABULARY_FOLDER.toString()%>"/><label for="dispVCF">Vocabulary folders</label><br/>
+                        <%
+                    }
+                    %>
+
+                </td>
+            </tr>
+                
+            <tr <% if (mode.equals("view")) %> class="<%=Util.isOdd(displayed)%>" <%;%>>
+                <th scope="row" class="scope-row">Display width</th>
+                        <%
+                        displayed++;
+                        if (!mode.equals("view")){
                             %>
-                            <input <%=disabled%> type="text" class="smalltext" size="5" name="dispWidth" />
+                            <td><img src="images/optional.gif" alt="Optional" title="Optional"/></td>
                             <%
                         }
                         %>
-                    </td>
-                </tr>
-                <%
-            }
-
-            if (type!=null && !type.equals(DElemAttribute.TYPE_COMPLEX)) {
-                %>
-                <tr <% if (mode.equals("view")) %> class="<%=Util.isOdd(displayed)%>" <%;%>>
-                    <th scope="row" class="scope-row">Display height</th>
+                <td>
+                    <%
+                    if (!mode.equals("add")){
+                        String dispWidth = attribute.getDisplayWidth();
+                        if (mode.equals("edit")){
+                            %>
+                            <input <%=disabled%> type="text" class="smalltext" size="5" name="dispWidth" value="<%=dispWidth%>" />
                             <%
-                            displayed++;
-                            if (!mode.equals("view")){
-                                %>
-                                <td><img src="images/optional.gif" alt="Optional" title="Optional"/></td>
-                                <%
-                            }
-                            %>
-                    <td>
-                        <%
-                        if (!mode.equals("add")){
-                            String dispHeight = attribute.getDisplayHeight();
-                            if (mode.equals("edit")){
-                                %>
-                                <input <%=disabled%> type="text" class="smalltext" size="5" name="dispHeight" value="<%=dispHeight%>" />
-                                <%
-                            }
-                            else{
-                                %>
-                                <%=dispHeight%>
-                                <%
-                            }
                         }
-                        else {
+                        else{
                             %>
-                            <input <%=disabled%> type="text" class="smalltext" size="5" name="dispHeight" />
+                            <%=dispWidth%>
+                            <%
+                        }
+                    }
+                    else {
+                        %>
+                        <input <%=disabled%> type="text" class="smalltext" size="5" name="dispWidth" />
+                        <%
+                    }
+                    %>
+                </td>
+            </tr>
+
+            <tr <% if (mode.equals("view")) %> class="<%=Util.isOdd(displayed)%>" <%;%>>
+                <th scope="row" class="scope-row">Display height</th>
+                        <%
+                        displayed++;
+                        if (!mode.equals("view")){
+                            %>
+                            <td><img src="images/optional.gif" alt="Optional" title="Optional"/></td>
                             <%
                         }
                         %>
-                    </td>
-                </tr>
+                <td>
+                    <%
+                    if (!mode.equals("add")){
+                        String dispHeight = attribute.getDisplayHeight();
+                        if (mode.equals("edit")){
+                            %>
+                            <input <%=disabled%> type="text" class="smalltext" size="5" name="dispHeight" value="<%=dispHeight%>" />
+                            <%
+                        }
+                        else{
+                            %>
+                            <%=dispHeight%>
+                            <%
+                        }
+                    }
+                    else {
+                        %>
+                        <input <%=disabled%> type="text" class="smalltext" size="5" name="dispHeight" />
+                        <%
+                    }
+                    %>
+                </td>
+            </tr>
 
-                <%
+            <%
                 pageContext.setAttribute("mode", mode);
                 pageContext.setAttribute("attr", attribute);
                 if (mode.equals("edit") || mode.equals("add")) {
@@ -1065,75 +941,8 @@ else
                         </c:if>
                     </td>
                 </tr>
-            <%
-            }
-            if (type!=null && type.equals(DElemAttribute.TYPE_COMPLEX) && !mode.equals("add")){ // if COMPLEX and mode=add
-        %>
-        <tr>
-            <th scope="row" class="scope-row">Fields</th>
-            <% if (!mode.equals("view")){ %>
-            <td></td>
-            <% } %>
-            <td>
-                <table class="datatable results">
-                    <col style="width:100px"/>
-                    <col style="width:200px"/>
-                    <tr>
-                        <th scope="col">Name</th>
-                        <th scope="col">Definition</th>
-                    </tr>
-                    <%
-
-                    //String position = String.valueOf(attrFields.size() + 1);
-                    int position = 0;
-                    if (attrFields!=null){
-                        for (int i=0; i<attrFields.size(); i++){
-                            Hashtable hash = (Hashtable)attrFields.get(i);
-                            String id = (String)hash.get("id");
-                            String name = (String)hash.get("name");
-                            String definition = (String)hash.get("definition");
-                            if (definition.length()>50) definition = definition.substring(0,50) + " ...";
-                            String fieldLink = "m_attr_field.jsp?attr_id=" + attr_id + "&amp;attr_name=" + attr_name + "&amp;attr_ns=basens&amp;field_id=" + id;
-
-                            int pos = Integer.parseInt((String)hash.get("position"));
-                            if (pos >= position) position = pos +1;
-                            String zebraClass = (i + 1) % 2 != 0 ? "odd" : "even";
-
-                            %>
-                            <tr class="<%=zebraClass%>">
-                                <td align="center"><a href="<%=fieldLink%>"><%=Util.processForDisplay(name)%></a></td>
-                                <td align="center" onmouseover=""><%=Util.processForDisplay(definition)%></td>
-                            </tr>
-                            <%
-                        }
-                    }
-                    %>
-                </table>
-            </td>
-        </tr>
         <%
-        if (user!=null){
-            %>
-            <tr>
-                <td></td>
-                <% if (!mode.equals("view")){ %>
-                <td></td>
-                <% } %>
-                <td>
-                    <b>*</b> <span class="smallfont"><a href="m_attr_fields.jsp?attr_id=<%=attr_id%>&amp;attr_name=<%=Util.processForDisplay(attr_shortname)%>">
-                        <b>FIELDS</b></a></span>&nbsp;&nbsp;
-                    <span class="smallfont" style="font-weight: normal">
-                        &lt;&nbsp;click here to add/remove fields of this complex attribute
-                    </span>
-                </td>
-            </tr>
-            <%
-        }
-        %>
-
-        <% } // end if COMPLEX and mode=add
-
-        if (!mode.equals("view")){ %>
+            if (!mode.equals("view")){ %>
             <tr>
                 <th></th>
                 <td colspan="2">
@@ -1165,11 +974,6 @@ else
         %>
     </table>
         <div style="display:none">
-            <%
-            if (type!=null){ %>
-                <input type="hidden" name="type" value="<%=type%>" /> <%
-            }
-            %>
             <input type="hidden" name="mode" value="<%=mode%>" />
         </div>
     </form>

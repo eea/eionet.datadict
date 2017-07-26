@@ -1,0 +1,29 @@
+<p>
+    This is a view that lists all the details about this attribute. More about what's a attribute is available in page help of
+    attributes list.<br/><br/>
+    <b>Short name</b> uniquely identifies the attribute.<br/>
+    <b>Name</b> is a bit more representative.<br/> Since attributes in different contexts can have the same name,
+    <b>Context</b> is used to distinguish them.<br/>
+    <b>Definition</b> is the full definition (i.e. description of its meaning) of the attribute.<br/>
+    <br/>
+    <b>Obligation</b> indicates if the attribute's specification in a dataset/table/element definition is mandatory, optional
+    or conditional.
+    <br/> The details following now are only of interest to data definers, not data reporters.
+    <br/>
+    <br/>
+    <b>Display type</b> indicates if the attribute is displayed as a text box, text area, select box or an image.
+    <br/> An attribute can have <b>fixed values</b>. If it has any specified, they are listed here. Their details can be
+    found by clicking the 'Fixed values' link.
+    <br/>
+    <b>Display multiple</b> indicates if this attribute can have multiple values at the same time. For example a Keyword
+    could be 'environment', 'water' and 'lake' all at the same time.
+    <br/>
+    <b>Inheritance</b> tells if and how the attribute is inheritable from higher levels (i.e. from dataset level to table
+    level).<br/>
+    <b>Display order</b> indicates the order of attribute display in attributes list and dataset/table/element definitions.
+    <br/>
+    <b>Display for</b> indicates the definitions where this attribute can be used: dataset, table, element with fixed values
+    or element with quanitative values or all together or only some of them.
+    <br/> Finally, if the attribute is to be displayed as a text box, the
+    <b>Display width</b> and <b>Display height</b> indicate the width and height of that text box.
+</p>

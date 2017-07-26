@@ -3,7 +3,6 @@ package eionet.meta.service.data;
 import java.util.List;
 
 import eionet.meta.dao.domain.Attribute;
-import eionet.meta.dao.domain.ComplexAttribute;
 
 /**
  *
@@ -24,13 +23,4 @@ public interface IObjectWithDynamicAttrs {
      */
     public void setAttributes(List<Attribute> attributes);
 
-    /**
-     * @return the complex attributes
-     */
-    public List<ComplexAttribute> getComplexAttributes();
-
-    /**
-     * @param attributes the complex attributes to set
-     */
-    public void setComplexAttributes(List<ComplexAttribute> complexAttributes);
 }

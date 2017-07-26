@@ -10,12 +10,12 @@ import java.sql.Types;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
-
 import eionet.util.Util;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
 import eionet.util.sql.SQLGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -25,7 +25,7 @@ import eionet.util.sql.SQLGenerator;
 public class NamespaceHandler extends BaseHandler {
 
     /** */
-    private static final Logger LOGGER = Logger.getLogger(NamespaceHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(NamespaceHandler.class);
 
     /** */
     private String mode = null;

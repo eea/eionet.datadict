@@ -67,7 +67,7 @@
     try {
         conn = ConnectionUtil.getConnection();
         DDSearchEngine searchEngine = new DDSearchEngine(conn, "");
-        Vector attrs = searchEngine.getSimpleAttributes(objID, objType);
+        Vector attrs = searchEngine.getAttributes(objID, objType);
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">

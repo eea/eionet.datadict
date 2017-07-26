@@ -1,0 +1,14 @@
+<h2>Public outputs</h2>
+<p>
+    Public outputs are these automatically generated outputs (in the documents & templates section at the top of definition pages)
+    that should be availabale on this dataset definition for un-authenticated (i.e. non-logged-in) users.
+    <br/> This attribute enables to control which exactly should they be. At the moment only two outputs are supported in
+    this function- the PDF output and the MS Excel output. Whatever you set here on the dataset level, is also applied on
+    its lower levels. This means that if you don't allow to show the MS Excel template for this dataset, it is also not allowed
+    for its tables.
+    <br/>
+    <b>
+        This attribute is displayed only for users who have the right to edit this dataset!<br/>
+        In view mode it is disabled.
+    </b>
+</p>

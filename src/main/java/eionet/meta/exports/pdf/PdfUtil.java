@@ -9,6 +9,7 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 
 import com.eteks.awt.PJAToolkit;
+import com.lowagie.text.Anchor;
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Element;
 import com.lowagie.text.Font;
@@ -22,10 +23,15 @@ import eionet.meta.DElemAttribute;
 import eionet.meta.DataElement;
 import eionet.meta.DsTable;
 import eionet.meta.FixedValue;
+import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.dao.domain.util.FixedValuesOrdinalComparator;
+import eionet.util.StringEncoder;
 import eionet.util.UnicodeEscapes;
 import eionet.util.Util;
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 public class PdfUtil {
 
@@ -106,17 +112,11 @@ public class PdfUtil {
         }
     }
 
-    public static PdfPTable simpleAttributesTable(Vector attrs) throws Exception {
-        return simpleAttributesTable(attrs, null);
-    }
-
-    public static PdfPTable simpleAttributesTable(Vector attrs, Vector map) throws Exception {
-
-        if (attrs == null || attrs.size() == 0) {
+    public static PdfPTable simpleAttributesTable(Map<String, DElemAttribute> attributes, Vector<String> visibleAttributeKeys) throws Exception {
+        if (attributes == null || attributes.isEmpty()) {
             return null;
         }
-
-        Vector show = map == null ? new Vector() : (Vector) map.clone();
+  
         // set up the table
         PdfPTable table = new PdfPTable(2);
         table.setHorizontalAlignment(Element.ALIGN_LEFT);
@@ -128,198 +128,64 @@ public class PdfUtil {
         int rowCount = 0;
         PdfPCell nameCell = null;
         PdfPCell valueCell = null;
-        String methodology = null;
 
-        for (int i = 0; attrs != null && i < attrs.size(); i++) {
-
-            String name = null;
-            String dispName = null;
-            String value = null;
-            // Vector values = null;
-
-            Object o = attrs.get(i);
-            if (o.getClass().getName().endsWith("Hashtable")) {
-                name = (String) ((Hashtable) o).get("name");
-                dispName = name;
-                value = (String) ((Hashtable) o).get("value");
-            } else if (o.getClass().getName().endsWith("DElemAttribute")) {
-                name = ((DElemAttribute) o).getShortName();
-                dispName = ((DElemAttribute) o).getName();
-                value = ((DElemAttribute) o).getValue();
-
-                // JH201103 - skip image attributes, will be treated later
-                String dispType = ((DElemAttribute) o).getDisplayType();
-                if (dispType != null && dispType.equals("image")) {
+        for (String key : visibleAttributeKeys) {
+            if (attributes.containsKey(key)) {
+                DElemAttribute attribute = (DElemAttribute) attributes.get(key);
+                String displayName = attribute.getName();
+                List<String> values = new ArrayList<>();
+                List<String> links = new ArrayList<>();
+                String displayType = attribute.getDisplayType();
+                if (displayType != null && displayType.equals("image")) {
+                    // JH201103 - skip image attributes, will be treated later
                     continue;
                 }
-            }
 
-            if (Util.isEmpty(value) || Util.isEmpty(name)) {
-                continue;
-            }
-            int pos = map == null ? show.size() : show.indexOf(name);
-            if (pos < 0) {
-                continue;
-            }
-
-            /*
-             * if (show != null && !show.contains(name)) continue; if (name.equalsIgnoreCase("methodology")) { methodology= value;
-             * continue; }
-             */
-
-            // int c;
-            Vector values = new Vector();
-            StringTokenizer st = new StringTokenizer(value, "\n");
-            while (st.hasMoreTokens()) {
-                values.add(st.nextToken());
-            }
-
-            Hashtable hash = new Hashtable();
-            hash.put("name", dispName);
-            hash.put("values", values);
-
-            if (map != null) {
-                show.remove(pos);
-            }
-            show.add(pos, hash);
-        }
-
-        /*
-         * for (c = 0; c < (value.length() / MAX_VALUE_LEN); c++) values.add(value.substring(c*MAX_VALUE_LEN, (c +
-         * 1)*MAX_VALUE_LEN)); if (value.length() > c*MAX_VALUE_LEN) values.add(value.substring(c*MAX_VALUE_LEN));
-         */
-
-        // if (values == null || values.size() == 0) continue;
-        // for (int j = 0; j < values.size(); j++) {
-        // String _name = j == 0 ? name : "";
-        // nameCell = new PdfPCell(new Phrase(_name, Fonts.get(Fonts.ATTR_TITLE)));
-        // valueCell = new PdfPCell(processLinks((String) values.get(j), Fonts.get(Fonts.CELL_VALUE)));
-
-        for (int i = 0; show != null && i < show.size(); i++) {
-
-            Object o = show.get(i);
-            if (!o.getClass().getName().endsWith("Hashtable")) {
-                continue;
-            }
-            Hashtable hash = (Hashtable) o;
-            String dispName = (String) hash.get("name");
-            Vector values = (Vector) hash.get("values");
-
-            for (int j = 0; j < values.size(); j++) {
-
-                dispName = j > 0 ? "" : dispName;
-                String value = PdfUtil.rmvCR((String) values.get(j));
-
-                nameCell = new PdfPCell(new Phrase(dispName, Fonts.get(Fonts.ATTR_TITLE)));
-                /*
-                 * BaseFont bf = BaseFont.createFont("/home/www/webs/datadict/public/WEB-INF/classes/arial.ttf",
-                 * BaseFont.IDENTITY_H, BaseFont.EMBEDDED); Font font = new Font(bf, 10);
-                 */
-                valueCell = new PdfPCell(process(value, Fonts.get(Fonts.CELL_VALUE)));
-                valueCell.setLeading(9 * 1.2f, 0);
-
-                nameCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
-                nameCell.setPaddingRight(5);
-                nameCell.setBorder(Rectangle.NO_BORDER);
-                valueCell.setBorder(Rectangle.NO_BORDER);
-
-                if (rowCount % 2 != 1) {
-                    nameCell.setGrayFill(0.9f);
-                    valueCell.setGrayFill(0.9f);
+                if (displayType != null && displayType.equals("vocabulary")) {
+                    for (VocabularyConcept vocabularyConcept : attribute.getVocabularyConcepts()) {
+                        values.add(vocabularyConcept.getLabel());
+                        String baseUri = VocabularyFolder.getBaseUri(attribute.getVocabularyBinding());
+                        if (!baseUri.endsWith("/") && !baseUri.endsWith("#") && !baseUri.endsWith(":")) {
+                            baseUri += "/";
+                        }
+                        String link = StringEncoder.encodeToIRI(baseUri + vocabularyConcept.getIdentifier());
+                        links.add(link);
+                    }
+                } else {
+                    if (attribute.getValue() == null) {
+                        continue;
+                    }
+                    values = Arrays.asList(attribute.getValue().split("\n"));
                 }
 
-                table.addCell(nameCell);
-                table.addCell(valueCell);
-            }
+                for (int i = 0; i < values.size(); i++) {
+                    displayName = i > 0 ? "" : displayName;
+                    String value = PdfUtil.rmvCR((String) values.get(i));
+                    nameCell = new PdfPCell(new Phrase(displayName, Fonts.get(Fonts.ATTR_TITLE)));
 
-            rowCount++;
-        }
+                    if (displayType != null && displayType.equals("vocabulary")) {
+                        Anchor anchor = new Anchor(new Chunk(value, Fonts.get(Fonts.ANCHOR)));
+                        anchor.setReference(links.get(i));
+                        valueCell = new PdfPCell(anchor);
+                    } else {
+                        valueCell = new PdfPCell(process(value, Fonts.get(Fonts.CELL_VALUE)));
+                    }
 
-        if (table.size() > 0) {
-            return table;
-        } else {
-            return null;
-        }
-    }
+                    valueCell.setLeading(9 * 1.2f, 0);
 
-    public static PdfPTable complexAttributeTable(DElemAttribute attr) throws Exception {
+                    nameCell.setHorizontalAlignment(Element.ALIGN_RIGHT);
+                    nameCell.setPaddingRight(5);
+                    nameCell.setBorder(Rectangle.NO_BORDER);
+                    valueCell.setBorder(Rectangle.NO_BORDER);
 
-        // get the attribute fields
-        Vector fields = attr.getFields();
-        if (fields == null || fields.size() == 0) {
-            return null;
-        }
-
-        int fieldCount = fields.size();
-
-        // set up the table
-        PdfPTable table = new PdfPTable(fieldCount);
-        table.setHorizontalAlignment(Element.ALIGN_LEFT);
-
-        // set the column widths
-        float[] headerwidths = new float[fieldCount];
-        for (int i = 0; i < fieldCount; i++) {
-            headerwidths[i] = 100 / fieldCount; // percentage
-        }
-
-        table.setWidths(headerwidths);
-        table.setWidthPercentage(100); // percentage
-
-        // start adding rows and cells
-        int rowCount = 0;
-
-        // add caption row
-        PdfPCell cell =
-                new PdfPCell(new Phrase(attr.getName() == null ? attr.getShortName() : attr.getName(),
-                        Fonts.get(Fonts.TBL_CAPTION)));
-        cell.setHorizontalAlignment(Element.ALIGN_LEFT);
-        cell.setPaddingLeft(5);
-        cell.setColspan(fieldCount);
-        cell.setBorder(Rectangle.NO_BORDER);
-
-        table.addCell(cell);
-
-        // add header row
-        for (int i = 0; i < fields.size(); i++) {
-
-            Hashtable field = (Hashtable) fields.get(i);
-            String fieldName = (String) field.get("name");
-
-            cell = new PdfPCell(new Phrase(fieldName, Fonts.get(Fonts.TBL_HEADER)));
-            cell.setHorizontalAlignment(Element.ALIGN_LEFT);
-            cell.setPaddingLeft(5);
-            cell.setBorder(Rectangle.NO_BORDER);
-            cell.setGrayFill(0.4f);
-
-            table.addCell(cell);
-        }
-
-        // add the attribute value rows
-        Vector valueRows = attr.getRows();
-        for (int i = 0; valueRows != null && i < valueRows.size(); i++) {
-
-            Hashtable rowHash = (Hashtable) valueRows.get(i);
-
-            for (int t = 0; t < fieldCount; t++) {
-                Hashtable fieldHash = (Hashtable) fields.get(t);
-                String fieldID = (String) fieldHash.get("id");
-                String fieldValue = fieldID == null ? " " : (String) rowHash.get(fieldID);
-
-                if (fieldValue == null) {
-                    fieldValue = " ";
+                    if (rowCount % 2 != 1) {
+                        nameCell.setGrayFill(0.9f);
+                        valueCell.setGrayFill(0.9f);
+                    }
+                    table.addCell(nameCell);
+                    table.addCell(valueCell);
                 }
-
-                Phrase phr = process(fieldValue, Fonts.get(Fonts.CELL_VALUE));
-                cell = new PdfPCell(phr);
-                cell.setHorizontalAlignment(Element.ALIGN_LEFT);
-                cell.setPaddingLeft(5);
-                cell.setBorder(Rectangle.NO_BORDER);
-
-                if (i % 2 == 1) {
-                    cell.setGrayFill(0.9f);
-                }
-
-                table.addCell(cell);
+                rowCount++;
             }
         }
 
@@ -335,7 +201,6 @@ public class PdfUtil {
     }
 
     public static PdfPTable tableElements(Vector tblElems, Vector captions, Sectioning sect, int level) throws Exception {
-
         if (tblElems == null || tblElems.size() == 0) {
             return null;
         }

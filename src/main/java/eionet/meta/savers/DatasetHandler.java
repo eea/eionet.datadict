@@ -16,8 +16,6 @@ import java.util.Vector;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.log4j.Logger;
-
 import eionet.acl.AccessController;
 import eionet.acl.SignOnException;
 import eionet.datadict.errors.BadRequestException;
@@ -30,6 +28,9 @@ import eionet.util.Util;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
 import eionet.util.sql.SQLGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +42,7 @@ import java.util.List;
 public class DatasetHandler extends BaseHandler {
 
     /** */
-    private static final Logger LOGGER = Logger.getLogger(DatasetHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DatasetHandler.class);
 
     public static String ATTR_PREFIX = "attr_";
     public static String ATTR_MULT_PREFIX = "attr_mult_";
@@ -480,7 +481,6 @@ public class DatasetHandler extends BaseHandler {
 
         // delete dataset dependencies
         deleteAttributes(false);
-        deleteComplexAttributes();
         deleteCache();
         deleteDocs();
         deleteTablesAndElements();
@@ -694,28 +694,6 @@ public class DatasetHandler extends BaseHandler {
         } finally {
             SQL.close(rs);
             SQL.close(stmt);
-        }
-    }
-
-    private void deleteComplexAttributes() throws SQLException {
-
-        for (int i = 0; ds_ids != null && i < ds_ids.length; i++) {
-
-            Parameters params = new Parameters();
-            params.addParameterValue("mode", "delete");
-            params.addParameterValue("legal_delete", "true");
-            params.addParameterValue("parent_id", ds_ids[i]);
-            params.addParameterValue("parent_type", "DS");
-
-            AttrFieldsHandler attrFieldsHandler =
-                new AttrFieldsHandler(conn, params, ctx);
-            //attrFieldsHandler.setVersioning(this.versioning);
-            attrFieldsHandler.setVersioning(false);
-            try {
-                attrFieldsHandler.execute();
-            } catch (Exception e) {
-                throw new SQLException(e.toString());
-            }
         }
     }
 
@@ -1045,40 +1023,6 @@ public class DatasetHandler extends BaseHandler {
             buf = new StringBuffer(gen.updateStatement());
             buf.append(" where PARENT_TYPE='DS' and DATAELEM_ID=").
             append(inParams.add(oldID, Types.INTEGER));
-
-            stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
-            stmt.executeUpdate();
-
-            inParams = new INParameters();
-            gen.clear();
-            gen.setTable("COMPLEX_ATTR_ROW r, COMPLEX_ATTR_FIELD f");
-            gen.setFieldExpr("f.ROW_ID", "md5(concat(" + inParams.add(newID, Types.INTEGER)
-                    + " , r.PARENT_TYPE, r.M_COMPLEX_ATTR_ID, r.POSITION))");
-            buf = new StringBuffer(gen.updateStatement());
-            buf.append(" where r.ROW_ID=f.ROW_ID and r.PARENT_TYPE='DS' and r.PARENT_ID=").
-            append(inParams.add(oldID, Types.INTEGER));
-
-            stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
-            stmt.executeUpdate();
-
-            inParams = new INParameters();
-            gen.clear();
-            gen.setTable("COMPLEX_ATTR_ROW");
-            gen.setFieldExpr("PARENT_ID", newID);
-            buf = new StringBuffer(gen.updateStatement());
-            buf.append(" where PARENT_TYPE='DS' and PARENT_ID=").
-            append(inParams.add(oldID, Types.INTEGER));
-
-            stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
-            stmt.executeUpdate();
-
-            inParams = new INParameters();
-            gen.clear();
-            gen.setTable("COMPLEX_ATTR_ROW");
-            gen.setFieldExpr("ROW_ID", "md5(concat(PARENT_ID, PARENT_TYPE, M_COMPLEX_ATTR_ID,POSITION))");
-            buf = new StringBuffer(gen.updateStatement());
-            buf.append(" where PARENT_TYPE='DS' and PARENT_ID=").
-            append(inParams.add(newID, Types.INTEGER));
 
             stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
             stmt.executeUpdate();

@@ -10,9 +10,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.log4j.Logger;
-
 import eionet.util.sql.ConnectionUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -22,7 +22,7 @@ import eionet.util.sql.ConnectionUtil;
 public class RdfServlet extends HttpServlet {
 
     /** Logger. */
-    protected static final Logger LOGGER = Logger.getLogger(RdfServlet.class);
+    protected static final Logger LOGGER = LoggerFactory.getLogger(RdfServlet.class);
 
     /** */
     public static final String URL_MAPPING = "/GetRdf";
@@ -48,7 +48,7 @@ public class RdfServlet extends HttpServlet {
             rdf.write(writer);
             writer.flush();
         } catch (Exception e) {
-            e.printStackTrace(System.out);
+            LOGGER.error(e.getMessage(), e);
             throw new ServletException(e.toString(), e);
         } finally {
             try {
@@ -58,7 +58,8 @@ public class RdfServlet extends HttpServlet {
                 if (conn != null) {
                     conn.close();
                 }
-            } catch (Exception ee) {
+            } catch (Exception e) {
+                LOGGER.error(e.getMessage(), e);
             }
         }
     }

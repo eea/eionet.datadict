@@ -63,7 +63,10 @@ import net.sourceforge.stripes.action.UrlBinding;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.validator.routines.UrlValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.util.UriUtils;
 
 import eionet.meta.DDRuntimeException;
@@ -79,6 +82,8 @@ import eionet.meta.dao.domain.VocabularyFolder;
  * @author Jaanus Heinlaid
  */
 public final class Util {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(Util.class);
 
     /** Size of buffer for the write() method. */
     private static final int BUF_SIZE = 1024;
@@ -703,9 +708,7 @@ public final class Util {
      * Return's a throwable's stack trace in a string.
      */
     public static String getStack(Throwable t) {
-        ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
-        t.printStackTrace(new PrintStream(bytesOut));
-        return bytesOut.toString();
+        return ExceptionUtils.getFullStackTrace(t);
     }
 
     /*

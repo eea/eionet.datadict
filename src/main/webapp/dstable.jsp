@@ -108,7 +108,6 @@
     ServletContext ctx = getServletContext();
     Vector mAttributes = null;
     Vector attributes = null;
-    Vector complexAttrs = null;
     Vector elems = null;
     String mode = null;
     String dsIdf = null;
@@ -367,12 +366,9 @@
         }
 
         // get metadata of attributes
-        mAttributes = searchEngine.getDElemAttributes(null, DElemAttribute.TYPE_SIMPLE, DDSearchEngine.ORDER_BY_M_ATTR_DISP_ORDER);
+        mAttributes = searchEngine.getDElemAttributes(null, DDSearchEngine.ORDER_BY_M_ATTR_DISP_ORDER);
         // get values of attributes
-        attributes = searchEngine.getAttributes(tableID, "T", DElemAttribute.TYPE_SIMPLE, null, dsID);
-        complexAttrs = searchEngine.getComplexAttributes(tableID, "T", null, null, dsID);
-        if (complexAttrs==null)
-            complexAttrs = new Vector();
+        attributes = searchEngine.getAttributes(tableID, "T", null, dsID);
 
         // get the table's elements
         if (mode.equals("view") && dsTable!=null)
@@ -658,9 +654,6 @@ else if (mode.equals("add"))
                 if (elems != null && elems.size() > 0) {
                     quicklinks.add("Elements | elements");
                 }
-                if (complexAttrs != null && complexAttrs.size() > 0) {
-                    quicklinks.add("Complex attributes | cattrs");
-                }
                 request.setAttribute("quicklinks", quicklinks);
         %>
                 <jsp:include page="quicklinks.jsp" flush="true" />
@@ -678,7 +671,6 @@ else if (mode.equals("add"))
                     // elements link
                     String elemLink = request.getContextPath() + "/tblelems.jsp?table_id=" + tableID + "&amp;ds_id=" + dsID + "&amp;ds_name=" + dsName + "&amp;ds_idf=" + dsIdf;
                     %>
-                    <li class="edit"><a href="<%=request.getContextPath()%>/complex_attrs.jsp?parent_id=<%=tableID%>&amp;parent_type=T&amp;parent_name=<%=Util.processForDisplay(dsTable.getShortName())%>&amp;dataset_id=<%=dsID%>">Edit complex attributes</a></li>
                     <li class="manage"><a href="<%=elemLink%>">Manage elements</a></li>
                     <li class="delete"><a href="javascript:submitForm('delete')">Delete</a></li>
                     <%
@@ -1490,70 +1482,6 @@ else if (mode.equals("add"))
                                                 }
                                     }
                                     %>
-
-                                    <!-- complex attributes -->
-                                    <% if (mode.equals("view") && complexAttrs!=null && complexAttrs.size()>0) { %>
-                                        <h2 id="cattrs">Complex attributes</h2>
-                                            <table class="datatable results" id="dataset-attributes">
-                                                <col style="width:30%"/>
-                                                <col style="width:70%"/>
-
-                                                <%
-                                                displayed = 1;
-                                                isOdd = Util.isOdd(displayed);
-                                                for (int i=0; i<complexAttrs.size(); i++){
-                                                    DElemAttribute attr = (DElemAttribute)complexAttrs.get(i);
-                                                    attrID = attr.getID();
-                                                    String attrName = attr.getName();
-                                                    Vector attrFields = searchEngine.getAttrFields(attrID, DElemAttribute.FIELD_PRIORITY_HIGH);
-                                                    %>
-
-                                                    <tr class="<%=isOdd%>">
-                                                        <td>
-                                                            <a href="<%=request.getContextPath()%>/complex_attr.jsp?attr_id=<%=attrID%>&amp;parent_id=<%=tableID%>&amp;parent_type=T&amp;parent_name=<%=Util.processForDisplay(dsTable.getShortName())%>&amp;dataset_id=<%=dsID%>" title="Click here to view all the fields">
-                                                                <%=Util.processForDisplay(attrName)%>
-                                                                <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?attrid=<%=attrID%>&amp;attrtype=COMPLEX"></a>
-                                                            </a>
-                                                        </td>
-                                                        <td>
-                                                            <%
-                                                            StringBuffer rowValue=null;
-                                                            Vector rows = attr.getRows();
-                                                            for (int j=0; rows!=null && j<rows.size(); j++){
-
-                                                                if (j>0){%>---<br/><%}
-
-                                                                Hashtable rowHash = (Hashtable)rows.get(j);
-                                                                rowValue = new StringBuffer();
-
-                                                                for (int t=0; t<attrFields.size(); t++){
-                                                                    Hashtable hash = (Hashtable)attrFields.get(t);
-                                                                    String fieldID = (String)hash.get("id");
-                                                                    String fieldValue = fieldID==null ? null : (String)rowHash.get(fieldID);
-                                                                    if (fieldValue == null) fieldValue = "";
-                                                                    if (fieldValue.trim().equals("")) continue;
-
-                                                                    if (t>0 && fieldValue.length()>0  && rowValue.toString().length()>0)
-                                                                        rowValue.append(", ");
-
-                                                                    rowValue.append(Util.processForDisplay(fieldValue));
-                                                                    %>
-                                                                    <%=Util.processForDisplay(fieldValue)%><br/><%
-                                                                }
-                                                            }
-                                                            %>
-                                                        </td>
-
-                                                        <% isOdd = Util.isOdd(++displayed); %>
-                                                    </tr><%
-                                                }
-                                                %>
-                                            </table>
-                                    <%
-                        }
-                        %>
-                        <!-- end complex attributes -->
-
                 <!-- end dotted -->
             </div>
 

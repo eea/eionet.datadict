@@ -2,7 +2,6 @@ package eionet.meta.dao;
 
 import eionet.meta.DElemAttribute;
 import eionet.meta.dao.domain.Attribute;
-import eionet.meta.dao.domain.ComplexAttribute;
 import eionet.meta.dao.domain.FixedValue;
 import eionet.meta.dao.domain.RdfNamespace;
 import eionet.meta.dao.domain.SimpleAttribute;
@@ -33,14 +32,6 @@ public interface IAttributeDAO {
     void copySimpleAttributes(int parentId, String parentType, int newParentId);
 
     /**
-     *
-     * @param parentId
-     * @param parentType
-     * @param newParentId
-     */
-    void copyComplexAttributes(int parentId, String parentType, int newParentId);
-
-    /**
      * Deletes all attributes of given parent ids.
      *
      * @param parentIds
@@ -60,11 +51,10 @@ public interface IAttributeDAO {
      * Wraps the DDSearchEngine functionality for getting attributes meta data.
      *
      * @param parentType
-     * @param attributeType
      * @return
      * @throws DAOException
      */
-    List<Attribute> getAttributes(DElemAttribute.ParentType parentType, String attributeType) throws DAOException;
+    List<Attribute> getAttributes(DElemAttribute.ParentType parentType) throws DAOException;
 
     /**
      * Returns the values of simple attributes of a parent identified by the given parent id and parent type. The type of returned
@@ -95,15 +85,6 @@ public interface IAttributeDAO {
      * @return
      */
     Attribute getAttributeByName(String shortName);
-
-    /**
-     * Returns complex attribute object by name.
-     *
-     * @param complexAttrName
-     *            Exact name of attribute.
-     * @return CoplexAttribute object
-     */
-    ComplexAttribute getComplexAttributeByName(String complexAttrName);
 
     /**
      * Returns attributes.

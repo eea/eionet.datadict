@@ -18,11 +18,15 @@ import javax.servlet.http.HttpServletResponse;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.sql.ConnectionUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author jaanus
  */
 public class MdbServlet extends HttpServlet {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MdbServlet.class);
 
     /*
      *  (non-Javadoc)
@@ -86,7 +90,7 @@ public class MdbServlet extends HttpServlet {
 
             os.flush();
         } catch (Throwable t) {
-            t.printStackTrace(System.out);
+            LOGGER.error(t.getMessage(), t);
             throw new ServletException(t.toString());
         } finally {
             try {
@@ -94,7 +98,9 @@ public class MdbServlet extends HttpServlet {
                 if (in != null) in.close();
                 if (os != null) os.close();
                 if (!cacheUsed && file != null && file.exists()) file.delete();
-            } catch (Exception ee) {}
+            } catch (Exception e) {
+                LOGGER.error(e.getMessage(), e);
+            }
         }
     }
 }

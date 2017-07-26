@@ -16,8 +16,12 @@ import eionet.meta.DDUser;
 import eionet.util.SecurityUtil;
 import eionet.util.Util;
 import eionet.util.sql.ConnectionUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class XmlInstServlet extends HttpServlet {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(XmlInstServlet.class);
 
     protected void service(HttpServletRequest req, HttpServletResponse res)
                                 throws ServletException, IOException {
@@ -67,13 +71,15 @@ public class XmlInstServlet extends HttpServlet {
             writer.close();
             osw.close();
         } catch (Exception e) {
-            e.printStackTrace(System.out);
-            throw new ServletException(e.toString());
+            LOGGER.error(e.getMessage(), e);
+            throw new ServletException(e.getMessage(), e);
         } finally {
             try {
                 if (writer != null) writer.close();
                 if (conn != null) conn.close();
-            } catch (Exception ee) {}
+            } catch (Exception e) {
+                LOGGER.error(e.getMessage(), e);
+            }
         }
     }
 

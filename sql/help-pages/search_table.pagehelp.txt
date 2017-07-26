@@ -1,0 +1,33 @@
+<h2>Table search page</h2>
+<p>
+    This page enables you to search for tables.
+</p>
+<p>
+    More about <strong>search criteria</strong> is available by clicking the information icons next to them.<br/> You can
+    add more search criteria by using the blue '+' sign at the bottom part of the page. You can remove added criteria by
+    clicking the blue '-' sign that will appear next to them.
+</p>
+<p>
+    The radio buttons below the criteria enable to set the <strong>search type</strong>. Possible options are:
+    <ul>
+        <li>
+            <strong>Substring search.</strong> This will interepret your inputs as substrings of what you're searching for.
+        </li>
+        <li>
+            <strong>Exact search.</strong> This will interepret your inputs as the exact phrase you're looking for.
+        </li>
+        <li>
+            <strong>Free text search.</strong> This will interepret your inputs as free text.
+        </li>
+    </ul>
+</p>
+<p>
+    If you have authenticated yourself then you will see the <strong>Working copies only</strong> checkbox. If this is checked,
+    only working copies are searched for.
+</p>
+<p>
+    <strong>Search</strong> button speaks for itself. <strong>Reset</strong> clears your search criteria.
+</p>
+<p>
+    <strong>NB!</strong> If all the criteria are blank, the query returns all tables found in DD.
+</p>

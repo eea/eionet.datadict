@@ -34,8 +34,9 @@ import java.util.Set;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.displaytag.properties.SortOrderEnum;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -57,7 +58,7 @@ import eionet.util.Util;
 public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
 
     /** Logger. */
-    private static final Logger LOGGER = Logger.getLogger(SchemaSetDAOImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SchemaSetDAOImpl.class);
 
     /** */
     private static final String GET_SCHEMA_MAPPINGS_SQL =
@@ -149,7 +150,6 @@ public class SchemaSetDAOImpl extends GeneralDAOImpl implements ISchemaSetDAO {
              * a.getId()); String value = "%" + a.getValue() + "%"; parameters.put(valueKey, value); } }
              */
             sql.append(getAttributesSqlConstraintAndAppendParams(searchFilter, parameters, "ss.SCHEMA_SET_ID"));
-            sql.append(getComplexAttrsSqlConstraintAndAppendParams(searchFilter, parameters, "ss.SCHEMA_SET_ID"));
         }
 
         // Sorting

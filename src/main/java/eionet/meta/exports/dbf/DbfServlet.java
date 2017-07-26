@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import eionet.util.sql.ConnectionUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -16,6 +18,8 @@ import eionet.util.sql.ConnectionUtil;
  *
  */
 public class DbfServlet extends HttpServlet {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DbfServlet.class);
 
     /** */
     private static final String FILE_EXT = ".dbf";
@@ -45,7 +49,7 @@ public class DbfServlet extends HttpServlet {
             res.setHeader("Content-Disposition", "attachment; filename=\"" + (fileName == null ? pathInfo.substring(1) : fileName) + ".dbf\"");
             dbf.write(res.getOutputStream());
         } catch (Exception e) {
-            e.printStackTrace(System.out);
+            LOGGER.error(e.getMessage(), e);
             throw new ServletException("Error when creating DBF", e);
         } finally {
             try {

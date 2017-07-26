@@ -3,7 +3,9 @@ package eionet.datadict.infrastructure.scheduling;
 import eionet.datadict.dal.AsyncTaskHistoryDao;
 import eionet.datadict.model.AsyncTaskExecutionEntryHistory;
 import java.util.List;
-import org.apache.log4j.Logger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -15,7 +17,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class FixedTimeScheduledTasks {
 
-    private static final Logger LOGGER = Logger.getLogger(FixedTimeScheduledTasks.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(FixedTimeScheduledTasks.class);
     private final AsyncTaskHistoryDao asyncTaskHistoryDao;
 
     @Autowired

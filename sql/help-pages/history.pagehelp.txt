@@ -1,0 +1,17 @@
+<h2>History of a dataset or common element</h2>
+<p>
+    The Data Dictionary keeps history of datasets and common elements.<br/> The version numbers are called <b>CheckInNo</b>    and they are incremented<br/> every time a definition of a dataset or common element is checked in and the user has selected
+    the option for updating the dataset's or element's version (see more in helps of dataset, table and element edit pages).
+    <br/>
+    <br/> This page lists the history of the selected dataset or common element.<br/>
+    <b>Please note that for un-authenticated users the history contains only the
+    definitions in Released status.</b><br/> Every row in this list represents a previous version of the selected<br/> dataset
+    or element. Every version is identified by CheckInNo which is clickable and leads to the version's detailed view. Note
+    that you cannot edit history!
+    <br/><br/> The <b>User</b> column stands for the user who created the version.<br/> The <b>Date</b> represents the date
+    of the creation of the version.
+    <br/>
+    <br/> If this is a dataset history and you see a
+    <font color="red">'D'</font> sign behind the version, it means it has been deleted by you. You can go to 'Restore datasets' page by clicking
+    this sign.
+</p>

@@ -1,0 +1,4 @@
+<h2>Table</h2>
+<p>
+    This column indicates the short name of the table where this element belongs to.
+</p>

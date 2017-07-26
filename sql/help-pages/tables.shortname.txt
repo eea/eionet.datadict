@@ -1,0 +1,4 @@
+<h2>Short name</h2>
+<p>
+    This column contains the table's short name.
+</p>

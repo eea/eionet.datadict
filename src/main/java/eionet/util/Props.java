@@ -16,7 +16,8 @@ import java.util.HashSet;
 import org.apache.commons.lang.LocaleUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Hashtable;
 import java.util.Locale;
@@ -33,7 +34,7 @@ public class Props implements PropsIF {
     /**
      * Static logger for this class.
      */
-    private static final Logger LOGGER = Logger.getLogger(Props.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Props.class);
     
     /**
      * A hash-table of default values for the properties. To be initialized at first required instance.
@@ -63,7 +64,7 @@ public class Props implements PropsIF {
                     isValidWorkingLanguage = StringUtils.isNotBlank(locale.getLanguage());
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.error(e.getMessage(), e);
             }
             if (!isValidWorkingLanguage) {
                 LOGGER.warn("Working language is not valid: '" + workingLanguage + "'");
@@ -207,7 +208,7 @@ public class Props implements PropsIF {
                 longValue = Long.parseLong(value) * coefficient;
             } catch (Exception e) {
                 // Ignore exceptions resulting from string-to-integer conversion here.
-                e.printStackTrace();
+                LOGGER.error(e.getMessage(), e);
             }
         }
         return longValue;

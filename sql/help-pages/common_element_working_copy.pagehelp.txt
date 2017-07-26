@@ -1,0 +1,80 @@
+<h2>Common element working copy view page</h2>
+<p>
+    <strong>Non-common elements</strong> belong into a certain single table and they cannot be used in any other tables.
+    They are defined within that certain table and they do not have a life outside of that table.
+    <br/>
+    <strong>Common elements</strong> do not belong into a certain single table. They can be used in many tables. A perfect
+    example of a common element is for example CountryCode. It is obvious that CountryCode is probably needed in many datasets.
+</p>
+<p>
+    When you check out a common element or create new version of it, DD creates a new copy of that element and that will be your
+    <strong>working copy</strong>. This is the copy where you do your changes and once you're done, you check it in. The check-in makes your
+    changes visible to others. If you checked in with the Registration status of <em>Released</em> or
+    <em>Recorded</em>, your changes will become visible to everybody, including un-authenticated users. If the Registration
+    status was anything else, your changes will be visible to authenticated users only.
+</p>
+<p>
+    The upper right corner of the page contains the following buttons:
+    <ul>
+        <li><strong>Edit</strong> will open the element's edit form.</li>
+        <li><strong>Check in</strong> will check in all edits that you did.</li>
+        <li><strong>Undo checkout</strong> cancels the checkout and deletes the working copy.</li>
+    </ul>
+    <br/> The <strong>Subscribe</strong> action also available in the upper right corner will subscribe you to any changes
+    made to any version of this element. EIONET's Unified Notification System (UNS) will send you notifications about those
+    changes.
+</p>
+<p>
+    This view page is divided into sections which you can quickly access by using the <strong>quicklinks</strong> at the
+    top of the page.
+</p>
+<p>
+    This page is divided into sections which you can quickly access by using the <strong>quicklinks</strong> at the top of
+    the page.
+</p>
+<p>
+    Below the quicklinks is a section with links to <strong>XML schema</strong> and possibly other formats of this element
+    definition.
+</p>
+<p>
+    Next is a section that states the element's type. It can be one of two:
+    <ul>
+        <li>
+            <strong>DATA ELEMENT WITH FIXED VALUES</strong> is an element where predefined values are the only accepted values.
+        </li>
+        <li>
+            <strong>DATA ELEMENT WITH QUANTITATIVE VALUES</strong> can have any values within the element's data type. DD
+            enables to define suggested values for these elements.
+        </li>
+    </ul>
+</p>
+<p>
+    Following the element's type is a section that lists the element's <strong>attributes</strong>. Every attribute is a
+    name/value pair. Some attributes can have several values at the same time. Help on every attribute is available by the
+    help icons in their titles.
+</p>
+<p>
+    Following the attributes is a section that lists one of two:
+    <ul>
+        <li>
+            <strong>Allowable values</strong> are a synonym of fixed values and they are listed if the element's type is
+            fixed values.
+        </li>
+        <li>
+            <strong>Suggested values</strong> are listed if the element's type is quantitative values. They are values suggested
+            to the data supplier if he does not know or is not sure what to enter. The data supplier is not obliged to use
+            them.
+        </li>
+    </ul>
+</p>
+<p>
+    If this common element is used in any tables, then the next section lists <strong>tables using this element</strong>.
+    Every table is given with its name (clickable and the click leads to its vew page), dataset name (also clickable and
+    leads to the dataset's view page) and the table's owner given by user name.
+</p>
+<p>
+    At the very bottom of the page is the list of <strong>other versions</strong> of this common element. Every version is
+    uniquely identified by the element number in the left-most column. The list also indicates the version's Registration
+    status and the date it was released (relevant only when the Registration status is <em>Released</em>). The right-most
+    column of this list provides the link to the view page of that version.
+</p>
