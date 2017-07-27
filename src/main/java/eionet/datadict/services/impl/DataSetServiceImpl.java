@@ -92,9 +92,11 @@ public class DataSetServiceImpl implements DataSetService {
             annotation.appendChild(documentation);
             for (AttributeValue attributeValue : attributeValues) {
                 Attribute attribute = attributeDao.getById(attributeValue.getAttributeId());
-                Element attributeElement = doc.createElement(attribute.getNamespace().getShortName().concat(":").replace("_", "").concat(attribute.getShortName()).replace(" ", ""));
+                if(attribute!=null){
+                 Element attributeElement = doc.createElement(attribute.getNamespace().getShortName().concat(":").replace("_", "").concat(attribute.getShortName()).replace(" ", ""));
                 attributeElement.appendChild(doc.createTextNode(attributeValue.getValue()));
                 documentation.appendChild(attributeElement);
+                }
             }
             Element complexType = doc.createElement(DataDictXMLConstants.XS_PREFIX + ":" + DataDictXMLConstants.COMPLEX_TYPE);
             element.appendChild(complexType);
