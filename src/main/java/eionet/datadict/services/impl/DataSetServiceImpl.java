@@ -155,9 +155,18 @@ public class DataSetServiceImpl implements DataSetService {
                 schemaRoot.appendChild(tableElement);
                 List<DataElement> dataElements = this.dataElementDao.getDataElementsOfDatasetTable(dsTable.getId());
                 for (DataElement dataElement : dataElements) {
-                    Element xmlDataElement = doc.createElementNS(tableNS, dataElement.getShortName().replace(" ", ""));
+                    if (dataElement!=null && dataElement.getShortName()!=null) {
+                        try{
+                         Element xmlDataElement = doc.createElementNS(tableNS, XMLUtils.replaceAllIlegalXMLCharacters(dataElement.getShortName().replace(" ", "")).replace("(", "").replace(")",""));
                     xmlDataElement.appendChild(doc.createTextNode(""));
-                    row.appendChild(xmlDataElement);
+                    row.appendChild(xmlDataElement);    
+                        }catch(Exception e){
+                        System.out.println("problematic Value is:"+dataElement.getShortName());
+                            throw new XmlExportException();
+                        }
+                     
+                    }
+                   
                 }
             }
             doc.appendChild(schemaRoot);
