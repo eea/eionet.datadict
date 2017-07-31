@@ -28,6 +28,7 @@ import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.w3c.dom.Element;
 
 /**
@@ -148,7 +149,9 @@ public class DataSetServiceImpl implements DataSetService {
 
             for (DatasetTable dsTable : dsTables) {
                 String tableNS = DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dsTable.getCorrespondingNS().getId();
-                Element tableElement = doc.createElementNS(tableNS, XMLUtils.replaceAllIlegalXMLCharacters(dsTable.getIdentifier()));
+                System.out.println(dsTable.getIdentifier());
+               
+                Element tableElement = doc.createElementNS(tableNS, dsTable.getIdentifier().replace(":","-"));
                 Element row = doc.createElementNS(tableNS, DataDictXMLConstants.ROW);
                 row.removeAttribute(XMLConstants.XMLNS_ATTRIBUTE);
                 tableElement.appendChild(row);
@@ -157,7 +160,7 @@ public class DataSetServiceImpl implements DataSetService {
                 for (DataElement dataElement : dataElements) {
                     if (dataElement!=null && dataElement.getShortName()!=null) {
                         try{
-                         Element xmlDataElement = doc.createElementNS(tableNS, XMLUtils.replaceAllIlegalXMLCharacters(dataElement.getShortName().replace(" ", "")).replace("(", "").replace(")",""));
+                         Element xmlDataElement = doc.createElementNS(tableNS, XMLUtils.replaceAllIlegalXMLCharacters(dataElement.getShortName().replace(" ", "")).replace("(", "").replace(")","").replace(",",""));
                     xmlDataElement.appendChild(doc.createTextNode(""));
                     row.appendChild(xmlDataElement);    
                         }catch(Exception e){
