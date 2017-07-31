@@ -85,6 +85,23 @@ $ cd $CHECKOUT_HOME
 $ mvn -Denv=unittest -Dmaven.test.skip=false test
 ```
 
+### Unit and Integration tests
+
+The integration tests mechanism uses maven failsafe plugin and docker to create a dockerized test mysql database which will be used for the tests. Note that if the unit tests fail, maven will stop there and not procceed to run the integration
+tests. If you wish to run only the Integration tests see below.
+```sh
+$ cd $CHECKOUT_HOME
+$mvn  clean verify  -Denv=unittest
+```
+
+
+### Integration Tests only
+
+If you wish to skip unit tests and run only integration tests you may do so using the flag: -DskipUTs=true as shown below:
+```sh
+$mvn clean verify -DskipUTs=true -Denv=unittest
+```
+
 ### Build for docker
 
 Build the application as already described and then create a docker image by executing the docker build command in a directory containing both the Dockerfile and the datadict.war. If no tag is provided then the image will be tagged as "latest".

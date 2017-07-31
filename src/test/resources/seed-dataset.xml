@@ -61,19 +61,19 @@
     <DATAELEM DATAELEM_ID="110" IDENTIFIER="ND_MaxValue" SHORT_NAME="MaximumValue" TYPE="CH2" />
     <DATAELEM DATAELEM_ID="111" IDENTIFIER="ND_TrendAnnValue" SHORT_NAME="TrendAnnualValue" TYPE="CH2" />
 
-    <FXV FXV_ID="1" OWNER_ID="94" VALUE="0" DEFINITION="Phreatic groundwater (shallow): 0-5 m (inclusive springs 0 m)" SHORT_DESC="" />
-    <FXV FXV_ID="2" OWNER_ID="94" VALUE="1a" DEFINITION="Phreatic groundwater (deep): 5-15 m" SHORT_DESC="" />
-    <FXV FXV_ID="3" OWNER_ID="94" VALUE="1b" DEFINITION="Phreatic groundwater (deep): 15-30 m" SHORT_DESC="" />
-    <FXV FXV_ID="4" OWNER_ID="94" VALUE="1c" DEFINITION="Phreatic groundwater (deep): &gt;30 m" SHORT_DESC="" />
-    <FXV FXV_ID="5" OWNER_ID="94" VALUE="2" DEFINITION="Captive groundwater" SHORT_DESC="" />
-    <FXV FXV_ID="6" OWNER_ID="94" VALUE="3" DEFINITION="Karstic groundwater" SHORT_DESC="" />
-    <FXV FXV_ID="7" OWNER_ID="94" VALUE="4" DEFINITION="River water" SHORT_DESC="" />
-    <FXV FXV_ID="8" OWNER_ID="94" VALUE="5" DEFINITION="Lake water" SHORT_DESC="" />
-    <FXV FXV_ID="9" OWNER_ID="94" VALUE="6" DEFINITION="Transitional water" SHORT_DESC="" />
-    <FXV FXV_ID="10" OWNER_ID="94" VALUE="7" DEFINITION="Coastal water" SHORT_DESC="" />
-    <FXV FXV_ID="11" OWNER_ID="94" VALUE="8" DEFINITION="Marine water" SHORT_DESC="" />
-    <FXV FXV_ID="12" OWNER_ID="101" VALUE="true" DEFINITION="" SHORT_DESC="" />
-    <FXV FXV_ID="13" OWNER_ID="101" VALUE="false" DEFINITION="" SHORT_DESC="" />
+    <FXV FXV_ID="1" OWNER_ID="94" VALUE="0" DEFINITION="Phreatic groundwater (shallow): 0-5 m (inclusive springs 0 m)" SHORT_DESC="desc" />
+    <FXV FXV_ID="2" OWNER_ID="94" VALUE="1a" DEFINITION="Phreatic groundwater (deep): 5-15 m" SHORT_DESC="desc" />
+    <FXV FXV_ID="3" OWNER_ID="94" VALUE="1b" DEFINITION="Phreatic groundwater (deep): 15-30 m" SHORT_DESC="desc" />
+    <FXV FXV_ID="4" OWNER_ID="94" VALUE="1c" DEFINITION="Phreatic groundwater (deep): &gt;30 m" SHORT_DESC="desc" />
+    <FXV FXV_ID="5" OWNER_ID="94" VALUE="2" DEFINITION="Captive groundwater" SHORT_DESC="desc" />
+    <FXV FXV_ID="6" OWNER_ID="94" VALUE="3" DEFINITION="Karstic groundwater" SHORT_DESC="desc" />
+    <FXV FXV_ID="7" OWNER_ID="94" VALUE="4" DEFINITION="River water" SHORT_DESC="desc" />
+    <FXV FXV_ID="8" OWNER_ID="94" VALUE="5" DEFINITION="Lake water" SHORT_DESC="desc" />
+    <FXV FXV_ID="9" OWNER_ID="94" VALUE="6" DEFINITION="Transitional water" SHORT_DESC="desc" />
+    <FXV FXV_ID="10" OWNER_ID="94" VALUE="7" DEFINITION="Coastal water" SHORT_DESC="desc" />
+    <FXV FXV_ID="11" OWNER_ID="94" VALUE="8" DEFINITION="Marine water" SHORT_DESC="desc" />
+    <FXV FXV_ID="12" OWNER_ID="101" VALUE="true" DEFINITION="def" SHORT_DESC="desc" />
+    <FXV FXV_ID="13" OWNER_ID="101" VALUE="false" DEFINITION="def" SHORT_DESC="desc" />
     <FXV FXV_ID="15" OWNER_ID="105" VALUE="mg/l NO3" DEFINITION="NO3" SHORT_DESC="Nitrate" />
     <FXV FXV_ID="16" OWNER_ID="105" VALUE="mg/l NO2" DEFINITION="NO2" SHORT_DESC="Nitrite" />
     <FXV FXV_ID="17" OWNER_ID="105" VALUE="mg/l P" DEFINITION="P" SHORT_DESC="Total Phosphorus" />
@@ -82,21 +82,21 @@
     <FXV FXV_ID="20" OWNER_ID="105" VALUE="&#956;g/l" DEFINITION="Chl-a, DIN, DIP" SHORT_DESC="Chlorophyll-a, Dissolved inorganic Nitrogen, Dissolved inorganic Phosphorus" />
     <FXV FXV_ID="21" OWNER_ID="105" VALUE="mg/l O2" DEFINITION="BOD, DO" SHORT_DESC="Biochemical Oxygen Demand, Dissolved Oxygen" />
     <FXV FXV_ID="22" OWNER_ID="105" VALUE="m" DEFINITION="Secchi depth (in meters)" SHORT_DESC="Secchi Depth Transparency" />
-    <FXV FXV_ID="23" OWNER_ID="115" VALUE="Ultra-oligotrophic" DEFINITION="Ultra-oligotrophic" SHORT_DESC="" />
-    <FXV FXV_ID="24" OWNER_ID="115" VALUE="Oligotrophic" DEFINITION="Oligotrophic" SHORT_DESC="" />
-    <FXV FXV_ID="25" OWNER_ID="115" VALUE="Mesotrophic" DEFINITION="Mesotrophic" SHORT_DESC="" />
-    <FXV FXV_ID="26" OWNER_ID="115" VALUE="Eutrophic" DEFINITION="Eutrophic" SHORT_DESC="" />
-    <FXV FXV_ID="27" OWNER_ID="115" VALUE="Hypertrophic" DEFINITION="Hypertrophic" SHORT_DESC="" />
-    <FXV FXV_ID="28" OWNER_ID="104" VALUE="P-tot" DEFINITION="Total Phosphorus" SHORT_DESC="" />
-    <FXV FXV_ID="29" OWNER_ID="104" VALUE="P-PO4" DEFINITION="Orthophosfate" SHORT_DESC="" />
-    <FXV FXV_ID="30" OWNER_ID="104" VALUE="N-tot" DEFINITION="Total Nitrogen" SHORT_DESC="" />
-    <FXV FXV_ID="31" OWNER_ID="104" VALUE="NO3" DEFINITION="Nitrate" SHORT_DESC="" />
-    <FXV FXV_ID="32" OWNER_ID="104" VALUE="NO2" DEFINITION="Nitrite" SHORT_DESC="" />
-    <FXV FXV_ID="33" OWNER_ID="104" VALUE="Chl-a" DEFINITION="Chlorophyll-a (average summer period)" SHORT_DESC="" />
-    <FXV FXV_ID="34" OWNER_ID="104" VALUE="BOD" DEFINITION="Biochemical Oxygen Demand (BOD5  is preferred)"    SHORT_DESC="" />
-    <FXV FXV_ID="35" OWNER_ID="104" VALUE="DO" DEFINITION="Dissolved oxygen" SHORT_DESC="" />
-    <FXV FXV_ID="36" OWNER_ID="104" VALUE="Secchi depth" DEFINITION="Secchi depth" SHORT_DESC="" />
-    <FXV FXV_ID="37" OWNER_ID="104" VALUE="DIN" DEFINITION="Dissolved inorganic Nitrogen" SHORT_DESC="" />
-    <FXV FXV_ID="38" OWNER_ID="104" VALUE="DIP" DEFINITION="Dissolved inorganic Phophorus" SHORT_DESC="" />
+    <FXV FXV_ID="23" OWNER_ID="115" VALUE="Ultra-oligotrophic" DEFINITION="Ultra-oligotrophic" SHORT_DESC="desc" />
+    <FXV FXV_ID="24" OWNER_ID="115" VALUE="Oligotrophic" DEFINITION="Oligotrophic" SHORT_DESC="desc" />
+    <FXV FXV_ID="25" OWNER_ID="115" VALUE="Mesotrophic" DEFINITION="Mesotrophic" SHORT_DESC="desc" />
+    <FXV FXV_ID="26" OWNER_ID="115" VALUE="Eutrophic" DEFINITION="Eutrophic" SHORT_DESC="desc" />
+    <FXV FXV_ID="27" OWNER_ID="115" VALUE="Hypertrophic" DEFINITION="Hypertrophic" SHORT_DESC="desc" />
+    <FXV FXV_ID="28" OWNER_ID="104" VALUE="P-tot" DEFINITION="Total Phosphorus" SHORT_DESC="desc" />
+    <FXV FXV_ID="29" OWNER_ID="104" VALUE="P-PO4" DEFINITION="Orthophosfate" SHORT_DESC="desc" />
+    <FXV FXV_ID="30" OWNER_ID="104" VALUE="N-tot" DEFINITION="Total Nitrogen" SHORT_DESC="desc" />
+    <FXV FXV_ID="31" OWNER_ID="104" VALUE="NO3" DEFINITION="Nitrate" SHORT_DESC="desc" />
+    <FXV FXV_ID="32" OWNER_ID="104" VALUE="NO2" DEFINITION="Nitrite" SHORT_DESC="desc" />
+    <FXV FXV_ID="33" OWNER_ID="104" VALUE="Chl-a" DEFINITION="Chlorophyll-a (average summer period)" SHORT_DESC="desc" />
+    <FXV FXV_ID="34" OWNER_ID="104" VALUE="BOD" DEFINITION="Biochemical Oxygen Demand (BOD5  is preferred)"    SHORT_DESC="desc" />
+    <FXV FXV_ID="35" OWNER_ID="104" VALUE="DO" DEFINITION="Dissolved oxygen" SHORT_DESC="desc" />
+    <FXV FXV_ID="36" OWNER_ID="104" VALUE="Secchi depth" DEFINITION="Secchi depth" SHORT_DESC="desc" />
+    <FXV FXV_ID="37" OWNER_ID="104" VALUE="DIN" DEFINITION="Dissolved inorganic Nitrogen" SHORT_DESC="desc" />
+    <FXV FXV_ID="38" OWNER_ID="104" VALUE="DIP" DEFINITION="Dissolved inorganic Phophorus" SHORT_DESC="desc" />
 
 </dataset>

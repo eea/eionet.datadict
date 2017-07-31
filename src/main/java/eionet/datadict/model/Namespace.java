@@ -1,18 +1,30 @@
 package eionet.datadict.model;
 
-/**
- *
- * @author Aliki Kopaneli
- */
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+
 public class Namespace {
-    
+
+
+    public static final String URL_PREFIX="namespaces";
+    @Id
     private Integer id;
-    
     private String shortName;
     private String fullName;
     private String definition;
     private String workingUser;
+    
+    @ManyToOne
+    private Namespace parent;
 
+    public Namespace() {
+        super();
+    }
+    
+    public Namespace(Integer id) {
+        this.id = id;
+    }
+    
     public Integer getId() {
         return id;
     }
@@ -52,4 +64,13 @@ public class Namespace {
     public void setWorkingUser(String workingUser) {
         this.workingUser = workingUser;
     }
+
+    public Namespace getParent() {
+        return parent;
+    }
+
+    public void setParent(Namespace parent) {
+        this.parent = parent;
+    }
+    
 }

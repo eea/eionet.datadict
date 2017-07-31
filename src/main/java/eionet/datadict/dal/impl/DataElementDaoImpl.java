@@ -2,14 +2,22 @@ package eionet.datadict.dal.impl;
 
 import eionet.datadict.dal.DataElementDao;
 import eionet.datadict.dal.impl.converters.BooleanToMysqlEnumYesNoConverter;
+import eionet.datadict.model.Attribute;
 import eionet.datadict.model.DataElement;
 import eionet.datadict.model.DataElement.DataElementType;
 import eionet.datadict.model.Namespace;
+import eionet.datadict.model.AttributeOwnerType;
+import eionet.datadict.model.AttributeValue;
+import eionet.datadict.model.DatasetTable;
+import eionet.datadict.model.ValueListItem;
 import eionet.meta.dao.domain.DatasetRegStatus;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -53,13 +61,77 @@ public class DataElementDaoImpl extends JdbcDaoBase implements DataElementDao {
             return null;
         }
     }
+
+    @Override
+    public List<DataElement> getDataElementsOfDatasetTable(int tableId) {
+         
+        List<DataElement> tableElements = new ArrayList<DataElement>();
+        String sql ="SELECT DATAELEM_ID"
+                + "  FROM TBL2ELEM"
+                + "  WHERE TABLE_ID= :tableId";
+        Map<String,Object> params = new HashMap<String,Object>();
+        params.put("tableId",tableId);
+        try {
+            List<Integer> dataElementIds=this.getNamedParameterJdbcTemplate().queryForList(sql, params,Integer.class);
+            for(Integer dataElementId : dataElementIds){
+                DataElement element = this.getById(dataElementId);
+                element.setDatasetTable(new DatasetTable(tableId));
+                tableElements.add(element);
+            }
+            return tableElements;
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
+
     
     public static class DataElementRowMapper implements RowMapper<DataElement> {
 
         @Override
         public DataElement mapRow(ResultSet rs, int i) throws SQLException {
-            DataElement dataElement = new DataElement();
-            dataElement.setType(DataElementType.getFromString(rs.getString("DATAELEM.TYPE")));
+            DataElement dataElement = new DataElement() {
+                @Override
+                public DataElement.ValueType getValueType() {
+                    throw new UnsupportedOperationException("Not supported yet."); 
+                }
+
+                @Override
+                public boolean supportsValueList() {
+                    throw new UnsupportedOperationException("Not supported yet."); 
+                }
+
+                @Override
+                public Iterable<? extends ValueListItem> getValueList() {
+                    throw new UnsupportedOperationException("Not supported yet."); 
+                }
+
+
+                @Override
+                public AttributeOwnerType getAttributeOwnerType() {
+                    throw new UnsupportedOperationException("Not supported yet."); 
+                }
+
+                @Override
+                public Set<Attribute> getAttributes() {
+                    throw new UnsupportedOperationException("Not supported yet."); 
+                }
+
+                @Override
+                public void setAttributes(Set<Attribute> attributes) {
+                    throw new UnsupportedOperationException("Not supported yet."); 
+                }
+
+                @Override
+                public Set<AttributeValue> getAttributesValues() {
+                    throw new UnsupportedOperationException("Not supported yet."); 
+                }
+
+                @Override
+                public void setAttributesValues(Set<AttributeValue> attributesValues) {
+                    throw new UnsupportedOperationException("Not supported yet."); 
+                }
+            };
             
             Namespace namespace = new Namespace();
             namespace.setId(rs.getInt("DATAELEM.NAMESPACE_ID"));
@@ -83,7 +155,7 @@ public class DataElementDaoImpl extends JdbcDaoBase implements DataElementDao {
                 dataElement.setTopNS(null);
             }
             
-            
+            dataElement.setType(DataElementType.resolveTypeFromName(rs.getString("DATAELEM.TYPE")));
             dataElement.setId(rs.getInt("DATAELEM.DATAELEM_ID"));
             dataElement.setShortName(rs.getString("DATAELEM.SHORT_NAME"));
             dataElement.setWorkingUser(rs.getString("DATAELEM.WORKING_USER"));

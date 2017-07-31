@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import eionet.datadict.dal.AttributeDao;
 import eionet.datadict.dal.impl.converters.BooleanToMySqlEnumConverter;
+import eionet.datadict.model.AttributeValue;
 import eionet.datadict.model.DataDictEntity;
 import eionet.datadict.model.Namespace;
 import eionet.datadict.model.RdfNamespace;
@@ -68,7 +69,7 @@ public class AttributeDaoImpl extends JdbcDaoBase implements AttributeDao {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("id", id);
 
-        int count = getNamedParameterJdbcTemplate().queryForObject(sql, params,Integer.class);
+        int count = getNamedParameterJdbcTemplate().queryForObject(sql, params, Integer.class);
         if (count > 0) {
             return true;
         } else {
@@ -89,7 +90,7 @@ public class AttributeDaoImpl extends JdbcDaoBase implements AttributeDao {
         params.put("shortName", attribute.getShortName());
         params.put("name", attribute.getName());
         params.put("obligation", new ObligationTypeConverter().convert(attribute.getObligationType()));
-        params.put("definition", attribute.getDefinition() ==  null ? "" : attribute.getDefinition());
+        params.put("definition", attribute.getDefinition() == null ? "" : attribute.getDefinition());
         params.put("dispOrder", attribute.getDisplayOrder() == null ? DISPLAY_ORDER_DEFAULT : attribute.getDisplayOrder());
         params.put("dispWidth", attribute.getDisplayWidth() == null ? DISPLAY_WIDTH_DEFAULT : attribute.getDisplayWidth());
         params.put("dispHeight", attribute.getDisplayHeight() == null ? DISPLAY_HEIGHT_DEFAULT : attribute.getDisplayHeight());
@@ -151,7 +152,7 @@ public class AttributeDaoImpl extends JdbcDaoBase implements AttributeDao {
         String sql = "select count(Distinct(PARENT_TYPE), DATAELEM_ID) from ATTRIBUTE where M_ATTRIBUTE_ID = :id and not PARENT_TYPE = ''";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("id", attributeId);
-        return getNamedParameterJdbcTemplate().queryForObject(sql, params,Integer.class);
+        return getNamedParameterJdbcTemplate().queryForObject(sql, params, Integer.class);
     }
 
     @Override
@@ -180,7 +181,7 @@ public class AttributeDaoImpl extends JdbcDaoBase implements AttributeDao {
 
     @Override
     public Map<DataDictEntity.Entity, Integer> getConceptsWithAttributeValues(int attributeId) {
-        String sql = "select PARENT_TYPE, count(DISTINCT(DATAELEM_ID)) as COUNT_RES from ATTRIBUTE where M_ATTRIBUTE_ID = :id and not PARENT_TYPE = ''group by PARENT_TYPE";
+        String sql = "select PARENT_TYPE, count(DISTINCT(DATAELEM_ID)) as COUNT_RES from ATTRIBUTE where M_ATTRIBUTE_ID = :id and not PARENT_TYPE = '' group by PARENT_TYPE";
         Map<String, Object> params = this.createParameterMap();
         params.put("id", attributeId);
         List<Map<DataDictEntity.Entity, Integer>> listOfMaps = getNamedParameterJdbcTemplate().query(sql, params, new MapRowMapper());
@@ -199,7 +200,72 @@ public class AttributeDaoImpl extends JdbcDaoBase implements AttributeDao {
         Map<String, Object> params = this.createParameterMap();
         params.put("attributeId", attributeId);
         try {
-            return this.getNamedParameterJdbcTemplate().queryForObject(sql, params,Integer.class);
+            return this.getNamedParameterJdbcTemplate().queryForObject(sql, params, Integer.class);
+        } catch (IncorrectResultSizeDataAccessException ex) {
+            return null;
+        }
+    }
+
+    @Override
+    public List<Attribute> getCombinedDataSetAndDataTableAttributes(int datasetTableId, int dataSetId) {
+        String sql = "select M_ATTRIBUTE.*, NAMESPACE.*, ATTRIBUTE.VALUE, ATTRIBUTE.PARENT_TYPE from M_ATTRIBUTE left outer join NAMESPACE on M_ATTRIBUTE.NAMESPACE_ID=NAMESPACE.NAMESPACE_ID left outer join \n"
+                + "ATTRIBUTE on M_ATTRIBUTE.M_ATTRIBUTE_ID=ATTRIBUTE.M_ATTRIBUTE_ID where (ATTRIBUTE.DATAELEM_ID= :datasetTableId and \n"
+                + "ATTRIBUTE.PARENT_TYPE='T') or (ATTRIBUTE.DATAELEM_ID= :dataSetId and ATTRIBUTE.PARENT_TYPE='DS' and\n"
+                + "M_ATTRIBUTE.INHERIT!='0')";
+        Map<String, Object> params = this.createParameterMap();
+        params.put("datasetTableId", datasetTableId);
+        params.put("dataSetId", dataSetId);
+        try {
+            return this.getNamedParameterJdbcTemplate().query(sql, params, new CombinedAttributeRowMapper());
+        } catch (IncorrectResultSizeDataAccessException ex) {
+            return null;
+        }
+    }
+
+    @Override
+    public List<Attribute> getAttributesOfDataTable(int tableId) {
+        String sql = "select M_ATTRIBUTE.*, NAMESPACE.*, ATTRIBUTE.VALUE, ATTRIBUTE.PARENT_TYPE from M_ATTRIBUTE left outer join NAMESPACE on M_ATTRIBUTE.NAMESPACE_ID=NAMESPACE.NAMESPACE_ID left outer join \n"
+                + "ATTRIBUTE on M_ATTRIBUTE.M_ATTRIBUTE_ID=ATTRIBUTE.M_ATTRIBUTE_ID where (ATTRIBUTE.DATAELEM_ID= :datasetTableId and \n"
+                + "ATTRIBUTE.PARENT_TYPE='T')";
+        Map<String, Object> params = this.createParameterMap();
+        params.put("datasetTableId", tableId);
+        try {
+            return this.getNamedParameterJdbcTemplate().query(sql, params, new CombinedAttributeRowMapper());
+        } catch (IncorrectResultSizeDataAccessException ex) {
+            return null;
+        }
+    }
+
+    @Override
+    public List<AttributeValue> getAttributesValuesOfDataTable(int tableId) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public Map<Integer, Set<Attribute>> getAttributesOfDataElementsInTable(int tableId) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+
+    @Override
+    public List<Attribute> getByDataDictEntity(DataDictEntity ownerEntity) {
+        String dataSetTableEntitySql = "select M_ATTRIBUTE.*, NAMESPACE.*, ATTRIBUTE.VALUE, ATTRIBUTE.PARENT_TYPE from M_ATTRIBUTE left outer join NAMESPACE on M_ATTRIBUTE.NAMESPACE_ID=NAMESPACE.NAMESPACE_ID left outer join \n"
+                + "ATTRIBUTE on M_ATTRIBUTE.M_ATTRIBUTE_ID=ATTRIBUTE.M_ATTRIBUTE_ID where (ATTRIBUTE.DATAELEM_ID= :entityId and \n"
+                + "ATTRIBUTE.PARENT_TYPE= 'T') ";
+        String dataSetEntitySql = "select M_ATTRIBUTE.*, NAMESPACE.*, ATTRIBUTE.VALUE, ATTRIBUTE.PARENT_TYPE from M_ATTRIBUTE left outer join NAMESPACE on M_ATTRIBUTE.NAMESPACE_ID=NAMESPACE.NAMESPACE_ID left outer join \n"
+                + "ATTRIBUTE on M_ATTRIBUTE.M_ATTRIBUTE_ID=ATTRIBUTE.M_ATTRIBUTE_ID where (ATTRIBUTE.DATAELEM_ID= :entityId and \n"
+                + "ATTRIBUTE.PARENT_TYPE= 'DS' and M_ATTRIBUTE.INHERIT!='0') ";
+        Map<String, Object> params = this.createParameterMap();
+        params.put("entityId", ownerEntity.getId().toString());
+        try {
+            if (ownerEntity.getType().equals(DataDictEntity.Entity.T)) {
+                return this.getNamedParameterJdbcTemplate().query(dataSetTableEntitySql, params, new CombinedAttributeRowMapper());
+            }
+            if (ownerEntity.getType().equals(DataDictEntity.Entity.DS)) {
+                return this.getNamedParameterJdbcTemplate().query(dataSetEntitySql, params, new CombinedAttributeRowMapper());
+            } else {
+                return null;
+            }
         } catch (IncorrectResultSizeDataAccessException ex) {
             return null;
         }
@@ -215,7 +281,7 @@ public class AttributeDaoImpl extends JdbcDaoBase implements AttributeDao {
         }
 
     }
-    
+
     protected static class AttributeRowMapper implements RowMapper<Attribute> {
 
         @Override
@@ -261,6 +327,74 @@ public class AttributeDaoImpl extends JdbcDaoBase implements AttributeDao {
                 VocabularyFolder vocabulary = new VocabularyFolder();
                 vocabulary.setId(vocabularyId);
                 attribute.setVocabulary(vocabulary);
+            }
+
+            return attribute;
+        }
+
+        protected void readNamespace(ResultSet rs, Attribute attribute) throws SQLException {
+            rs.getInt("NAMESPACE.NAMESPACE_ID");
+
+            if (rs.wasNull()) {
+                return;
+            }
+
+            attribute.getNamespace().setShortName(rs.getString("NAMESPACE.SHORT_NAME"));
+            attribute.getNamespace().setFullName(rs.getString("NAMESPACE.FULL_NAME"));
+            attribute.getNamespace().setDefinition(rs.getString("NAMESPACE.DEFINITION"));
+            attribute.getNamespace().setWorkingUser(rs.getString("NAMESPACE.WORKING_USER"));
+        }
+
+        protected void readRdfNamespace(ResultSet rs, Attribute attribute) throws SQLException {
+            rs.getInt("RDF_ID");
+
+            if (rs.wasNull()) {
+                return;
+            }
+
+            attribute.getRdfNamespace().setPrefix(rs.getString("RDF_PREFIX"));
+            attribute.getRdfNamespace().setUri(rs.getString("RDF_URI"));
+        }
+
+    }
+
+    protected static class CombinedAttributeRowMapper implements RowMapper<Attribute> {
+
+        @Override
+        public Attribute mapRow(ResultSet rs, int i) throws SQLException {
+            Attribute attribute = new Attribute();
+            attribute.setId(rs.getInt("M_ATTRIBUTE.M_ATTRIBUTE_ID"));
+            attribute.setDisplayOrder(rs.getInt("M_ATTRIBUTE.DISP_ORDER") == 999 ? null : rs.getInt("M_ATTRIBUTE.DISP_ORDER"));
+            attribute.setTargetEntities(new TargetEntityConverter().convertBack(rs.getInt("M_ATTRIBUTE.DISP_WHEN")));
+            attribute.setDisplayWidth(rs.getInt("M_ATTRIBUTE.DISP_WIDTH"));
+            attribute.setDisplayHeight(rs.getInt("M_ATTRIBUTE.DISP_HEIGHT"));
+            attribute.setLanguageUsed(rs.getBoolean("M_ATTRIBUTE.LANGUAGE_USED"));
+            attribute.setName(rs.getString("M_ATTRIBUTE.NAME"));
+            attribute.setDefinition(rs.getString("M_ATTRIBUTE.DEFINITION"));
+            attribute.setShortName(rs.getString("M_ATTRIBUTE.SHORT_NAME"));
+            attribute.setDisplayMultiple(rs.getBoolean("M_ATTRIBUTE.DISP_MULTIPLE"));
+            attribute.setRdfPropertyName(rs.getString("M_ATTRIBUTE.RDF_PROPERTY_NAME"));
+            attribute.setObligationType(new ObligationTypeConverter().convertBack(rs.getString("M_ATTRIBUTE.OBLIGATION")));
+            attribute.setDisplayType(new DisplayTypeConverter().convertBack(rs.getString("M_ATTRIBUTE.DISP_TYPE")));
+            attribute.setValueInheritanceMode(new ValueInheritanceConverter().convertBack(rs.getString("M_ATTRIBUTE.INHERIT")));
+            attribute.setDataType(AttributeDataType.getEnum(rs.getString("M_ATTRIBUTE.DATA_TYPE")));
+
+            int namespaceId = rs.getInt("M_ATTRIBUTE.NAMESPACE_ID");
+
+            if (!rs.wasNull()) {
+                Namespace ns = new Namespace();
+                ns.setId(namespaceId);
+                attribute.setNamespace(ns);
+                this.readNamespace(rs, attribute);
+            }
+
+            int rdfNamespaceId = rs.getInt("M_ATTRIBUTE.RDF_PROPERTY_NAMESPACE_ID");
+
+            if (!rs.wasNull()) {
+                RdfNamespace rdfNamespace = new RdfNamespace();
+                rdfNamespace.setId(rdfNamespaceId);
+                attribute.setRdfNamespace(rdfNamespace);
+                this.readRdfNamespace(rs, attribute);
             }
 
             return attribute;

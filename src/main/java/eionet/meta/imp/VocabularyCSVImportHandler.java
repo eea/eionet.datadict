@@ -52,7 +52,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author enver
  */
-// @Configurable
+ //@Configurable
 public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
 
     /** Static logger for this class. */

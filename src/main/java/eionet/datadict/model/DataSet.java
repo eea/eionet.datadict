@@ -1,10 +1,26 @@
 package eionet.datadict.model;
 
 import eionet.meta.dao.domain.DatasetRegStatus;
+import java.util.Set;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
-public class Dataset {
+@Table(name="DATASET")
+public class DataSet implements AttributeOwner {
 
+    @Id
     private Integer id;
+    private String identifier;
+
+    @ManyToOne
+    private Namespace namespace;
+    @OneToMany(mappedBy = "dataSet")
+    private Set<DatasetTable> datasetTables;
+    private Set<Attribute> attributes;
+    @OneToMany(mappedBy = "owner")
+    private Set<AttributeValue> attributesValues;
     private String shortName;
     private Integer version;
     private String visual;
@@ -16,16 +32,61 @@ public class Dataset {
     private String user;
     private Namespace correspondingNS;
     private String deleted;
-    private String identifier;
     private Integer dispCreateLinks;
     private Integer checkedOutCopyId;
 
+    public DataSet() {
+        super();
+    }
+
+    public DataSet(Integer id) {
+        this.id = id;
+    }
+
+    @Override
+    public AttributeOwnerType getAttributeOwnerType() {
+        return new AttributeOwnerType(id,AttributeOwnerType.Type.DS);
+    }
+
+    @Override
     public Integer getId() {
         return id;
     }
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
+
+    public Namespace getNamespace() {
+        return namespace;
+    }
+
+    public void setNamespace(Namespace namespace) {
+        this.namespace = namespace;
+    }
+
+    public Set<DatasetTable> getDatasetTables() {
+        return datasetTables;
+    }
+
+    public void setDatasetTables(Set<DatasetTable> datasetTables) {
+        this.datasetTables = datasetTables;
+    }
+
+    public Set<AttributeValue> getAttributesValues() {
+        return attributesValues;
+    }
+
+    public void setAttributesValues(Set<AttributeValue> attributesValues) {
+        this.attributesValues = attributesValues;
     }
 
     public String getShortName() {
@@ -116,14 +177,6 @@ public class Dataset {
         this.deleted = deleted;
     }
 
-    public String getIdentifier() {
-        return identifier;
-    }
-
-    public void setIdentifier(String identifier) {
-        this.identifier = identifier;
-    }
-
     public Integer getDispCreateLinks() {
         return dispCreateLinks;
     }
@@ -139,6 +192,39 @@ public class Dataset {
     public void setCheckedOutCopyId(Integer checkedOutCopyId) {
         this.checkedOutCopyId = checkedOutCopyId;
     }
-    
-    
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+
+        if (!(obj instanceof DataSet)) {
+            return false;
+        }
+
+        if (this.id == null) {
+            return false;
+        }
+
+        DataSet other = (DataSet) obj;
+
+        return this.id.equals(other.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return this.id == null ? super.hashCode() : this.id.hashCode();
+    }
+
+    @Override
+    public Set<Attribute> getAttributes() {
+        return this.attributes;
+    }
+
+    @Override
+    public void setAttributes(Set<Attribute> attributes) {
+        this.attributes = attributes;
+    }
+
 }

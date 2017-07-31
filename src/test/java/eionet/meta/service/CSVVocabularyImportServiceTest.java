@@ -49,6 +49,7 @@ import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.exports.VocabularyOutputHelper;
 import eionet.meta.imp.VocabularyImportBaseHandler;
+import org.junit.Ignore;
 
 /**
  * JUnit integration test with Unitils for CSV Vocabulary Import Service.

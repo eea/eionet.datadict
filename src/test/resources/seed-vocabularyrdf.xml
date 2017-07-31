@@ -38,7 +38,7 @@
     <VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="8" VOCABULARY_ID="3" IDENTIFIER="1"
         LABEL="existing bathing water" DEFINITION="including re-opened bathing water if closed or permanently closed in the previous season(s)" />
     <VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="9" VOCABULARY_ID="3" IDENTIFIER="2"
-        LABEL="new bathing water" DEFINITION="" />
+        LABEL="new bathing water" DEFINITION="def" />
     <VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="10" VOCABULARY_ID="3" IDENTIFIER="3"
         LABEL="permanently closed bathing water" DEFINITION="bathing water has a permanent bathing prohibition or permanent advice against bathing" />
     <VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="11" VOCABULARY_ID="3" IDENTIFIER="5"
