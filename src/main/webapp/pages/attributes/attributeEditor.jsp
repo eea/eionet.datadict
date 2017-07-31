@@ -25,7 +25,7 @@
                 <tr>
                     <th scope="row" class="scope-row">Name</th>
                     <td><img src="<stripes:url value="/images/mandatory.gif" />" alt="Mandatory" name="Mandatory"/></td>
-                    <td><stripes:text id= "Name" class="mandatory_field" name="attribute.name"/></td>
+                    <td><stripes:text id="Name" class="mandatory_field" name="attribute.name"/></td>
                 </tr>
                 <tr>
                     <th scope="row" class="scope-row">Context</th>
@@ -129,21 +129,9 @@
                 <tr>
                     <th scope="row" class="scope-row">Display for</th>
                     <td><img src="<stripes:url value="/images/mandatory.gif" />" alt="Mandatory" name="Mandatory"/></td>
-                    <c:choose>
-                        <c:when test="${not empty actionBean.attribute.id and actionBean.attribute.displayType == 'VOCABULARY'}">
-                            <c:set var="filterTargetEntities" value="true" />
-                        </c:when>
-                        <c:otherwise>
-                            <c:set var="filterTargetEntites" value="false" />
-                        </c:otherwise>
-                    </c:choose>
-                    <td id="display-some-targetEntities">
+                    <td>
                         <c:forEach var="displayForType" items="${ddfn:getEnumValues('eionet.datadict.model.Attribute$TargetEntity')}"> 
-                            <c:set var="targetEntityDisplay" value ="display: block"/>
-                            <c:if test="${(displayForType.value eq 1024) and filterTargetEntities}">
-                                <c:set var="targetEntityDisplay" value ="display: none"/>
-                            </c:if>
-                            <div id="targetEntitySection-${displayForType.value}" style="${targetEntityDisplay}">
+                            <div>
                                <stripes:checkbox id="targetEntity-${displayForType.value}" name="attribute.targetEntities" value="${displayForType}" checked="${actionBean.attribute.targetEntities}"/>
                                <label for="targetEntity-${displayForType.value}">${fn:escapeXml(displayForType.label)}</label>
                             </div>

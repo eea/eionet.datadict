@@ -365,8 +365,34 @@
                             </c:choose>
                         </td>
                         <td class="simple_attr_value">
-                            <dd:simpleAttribute fieldName="vocabularyFolder.attributes[${outerLoop.index}]"
-                                attributes="${attributeValues}" uniqueId="attr${outerLoop.index}"/>
+                            <c:choose>
+                                <c:when test="${attrMeta.inputType=='vocabulary'}">
+                                    <c:choose>
+                                        <c:when test="${not empty actionBean.getVocabularyBinding(attrMeta.attributeId)}">
+                                            <c:set var="vocabularyConcepts" value="${actionBean.getVocabularyConcepts(attrMeta.attributeId)}" />
+                                            <c:if test="${not empty vocabularyConcepts}">
+                                                <ul class="stripedmenu">
+                                                    <c:forEach var="vocabularyConcept" items="${vocabularyConcepts}" varStatus="innerLoop">
+                                                        <li><c:out value="${vocabularyConcept.label}"/></li>
+                                                        <input type="hidden" name="vocabularyFolder.attributes[${outerLoop.index}][${innerLoop.index}].attributeId" value="${attrMeta.attributeId}" />
+                                                        <input type="hidden" name="vocabularyFolder.attributes[${outerLoop.index}][${innerLoop.index}].value" value="${vocabularyConcept.id}" />
+                                                    </c:forEach>
+                                                </ul>
+                                            </c:if>
+                                            <c:if test="${empty vocabularyConcepts}">
+                                                <input type="hidden" name="vocabularyFolder.attributes[${outerLoop.index}][0].attributeId" value="${attrMeta.attributeId}" />
+                                            </c:if>
+                                            <a href="${pageContext.request.contextPath}/vocabularyvalues/attribute/${attrMeta.attributeId}/vocabulary/${actionBean.vocabularyFolder.id}">[Manage links to the vocabulary]</a>
+                                        </c:when>
+                                        <c:otherwise>
+                                            [Manage links to the vocabulary]
+                                        </c:otherwise>
+                                    </c:choose>
+                                </c:when>
+                                <c:otherwise>
+                                    <dd:simpleAttribute fieldName="vocabularyFolder.attributes[${outerLoop.index}]" attributes="${attributeValues}" uniqueId="attr${outerLoop.index}"/>
+                                </c:otherwise>
+                            </c:choose>
                         </td>
                     </tr>
                 </c:forEach>

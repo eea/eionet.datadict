@@ -40,6 +40,13 @@
                 <c:set var="backLink" value="${actionBean.contextPath}/schema/${ddEntity.schemaSetId > 0 ? ddEntity.schemaSetIdentifier : 'root'}/${ddEntity.fileName}/edit?workingCopy=true"/>
                 <c:set var="ddEntityUrl" value="${actionBean.contextPath}/schema/${ddEntity.schemaSetId > 0 ? ddEntity.schemaSetIdentifier : 'root'}/${ddEntity.fileName}/view?workingCopy=true"/>
             </c:when>
+            <c:when test="${actionBean.attrOwnerType eq 'vocabulary'}">
+                <c:set var="ddEntity" value="${actionBean.vocabularyFolder}"/>
+                <c:set var="ddEntityTitle" value="${ddEntity.label}"/>
+                <c:set var="backLabel" value="Back to vocabulary edit page"/>
+                <c:set var="backLink" value="${actionBean.contextPath}/vocabulary/${ddEntity.folderName}/${ddEntity.identifier}/edit?vocabularyFolder.workingCopy=true"/>
+                <c:set var="ddEntityUrl" value="${actionBean.contextPath}/vocabulary/${ddEntity.folderName}/${ddEntity.identifier}/view?vocabularyFolder.workingCopy=true"/>
+            </c:when>
         </c:choose>
         <h1>Values for the <c:out value="${actionBean.attribute.shortName}"/> attribute corresponding to the 
             <stripes:link href="${ddEntityUrl}">

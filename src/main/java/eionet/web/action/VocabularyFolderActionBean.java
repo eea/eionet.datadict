@@ -26,16 +26,20 @@ import com.google.gson.JsonSyntaxException;
 import eionet.datadict.dal.AsyncTaskDao;
 import eionet.datadict.dal.AsyncTaskHistoryDao;
 import eionet.datadict.errors.BadFormatException;
+import eionet.datadict.errors.EmptyParameterException;
 import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.infrastructure.asynctasks.AsyncTaskDataSerializer;
 import eionet.datadict.infrastructure.asynctasks.AsyncTaskExecutionError;
 import eionet.datadict.infrastructure.asynctasks.AsyncTaskManager;
 import eionet.datadict.model.AsyncTaskExecutionEntry;
 import eionet.datadict.model.AsyncTaskExecutionEntryHistory;
-import eionet.datadict.model.AsyncTaskExecutionStatus;
+import eionet.datadict.model.Attribute;
+import eionet.datadict.model.DataDictEntity;
 import eionet.datadict.model.enums.Enumerations;
 import eionet.datadict.model.enums.Enumerations.SchedulingIntervalUnit;
 import eionet.datadict.model.enums.Enumerations.VocabularyRdfPurgeOption;
+import eionet.datadict.services.AttributeService;
+import eionet.datadict.services.data.AttributeDataService;
 import eionet.datadict.services.stripes.FileBeanDecompressor;
 import eionet.datadict.util.ScheduledTaskResolver;
 import eionet.datadict.web.asynctasks.VocabularyRdfImportFromUrlTask;
@@ -237,6 +241,12 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      */
     @SpringBean
     private IVocabularyService vocabularyService;
+    
+    @SpringBean
+    private AttributeService attributeService;
+
+    @SpringBean
+    private AttributeDataService attributeDataService;
 
     /**
      * Site code service.
@@ -2384,4 +2394,22 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         }
         return null;
     }
+
+    public Integer getVocabularyBinding(int attributeId) {
+       return attributeDataService.getVocabularyBinding(attributeId);
+    }
+
+    public List<VocabularyConcept> getVocabularyConcepts(int attributeId) throws ResourceNotFoundException, EmptyParameterException {
+        DataDictEntity ddEntity = new DataDictEntity(vocabularyFolder.getId(), DataDictEntity.Entity.VCF);
+        return attributeService.getAttributeVocabularyConcepts(attributeId, ddEntity, Attribute.ValueInheritanceMode.NONE);
+    }
+
+    public VocabularyFolder getVocabularyBindingFolder(int attributeId) throws ServiceException {
+        Integer boundVocabularyId = getVocabularyBinding(attributeId);
+        if (boundVocabularyId != null) {
+            return vocabularyService.getVocabularyFolder(boundVocabularyId);
+        }
+        return null;
+    }
+
 }

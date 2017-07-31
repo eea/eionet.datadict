@@ -3,28 +3,17 @@
 <stripes:layout-component name="head">
     <script type="text/javascript">
 
-        function showOnLoadSpecific(currentDisplayType) {
-            
-            if (currentDisplayType == 'VOCABULARY') {
-                document.getElementById('vocabulary').style.display = "inline";
-            } else if (currentDisplayType == 'SELECT') {
-                document.getElementById('select').style.display = "inline";
-            }
-        }
-
         function showOnChange(elem, currentDisplayType) {
 
             document.getElementById('vocabulary').style.display = 'none';
             document.getElementById('select').style.display = 'none';
 
             if (elem.value == currentDisplayType) {
-                showOnLoadSpecific(currentDisplayType);
-            }
-            if (elem.value === 'VOCABULARY') {
-                document.getElementById('targetEntitySection-1024').style.display = "none";
-            }
-            else {
-                document.getElementById('targetEntitySection-1024').style.display = "block";
+                if (currentDisplayType == 'VOCABULARY') {
+                    document.getElementById('vocabulary').style.display = "inline";
+                } else if (currentDisplayType == 'SELECT') {
+                    document.getElementById('select').style.display = "inline";
+                }
             }
         }
         

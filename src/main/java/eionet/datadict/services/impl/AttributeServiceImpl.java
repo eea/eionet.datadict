@@ -111,7 +111,6 @@ public class AttributeServiceImpl implements AttributeService {
         }
         
         validateMandatoryAttributeFields(attribute);
-        filterTargetEntities(attribute);
         
         int newAttributeId = this.attributeDataService.createAttribute(attribute);
         this.aclService.grantAccess(user, AclEntity.ATTRIBUTE, this.getAttributeAclId(newAttributeId), "Short_name= " + attribute.getShortName());
@@ -126,7 +125,6 @@ public class AttributeServiceImpl implements AttributeService {
         }
 
         validateMandatoryAttributeFields(attribute);
-        filterTargetEntities(attribute);
         removeIncompatibleOldValues(attribute);
        
         this.attributeDataService.updateAttribute(attribute);
@@ -148,21 +146,6 @@ public class AttributeServiceImpl implements AttributeService {
             throw new BadRequestException ("One of the mandatory fields are missing! Attribute cannot be saved.");
         }
     }
-    
-    /**
-     * If the given attribute has vocabulary as its display type then it is not supported for VocabularyFolder target entity:
-     * When support for this target entity is implemented, this method should not be used any more.
-     * 
-     * @param attribute 
-     */
-    protected void filterTargetEntities (Attribute attribute) {
-        if (attribute.getDisplayType() == Attribute.DisplayType.VOCABULARY) {
-            Set<TargetEntity> targetEntities = attribute.getTargetEntities();
-            if (targetEntities!=null) {
-                targetEntities.remove(TargetEntity.VCF);
-            }
-        }
-    } 
     
     protected void removeIncompatibleOldValues(Attribute attribute) throws ResourceNotFoundException {
         Attribute oldAttribute = attributeDataService.getAttribute(attribute.getId());

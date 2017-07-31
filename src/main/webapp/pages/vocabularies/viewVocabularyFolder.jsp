@@ -212,18 +212,37 @@
                 <c:forEach var="attributeValues" items="${actionBean.vocabularyFolder.attributes}">
                     <c:set var="attrMeta" value="${attributeValues[0]}"/>
                     <c:if test="${not empty attrMeta.value}">
-                      <tr>
-                          <th scope="row" class="scope-row simple_attr_title">${attrMeta.label}</th>
-                          <td class="simple_attr_value">
-                              <ul class="stripedmenu">
-                                <c:forEach var="attr" items="${attributeValues}" varStatus="innerLoop">
-                                  <li>
-                                    <span style="white-space:pre-wrap"><c:out value="${attr.value}" /></span>
-                                  </li>
-                                </c:forEach>
-                              </ul>
-                          </td>
-                      </tr>
+                        <tr>
+                            <th scope="row" class="scope-row simple_attr_title">${attrMeta.label}</th>
+                            <td class="simple_attr_value">
+                                <c:choose>
+                                    <c:when test="${attrMeta.inputType=='vocabulary'}">
+                                        <c:set var="vocabularyConcepts" value="${actionBean.getVocabularyConcepts(attrMeta.attributeId)}" />
+                                        <c:set var="vocabularyBindingFolder" value="${actionBean.getVocabularyBindingFolder(attrMeta.attributeId)}" />
+                                        <c:if test="${not empty vocabularyConcepts}">
+                                            <ul class="stripedmenu">
+                                                <c:forEach var="vocabularyConcept" items="${vocabularyConcepts}">
+                                                    <li>
+                                                        <stripes:link href="/vocabularyconcept/${vocabularyBindingFolder.folderName}/${vocabularyBindingFolder.identifier}/${vocabularyConcept.identifier}/view" title="${vocabularyConcept.label}">
+                                                            <c:out value="${vocabularyConcept.label}"/>
+                                                        </stripes:link>
+                                                    </li>
+                                                </c:forEach>
+                                            </ul>
+                                        </c:if>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <ul class="stripedmenu">
+                                            <c:forEach var="attr" items="${attributeValues}" varStatus="innerLoop">
+                                                <li>
+                                                    <span style="white-space:pre-wrap"><c:out value="${attr.value}" /></span>
+                                                </li>
+                                            </c:forEach>
+                                        </ul>
+                                    </c:otherwise>
+                                </c:choose>
+                            </td>
+                        </tr>
                     </c:if>
                 </c:forEach>
             </table>

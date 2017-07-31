@@ -24,9 +24,7 @@
     <c:if test="${attrMeta.inputType eq 'text'}">
         <stripes:text name="${fieldName}[0].value" size="${attrMeta.width}" class="smalltext" />
     </c:if>
-
 </c:if>
-
 
 <%-- Multiple values --%>
 <c:if test="${attrMeta.multiValue}">

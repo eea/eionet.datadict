@@ -21,6 +21,7 @@ import eionet.meta.dao.domain.Schema;
 import eionet.meta.dao.domain.SchemaSet;
 import eionet.meta.dao.domain.StandardGenericStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.ISchemaService;
 import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.ServiceException;
@@ -69,6 +70,7 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
     private DataElement dataElement;
     private SchemaSet schemaSet;
     private Schema schema;
+    private VocabularyFolder vocabularyFolder;
 
     // The Attribute object
     private Attribute attribute;
@@ -174,6 +176,11 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
                     (!this.schema.isWorkingCopy() || (this.schema.getWorkingUser() != null && !this.schema.getWorkingUser().equals(user.getUserName())))) {
                 throw new UserAuthorizationException("You are not authorized to edit this schema.");
             }
+        } else if (attrOwnerType.equals("vocabulary")) {
+            configureVocabulary();
+            if (!this.vocabularyFolder.isWorkingCopy() || (this.vocabularyFolder.getWorkingUser() != null && !this.vocabularyFolder.getWorkingUser().equals(user.getUserName()))) {
+                throw new UserAuthorizationException("You are not authorized to edit this vocabulary.");
+            }
         }
 
         this.attribute = attributeDataService.getAttribute(Integer.parseInt(attributeId));
@@ -245,6 +252,11 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
             if (this.schema.getSchemaSetId() <= 0 && 
                     (!this.schema.isWorkingCopy() || (this.schema.getWorkingUser() != null && !this.schema.getWorkingUser().equals(user.getUserName())))) {
                 throw new UserAuthorizationException("You are not authorized to edit this schema.");
+            }
+        } else if (attrOwnerType.equals("vocabulary")) {
+            configureVocabulary();
+            if (!this.vocabularyFolder.isWorkingCopy() || (this.vocabularyFolder.getWorkingUser() != null && !this.vocabularyFolder.getWorkingUser().equals(user.getUserName()))) {
+                throw new UserAuthorizationException("You are not authorized to edit this vocabulary.");
             }
         }
 
@@ -462,6 +474,15 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
         }
     }
 
+    protected void configureVocabulary() throws ResourceNotFoundException {
+        this.currentSection = "vocabularies";
+        try {
+            this.vocabularyFolder = this.vocabularyService.getVocabularyFolder(this.attributeOwnerEntity.getId());
+        } catch (ServiceException ex) {
+            throw new ResourceNotFoundException("Vocabulary with id: " + this.attributeOwnerEntity.getId() + " does not exist.", ex);
+        }
+    }
+
     //----------------- Getters and Setters ------------------------------
     
     public String getAttributeId() {
@@ -510,6 +531,14 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
 
     public void setSchema(Schema schema) {
         this.schema = schema;
+    }
+
+    public VocabularyFolder getVocabularyFolder() {
+        return vocabularyFolder;
+    }
+
+    public void setVocabularyFolder(VocabularyFolder vocabularyFolder) {
+        this.vocabularyFolder = vocabularyFolder;
     }
 
     public DataDictEntity getAttributeOwnerEntity() {

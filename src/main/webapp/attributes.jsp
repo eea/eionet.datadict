@@ -117,7 +117,7 @@
                     %>
                     <div id="drop-operations">
                         <ul>
-                            <li class="add"><a href="delem_attribute.jsp?mode=add">Add attribute</a></li>
+                            <li class="add"><a href="${pageContext.request.contextPath}/attribute/add">Add attribute</a></li>
                         </ul>
                     </div>
                     <%

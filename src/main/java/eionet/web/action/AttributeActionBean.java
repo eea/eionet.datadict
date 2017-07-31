@@ -17,7 +17,6 @@ import eionet.meta.DDUser;
 import eionet.datadict.errors.UserAuthenticationException;
 import eionet.datadict.errors.UserAuthorizationException;
 import eionet.meta.dao.domain.FixedValue;
-import eionet.web.action.AbstractActionBean;
 import java.util.List;
 import java.util.Map;
 import net.sourceforge.stripes.action.Before;
@@ -80,7 +79,6 @@ public class AttributeActionBean extends AbstractActionBean {
      */
     public Resolution view() throws UserAuthenticationException, UserAuthorizationException, ResourceNotFoundException, BadRequestException {
         DDUser user = this.getUser();
-
         if (user == null) {
             throw new UserAuthenticationException("You must be signed in in order to view attributes.");
         }
@@ -154,15 +152,15 @@ public class AttributeActionBean extends AbstractActionBean {
 
         attribute = attributeDataService.getAttribute(attribute.getId());
 
-        if (vocabularyId!= null ) {
+        if (vocabularyId!= null) {
             attribute = attributeDataService.setNewVocabularyToAttributeObject(attribute, Integer.parseInt(vocabularyId));
         }
         
-        if (this.namespaces==null || this.namespaces.isEmpty()){
+        if (this.namespaces==null || this.namespaces.isEmpty()) {
             this.namespaces = this.namespaceDataService.getAttributeNamespaces();
         }
         
-        if (this.rdfNamespaces==null || this.rdfNamespaces.isEmpty()){
+        if (this.rdfNamespaces==null || this.rdfNamespaces.isEmpty()) {
             this.rdfNamespaces = this.rdfNamespaceDataService.getRdfNamespaces();
         }
         
