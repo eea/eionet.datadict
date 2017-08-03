@@ -28,7 +28,6 @@ import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.w3c.dom.Element;
 
 /**
@@ -66,7 +65,7 @@ public class DataSetServiceImpl implements DataSetService {
             Document doc = docBuilder.newDocument();
             Element schemaRoot = doc.createElementNS(XMLConstants.W3C_XML_SCHEMA_NS_URI, DataDictXMLConstants.XS_PREFIX + ":" + DataDictXMLConstants.SCHEMA);
             schemaRoot.setAttributeNS(XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI,
-                    DataDictXMLConstants.XSI_PREFIX + ":" + DataDictXMLConstants.SCHEMA_LOCATION, XMLConstants.W3C_XML_SCHEMA_NS_URI +" " + XMLConstants.W3C_XML_SCHEMA_NS_URI+".xsd");
+                    DataDictXMLConstants.XSI_PREFIX + ":" + DataDictXMLConstants.SCHEMA_LOCATION, XMLConstants.W3C_XML_SCHEMA_NS_URI + " " + XMLConstants.W3C_XML_SCHEMA_NS_URI + ".xsd");
             schemaRoot.setAttribute(XMLConstants.XMLNS_ATTRIBUTE + ":" + DataDictXMLConstants.XS_PREFIX, XMLConstants.W3C_XML_SCHEMA_NS_URI);
             schemaRoot.setAttribute(XMLConstants.XMLNS_ATTRIBUTE + ":" + DataDictXMLConstants.DATASETS, DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + DataDictXMLConstants.DATASETS_NAMESPACE_ID);
             schemaRoot.setAttribute(XMLConstants.XMLNS_ATTRIBUTE + ":" + DataDictXMLConstants.ISO_ATTRS, DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + DataDictXMLConstants.ISOATTRS_NAMESPACE_ID);
@@ -93,10 +92,10 @@ public class DataSetServiceImpl implements DataSetService {
             annotation.appendChild(documentation);
             for (AttributeValue attributeValue : attributeValues) {
                 Attribute attribute = attributeDao.getById(attributeValue.getAttributeId());
-                if(attribute!=null){
-                 Element attributeElement = doc.createElement(attribute.getNamespace().getShortName().concat(":").replace("_", "").concat(attribute.getShortName()).replace(" ", ""));
-                attributeElement.appendChild(doc.createTextNode(attributeValue.getValue()));
-                documentation.appendChild(attributeElement);
+                if (attribute != null) {
+                    Element attributeElement = doc.createElement(attribute.getNamespace().getShortName().concat(":").replace("_", "").concat(attribute.getShortName()).replace(" ", ""));
+                    attributeElement.appendChild(doc.createTextNode(attributeValue.getValue()));
+                    documentation.appendChild(attributeElement);
                 }
             }
             Element complexType = doc.createElement(DataDictXMLConstants.XS_PREFIX + ":" + DataDictXMLConstants.COMPLEX_TYPE);
@@ -133,7 +132,7 @@ public class DataSetServiceImpl implements DataSetService {
     }
 
     @Override
-    public Document getDataSetXMLInstance(int id) throws XmlExportException , ResourceNotFoundException{
+    public Document getDataSetXMLInstance(int id) throws XmlExportException, ResourceNotFoundException {
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = null;
         try {
@@ -143,46 +142,43 @@ public class DataSetServiceImpl implements DataSetService {
             docBuilder = docFactory.newDocumentBuilder();
             Document doc = docBuilder.newDocument();
             Element schemaRoot = doc.createElement(dataset.getIdentifier().replace(" ", ""));
-           schemaRoot.setAttribute(XMLConstants.XMLNS_ATTRIBUTE, DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dataset.getCorrespondingNS().getId());
-            schemaRoot.setAttribute(XMLConstants.XMLNS_ATTRIBUTE +":"+ DataDictXMLConstants.XSI_PREFIX, XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
-            schemaRoot.setAttribute(DataDictXMLConstants.XSI_PREFIX+":" + DataDictXMLConstants.SCHEMA_LOCATION, DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dataset.getCorrespondingNS().getId() + "  " + DataDictXMLConstants.DATASET_SCHEMA_LOCATION_PARTIAL_FILE_NAME + dataset.getId() + DataDictXMLConstants.XSD_FILE_EXTENSION);
+            schemaRoot.setAttribute(XMLConstants.XMLNS_ATTRIBUTE, DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dataset.getCorrespondingNS().getId());
+            schemaRoot.setAttribute(XMLConstants.XMLNS_ATTRIBUTE + ":" + DataDictXMLConstants.XSI_PREFIX, XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
+            schemaRoot.setAttribute(DataDictXMLConstants.XSI_PREFIX + ":" + DataDictXMLConstants.SCHEMA_LOCATION, DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dataset.getCorrespondingNS().getId() + "  " + DataDictXMLConstants.DATASET_SCHEMA_LOCATION_PARTIAL_FILE_NAME + dataset.getId() + DataDictXMLConstants.XSD_FILE_EXTENSION);
 
             for (DatasetTable dsTable : dsTables) {
                 String tableNS = DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dsTable.getCorrespondingNS().getId();
-                System.out.println(dsTable.getIdentifier());
-               
-                Element tableElement = doc.createElementNS(tableNS, dsTable.getIdentifier().replace(":","-"));
+                Element tableElement = doc.createElementNS(tableNS, dsTable.getIdentifier().replace(":", "-"));
                 Element row = doc.createElementNS(tableNS, DataDictXMLConstants.ROW);
                 row.removeAttribute(XMLConstants.XMLNS_ATTRIBUTE);
                 tableElement.appendChild(row);
                 schemaRoot.appendChild(tableElement);
                 List<DataElement> dataElements = this.dataElementDao.getDataElementsOfDatasetTable(dsTable.getId());
                 for (DataElement dataElement : dataElements) {
-                    if (dataElement!=null && dataElement.getShortName()!=null) {
-                        try{
-                         Element xmlDataElement = doc.createElementNS(tableNS, XMLUtils.replaceAllIlegalXMLCharacters(dataElement.getShortName().replace(" ", "")).replace("(", "").replace(")","").replace(",",""));
-                    xmlDataElement.appendChild(doc.createTextNode(""));
-                    row.appendChild(xmlDataElement);    
-                        }catch(Exception e){
-                        System.out.println("problematic Value is:"+dataElement.getShortName());
+                    if (dataElement != null && dataElement.getShortName() != null) {
+                        try {
+                            Element xmlDataElement = doc.createElementNS(tableNS, XMLUtils.replaceAllIlegalXMLCharacters(dataElement.getShortName().replace(" ", "")).replace("(", "").replace(")", "").replace(",", ""));
+                            xmlDataElement.appendChild(doc.createTextNode(""));
+                            row.appendChild(xmlDataElement);
+                        } catch (Exception e) {
                             throw new XmlExportException();
                         }
-                     
+
                     }
-                   
+
                 }
             }
             doc.appendChild(schemaRoot);
             return doc;
         } catch (ParserConfigurationException ex) {
             Logger.getLogger(DataSetServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
-            throw new XmlExportException("Error while parsing XML File",ex);
+            throw new XmlExportException("Error while parsing XML File", ex);
         }
     }
 
     @Override
     public Document getDataSetXMLInstanceWithNS(int id) throws XmlExportException {
-        throw new UnsupportedOperationException("Not supported yet."); 
+        throw new UnsupportedOperationException("Not supported yet.");
     }
-    
+
 }

@@ -22,6 +22,8 @@ public class FixedValueDaoTest extends UnitilsJUnit4 {
     private static final int FXV_2_OWNER_ID = 1;
     private static final int FXV_3_ID = 3;
     private static final String FXV_3_VALUE = "attribute first fixed value";
+    private static final String FXV_4_VALUE = "attribute second fixed value";
+    private static final int FXV_8880_OWNER_ID=8880;
     private static final int FXV_3_OWNER_ID = 1;
     
     @SpringBeanByType
@@ -49,8 +51,8 @@ public class FixedValueDaoTest extends UnitilsJUnit4 {
     
     @Test
     public void testExistsByValue() {
-        assertTrue(this.fixedValueDao.exists(FixedValue.OwnerType.DATA_ELEMENT, FXV_2_OWNER_ID, FXV_2_VALUE));
-        assertTrue(this.fixedValueDao.exists(FixedValue.OwnerType.ATTRIBUTE, FXV_3_OWNER_ID, FXV_3_VALUE));
+        assertTrue(this.fixedValueDao.exists(FixedValue.OwnerType.ATTRIBUTE, FXV_2_OWNER_ID, FXV_3_VALUE));
+        assertTrue(this.fixedValueDao.exists(FixedValue.OwnerType.ATTRIBUTE, FXV_3_OWNER_ID, FXV_4_VALUE));
         assertFalse(this.fixedValueDao.exists(FixedValue.OwnerType.DATA_ELEMENT, FXV_2_OWNER_ID, "not existing value"));
         assertFalse(this.fixedValueDao.exists(FixedValue.OwnerType.DATA_ELEMENT, 1000, "not existing value"));
     }
@@ -69,7 +71,7 @@ public class FixedValueDaoTest extends UnitilsJUnit4 {
     
     @Test
     public void testGetByValue() {
-        FixedValue fxv1 = this.fixedValueDao.getByValue(FixedValue.OwnerType.DATA_ELEMENT, FXV_2_OWNER_ID, FXV_2_VALUE);
+        FixedValue fxv1 = this.fixedValueDao.getByValue(FixedValue.OwnerType.DATA_ELEMENT, FXV_8880_OWNER_ID, FXV_2_VALUE);
         this.assertFixedValueWithId2(fxv1);
         
         FixedValue fxv2 = this.fixedValueDao.getByValue(FixedValue.OwnerType.ATTRIBUTE, FXV_3_OWNER_ID, FXV_3_VALUE);
@@ -92,7 +94,7 @@ public class FixedValueDaoTest extends UnitilsJUnit4 {
     
     @Test
     public void testDeleteAll() {
-        final int ownerId = 1;
+        final int ownerId = 8880;
         
         List<FixedValue> valuesBefore = this.dataElementDao.getFixedValues(ownerId);
         assertFalse(valuesBefore.isEmpty());
@@ -171,7 +173,7 @@ public class FixedValueDaoTest extends UnitilsJUnit4 {
         assertEquals("definition 2", fxv.getDefinition());
         assertEquals("description 2", fxv.getShortDescription());
         assertFalse(fxv.isDefaultValue());
-        assertEquals(FXV_2_OWNER_ID, fxv.getOwnerId());
+        assertEquals(FXV_8880_OWNER_ID, fxv.getOwnerId());
         assertEquals(FixedValue.OwnerType.DATA_ELEMENT.toString(), fxv.getOwnerType());
     }
     

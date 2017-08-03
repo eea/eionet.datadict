@@ -47,7 +47,6 @@ public class DataSetController {
     private static final String SCHEMA_DATASET_TABLE_FILE_NAME_PREFIX = "schema-tbl-";
     private static final String SCHEMA_DATASET_FILE_NAME_PREFIX = "schema-dst-";
     private static final String DATASET_INSTANCE_FILE_NAME = "dataset-instance";
-    private static final String DATASET_TABLE_INSTANCE_FILE_NAME = "table-(.*?)-instance.xml";
 
     @Autowired
     public DataSetController(DataSetService dataSetService, DataSetTableService dataSetTableService) {
@@ -55,11 +54,6 @@ public class DataSetController {
         this.dataSetTableService = dataSetTableService;
     }
 
-    @RequestMapping(value = "/testmvc", method = RequestMethod.GET)
-    @ResponseBody
-    public String testMVCINDD() {
-        return "it works";
-    }
 
     @RequestMapping(value = "/{id}/schema", method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
     @ResponseBody
@@ -122,7 +116,7 @@ public class DataSetController {
         } else if (DatasetTableInstanceFileNamePatternMatcher.find()) {
             String tableId = DatasetTableInstanceFileNamePatternMatcher.group(1);
             xml = this.dataSetTableService.getDataSetTableXMLInstance(Integer.parseInt(tableId));
-            String fileName = "table" + id + "-instance.xml";
+            String fileName = "table" + tableId + "-instance.xml";
             response.setContentType("application/xml");
             response.setHeader("Content-Disposition", "attachment;filename=" + fileName);
 

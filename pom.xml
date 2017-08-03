@@ -19,7 +19,7 @@
     </properties>
 
     <version>1.0-SNAPSHOT</version>
-    <name>datadict-75318</name>
+    <name>datadict</name>
     <url>http://maven.apache.org</url>
 
     <!-- configuration of Maven repositories to be used -->
@@ -194,6 +194,7 @@
                     <includes>
                         <include>**/*IT.java</include>
                     </includes>
+                    <skipTests>${skipITs}</skipTests>
                 </configuration>
                 <executions>
                     <execution>
