@@ -881,7 +881,7 @@ else if (mode.equals("add"))
                                                     // XML Schema link
                                                     if (dispAll || dispXmlSchema) { %>
                                                         <li>
-                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/v2/dataset/<%=ds_id%>/schema" class="xsd">
+                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/v2/dataset/<%=ds_id%>/schema-dst-<%=ds_id%>.xsd" class="xsd">
                                                                 Create an XML Schema for this dataset
                                                             </a>
                                                         </li><%
@@ -890,7 +890,7 @@ else if (mode.equals("add"))
                                                     // XML Instance link
                                                     if (dispAll || dispXmlInstance) { %>
                                                         <li>
-                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/v2/dataset/<%=dataset.getID()%>/instance" class="xml">
+                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/v2/dataset/<%=dataset.getID()%>/dataset-instance.xml" class="xml">
                                                                 Create an instance XML for this dataset
                                                             </a>
                                                         </li><%

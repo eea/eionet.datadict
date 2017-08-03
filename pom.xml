@@ -4,7 +4,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>eionet.datadict</groupId>
-    <artifactId>datadict-75318</artifactId>
+    <artifactId>datadict</artifactId>
     <packaging>war</packaging>
 
     <properties>
@@ -194,6 +194,7 @@
                     <includes>
                         <include>**/*IT.java</include>
                     </includes>
+                    <skipTests>${skipITs}</skipTests>
                 </configuration>
                 <executions>
                     <execution>
