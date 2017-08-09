@@ -220,6 +220,7 @@ public class Enumerations {
         public String getLabel(){
             return this.label;
         }
+
         public static List<DisplayForType> getDisplayForTypes(int displayWhen){
             List<DisplayForType> displayForTypes = new ArrayList<DisplayForType>();
             for (DisplayForType type : DisplayForType.values()){

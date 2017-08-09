@@ -226,7 +226,7 @@ public class AttributeActionBean extends AbstractActionBean {
        
        this.attributeService.delete(attributeId, user);
        
-       return new RedirectResolution("/attributes.jsp");
+       return new RedirectResolution("/attributes");
     }
     
     /**

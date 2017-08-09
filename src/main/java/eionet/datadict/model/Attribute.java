@@ -2,7 +2,7 @@ package eionet.datadict.model;
 
 import eionet.datadict.model.enums.Enumerations.AttributeDataType;
 import eionet.meta.dao.domain.VocabularyFolder;
-import java.util.Set;
+import java.util.EnumSet;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -14,11 +14,11 @@ public class Attribute {
     
     public static enum TargetEntity {
         
+        DST(8, "Datasets"), // Datasets
+        TBL(64, "Dataset tables"), // Dataset tables
         CH1(2, "Data elements with fixed values (code list and elements from a vocabulary)"), // Data elements with fixed values (code list and elements from a vocabulary)
         CH2(1, "Data elements with quantitative values"), // Data elements with quantitative values
         //CH3(2, "Data elements with fixed values (code list and elements from a vocabulary)"), // Data elements with fixed values (code list and elements from a vocabulary)
-        DST(8, "Datasets"), // Datasets
-        TBL(64, "Dataset tables"), // Dataset tables
         SCH(128, "Schemas"), // Schemas
         SCS(256, "Schema sets"), // Schema sets
         VCF(1024, "Vocabularies") // Vocabularies
@@ -124,7 +124,7 @@ public class Attribute {
     private String definition;
     private String shortName;
 
-    private Set<TargetEntity> targetEntities;
+    private EnumSet<TargetEntity> targetEntities;
     private DisplayType displayType;
     private AttributeDataType dataType;
     private ObligationType obligationType;
@@ -217,11 +217,11 @@ public class Attribute {
         this.shortName = shortName;
     }
 
-    public Set<TargetEntity> getTargetEntities() {
+    public EnumSet<TargetEntity> getTargetEntities() {
         return targetEntities;
     }
     
-    public void setTargetEntities(Set<TargetEntity> targetEntities) {
+    public void setTargetEntities(EnumSet<TargetEntity> targetEntities) {
         this.targetEntities = targetEntities;
     }
     

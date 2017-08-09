@@ -14,7 +14,7 @@
             The action you are about to perform will remove attribute values of ${actionBean.attributeValuesCount} entities:
         </div>
         <br>
-        <table class="datatable">
+        <table class="datatable results">
             <thead>
                 <tr>
                     <th>Type</th>

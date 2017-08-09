@@ -598,7 +598,6 @@
 
 	table.results {
 		border-collapse: collapse;
-		word-break: break-word;
 		width: 100%;
 		margin: 0px 0;
 	}

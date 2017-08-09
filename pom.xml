@@ -9,10 +9,11 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <env>default</env>
         <java_version>1.8</java_version>
         <spring.version>4.3.5.RELEASE</spring.version>
-       <spring-security-version>4.2.0.RELEASE</spring-security-version>
+        <spring-security-version>4.2.0.RELEASE</spring-security-version>
         <checkstyle.config.location>${basedir}/doc/checkstyle.xml</checkstyle.config.location>
         <sesame.openrdf.version>2.7.10</sesame.openrdf.version>
         <jackson-version>2.8.0</jackson-version>
@@ -23,7 +24,6 @@
     <url>http://maven.apache.org</url>
 
     <!-- configuration of Maven repositories to be used -->
-
     <repositories>
         <repository>
             <id>project-local</id>
@@ -71,20 +71,19 @@
             </properties>
         </profile>
     </profiles>
+
     <!-- the build configuration -->
-
-
     <build>
         <plugins>
-
-             <!-- Docker maven plugin-->
-            
+            <!-- Docker maven plugin-->
             <plugin>
                 <groupId>io.fabric8</groupId>
                 <artifactId>docker-maven-plugin</artifactId>
                 <version>0.15.16</version>
                 <extensions>true</extensions>
                 <configuration>
+                    <!-- Use the following for windows hosts -->
+                    <!-- <dockerHost>http://localhost:2375</dockerHost> -->
                     <image>${valid.images}</image>
                     <images>
                         <image>
@@ -102,7 +101,9 @@
                                 </env>
                                 <wait>
                                     <tcp>
-                                        <mode>direct</mode>
+                                        <!-- Use the following for windows hosts -->
+                                        <!-- <mode>direct</mode> -->
+                                        <mode>mapped</mode>
                                         <ports>
                                             <port>3306</port>
                                         </ports>
@@ -139,8 +140,8 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- Configure maven compiler -->
 
+            <!-- Configure maven compiler -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -157,7 +158,6 @@
             </plugin>
 
             <!-- Configure Eclipse plugin -->
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-eclipse-plugin</artifactId>
@@ -170,7 +170,6 @@
             </plugin>
 
             <!-- Configure Surefire plugin (for executing unit tests) -->
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -180,14 +179,13 @@
                 </configuration>
             </plugin>
 
- <!-- Configure Failsafe plugin (for executing integration tests) -->
-        
+            <!-- Configure Failsafe plugin (for executing integration tests) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>2.19.1</version>
                 <configuration>
-                            <trimStackTrace>false</trimStackTrace>
+                    <trimStackTrace>false</trimStackTrace>
                     <systemPropertyVariables>
                         <docker.host.address>${docker.host.address}</docker.host.address>
                     </systemPropertyVariables>
@@ -205,6 +203,7 @@
                     </execution>
                 </executions>
             </plugin>
+
             <!-- Configure WAR plugin (for building WAR application) -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -251,7 +250,7 @@
                     </webResources>
                 </configuration>
             </plugin>
-            
+
             <!-- Update database tables -->
             <plugin>
                 <groupId>org.liquibase</groupId>
@@ -368,14 +367,12 @@
         </plugins>
         
         <!-- filters for src/main/resources and src/test/resources -->
-
         <filters>
             <filter>${env}.properties</filter>
             <filter>src/test/resources/testlanguagesbase.properties</filter>
         </filters>
 
         <!-- resources for the main code -->
-
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
@@ -531,7 +528,7 @@
         <dependency>
             <groupId>net.sourceforge.stripes</groupId>
             <artifactId>stripes</artifactId>
-            <version>1.5.6</version>
+            <version>1.5.8</version>
         </dependency>
         <dependency>
             <groupId>taglibs</groupId>
@@ -555,7 +552,6 @@
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
-
             <artifactId>javax.servlet-api</artifactId>
             <version>3.1.0</version>
             <scope>provided</scope>
@@ -664,7 +660,7 @@
             <version>2.0</version>
         </dependency>
         <!-- xmlrpc can be switched to newer versions with following dependency
-       <dependency>
+        <dependency>
             <groupId>org.apache.xmlrpc</groupId>
             <artifactId>xmlrpc</artifactId>
             <version>3.1.3</version>
@@ -978,12 +974,6 @@
             <version>1.3</version>
         </dependency>
         <dependency>
-            <groupId>org.dbunit</groupId>
-            <artifactId>dbunit</artifactId>
-            <version>2.4.9</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-mxj</artifactId>
             <version>5.0.12</version>
@@ -1077,13 +1067,13 @@
             <version>1.5</version>
             <scope>test</scope>
         </dependency>
-          <dependency>
+        <dependency>
             <groupId>com.github.springtestdbunit</groupId>
             <artifactId>spring-test-dbunit</artifactId>
             <version>1.2.1</version>
             <scope>test</scope>
         </dependency>
-             <dependency>
+            <dependency>
             <groupId>org.dbunit</groupId>
             <artifactId>dbunit</artifactId>
             <version>2.5.1</version>

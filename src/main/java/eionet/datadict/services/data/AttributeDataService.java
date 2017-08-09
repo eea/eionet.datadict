@@ -31,7 +31,9 @@ public interface AttributeDataService {
      * @throws ResourceNotFoundException 
      */
     Attribute getAttribute(int id) throws ResourceNotFoundException;
-    
+
+    List<Attribute> getAllAttributes();
+
     /**
      * Fetches the original (not inherited) attribute values of the attribute with the given id corresponding to the specified owner.
      * 

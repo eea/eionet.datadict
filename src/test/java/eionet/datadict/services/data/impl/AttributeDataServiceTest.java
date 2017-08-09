@@ -79,13 +79,20 @@ public class AttributeDataServiceTest extends UnitilsJUnit4 {
         Mockito.doReturn(null).when(attributeDao).getById(0);
         attributeDataService.getAttribute(0);
     }
+
     @Test
     public void testExists() {
         Mockito.doReturn(Boolean.TRUE).when(attributeDao).exists(anyInt());
         attributeDataService.existsAttribute(0);
         Mockito.verify(attributeDao, times(1)).exists(0);
     }
-    
+
+    @Test
+    public void testGetAllAttributes() {
+        attributeDataService.getAllAttributes();
+        Mockito.verify(attributeDao, times(1)).getAll();
+    }
+
     @Test
     public void testCreateAttribute() {
         Mockito.doReturn(1).when(attributeDao).create(attribute);

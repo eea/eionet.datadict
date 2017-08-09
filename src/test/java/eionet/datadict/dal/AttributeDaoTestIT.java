@@ -13,20 +13,16 @@ import eionet.datadict.model.Attribute.ValueInheritanceMode;
 import eionet.datadict.model.DataDictEntity;
 import eionet.datadict.model.Namespace;
 import eionet.datadict.model.RdfNamespace;
-import eionet.meta.service.DBUnitHelper;
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.EnumSet;
 import java.util.List;
-import java.util.Set;
-import org.junit.AfterClass;
+import java.util.stream.Collectors;
 import org.junit.Test;
-import org.unitils.UnitilsJUnit4;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -62,9 +58,17 @@ public class AttributeDaoTestIT {
     }
 
     @Test
+    public void testGetAll() {
+        List<Attribute> attributes = this.attributeDao.getAll();
+        assertEquals(attributes.size(), 7);
+        List<Integer> attributeIds = attributes.stream().map(Attribute::getId).collect(Collectors.toList());
+        assertTrue(attributeIds.containsAll(Arrays.asList(80, 81, 82, 37, 39, 40, 23)));
+    }
+
+    @Test
     public void testGetByIdForTargetEntities() {
         Attribute attribute37 = this.attributeDao.getById(37);
-        Set<Attribute.TargetEntity> targetEntities = attribute37.getTargetEntities();
+        EnumSet<Attribute.TargetEntity> targetEntities = attribute37.getTargetEntities();
         assertNotNull(targetEntities);
         assertTrue(targetEntities.size() == 4);
         assertTrue(targetEntities.containsAll(
@@ -103,7 +107,7 @@ public class AttributeDaoTestIT {
         RdfNamespace rdfNamespace = new RdfNamespace();
         rdfNamespace.setId(1);
 
-        Set<TargetEntity> entities = new HashSet();
+        EnumSet<TargetEntity> entities = EnumSet.noneOf(TargetEntity.class);
         entities.add(TargetEntity.CH1);
         entities.add(TargetEntity.DST);
 
@@ -244,7 +248,7 @@ public class AttributeDaoTestIT {
             String name, String shortName, String definition, Integer displayOrder,
             Integer height, Integer width, boolean displayMultiple, ValueInheritanceMode valueInheritanceMode,
             Namespace namespace, RdfNamespace rdfNamespace, DisplayType displayType,
-            ObligationType obligationType, Set<TargetEntity> targetEntities) {
+            ObligationType obligationType, EnumSet<TargetEntity> targetEntities) {
 
         Attribute attribute = new Attribute();
 

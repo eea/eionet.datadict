@@ -59,7 +59,7 @@ public class AttributeDataServiceImpl implements AttributeDataService {
         Attribute attribute = attributeDao.getById(id);
         
         if (attribute == null) {
-            throw new ResourceNotFoundException("Attribute with id: "+id+" does not exist.");
+            throw new ResourceNotFoundException("Attribute with id: " + id + " does not exist.");
         }
         
         if (attribute.getVocabulary() != null) {
@@ -70,7 +70,12 @@ public class AttributeDataServiceImpl implements AttributeDataService {
         
         return attribute;
     }
-    
+
+    @Override
+    public List<Attribute> getAllAttributes() {
+        return this.attributeDao.getAll();
+    }
+
     @Override
     public boolean existsAttribute(int id) {
         return this.attributeDao.exists(id);

@@ -107,5 +107,6 @@ public interface AttributeDao {
     List<AttributeValue> getAttributesValuesOfDataTable(int tableId);
     
     Map<Integer, Set<Attribute>> getAttributesOfDataElementsInTable(int tableId);
-    
+
+    List<Attribute> getAll();
 }

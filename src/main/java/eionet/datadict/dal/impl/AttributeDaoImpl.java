@@ -16,8 +16,8 @@ import eionet.datadict.model.Namespace;
 import eionet.datadict.model.RdfNamespace;
 import eionet.datadict.util.data.DataConverter;
 import eionet.meta.dao.domain.VocabularyFolder;
+import java.util.EnumSet;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -271,6 +271,12 @@ public class AttributeDaoImpl extends JdbcDaoBase implements AttributeDao {
         }
     }
 
+    @Override
+    public List<Attribute> getAll() {
+        String sql = "select M_ATTRIBUTE.* FROM M_ATTRIBUTE order by DISP_ORDER";
+        return this.getJdbcTemplate().query(sql, new AttributeWithNoRelationsRowMapper());
+    }
+
     protected static class MapRowMapper implements RowMapper<Map<DataDictEntity.Entity, Integer>> {
 
         @Override
@@ -286,22 +292,7 @@ public class AttributeDaoImpl extends JdbcDaoBase implements AttributeDao {
 
         @Override
         public Attribute mapRow(ResultSet rs, int i) throws SQLException {
-            Attribute attribute = new Attribute();
-            attribute.setId(rs.getInt("M_ATTRIBUTE.M_ATTRIBUTE_ID"));
-            attribute.setDisplayOrder(rs.getInt("M_ATTRIBUTE.DISP_ORDER") == 999 ? null : rs.getInt("M_ATTRIBUTE.DISP_ORDER"));
-            attribute.setTargetEntities(new TargetEntityConverter().convertBack(rs.getInt("M_ATTRIBUTE.DISP_WHEN")));
-            attribute.setDisplayWidth(rs.getInt("M_ATTRIBUTE.DISP_WIDTH"));
-            attribute.setDisplayHeight(rs.getInt("M_ATTRIBUTE.DISP_HEIGHT"));
-            attribute.setLanguageUsed(rs.getBoolean("M_ATTRIBUTE.LANGUAGE_USED"));
-            attribute.setName(rs.getString("M_ATTRIBUTE.NAME"));
-            attribute.setDefinition(rs.getString("M_ATTRIBUTE.DEFINITION"));
-            attribute.setShortName(rs.getString("M_ATTRIBUTE.SHORT_NAME"));
-            attribute.setDisplayMultiple(rs.getBoolean("M_ATTRIBUTE.DISP_MULTIPLE"));
-            attribute.setRdfPropertyName(rs.getString("M_ATTRIBUTE.RDF_PROPERTY_NAME"));
-            attribute.setObligationType(new ObligationTypeConverter().convertBack(rs.getString("M_ATTRIBUTE.OBLIGATION")));
-            attribute.setDisplayType(new DisplayTypeConverter().convertBack(rs.getString("M_ATTRIBUTE.DISP_TYPE")));
-            attribute.setValueInheritanceMode(new ValueInheritanceConverter().convertBack(rs.getString("M_ATTRIBUTE.INHERIT")));
-            attribute.setDataType(AttributeDataType.getEnum(rs.getString("M_ATTRIBUTE.DATA_TYPE")));
+            Attribute attribute = createAttributeFromResultSet(rs);
 
             int namespaceId = rs.getInt("M_ATTRIBUTE.NAMESPACE_ID");
 
@@ -362,22 +353,7 @@ public class AttributeDaoImpl extends JdbcDaoBase implements AttributeDao {
 
         @Override
         public Attribute mapRow(ResultSet rs, int i) throws SQLException {
-            Attribute attribute = new Attribute();
-            attribute.setId(rs.getInt("M_ATTRIBUTE.M_ATTRIBUTE_ID"));
-            attribute.setDisplayOrder(rs.getInt("M_ATTRIBUTE.DISP_ORDER") == 999 ? null : rs.getInt("M_ATTRIBUTE.DISP_ORDER"));
-            attribute.setTargetEntities(new TargetEntityConverter().convertBack(rs.getInt("M_ATTRIBUTE.DISP_WHEN")));
-            attribute.setDisplayWidth(rs.getInt("M_ATTRIBUTE.DISP_WIDTH"));
-            attribute.setDisplayHeight(rs.getInt("M_ATTRIBUTE.DISP_HEIGHT"));
-            attribute.setLanguageUsed(rs.getBoolean("M_ATTRIBUTE.LANGUAGE_USED"));
-            attribute.setName(rs.getString("M_ATTRIBUTE.NAME"));
-            attribute.setDefinition(rs.getString("M_ATTRIBUTE.DEFINITION"));
-            attribute.setShortName(rs.getString("M_ATTRIBUTE.SHORT_NAME"));
-            attribute.setDisplayMultiple(rs.getBoolean("M_ATTRIBUTE.DISP_MULTIPLE"));
-            attribute.setRdfPropertyName(rs.getString("M_ATTRIBUTE.RDF_PROPERTY_NAME"));
-            attribute.setObligationType(new ObligationTypeConverter().convertBack(rs.getString("M_ATTRIBUTE.OBLIGATION")));
-            attribute.setDisplayType(new DisplayTypeConverter().convertBack(rs.getString("M_ATTRIBUTE.DISP_TYPE")));
-            attribute.setValueInheritanceMode(new ValueInheritanceConverter().convertBack(rs.getString("M_ATTRIBUTE.INHERIT")));
-            attribute.setDataType(AttributeDataType.getEnum(rs.getString("M_ATTRIBUTE.DATA_TYPE")));
+            Attribute attribute = createAttributeFromResultSet(rs);
 
             int namespaceId = rs.getInt("M_ATTRIBUTE.NAMESPACE_ID");
 
@@ -444,10 +420,10 @@ public class AttributeDaoImpl extends JdbcDaoBase implements AttributeDao {
         }
     }
 
-    protected static class TargetEntityConverter implements DataConverter<Set<Attribute.TargetEntity>, Integer> {
+    protected static class TargetEntityConverter implements DataConverter<EnumSet<Attribute.TargetEntity>, Integer> {
 
         @Override
-        public Integer convert(Set<Attribute.TargetEntity> value) {
+        public Integer convert(EnumSet<Attribute.TargetEntity> value) {
             int result = 0;
 
             if (value == null || value.isEmpty()) {
@@ -462,8 +438,8 @@ public class AttributeDaoImpl extends JdbcDaoBase implements AttributeDao {
         }
 
         @Override
-        public Set<Attribute.TargetEntity> convertBack(Integer value) {
-            Set<Attribute.TargetEntity> result = new HashSet<Attribute.TargetEntity>();
+        public EnumSet<Attribute.TargetEntity> convertBack(Integer value) {
+            EnumSet<Attribute.TargetEntity> result = EnumSet.noneOf(Attribute.TargetEntity.class);
 
             if (value == 0) {
                 return result;
@@ -580,6 +556,34 @@ public class AttributeDaoImpl extends JdbcDaoBase implements AttributeDao {
             throw new IllegalArgumentException(String.format("Unable to convert stirng to value inheritance mode: %s", value));
         }
 
+    }
+
+    protected static class AttributeWithNoRelationsRowMapper implements RowMapper<Attribute> {
+        @Override
+        public Attribute mapRow(ResultSet rs, int i) throws SQLException {
+            return createAttributeFromResultSet(rs);
+        }
+    }
+
+    private static Attribute createAttributeFromResultSet(ResultSet rs) throws SQLException {
+        Attribute attribute = new Attribute();
+        attribute.setId(rs.getInt("M_ATTRIBUTE.M_ATTRIBUTE_ID"));
+        attribute.setDisplayOrder(rs.getInt("M_ATTRIBUTE.DISP_ORDER") == 999 ? null : rs.getInt("M_ATTRIBUTE.DISP_ORDER"));
+        attribute.setTargetEntities(new TargetEntityConverter().convertBack(rs.getInt("M_ATTRIBUTE.DISP_WHEN")));
+        attribute.setDisplayWidth(rs.getInt("M_ATTRIBUTE.DISP_WIDTH"));
+        attribute.setDisplayHeight(rs.getInt("M_ATTRIBUTE.DISP_HEIGHT"));
+        attribute.setLanguageUsed(rs.getBoolean("M_ATTRIBUTE.LANGUAGE_USED"));
+        attribute.setName(rs.getString("M_ATTRIBUTE.NAME"));
+        attribute.setDefinition(rs.getString("M_ATTRIBUTE.DEFINITION"));
+        attribute.setShortName(rs.getString("M_ATTRIBUTE.SHORT_NAME"));
+        attribute.setDisplayMultiple(rs.getBoolean("M_ATTRIBUTE.DISP_MULTIPLE"));
+        attribute.setRdfPropertyName(rs.getString("M_ATTRIBUTE.RDF_PROPERTY_NAME"));
+        attribute.setObligationType(new ObligationTypeConverter().convertBack(rs.getString("M_ATTRIBUTE.OBLIGATION")));
+        attribute.setDisplayType(new DisplayTypeConverter().convertBack(rs.getString("M_ATTRIBUTE.DISP_TYPE")));
+        attribute.setValueInheritanceMode(new ValueInheritanceConverter().convertBack(rs.getString("M_ATTRIBUTE.INHERIT")));
+        attribute.setDataType(AttributeDataType.getEnum(rs.getString("M_ATTRIBUTE.DATA_TYPE")));
+
+        return attribute;
     }
 
     public static final int DISPLAY_WIDTH_DEFAULT = 20;
