@@ -2217,6 +2217,15 @@ public class DDSearchEngine {
             }
         }
 
+        if (isIncludeHistoricVersions == false) {
+            for (Iterator it = v.iterator(); it.hasNext();) {
+                Dataset dataset = (Dataset) it.next();
+                if (!dataset.getID().equals(getLatestDstID(dataset.getIdentifier(), null))) {
+                    it.remove();
+                }
+                
+            }
+        }
         return v;
     }
 
