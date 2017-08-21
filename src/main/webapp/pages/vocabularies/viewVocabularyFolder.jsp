@@ -248,6 +248,9 @@
             </table>
         </div>
 
+        <!-- Bound data elements -->
+        <jsp:include page="boundElementsInc.jsp" />
+
         <c:if test="${actionBean.userWorkingCopy}">
             <jsp:include page="newConceptInc.jsp" />
         </c:if>

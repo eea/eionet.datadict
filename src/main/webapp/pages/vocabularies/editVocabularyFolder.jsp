@@ -408,7 +408,9 @@
         </stripes:form>
 
         <!-- Bound data elements -->
-        <jsp:include page="editBoundElementsInc.jsp" />
+        <jsp:include page="boundElementsInc.jsp">
+            <jsp:param name="editMode" value="true" />
+        </jsp:include>
 
         <!-- New concept popup -->
         <jsp:include page="newConceptInc.jsp" />
