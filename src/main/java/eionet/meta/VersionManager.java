@@ -663,12 +663,6 @@ public class VersionManager {
                 elmHandler.setUseForce(true);
                 elmHandler.execute();
 
-                // the new copy must get the id of the previous one
-                gen.clear();
-                gen.setTable("DATAELEM");
-                gen.setFieldExpr("DATAELEM_ID", checkedoutCopyID);
-                stmt.executeUpdate(gen.updateStatement() + " where DATAELEM_ID=" + elmID);
-                
                 // the id of the new copy must be changed in all relations as well
                 DataElementHandler.replaceID(elmID, checkedoutCopyID, conn);
                 elmID = checkedoutCopyID;

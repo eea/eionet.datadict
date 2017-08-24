@@ -966,13 +966,32 @@ public class CopyHandler extends OldCopyHandler {
     private void copyInferenceRules() throws SQLException {
         for (String oldElementId : this.oldNewElements.keySet()) {
             String newElementId = this.oldNewElements.get(oldElementId);
+            this.copySameElementInferenceRules(oldElementId, newElementId);
             this.copyInferenceRules(oldElementId, newElementId);
             this.copyInvertedInferenceRules(oldElementId, newElementId);
         }
     }
 
+    private void copySameElementInferenceRules(String oldElementId, String newElementId) throws SQLException {
+        String sql = "insert into INFERENCE_RULE (DATAELEM_ID, RULE, TARGET_ELEM_ID) select ?, RULE, ? from INFERENCE_RULE where DATAELEM_ID = ? and DATAELEM_ID=TARGET_ELEM_ID";
+        PreparedStatement stmt = null;
+        
+        try {
+            stmt = this.conn.prepareStatement(sql);
+            stmt.setInt(1, Integer.valueOf(newElementId));
+            stmt.setInt(2, Integer.valueOf(newElementId));
+            stmt.setInt(3, Integer.valueOf(oldElementId));
+            stmt.executeUpdate();
+        }
+        finally {
+            if (stmt != null) {
+                stmt.close();
+            }
+        }
+    }
+
     private void copyInferenceRules(String oldElementId, String newElementId) throws SQLException {
-        String sql = "insert into INFERENCE_RULE (DATAELEM_ID, RULE, TARGET_ELEM_ID) select ?, RULE, TARGET_ELEM_ID from INFERENCE_RULE where DATAELEM_ID = ?";
+        String sql = "insert into INFERENCE_RULE (DATAELEM_ID, RULE, TARGET_ELEM_ID) select ?, RULE, TARGET_ELEM_ID from INFERENCE_RULE where DATAELEM_ID = ? and DATAELEM_ID<>TARGET_ELEM_ID";
         PreparedStatement stmt = null;
         
         try {
@@ -989,7 +1008,7 @@ public class CopyHandler extends OldCopyHandler {
     }
 
     private void copyInvertedInferenceRules(String oldElementId, String newElementId) throws SQLException {
-        String sql = "insert into INFERENCE_RULE (DATAELEM_ID, RULE, TARGET_ELEM_ID) select DATAELEM_ID, RULE, ? from INFERENCE_RULE where RULE='owl:inverseOf' and TARGET_ELEM_ID = ?";
+        String sql = "insert into INFERENCE_RULE (DATAELEM_ID, RULE, TARGET_ELEM_ID) select DATAELEM_ID, RULE, ? from INFERENCE_RULE where RULE='owl:inverseOf' and TARGET_ELEM_ID = ? and DATAELEM_ID<>TARGET_ELEM_ID";
         PreparedStatement stmt = null;
         
         try {

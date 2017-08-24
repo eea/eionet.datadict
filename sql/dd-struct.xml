@@ -2740,4 +2740,27 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
         <dropTable tableName="COMPLEX_ATTR_ROW" />
     </changeSet>
 
+    <changeSet author="stamojoh" id="rev-198">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <indexExists indexName="FK_DATAELEM_ID"/>
+            </not>
+        </preConditions>
+        <comment>
+            Refs #85105 In order to drop the primary key in rev-199 
+            all the foreign keys must have indexes
+        </comment>
+        <createIndex indexName="FK_DATAELEM_ID" tableName="INFERENCE_RULE" >
+            <column name="DATAELEM_ID" />
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="stamojoh" id="rev-199">
+        <comment>
+            Refs #85105 Drop primary key 
+            https://bugs.mysql.com/bug.php?id=11305
+        </comment>
+        <dropPrimaryKey tableName="INFERENCE_RULE"/>
+    </changeSet>
+
 </databaseChangeLog>
