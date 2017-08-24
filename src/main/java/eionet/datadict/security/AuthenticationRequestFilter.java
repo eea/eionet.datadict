@@ -45,6 +45,7 @@ public class AuthenticationRequestFilter extends GenericFilterBean {
         interceptedUrlPatterns.add("/vocabulary?add=");
         interceptedUrlPatterns.add("/vocabularies/maintain");
         interceptedUrlPatterns.add("**/datasets/*/edit");
+        interceptedUrlPatterns.add("/inference_rules");
         INTERCEPTED_URL_PATTERNS = Collections.unmodifiableList(interceptedUrlPatterns);
     }
 

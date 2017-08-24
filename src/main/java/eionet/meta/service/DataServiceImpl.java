@@ -317,25 +317,13 @@ public class DataServiceImpl implements IDataService {
         }
 
     }
-    
+
     @Override
     public Collection<InferenceRule> getDataElementRules(int dataElementId) throws ServiceException {
         try{
             DataElement dataElement = dataElementDao.getDataElement(dataElementId);
-            return dataElementDao.listInferenceRules(dataElement);
-        }
-        catch(Exception e){
-            throw new ServiceException("Failed to get inference rules for element " + dataElementId + " : " + e.getMessage(), e);
-        }
-    }
-    
-    @Override
-    public Collection<InferenceRule> listDataElementRules(int dataElementId) throws ServiceException {
-        try{
-            DataElement dataElement = dataElementDao.getDataElement(dataElementId);
             return dataElementDao.getInferenceRules(dataElement);
-        }
-        catch(Exception e){
+        } catch(Exception e) {
             throw new ServiceException("Failed to list inference rules for element " + dataElementId + " : " + e.getMessage(), e);
         }
     }
@@ -348,8 +336,7 @@ public class DataServiceImpl implements IDataService {
             InferenceRule rule = new InferenceRule(sourceDElement, type, targetDElement);
             
             dataElementDao.createInferenceRule(rule);
-        }
-        catch(Exception e){
+        } catch(Exception e) {
             throw new ServiceException("Failed to create new rule (" + type.getName() + "," + targetDElementId + ") for element " + sourceDElementId + " : " + e.getMessage(), e);
         }
     }
@@ -360,14 +347,8 @@ public class DataServiceImpl implements IDataService {
             DataElement sourceDElement = dataElementDao.getDataElement(sourceDElementId);
             DataElement targetDElement = dataElementDao.getDataElement(targetDElementId);
             InferenceRule rule = new InferenceRule(sourceDElement, type, targetDElement);
-            
-            if (type == RuleType.INVERSE && !dataElementDao.inferenceRuleExists(rule)) {
-                // check for inverted rule
-                rule = new InferenceRule(targetDElement, type, sourceDElement);
-            }
             dataElementDao.deleteInferenceRule(rule);
-        }
-        catch(Exception e){
+        } catch(Exception e) {
             throw new ServiceException("Failed to delete rule (" + type.getName() + "," + targetDElementId + ") for element " + sourceDElementId + " : " + e.getMessage(), e);
         }
     }
@@ -380,8 +361,7 @@ public class DataServiceImpl implements IDataService {
             InferenceRule rule = new InferenceRule(sourceDElement, type, targetDElement);
             
             return  dataElementDao.inferenceRuleExists(rule);
-        }
-        catch(Exception e){
+        } catch(Exception e) {
             throw new ServiceException("Failed to check if rule (" + type.getName() + "," + targetDElementId + ") for element " + sourceDElementId + " exists : " + e.getMessage(), e);
         }
     }
@@ -397,8 +377,7 @@ public class DataServiceImpl implements IDataService {
             InferenceRule newRule = new InferenceRule(sourceDElement, newType, newTargetDElement);
             
             dataElementDao.updateInferenceRule(rule, newRule);
-        }
-        catch(Exception e){
+        } catch(Exception e) {
             throw new ServiceException("Failed to update rule (" + type.getName() + "," + targetDElementId + ") for element " + sourceDElementId + " : " + e.getMessage(), e);
         }
     }
@@ -407,8 +386,7 @@ public class DataServiceImpl implements IDataService {
     public Collection<DataElement> grepDataElement(String pattern) throws ServiceException {
         try{
             return dataElementDao.grepDataElement(pattern);
-        }
-        catch(Exception e){
+        } catch(Exception e) {
             throw new ServiceException("Failed to grep for data element : " + e.getMessage(), e);
         }
     }

@@ -1728,3 +1728,7 @@
             min-height: 1px;
             padding-left: 3%;
         }
+        
+        .actionButton {
+            float: left;
+        }

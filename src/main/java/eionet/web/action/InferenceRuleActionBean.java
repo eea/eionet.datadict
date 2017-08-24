@@ -65,57 +65,44 @@ public class InferenceRuleActionBean extends AbstractActionBean {
     
     @DefaultHandler
     public Resolution view() throws ServiceException {
-        if(!isUserLoggedIn()){
-            addGlobalValidationError("You have to login to access inference rules");
-            return new ForwardResolution(ERROR_PAGE);
+        if (!dataService.dataElementExists(parentElementId)) {
+            addGlobalValidationError("There is no element with ID: " + Integer.toString(parentElementId));
         }
         
-        if(!dataService.dataElementExists(parentElementId) )
-            addGlobalValidationError("There is no element with ID : " + Integer.toString(parentElementId));
-        
-        if(getGlobalValidationErrors().size() == 0){
-            rules = dataService.listDataElementRules(parentElementId);
+        if (getGlobalValidationErrors().isEmpty()){
+            rules = dataService.getDataElementRules(parentElementId);
             parentElement = dataService.getDataElement(parentElementId);
         }
         return new ForwardResolution(INFERENCE_RULES_VIEW_JSP);
     }
     
     public Resolution newRule() throws ServiceException {
-        if(!isUserLoggedIn()){
-            addGlobalValidationError("You have to login to access inference rules");
-            return new ForwardResolution(ERROR_PAGE);
+        if (!dataService.dataElementExists(parentElementId)) {
+            addGlobalValidationError("There is no element with ID: " + Integer.toString(parentElementId));
         }
         
-        if(!dataService.dataElementExists(parentElementId))
-            addGlobalValidationError("There is no element with ID : " + Integer.toString(parentElementId));
-        
-        if(getGlobalValidationErrors().size() == 0)
+        if (getGlobalValidationErrors().size() == 0) {
             parentElement = dataService.getDataElement(parentElementId);
+        }
         
         return new ForwardResolution(INFERENCE_RULE_NEW_JSP);
     }
     
     public Resolution addRule() throws ServiceException {
-        if(!isUserLoggedIn()){
-            addGlobalValidationError("You have to login to access inference rules");
-            return new ForwardResolution(ERROR_PAGE);
+        if (!dataService.dataElementExists(parentElementId)) {
+            addCautionMessage("There is no source element with ID: " + Integer.toString(parentElementId));
+        }
+        if (!dataService.dataElementExists(targetElementId)) {
+            addCautionMessage("There is no target element with ID: " + Integer.toString(targetElementId));
+        }
+        if (dataService.dataElementExists(parentElementId) && dataService.dataElementExists(targetElementId) && dataService.ruleExists(parentElementId, type, targetElementId)) {
+            addCautionMessage("The rule (" + type.getName() + "," + Integer.toString(targetElementId) + ") for element " + Integer.toString(parentElementId) + " already exists");
         }
         
-        if(!dataService.dataElementExists(parentElementId))
-            addCautionMessage("There is no source element with ID : " + Integer.toString(parentElementId));
-        if(!dataService.dataElementExists(targetElementId))
-            addCautionMessage("There is no target element with ID : " + Integer.toString(targetElementId));
-        if( dataService.dataElementExists(parentElementId) && dataService.dataElementExists(targetElementId)){
-            if( dataService.ruleExists(parentElementId, type, targetElementId) )
-                addCautionMessage("The rule (" + type.getName() + "," + Integer.toString(targetElementId) + ") for element " + Integer.toString(parentElementId) + " already exists");
-        }
-        
-        
-        if(getCautionMessages().size() > 0){
+        if (getCautionMessages().size() > 0) {
             parentElement = dataService.getDataElement(parentElementId);
             return getContext().getSourcePageResolution();
-        }
-        else{
+        } else {
             dataService.createDataElementRule(parentElementId, type, targetElementId);
             addSystemMessage("Inference Rule (" + type.getName() + "," + Integer.toString(targetElementId) + ") for element " + Integer.toString(parentElementId) + " was successfully created");
             return new RedirectResolution(InferenceRuleActionBean.class).addParameter("parentElementId", parentElementId);
@@ -124,61 +111,48 @@ public class InferenceRuleActionBean extends AbstractActionBean {
     }
     
     public Resolution existingRule() throws ServiceException {
-        if(!isUserLoggedIn()){
-            addGlobalValidationError("You have to login to access inference rules");
-            return new ForwardResolution(ERROR_PAGE);
+        if (!dataService.dataElementExists(parentElementId)) {
+            addGlobalValidationError("There is no source element with ID: " + Integer.toString(parentElementId));
+        }
+        if (!dataService.dataElementExists(targetElementId)) {
+            addGlobalValidationError("There is no target element with ID: " + Integer.toString(targetElementId));
         }
         
-        if( !dataService.dataElementExists(parentElementId) )
-            addGlobalValidationError("There is no source element with ID : " + Integer.toString(parentElementId));
-        if( !dataService.dataElementExists(targetElementId) )
-            addGlobalValidationError("There is no target element with ID : " + Integer.toString(targetElementId));
-        
-        if(getGlobalValidationErrors().size() == 0)
+        if (getGlobalValidationErrors().size() == 0) {
             parentElement = dataService.getDataElement(parentElementId);
-        
+        }
         return new ForwardResolution(INFERENCE_RULE_EXISTING_JSP);
     }
     
     public Resolution editRule() throws ServiceException {
-        if(!isUserLoggedIn()){
-            addGlobalValidationError("You have to login to access inference rules");
-            return new ForwardResolution(ERROR_PAGE);
-        }
-
-        if( !dataService.dataElementExists(parentElementId))
+        if (!dataService.dataElementExists(parentElementId)) {
             addGlobalValidationError("The ID (" + Integer.toString(parentElementId) + ") of the parent element of the existing rule is not valid");
-        if( !dataService.dataElementExists(targetElementId) )
-            addGlobalValidationError("The ID (" + Integer.toString(targetElementId) + ") of the target element of the existing rule is not valid");         
-        
-        if( !dataService.dataElementExists(newTargetElementId) )
-            addCautionMessage("There is no target element with ID : " + Integer.toString(newTargetElementId));
-        if( dataService.dataElementExists(parentElementId) && dataService.dataElementExists(newTargetElementId)){
-            if( dataService.ruleExists(parentElementId, newType, newTargetElementId) )
-                addCautionMessage("The rule (" + newType.getName() + "," + Integer.toString(newTargetElementId) + ") for element " + Integer.toString(parentElementId) + " already exists");
+        }
+        if (!dataService.dataElementExists(targetElementId)) {
+            addGlobalValidationError("The ID (" + Integer.toString(targetElementId) + ") of the target element of the existing rule is not valid");
         }
         
-        if( (getGlobalValidationErrors().size() > 0) || (getCautionMessages().size() > 0) ){
+        if (!dataService.dataElementExists(newTargetElementId)) {
+            addCautionMessage("There is no target element with ID: " + Integer.toString(newTargetElementId));
+        }
+        if (dataService.dataElementExists(parentElementId) && dataService.dataElementExists(newTargetElementId) && dataService.ruleExists(parentElementId, newType, newTargetElementId)) {
+            addCautionMessage("The rule (" + newType.getName() + "," + Integer.toString(newTargetElementId) + ") for element " + Integer.toString(parentElementId) + " already exists");
+        }
+        
+        if (getGlobalValidationErrors().size() > 0 || getCautionMessages().size() > 0) {
             parentElement = dataService.getDataElement(parentElementId);
             return getContext().getSourcePageResolution();
-        }
-        else{
+        } else {
             dataService.updateDataElementRule(parentElementId, type, targetElementId, newType, newTargetElementId);
             addSystemMessage("Inference Rule (" + type.getName() + "," + Integer.toString(targetElementId) + ") for element " + Integer.toString(parentElementId) + " was successfully edited to (" + newType.getName() + "," + Integer.toString(newTargetElementId) + ")");
             return new RedirectResolution(InferenceRuleActionBean.class).addParameter("parentElementId", parentElementId);
         }
-        
     }
     
     public Resolution deleteRule() throws ServiceException {
-        if(!isUserLoggedIn()){
-            addGlobalValidationError("You have to login to access inference rules");
-            return new ForwardResolution(ERROR_PAGE);
-        }
-        
-        if( !dataService.dataElementExists(parentElementId) || !dataService.dataElementExists(targetElementId) )
+        if (!dataService.dataElementExists(parentElementId) || !dataService.dataElementExists(targetElementId)) {
             addCautionMessage("The rule (" + Integer.toString(parentElementId) + "," + type.getName() + "," + Integer.toString(targetElementId) + ") could not be deleted, because it does not exist");
-        else{
+        } else {
             dataService.deleteDataElementRule(parentElementId, type, targetElementId);
             addSystemMessage("Inference Rule (" + type.getName() + "," + Integer.toString(targetElementId) + ") for element " + Integer.toString(parentElementId) + " was successfully deleted");
         }
@@ -187,96 +161,91 @@ public class InferenceRuleActionBean extends AbstractActionBean {
     
     @HandlesEvent("search")
     public Resolution grepElement() throws ServiceException {
-        if(!isUserLoggedIn()){
-            addGlobalValidationError("You have to login to access inference rules");
-            return new ForwardResolution(ERROR_PAGE);
-        }
-        
         Collection<DataElement> elements = dataService.grepDataElement(pattern);
-        
         JSONArray jsonObject = convertToJsonArray(elements, new String[] {"id", "shortName"});
         return new StreamingResolution("application/json", jsonObject.toString());
     }
     
-    private JSONArray convertToJsonArray(Collection javaObject, final String[] includedFields){
+    private JSONArray convertToJsonArray(Collection javaObject, final String[] includedFields) {
         JsonConfig jsonConfig = new JsonConfig();
-        jsonConfig.setJsonPropertyFilter( new PropertyFilter(){    
+        jsonConfig.setJsonPropertyFilter(new PropertyFilter() {
             @Override
-            public boolean apply( Object source, String name, Object value) {
+            public boolean apply(Object source, String name, Object value) {
                 boolean isFiltered = true;
-                for (String includedField : includedFields){
-                    if (name.equals(includedField))
+                for (String includedField : includedFields) {
+                    if (name.equals(includedField)) {
                         isFiltered = false;
+                    }
                 }
                 return isFiltered;
-            }    
-        });   
+            }
+        });
         
         JSONArray jsonObject = JSONArray.fromObject(javaObject, jsonConfig);
         return jsonObject;
     }
     
-    public void setParentElement(DataElement element){
+    public void setParentElement(DataElement element) {
         this.parentElement = element;
     }
     
-    public DataElement getParentElement(){
+    public DataElement getParentElement() {
         return this.parentElement;
     }
     
-    public Collection<InferenceRule> getRules(){
+    public Collection<InferenceRule> getRules() {
         return this.rules;
     }
     
-    public void setRules(Collection rules){
+    public void setRules(Collection rules) {
         this.rules = rules;
     }
     
-    public void setType(RuleType type){
+    public void setType(RuleType type) {
         this.type = type;
     }
 
-    public RuleType getType(){
+    public RuleType getType() {
         return type;
     }
     
-    public int getTargetElementId(){
+    public int getTargetElementId() {
         return targetElementId;
     }
     
-    public void setTargetElementId(int id){
+    public void setTargetElementId(int id) {
         this.targetElementId = id;
     }
     
-    public int getParentElementId(){
+    public int getParentElementId() {
         return parentElementId;
     }
     
-    public void setParentElementId(int id){
+    public void setParentElementId(int id) {
         this.parentElementId = id;
     }
     
-    public RuleType getNewType(){
+    public RuleType getNewType() {
         return this.newType;
     }
     
-    public void setNewType(RuleType type){
+    public void setNewType(RuleType type) {
         this.newType = type;
     }
     
-    public int getNewTargetElementId(){
+    public int getNewTargetElementId() {
         return this.targetElementId;
     }
     
-    public void setNewTargetElementId(int id){
+    public void setNewTargetElementId(int id) {
         this.newTargetElementId = id;
     }
     
-    public String getPattern(){
+    public String getPattern() {
         return this.pattern;
     }
     
-    public void setPattern(String pattern){
+    public void setPattern(String pattern) {
         this.pattern = pattern;
     }
 }

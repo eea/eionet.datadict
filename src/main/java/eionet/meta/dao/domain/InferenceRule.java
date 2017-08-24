@@ -110,7 +110,7 @@ public class InferenceRule {
             return true;
         
         InferenceRule rule = (InferenceRule) obj;
-        return ( (getSourceDElement().getId() == rule.getSourceDElement().getId()) && (getTargetDElement().getId() == rule.getTargetDElement().getId()) && (getType() == rule.getType()) );
+        return getSourceDElement().getId() == rule.getSourceDElement().getId() && getTargetDElement().getId() == rule.getTargetDElement().getId() && getType() == rule.getType();
     }
     
     @Override

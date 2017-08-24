@@ -392,13 +392,6 @@ public interface IDataElementDAO {
     Collection<InferenceRule> getInferenceRules(DataElement parentElem);
 
     /**
-     * Returns inference rules of specific element (not fetching Data Elements, only their IDs)
-     * @param parentElem
-     * @return List of rules
-     */
-    Collection<InferenceRule> listInferenceRules(DataElement parentElem);
-
-    /**
      * Creates new inference rule for specific element
      * @param rule 
      */

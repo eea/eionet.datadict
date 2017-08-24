@@ -1155,30 +1155,6 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     }
 
     @Override
-    public Collection<InferenceRule> listInferenceRules(DataElement parentElem) {
-        StringBuilder sql = new StringBuilder("select * from INFERENCE_RULE where DATAELEM_ID = :dataelem_id");
-
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("dataelem_id", parentElem.getId());
-
-        List<InferenceRule> result = getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<InferenceRule>() {
-
-            @Override
-            public InferenceRule mapRow(ResultSet rs, int rowNum) throws SQLException {
-                DataElement source = new DataElement();
-                DataElement target = new DataElement();
-                source.setId(Integer.parseInt(rs.getString("DATAELEM_ID")));
-                target.setId(Integer.parseInt(rs.getString("TARGET_ELEM_ID")));
-                InferenceRule rule = new InferenceRule(source, RuleType.fromName(rs.getString("RULE")), target);
-
-                return rule;
-            }
-        });
-        return result;
-
-    }
-
-    @Override
     public void createInferenceRule(InferenceRule rule) {
         StringBuilder sql = new StringBuilder("insert into INFERENCE_RULE (DATAELEM_ID, RULE, TARGET_ELEM_ID) values (:sourceElementId, :ruleName, :targetElementId)");
 
@@ -1192,7 +1168,12 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
 
     @Override
     public void deleteInferenceRule(InferenceRule rule) {
-        StringBuilder sql = new StringBuilder("delete from INFERENCE_RULE where DATAELEM_ID = :sourceElementId AND RULE = :ruleName AND TARGET_ELEM_ID = :targetElementId");
+        String sql;
+        if (rule.getType() == RuleType.INVERSE) {
+            sql = "delete from INFERENCE_RULE  where (DATAELEM_ID=:sourceElementId or DATAELEM_ID=:targetElementId) and RULE=:ruleName and (TARGET_ELEM_ID=:targetElementId or TARGET_ELEM_ID=:sourceElementId)";
+        } else {
+            sql = "delete from INFERENCE_RULE where DATAELEM_ID=:sourceElementId AND RULE=:ruleName and TARGET_ELEM_ID=:targetElementId";
+        }
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("sourceElementId", rule.getSourceDElement().getId());
@@ -1204,14 +1185,19 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
 
     @Override
     public boolean inferenceRuleExists(InferenceRule rule) {
-        StringBuilder sql = new StringBuilder("select count(*) from INFERENCE_RULE where DATAELEM_ID = :sourceElementId AND RULE = :ruleName AND TARGET_ELEM_ID = :targetElementId");
+        String sql;
+        if (rule.getType() == RuleType.INVERSE) {
+            sql = "select count(*) from INFERENCE_RULE where (DATAELEM_ID=:sourceElementId or DATAELEM_ID=:targetElementId) and RULE=:ruleName and (TARGET_ELEM_ID=:targetElementId or TARGET_ELEM_ID=:sourceElementId)";
+        } else {
+            sql = "select count(*) from INFERENCE_RULE where DATAELEM_ID=:sourceElementId and RULE=:ruleName and TARGET_ELEM_ID=:targetElementId";
+        }
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("sourceElementId", rule.getSourceDElement().getId());
         params.put("ruleName", rule.getTypeName());
         params.put("targetElementId", rule.getTargetDElement().getId());
 
-        int count = getNamedParameterJdbcTemplate().queryForObject(sql.toString(), params, Integer.class);
+        int count = getNamedParameterJdbcTemplate().queryForObject(sql, params, Integer.class);
         return (count > 0);
     }
 

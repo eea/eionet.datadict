@@ -220,14 +220,6 @@ public interface IDataService {
     Collection<InferenceRule> getDataElementRules(int dataElementId) throws ServiceException;
     
     /**
-     * Returns all inference rules of a data element (not fetching Data Elements, only their IDs)
-     * @param dataElementId
-     * @return
-     * @throws ServiceException 
-     */
-    Collection<InferenceRule> listDataElementRules(int dataElementId) throws ServiceException;
-    
-    /**
      * Creates new inference rule for specific data element
      * 
      * @param sourceDElementId
