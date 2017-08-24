@@ -1274,7 +1274,7 @@
                   colonCount = colonCount + 1;
                 }
                 //only common elements may have colon
-                if (!((ch == 58 && isCommon == "true") || ch==95 || ch==45 || ch==46 || (ch>=48 && ch<=57) || (ch>=65 && ch<=90) || (ch>=97 && ch<=122))){
+                if (!((ch == 58 && isCommon) || ch==95 || ch==45 || ch==46 || (ch>=48 && ch<=57) || (ch>=65 && ch<=90) || (ch>=97 && ch<=122))){
                     return false;
                 }
 
