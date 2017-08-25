@@ -4,8 +4,8 @@
         // <![CDATA[
         (function($) {
             $(document).ready(function() {
-                $("#searchDataElementsLink").live("click", function() {
-                    $('#filters').dialog('open');
+                $("#searchDataElementsLink").click(function() {
+                    $('#searchDataElements').dialog('open');
                     return false;
                 });
 
