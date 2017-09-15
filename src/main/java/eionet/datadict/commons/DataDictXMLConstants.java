@@ -14,6 +14,7 @@ public class DataDictXMLConstants {
     public static final String ISOATTRS_NAMESPACE_ID = "2";
     public static final String DDATTRS_NAMESPACE_ID = "3";
     public static final String DATASETS = "datasets";
+    public static final String DATASET = "dataset";
     public static final String DD_ATTRS = "ddattrs";
     public static final String ISO_ATTRS = "isoattrs";
     public static final String TARGET_NAMESPACE = "targetNamespace";
@@ -47,5 +48,6 @@ public class DataDictXMLConstants {
     public static final String LANGUAGE_PREFIX="lang";
     public static final String MIN_OCCURS="minOccurs";
     public static final String MAX_OCCURS="maxOccurs";
+    public static final String SCHEMAS_API_V2_PREFIX="v2";
     
 }

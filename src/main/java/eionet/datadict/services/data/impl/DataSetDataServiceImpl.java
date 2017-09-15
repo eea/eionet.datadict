@@ -14,11 +14,13 @@ import eionet.datadict.services.data.DataSetDataService;
 import java.util.HashSet;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  *
  * @author Vasilis Skiadas<vs@eworx.gr>
  */
+@Service
 public class DataSetDataServiceImpl implements DataSetDataService {
 
     private final DatasetDao datasetDao;
@@ -47,4 +49,11 @@ public class DataSetDataServiceImpl implements DataSetDataService {
         return dataset;
     }
 
+    @Override
+    public DataSet getDatasetWithoutRelations(int dataSetId) {
+        return datasetDao.getById(dataSetId);
+    }
+
+    
+    
 }

@@ -73,7 +73,6 @@ public class DatasetTableController {
         transformer.transform(source, result);
         outStream.flush();
         outStream.close();
-
     }
 
     @RequestMapping(value = "/{id}/{variable:.+}")

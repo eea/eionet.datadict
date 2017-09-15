@@ -15,6 +15,7 @@ import eionet.datadict.services.AttributeService;
 import eionet.datadict.services.DataSetService;
 import eionet.datadict.services.data.AttributeDataService;
 import eionet.datadict.services.data.DataElementDataService;
+import eionet.datadict.services.data.DataSetDataService;
 import eionet.datadict.services.data.DatasetTableDataService;
 import eionet.meta.DDUser;
 import eionet.meta.dao.domain.Schema;
@@ -82,8 +83,9 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
     private AttributeDataService attributeDataService;
     @SpringBean
     private IVocabularyService vocabularyService;
+    
     @SpringBean
-    private DataSetService datasetService;
+    private DataSetDataService dataSetDataService;
     @SpringBean
     private DatasetTableDataService datasetTableDataService;
     @SpringBean
@@ -436,7 +438,7 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
     
     protected void configureDataset() throws ResourceNotFoundException {
         this.currentSection = "datasets";
-        this.dataSet = this.datasetService.getDataset(this.attributeOwnerEntity.getId());
+        this.dataSet = this.dataSetDataService.getDatasetWithoutRelations(this.attributeOwnerEntity.getId());
     }
     
     protected void configureDataElement() throws ResourceNotFoundException {

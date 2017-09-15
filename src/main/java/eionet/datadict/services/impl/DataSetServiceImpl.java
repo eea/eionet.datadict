@@ -5,10 +5,10 @@ import eionet.datadict.commons.util.XMLUtils;
 import eionet.datadict.dal.AttributeDao;
 import eionet.datadict.dal.AttributeValueDao;
 import eionet.datadict.dal.DataElementDao;
-import eionet.datadict.dal.DatasetDao;
 import eionet.datadict.model.DataElement;
 
 import eionet.datadict.dal.DatasetTableDao;
+import eionet.datadict.errors.EmptyParameterException;
 import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.errors.XmlExportException;
 import eionet.datadict.model.Attribute;
@@ -24,6 +24,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import eionet.datadict.model.Namespace;
+import eionet.datadict.services.data.AttributeDataService;
+import eionet.datadict.services.data.DataSetDataService;
+import eionet.meta.dao.domain.VocabularyConcept;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -37,26 +40,28 @@ import org.w3c.dom.Element;
 @Service
 public class DataSetServiceImpl implements DataSetService {
 
-    private final DatasetDao datasetDao;
+    private final DataSetDataService dataSetDataService;
     private final DatasetTableDao datasetTableDao;
     private final AttributeValueDao attributeValueDao;
     private final AttributeDao attributeDao;
     private final DataElementDao dataElementDao;
+    private final AttributeDataService attributeDataService;
 
     @Autowired
-    public DataSetServiceImpl(DatasetDao datasetDao, DatasetTableDao datasetTableDao, AttributeValueDao attributeValueDao, AttributeDao attributeDao, DataElementDao dataElementDao) {
-        this.datasetDao = datasetDao;
+    public DataSetServiceImpl(DataSetDataService dataSetDataService, DatasetTableDao datasetTableDao, AttributeValueDao attributeValueDao, AttributeDao attributeDao, DataElementDao dataElementDao, AttributeDataService attributeDataService) {
+        this.dataSetDataService = dataSetDataService;
         this.datasetTableDao = datasetTableDao;
         this.attributeValueDao = attributeValueDao;
         this.attributeDao = attributeDao;
         this.dataElementDao = dataElementDao;
+        this.attributeDataService = attributeDataService;
     }
 
     @Override
     public Document getDataSetXMLSchema(int id) throws XmlExportException, ResourceNotFoundException {
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = null;
-        DataSet dataset = this.getDataset(id);
+        DataSet dataset = dataSetDataService.getDatasetWithoutRelations(id);
         List<DatasetTable> dsTables = datasetTableDao.getAllByDatasetId(dataset.getId());
         List<AttributeValue> attributeValues = attributeValueDao.getByOwner(new DataDictEntity(dataset.getId(), DataDictEntity.Entity.DS));
 
@@ -92,7 +97,27 @@ public class DataSetServiceImpl implements DataSetService {
             annotation.appendChild(documentation);
             for (AttributeValue attributeValue : attributeValues) {
                 Attribute attribute = attributeDao.getById(attributeValue.getAttributeId());
-                if (attribute != null) {
+                /**
+                 * *
+                 * if (attr.getDisplayType().equals("vocabulary")){
+                 * List<VocabularyConcept> vocs =
+                 * searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attr.getID()),
+                 * attributeValuesOwner, "0"); if(vocs != null){ if
+                 * (attr.getValues() != null)
+                 * attr.getValues().removeAllElements(); for (VocabularyConcept
+                 * concept : vocs) { attr.setValue(concept.getLabel()); } } }
+                 *
+                 */
+                if (attribute != null && attribute.getDisplayType().equals(Attribute.DisplayType.VOCABULARY)) {
+
+                    List<VocabularyConcept> concepts = this.attributeDataService.getVocabularyConceptsAsAttributeValues(attribute.getId(), new DataDictEntity(dataset.getId(), DataDictEntity.Entity.DS), Attribute.ValueInheritanceMode.NONE);
+                    for (VocabularyConcept concept : concepts) {
+                        attributeValue.setValue(concept.getLabel());
+                        Element attributeElement = doc.createElement(attribute.getNamespace().getShortName().concat(":").replace("_", "").concat(attribute.getShortName()).replace(" ", ""));
+                        attributeElement.appendChild(doc.createTextNode(attributeValue.getValue()));
+                        documentation.appendChild(attributeElement);
+                    }
+                } else if (attribute != null) {
                     Element attributeElement = doc.createElement(attribute.getNamespace().getShortName().concat(":").replace("_", "").concat(attribute.getShortName()).replace(" ", ""));
                     attributeElement.appendChild(doc.createTextNode(attributeValue.getValue()));
                     documentation.appendChild(attributeElement);
@@ -114,16 +139,10 @@ public class DataSetServiceImpl implements DataSetService {
         } catch (ParserConfigurationException ex) {
             Logger.getLogger(DataSetServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
             throw new XmlExportException(ex);
-        }
-    }
+        } catch (EmptyParameterException ex) {
+            Logger.getLogger(DataSetServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
+            throw new XmlExportException(ex);
 
-    @Override
-    public DataSet getDataset(int id) throws ResourceNotFoundException {
-        DataSet dataset = datasetDao.getById(id);
-        if (dataset != null) {
-            return dataset;
-        } else {
-            throw new ResourceNotFoundException("Dataset with id: " + Integer.toString(id) + " does not exist.");
         }
     }
 
@@ -136,7 +155,7 @@ public class DataSetServiceImpl implements DataSetService {
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = null;
         try {
-            DataSet dataset = this.getDataset(id);
+            DataSet dataset = this.dataSetDataService.getDatasetWithoutRelations(id);
             List<DatasetTable> dsTables = datasetTableDao.getAllByDatasetId(dataset.getId());
             docFactory.setNamespaceAware(true);
             docBuilder = docFactory.newDocumentBuilder();
@@ -144,7 +163,8 @@ public class DataSetServiceImpl implements DataSetService {
             Element schemaRoot = doc.createElement(dataset.getIdentifier().replace(" ", ""));
             schemaRoot.setAttribute(XMLConstants.XMLNS_ATTRIBUTE, DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dataset.getCorrespondingNS().getId());
             schemaRoot.setAttribute(XMLConstants.XMLNS_ATTRIBUTE + ":" + DataDictXMLConstants.XSI_PREFIX, XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
-            schemaRoot.setAttribute(DataDictXMLConstants.XSI_PREFIX + ":" + DataDictXMLConstants.SCHEMA_LOCATION, DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dataset.getCorrespondingNS().getId() + "  " + DataDictXMLConstants.DATASET_SCHEMA_LOCATION_PARTIAL_FILE_NAME + dataset.getId() + DataDictXMLConstants.XSD_FILE_EXTENSION);
+            schemaRoot.setAttribute(DataDictXMLConstants.XSI_PREFIX + ":" + DataDictXMLConstants.SCHEMA_LOCATION, DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dataset.getCorrespondingNS().getId() + "  "
+                    + DataDictXMLConstants.APP_CONTEXT + "/" + DataDictXMLConstants.SCHEMAS_API_V2_PREFIX + "/" + DataDictXMLConstants.DATASET + "/" + dataset.getId() + "/" + DataDictXMLConstants.DATASET_SCHEMA_LOCATION_PARTIAL_FILE_NAME + dataset.getId() + DataDictXMLConstants.XSD_FILE_EXTENSION);
 
             for (DatasetTable dsTable : dsTables) {
                 String tableNS = DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dsTable.getCorrespondingNS().getId();
@@ -155,9 +175,9 @@ public class DataSetServiceImpl implements DataSetService {
                 schemaRoot.appendChild(tableElement);
                 List<DataElement> dataElements = this.dataElementDao.getDataElementsOfDatasetTable(dsTable.getId());
                 for (DataElement dataElement : dataElements) {
-                    if (dataElement != null && dataElement.getShortName() != null) {
+                    if (dataElement != null && dataElement.getIdentifier()!= null) {
                         try {
-                            Element xmlDataElement = doc.createElementNS(tableNS, XMLUtils.replaceAllIlegalXMLCharacters(dataElement.getShortName().replace(" ", "")).replace("(", "").replace(")", "").replace(",", ""));
+                            Element xmlDataElement = doc.createElementNS(tableNS, XMLUtils.replaceAllIlegalXMLCharacters(dataElement.getIdentifier()));
                             xmlDataElement.appendChild(doc.createTextNode(""));
                             row.appendChild(xmlDataElement);
                         } catch (Exception e) {

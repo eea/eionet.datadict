@@ -20,6 +20,7 @@ import org.mockito.MockitoAnnotations;
  *
  * @author Vasilis Skiadas<vs@eworx.gr>
  */
+
 public class DatasetServiceTest {
 
     @Mock
@@ -41,18 +42,10 @@ public class DatasetServiceTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        this.dataSetService = new DataSetServiceImpl(datasetDao, datasetTableDao, attributeValueDao, attributeDao, dataElementDao);
+//        this.dataSetService = new DataSetServiceImpl(datasetDao, datasetTableDao, attributeValueDao, attributeDao, dataElementDao);
     }
 
-    @Test
-    public void testGetDatasetSuccessfully() throws ResourceNotFoundException {
-        DataSet dataset = new DataSet();
-        dataset.setId(2827);
-        Mockito.doReturn(dataset).when(datasetDao).getById(2827);
-        DataSet actualDataSet = dataSetService.getDataset(2827);
-        assertEquals(dataset.getId(), actualDataSet.getId());
-        Mockito.verify(datasetDao, times(1)).getById(2827);
-    }
+    
 
     @Test
     public void testGetDatasetXMlSchemaFailureDueTomissingDSparams(){
@@ -60,8 +53,5 @@ public class DatasetServiceTest {
     }
     
     
-    @Test(expected = ResourceNotFoundException.class)
-    public void testGetDatasetFailure() throws ResourceNotFoundException {
-        dataSetService.getDataset(2827);
-    }
+   
 }

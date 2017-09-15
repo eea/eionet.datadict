@@ -71,7 +71,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
             schemaRoot.setAttribute(DataDictXMLConstants.TARGET_NAMESPACE, DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dataSetTable.getCorrespondingNS().getId());
             schemaRoot.setAttribute("elementFormDefault", "qualified");
             schemaRoot.setAttribute("attributeFormDefault", "unqualified");
-            Element tableRootElement = elMaker.createElement(DataDictXMLConstants.ELEMENT, dataSetTable.getShortName());
+            Element tableRootElement = elMaker.createElement(DataDictXMLConstants.ELEMENT, dataSetTable.getIdentifier());
             schemaRoot.appendChild(tableRootElement);
             Element dsAnnotation = elMaker.createElement(DataDictXMLConstants.ANNOTATION);
             tableRootElement.appendChild(dsAnnotation);
@@ -81,7 +81,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
 
             for (Attribute dataSetTableAttribute : dataSetTable.getAttributes()) {
                 AttributeValue attributeValue = attributeValueDao.getByAttributeAndOwner(dataSetTableAttribute.getId(), new DataDictEntity(dataSetTable.getId(), DataDictEntity.Entity.T)).get(0);
-                if (dataSetTableAttribute.getShortName() != null && dataSetTableAttribute.getNamespace() != null && dataSetTableAttribute.getNamespace().getShortName() != null) {
+                if (dataSetTableAttribute.getShortName() != null && !dataSetTableAttribute.getShortName().equals("Keyword") && !dataSetTableAttribute.getShortName().equals("obligation") && dataSetTableAttribute.getNamespace() != null && dataSetTableAttribute.getNamespace().getShortName() != null) {
                     Element attributeElement = elMaker.createElement(dataSetTableAttribute.getShortName().replace(" ", ""), null, dataSetTableAttribute.getNamespace().getShortName().replace("_", ""));
                     if (attributeValue != null) {
                         attributeElement.appendChild(doc.createTextNode(attributeValue.getValue()));
@@ -95,7 +95,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
             for (Attribute dataSetAttribute : dataSetAttributes) {
                 List<AttributeValue> attributeValues = attributeValueDao.getByAttributeAndOwner(dataSetAttribute.getId(), new DataDictEntity(datasetId, DataDictEntity.Entity.DS));
                 dataSetAttributesValues.add(attributeValues.get(0));
-                if (dataSetAttribute.getShortName() != null && dataSetAttribute.getNamespace() != null && dataSetAttribute.getNamespace().getShortName() != null) {
+                if (dataSetAttribute.getShortName() != null && !dataSetAttribute.getShortName().equals("Keyword") && !dataSetAttribute.getShortName().equals("obligation") && dataSetAttribute.getNamespace() != null && dataSetAttribute.getNamespace().getShortName() != null) {
                     Element attributeElement = elMaker.createElement(dataSetAttribute.getShortName().replace(" ", ""), null, dataSetAttribute.getNamespace().getShortName().replace("_", ""));
                     if (attributeValues.get(0) != null) {
                         attributeElement.appendChild(doc.createTextNode(attributeValues.get(0).getValue()));
@@ -119,14 +119,14 @@ public class DataSetTableServiceImpl implements DataSetTableService {
             rowComplexType.appendChild(rowSequence);
             for (DataElement dataElement : dataSetTable.getDataElements()) {
                 Element tableElement = elMaker.createElement(DataDictXMLConstants.ELEMENT);
-                tableElement.setAttribute(DataDictXMLConstants.REF, dataElement.getShortName());
+                tableElement.setAttribute(DataDictXMLConstants.REF, dataElement.getIdentifier());
                 tableElement.setAttribute(DataDictXMLConstants.MIN_OCCURS, "1");
                 tableElement.setAttribute(DataDictXMLConstants.MAX_OCCURS, "1");
                 rowSequence.appendChild(tableElement);
             }
 
             for (DataElement dataElement : dataSetTable.getDataElements()) {
-                Element xmlElement = elMaker.createElement(DataDictXMLConstants.ELEMENT, dataElement.getShortName());
+                Element xmlElement = elMaker.createElement(DataDictXMLConstants.ELEMENT, dataElement.getIdentifier());
                 String MinSize = "";
                 String MaxSize = "";
                 String Datatype = "";
@@ -163,7 +163,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                         MaxInclusiveValue = attributeValue.getValue();
                         continue;
                     }
-                    if (attribute != null && attribute.getShortName() != null && attribute.getNamespace() != null && attribute.getNamespace().getShortName() != null) {
+                    if (attribute != null && attribute.getShortName() != null && !attribute.getShortName().equals("Keyword") && !attribute.getShortName().equals("obligation") && attribute.getNamespace() != null && attribute.getNamespace().getShortName() != null) {
                         Element attributeElement = elMaker.createElement(attribute.getShortName().replace(" ", ""), null, attribute.getNamespace().getShortName().replace("_", ""));
                         attributeElement.appendChild(doc.createTextNode(attributeValue.getValue()));
                         elemDocumentation.appendChild(attributeElement);
@@ -211,21 +211,22 @@ public class DataSetTableServiceImpl implements DataSetTableService {
     public Document getDataSetTableXMLInstance(int id) throws XmlExportException, ResourceNotFoundException {
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = null;
-        DatasetTable dataSetTable = this.getDatasetTable(id);
+        DatasetTable dataSetTable = this.datasetTableDataService.getFullDatasetTableDefinition(id);
         try {
             docBuilder = docFactory.newDocumentBuilder();
             Document doc = docBuilder.newDocument();
-            Element schemaRoot = doc.createElement(dataSetTable.getShortName().replace(":", "-"));//.replace(" ","_"));
+            Element schemaRoot = doc.createElement(dataSetTable.getIdentifier());
             schemaRoot.setAttribute(XMLConstants.XMLNS_ATTRIBUTE, DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dataSetTable.getCorrespondingNS().getId());
             schemaRoot.setAttribute(XMLConstants.XMLNS_ATTRIBUTE + ":" + DataDictXMLConstants.XSI_PREFIX, XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
-            schemaRoot.setAttribute(DataDictXMLConstants.XSI_PREFIX + ":" + DataDictXMLConstants.SCHEMA_LOCATION, DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dataSetTable.getCorrespondingNS().getId() + "  " + DataDictXMLConstants.TABLE_SCHEMA_LOCATION_PARTIAL_FILE_NAME + dataSetTable.getId() + DataDictXMLConstants.XSD_FILE_EXTENSION);
+            schemaRoot.setAttribute(DataDictXMLConstants.XSI_PREFIX + ":" + DataDictXMLConstants.SCHEMA_LOCATION, DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dataSetTable.getCorrespondingNS().getId() + "  " + DataDictXMLConstants.APP_CONTEXT + "/" + DataDictXMLConstants.SCHEMAS_API_V2_PREFIX + "/" + DataDictXMLConstants.DATASET + "/" + dataSetTable.getDataSet().getId() + "/"
+                    + DataDictXMLConstants.TABLE_SCHEMA_LOCATION_PARTIAL_FILE_NAME + dataSetTable.getId() + DataDictXMLConstants.XSD_FILE_EXTENSION);
             List<DataElement> dataElements = this.dataElementDao.getDataElementsOfDatasetTable(dataSetTable.getId());
             String tableNS = DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dataSetTable.getCorrespondingNS().getId();
             Element row = doc.createElementNS(tableNS, DataDictXMLConstants.ROW);
             schemaRoot.appendChild(row);
             for (DataElement dataElement : dataElements) {
-                if (dataElement.getShortName() != null) {
-                    Element xmlDataElement = doc.createElementNS(tableNS, dataElement.getShortName());
+                if (dataElement.getIdentifier() != null) {
+                    Element xmlDataElement = doc.createElementNS(tableNS, dataElement.getIdentifier());
                     xmlDataElement.appendChild(doc.createTextNode(""));
                     row.appendChild(xmlDataElement);
                 }

@@ -88,6 +88,8 @@ public abstract class Xls implements XlsIF {
 
         // first make sure we have the schema url base
         String schemaUrlBase = Props.getProperty(PropsIF.XLS_SCHEMA_URL);
+        String datadictUrlBase = Props.getProperty(PropsIF.DD_URL);
+        
         if (Util.isEmpty(schemaUrlBase)) {
             throw new Exception("Missing " + PropsIF.XLS_SCHEMA_URL + " property!");
         }
