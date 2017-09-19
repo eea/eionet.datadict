@@ -66,7 +66,7 @@ public class DataElementDaoTestIT {
 
     @Test
     public void testGetDataElementsOfDatasetTable() {
-        List<DataElement> expectedDataElements = dataElementDao.getDataElementsOfDatasetTable(4582);
+        List<DataElement> expectedDataElements = dataElementDao.getDataElementsOfDatasetTableOrderByPositionAsc(4582);
 
         assertEquals(expectedDataElements.size(), 2);
         List<Integer> dataElementIDs = Arrays.asList(31880, 31882);

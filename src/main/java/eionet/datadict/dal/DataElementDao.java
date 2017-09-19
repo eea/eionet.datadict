@@ -12,7 +12,7 @@ public interface DataElementDao {
      * @param id the id of the dataset table whose data elements are to be fetched.
      * @return the {@list DataElement} for those data elements which belong to the Data table with the given id.
      **/
-    List<DataElement> getDataElementsOfDatasetTable(int tableId);
+    List<DataElement> getDataElementsOfDatasetTableOrderByPositionAsc(int tableId);
     
 
     /**

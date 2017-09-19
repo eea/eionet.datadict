@@ -48,6 +48,7 @@ public abstract class Xls implements XlsIF {
 
         // first make sure we have the schema url
         String schemaUrl = Props.getProperty(PropsIF.XLS_SCHEMA_URL);
+                String datadictUrlBase = Props.getProperty(PropsIF.DD_URL);
         if (Util.isEmpty(schemaUrl)) {
             throw new Exception("Missing " + PropsIF.XLS_SCHEMA_URL + " property!");
         }
@@ -75,6 +76,8 @@ public abstract class Xls implements XlsIF {
         row = sheet.createRow(3);
         cell = row.createCell((short) 0);
         cell.setCellValue(schemaUrl + id);
+        cell.setCellValue(datadictUrlBase + "/v2/dataset/"+searchEngine.getDatasetTable(id.replace("TBL","")).getDatasetID()+"/schema-tbl-"+id.replace("TBL","")+".xsd");
+
     }
 
     /*
@@ -116,8 +119,11 @@ public abstract class Xls implements XlsIF {
         // dataset schema url
         row = sheet.createRow(3);
         cell = row.createCell((short) 0);
-        cell.setCellValue(schemaUrlBase + "DST" + dstID);
-
+//        cell.setCellValue(schemaUrlBase + "DST" + dstID);
+        cell.setCellValue(datadictUrlBase + "/v2/dataset/"+dstID+"/schema-dst-"+dstID+".xsd");
+        
+        // New DST URL:
+        // 
         // create the rows with the table schema urls
         // header row
         row = sheet.createRow(4);
@@ -139,7 +145,8 @@ public abstract class Xls implements XlsIF {
             cell = row.createCell((short) 0);
             cell.setCellValue(idfier);
             cell = row.createCell((short) 1);
-            cell.setCellValue(schemaUrlBase + "TBL" + id);
+         //   cell.setCellValue(schemaUrlBase + "TBL" + id);
+            cell.setCellValue(datadictUrlBase + "/v2/dataset/"+dstID+"/schema-tbl-"+id+".xsd");
         }
     }
 

@@ -173,7 +173,7 @@ public class DataSetServiceImpl implements DataSetService {
                 row.removeAttribute(XMLConstants.XMLNS_ATTRIBUTE);
                 tableElement.appendChild(row);
                 schemaRoot.appendChild(tableElement);
-                List<DataElement> dataElements = this.dataElementDao.getDataElementsOfDatasetTable(dsTable.getId());
+                List<DataElement> dataElements = this.dataElementDao.getDataElementsOfDatasetTableOrderByPositionAsc(dsTable.getId());
                 for (DataElement dataElement : dataElements) {
                     if (dataElement != null && dataElement.getIdentifier()!= null) {
                         try {

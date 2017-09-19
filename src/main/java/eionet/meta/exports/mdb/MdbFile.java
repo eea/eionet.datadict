@@ -319,7 +319,8 @@ public class MdbFile {
      * @return
      */
     public static Object[] constructVmdRow(Dataset dst, DsTable tbl, DataElement elm) {
-
+       
+        String datadictUrlBase = Props.getProperty(PropsIF.DD_URL);
         Object[] row = new Object[VMD_COLUMNS.length];
 
         row[0] = tbl.getIdentifier(); // TblIdf
@@ -327,12 +328,12 @@ public class MdbFile {
         row[2] = tbl.getID(); // TblNr
         row[3] = NAMESPACE_PREFIX + tbl.getNamespace(); // TblNsID
         row[4] = getNamespaceURLPrefix() + tbl.getNamespace(); // TblNsURL
-        row[5] = getSchemaURLBase() + "TBL" + tbl.getID(); // TblSchemaURL
+        row[5] = datadictUrlBase +"/v2/dataset/"+dst.getID() +"/schema-tbl-"+tbl.getID()+".xsd";
         row[6] = dst.getIdentifier(); // DstIdf
         row[7] = dst.getID(); // DstNr
         row[8] = NAMESPACE_PREFIX + dst.getNamespaceID(); // DstNsID
         row[9] = getNamespaceURLPrefix() + dst.getNamespaceID(); // DstNsURL
-        row[10] = getSchemaURLBase() + "DST" + dst.getID(); // DstSchemaURL
+        row[10] = datadictUrlBase +"/v2/dataset/"+dst.getID() +"/schema-dst-"+dst.getID()+".xsd";
         row[11] = getDstSchemaLocationPrefix() + row[8] + " " + row[10];// DstSchemaLocation
         row[12] = NAMESPACE_PREFIX + DATASETS_NSID; // DstsNsID
         row[13] = getNamespaceURLPrefix() + DATASETS_NSID; // DstsNsURL

@@ -724,7 +724,7 @@ else if (mode.equals("add"))
                                             // XML Schema link
                                             if (dispAll || dispXmlSchema){ %>
                                                 <li>
-                                                    <a rel="nofollow" href="<%=request.getContextPath()%>/v2/dataset/<%=dsID%>/schema-tbl-<%=tableID%>-.xsd" class="xsd">
+                                                    <a rel="nofollow" href="<%=request.getContextPath()%>/v2/dataset/<%=dsID%>/schema-tbl-<%=tableID%>.xsd" class="xsd">
                                                         Create an XML Schema for this table
                                                     </a>
                                                 </li><%

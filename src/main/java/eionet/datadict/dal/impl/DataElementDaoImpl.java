@@ -63,12 +63,12 @@ public class DataElementDaoImpl extends JdbcDaoBase implements DataElementDao {
     }
 
     @Override
-    public List<DataElement> getDataElementsOfDatasetTable(int tableId) {
+    public List<DataElement> getDataElementsOfDatasetTableOrderByPositionAsc(int tableId) {
          
         List<DataElement> tableElements = new ArrayList<DataElement>();
         String sql ="SELECT DATAELEM_ID"
                 + "  FROM TBL2ELEM"
-                + "  WHERE TABLE_ID= :tableId";
+                + "  WHERE TABLE_ID= :tableId ORDER BY POSITION asc ";
         Map<String,Object> params = new HashMap<String,Object>();
         params.put("tableId",tableId);
         try {

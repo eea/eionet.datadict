@@ -79,7 +79,7 @@ public class DatasetTableDataServiceImpl implements DatasetTableDataService {
         }
         OrmUtils.link(dataSet, datasetTable);
 
-        List<DataElement> dataElements = this.dataElementDao.getDataElementsOfDatasetTable(datasetTable.getId());
+        List<DataElement> dataElements = this.dataElementDao.getDataElementsOfDatasetTableOrderByPositionAsc(datasetTable.getId());
         datasetTable.setDataElements(OrmCollectionUtils.createChildCollection(dataElements));
         OrmUtils.link(datasetTable, dataElements);
 
