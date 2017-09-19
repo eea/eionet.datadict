@@ -42,6 +42,7 @@ public abstract class DataElement implements AttributeOwner {
     private Integer checkedOutCopyId;
     private Integer vocabularyId;
     private Boolean allConceptsLegal;
+    private Integer position;
 
     @ManyToOne
     private DatasetTable datasetTable;
@@ -110,6 +111,15 @@ public abstract class DataElement implements AttributeOwner {
         this.workingCopy = workingCopy;
     }
 
+    public Integer getPosition() {
+        return position;
+    }
+
+    public void setPosition(Integer position) {
+        this.position = position;
+    }
+
+    
     public Namespace getNamespace() {
         return namespace;
     }

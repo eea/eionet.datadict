@@ -16,6 +16,9 @@ import eionet.datadict.model.Namespace;
 import eionet.datadict.services.DataSetTableService;
 import eionet.datadict.services.data.DatasetTableDataService;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,6 +26,7 @@ import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import org.apache.poi.ss.formula.CollaboratingWorkbooksEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
@@ -117,7 +121,20 @@ public class DataSetTableServiceImpl implements DataSetTableService {
             rowElement.appendChild(rowComplexType);
             Element rowSequence = elMaker.createElement(DataDictXMLConstants.SEQUENCE);
             rowComplexType.appendChild(rowSequence);
-            for (DataElement dataElement : dataSetTable.getDataElements()) {
+            
+           //Ordering of DataElements according to their Position Number, ascending 
+            List<DataElement> datasetTableElementsList  = new LinkedList<DataElement>();
+            datasetTableElementsList.addAll(dataSetTable.getDataElements());
+            
+            Comparator<DataElement> positionsComparator = new Comparator<DataElement>(){
+               
+                @Override
+                public int compare(DataElement o1, DataElement o2) {
+                    return Integer.valueOf(o1.getPosition()).compareTo(Integer.valueOf(o2.getPosition()));
+                }                
+            };
+            Collections.sort(datasetTableElementsList, positionsComparator);
+            for (DataElement dataElement : datasetTableElementsList) {
                 Element tableElement = elMaker.createElement(DataDictXMLConstants.ELEMENT);
                 tableElement.setAttribute(DataDictXMLConstants.REF, dataElement.getIdentifier());
                 tableElement.setAttribute(DataDictXMLConstants.MIN_OCCURS, "1");

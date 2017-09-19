@@ -13,8 +13,8 @@ import eionet.datadict.model.ValueListItem;
 import eionet.meta.dao.domain.DatasetRegStatus;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -39,10 +39,10 @@ public class DataElementDaoImpl extends JdbcDaoBase implements DataElementDao {
                 + "LEFT JOIN NAMESPACE AS PARENT ON DATAELEM.PARENT_NS=PARENT.NAMESPACE_ID "
                 + "LEFT JOIN NAMESPACE AS TOP ON DATAELEM.TOP_NS=TOP.NAMESPACE_ID "
                 + "WHERE DATAELEM_ID= :id";
-        
+
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("id", id);
-        try {    
+        try {
             return this.getNamedParameterJdbcTemplate().queryForObject(sql, params, new DataElementRowMapper());
         } catch (EmptyResultDataAccessException ex) {
             return null;
@@ -55,8 +55,8 @@ public class DataElementDaoImpl extends JdbcDaoBase implements DataElementDao {
                 + "WHERE DATAELEM_ID = :id";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("id", elementId);
-        try {    
-            return this.getNamedParameterJdbcTemplate().queryForObject(sql, params,Integer.class);
+        try {
+            return this.getNamedParameterJdbcTemplate().queryForObject(sql, params, Integer.class);
         } catch (EmptyResultDataAccessException ex) {
             return null;
         }
@@ -64,28 +64,37 @@ public class DataElementDaoImpl extends JdbcDaoBase implements DataElementDao {
 
     @Override
     public List<DataElement> getDataElementsOfDatasetTableOrderByPositionAsc(int tableId) {
-         
-        List<DataElement> tableElements = new ArrayList<DataElement>();
-        String sql ="SELECT DATAELEM_ID"
+
+        List<DataElement> tableElements = new LinkedList<DataElement>();
+        String sql = "SELECT DATAELEM_ID , POSITION"
                 + "  FROM TBL2ELEM"
                 + "  WHERE TABLE_ID= :tableId ORDER BY POSITION asc ";
-        Map<String,Object> params = new HashMap<String,Object>();
-        params.put("tableId",tableId);
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("tableId", tableId);
         try {
-            List<Integer> dataElementIds=this.getNamedParameterJdbcTemplate().queryForList(sql, params,Integer.class);
-            for(Integer dataElementId : dataElementIds){
-                DataElement element = this.getById(dataElementId);
+            List<ElementIdAndPosition> idsAndPositions = this.getNamedParameterJdbcTemplate().query(sql, params, new RowMapper<ElementIdAndPosition>() {
+                @Override
+                public ElementIdAndPosition mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    ElementIdAndPosition elemIdAndPosition = new ElementIdAndPosition();
+                    elemIdAndPosition.setElementId(rs.getInt("DATAELEM_ID"));
+                    elemIdAndPosition.setElementPosition(rs.getInt("POSITION"));
+                    return elemIdAndPosition;
+                }
+            });
+
+            for (ElementIdAndPosition idAndPosition : idsAndPositions) {
+                DataElement element = this.getById(idAndPosition.getElementId());
                 element.setDatasetTable(new DatasetTable(tableId));
+                element.setPosition(idAndPosition.getElementPosition());
                 tableElements.add(element);
             }
+
             return tableElements;
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
     }
 
-
-    
     public static class DataElementRowMapper implements RowMapper<DataElement> {
 
         @Override
@@ -93,50 +102,49 @@ public class DataElementDaoImpl extends JdbcDaoBase implements DataElementDao {
             DataElement dataElement = new DataElement() {
                 @Override
                 public DataElement.ValueType getValueType() {
-                    throw new UnsupportedOperationException("Not supported yet."); 
+                    throw new UnsupportedOperationException("Not supported yet.");
                 }
 
                 @Override
                 public boolean supportsValueList() {
-                    throw new UnsupportedOperationException("Not supported yet."); 
+                    throw new UnsupportedOperationException("Not supported yet.");
                 }
 
                 @Override
                 public Iterable<? extends ValueListItem> getValueList() {
-                    throw new UnsupportedOperationException("Not supported yet."); 
+                    throw new UnsupportedOperationException("Not supported yet.");
                 }
-
 
                 @Override
                 public AttributeOwnerType getAttributeOwnerType() {
-                    throw new UnsupportedOperationException("Not supported yet."); 
+                    throw new UnsupportedOperationException("Not supported yet.");
                 }
 
                 @Override
                 public Set<Attribute> getAttributes() {
-                    throw new UnsupportedOperationException("Not supported yet."); 
+                    throw new UnsupportedOperationException("Not supported yet.");
                 }
 
                 @Override
                 public void setAttributes(Set<Attribute> attributes) {
-                    throw new UnsupportedOperationException("Not supported yet."); 
+                    throw new UnsupportedOperationException("Not supported yet.");
                 }
 
                 @Override
                 public Set<AttributeValue> getAttributesValues() {
-                    throw new UnsupportedOperationException("Not supported yet."); 
+                    throw new UnsupportedOperationException("Not supported yet.");
                 }
 
                 @Override
                 public void setAttributesValues(Set<AttributeValue> attributesValues) {
-                    throw new UnsupportedOperationException("Not supported yet."); 
+                    throw new UnsupportedOperationException("Not supported yet.");
                 }
             };
-            
+
             Namespace namespace = new Namespace();
             namespace.setId(rs.getInt("DATAELEM.NAMESPACE_ID"));
             dataElement.setNamespace(namespace);
-            
+
             namespace = new Namespace();
             int parentNs = rs.getInt("DATAELEM.PARENT_NS");
             if (!rs.wasNull()) {
@@ -145,7 +153,7 @@ public class DataElementDaoImpl extends JdbcDaoBase implements DataElementDao {
             } else {
                 dataElement.setParentNS(null);
             }
-            
+
             namespace = new Namespace();
             int topNs = rs.getInt("DATAELEM.TOP_NS");
             if (!rs.wasNull()) {
@@ -154,7 +162,7 @@ public class DataElementDaoImpl extends JdbcDaoBase implements DataElementDao {
             } else {
                 dataElement.setTopNS(null);
             }
-            
+
             dataElement.setType(DataElementType.resolveTypeFromName(rs.getString("DATAELEM.TYPE")));
             dataElement.setId(rs.getInt("DATAELEM.DATAELEM_ID"));
             dataElement.setShortName(rs.getString("DATAELEM.SHORT_NAME"));
@@ -169,41 +177,62 @@ public class DataElementDaoImpl extends JdbcDaoBase implements DataElementDao {
             dataElement.setVocabularyId(rs.getInt("DATAELEM.VOCABULARY_ID"));
             return dataElement;
         }
-     
+
     }
-    
+
     protected void readNamespaces(ResultSet rs, DataElement dataElement) throws SQLException {
-            rs.getInt("NAMESPACE.NAMESPACE_ID");
-            if (rs.wasNull()) {
-                return;
-            }
-
-            dataElement.getNamespace().setShortName(rs.getString("NAMESPACE.SHORT_NAME"));
-            dataElement.getNamespace().setFullName(rs.getString("NAMESPACE.FULL_NAME"));
-            dataElement.getNamespace().setDefinition(rs.getString("NAMESPACE.DEFINITION"));
-            dataElement.getNamespace().setWorkingUser(rs.getString("NAMESPACE.WORKING_USER"));
-            
-            rs.getInt("PARENT.NAMESPACE_ID");
-            if (rs.wasNull()) {
-                return;
-            }
-
-            dataElement.getParentNS().setShortName(rs.getString("PARENT.SHORT_NAME"));
-            dataElement.getParentNS().setFullName(rs.getString("PARENT.FULL_NAME"));
-            dataElement.getParentNS().setDefinition(rs.getString("PARENT.DEFINITION"));
-            dataElement.getParentNS().setWorkingUser(rs.getString("PARENT.WORKING_USER"));
-    
-            
-            rs.getInt("TOP.NAMESPACE_ID");
-            if(rs.wasNull()) {
-                return;
-            }
-            
-            dataElement.getTopNS().setShortName(rs.getString("TOP.SHORT_NAME"));
-            dataElement.getTopNS().setFullName(rs.getString("TOP.FULL_NAME"));
-            dataElement.getTopNS().setDefinition(rs.getString("TOP.DEFINITION"));
-            dataElement.getTopNS().setWorkingUser(rs.getString("TOP.WORKING_USER"));
-            
+        rs.getInt("NAMESPACE.NAMESPACE_ID");
+        if (rs.wasNull()) {
+            return;
         }
-    
+
+        dataElement.getNamespace().setShortName(rs.getString("NAMESPACE.SHORT_NAME"));
+        dataElement.getNamespace().setFullName(rs.getString("NAMESPACE.FULL_NAME"));
+        dataElement.getNamespace().setDefinition(rs.getString("NAMESPACE.DEFINITION"));
+        dataElement.getNamespace().setWorkingUser(rs.getString("NAMESPACE.WORKING_USER"));
+
+        rs.getInt("PARENT.NAMESPACE_ID");
+        if (rs.wasNull()) {
+            return;
+        }
+
+        dataElement.getParentNS().setShortName(rs.getString("PARENT.SHORT_NAME"));
+        dataElement.getParentNS().setFullName(rs.getString("PARENT.FULL_NAME"));
+        dataElement.getParentNS().setDefinition(rs.getString("PARENT.DEFINITION"));
+        dataElement.getParentNS().setWorkingUser(rs.getString("PARENT.WORKING_USER"));
+
+        rs.getInt("TOP.NAMESPACE_ID");
+        if (rs.wasNull()) {
+            return;
+        }
+
+        dataElement.getTopNS().setShortName(rs.getString("TOP.SHORT_NAME"));
+        dataElement.getTopNS().setFullName(rs.getString("TOP.FULL_NAME"));
+        dataElement.getTopNS().setDefinition(rs.getString("TOP.DEFINITION"));
+        dataElement.getTopNS().setWorkingUser(rs.getString("TOP.WORKING_USER"));
+
+    }
+
+    private class ElementIdAndPosition {
+
+        private Integer elementId;
+        private Integer elementPosition;
+
+        public Integer getElementId() {
+            return elementId;
+        }
+
+        public void setElementId(Integer elementId) {
+            this.elementId = elementId;
+        }
+
+        public Integer getElementPosition() {
+            return elementPosition;
+        }
+
+        public void setElementPosition(Integer elementPosition) {
+            this.elementPosition = elementPosition;
+        }
+
+    }
 }
