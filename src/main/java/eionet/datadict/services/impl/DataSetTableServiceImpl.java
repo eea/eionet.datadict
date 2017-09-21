@@ -121,17 +121,17 @@ public class DataSetTableServiceImpl implements DataSetTableService {
             rowElement.appendChild(rowComplexType);
             Element rowSequence = elMaker.createElement(DataDictXMLConstants.SEQUENCE);
             rowComplexType.appendChild(rowSequence);
-            
-           //Ordering of DataElements according to their Position Number, ascending 
-            List<DataElement> datasetTableElementsList  = new LinkedList<DataElement>();
+
+            //Ordering of DataElements according to their Position Number, ascending 
+            List<DataElement> datasetTableElementsList = new LinkedList<DataElement>();
             datasetTableElementsList.addAll(dataSetTable.getDataElements());
-            
-            Comparator<DataElement> positionsComparator = new Comparator<DataElement>(){
-               
+
+            Comparator<DataElement> positionsComparator = new Comparator<DataElement>() {
+
                 @Override
                 public int compare(DataElement o1, DataElement o2) {
                     return Integer.valueOf(o1.getPosition()).compareTo(Integer.valueOf(o2.getPosition()));
-                }                
+                }
             };
             Collections.sort(datasetTableElementsList, positionsComparator);
             for (DataElement dataElement : datasetTableElementsList) {
@@ -192,28 +192,38 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                 dataElementRestriction.setAttribute(DataDictXMLConstants.BASE, DataDictXMLConstants.XS_PREFIX + ":" + Datatype);
                 dataElementSimpleType.appendChild(dataElementRestriction);
                 if (Datatype.equals("decimal")) {
-                    Element totalDigitsElement = elMaker.createElement("totalDigits");
-                    totalDigitsElement.setAttribute("value", MaxSize);
-                    dataElementRestriction.appendChild(totalDigitsElement);
-                    Element minInclusiveElement = elMaker.createElement("minInclusive");
-                    minInclusiveElement.setAttribute("value", MinInclusiveValue);
-                    dataElementRestriction.appendChild(minInclusiveElement);
-                    Element maxInclusiveElement = elMaker.createElement("maxInclusive");
-                    maxInclusiveElement.setAttribute("value", MaxInclusiveValue);
-                    dataElementRestriction.appendChild(maxInclusiveElement);
+                    if (!MaxSize.equals("")) {
+                        Element totalDigitsElement = elMaker.createElement("totalDigits");
+                        totalDigitsElement.setAttribute("value", MaxSize);
+                        dataElementRestriction.appendChild(totalDigitsElement);
+                    }
+                    if (!MinInclusiveValue.equals("")) {
+                        Element minInclusiveElement = elMaker.createElement("minInclusive");
+                        minInclusiveElement.setAttribute("value", MinInclusiveValue);
+                        dataElementRestriction.appendChild(minInclusiveElement);
+                    }
+                    if (!MaxInclusiveValue.equals("")) {
+                        Element maxInclusiveElement = elMaker.createElement("maxInclusive");
+                        maxInclusiveElement.setAttribute("value", MaxInclusiveValue);
+                        dataElementRestriction.appendChild(maxInclusiveElement);
+                    }
                 }
-                if (Datatype.equals("integer")) {
+                if (Datatype.equals("integer") && !MaxSize.equals("")) {
                     Element totalDigitsElement = elMaker.createElement("totalDigits");
                     totalDigitsElement.setAttribute("value", MaxSize);
                     dataElementRestriction.appendChild(totalDigitsElement);
                 }
                 if (Datatype.equals("string")) {
-                    Element minLengthElement = elMaker.createElement("minLength");
-                    minLengthElement.setAttribute("value", MinSize);
-                    dataElementRestriction.appendChild(minLengthElement);
-                    Element maxLengthElement = elMaker.createElement("maxLength");
-                    maxLengthElement.setAttribute("value", MaxSize);
-                    dataElementRestriction.appendChild(maxLengthElement);
+                    if (!MaxSize.equals("")) {
+                        Element minLengthElement = elMaker.createElement("minLength");
+                        minLengthElement.setAttribute("value", MinSize);
+                        dataElementRestriction.appendChild(minLengthElement);
+                    }
+                    if (!MaxSize.equals("")) {
+                        Element maxLengthElement = elMaker.createElement("maxLength");
+                        maxLengthElement.setAttribute("value", MaxSize);
+                        dataElementRestriction.appendChild(maxLengthElement);
+                    }
                 }
             }
             doc.appendChild(schemaRoot);
