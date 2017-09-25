@@ -14,6 +14,7 @@ import eionet.datadict.model.DataElement;
 import eionet.datadict.model.DatasetTable;
 import eionet.datadict.model.Namespace;
 import eionet.datadict.services.DataSetTableService;
+import eionet.datadict.services.data.DataElementDataService;
 import eionet.datadict.services.data.DatasetTableDataService;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,7 +27,6 @@ import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import org.apache.poi.ss.formula.CollaboratingWorkbooksEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
@@ -44,15 +44,20 @@ public class DataSetTableServiceImpl implements DataSetTableService {
     private final AttributeValueDao attributeValueDao;
     private final AttributeDao attributeDao;
     private final DatasetTableDataService datasetTableDataService;
+    private final DataElementDataService dataElementDataService;
 
+    
     @Autowired
-    public DataSetTableServiceImpl(DatasetTableDao datasetTableDao, DataElementDao dataElementDao, AttributeValueDao attributeValueDao, AttributeDao attributeDao, DatasetTableDataService datasetTableDataService) {
+    public DataSetTableServiceImpl(DatasetTableDao datasetTableDao, DataElementDao dataElementDao, AttributeValueDao attributeValueDao, AttributeDao attributeDao, DatasetTableDataService datasetTableDataService, DataElementDataService dataElementDataService) {
         this.datasetTableDao = datasetTableDao;
         this.dataElementDao = dataElementDao;
         this.attributeValueDao = attributeValueDao;
         this.attributeDao = attributeDao;
         this.datasetTableDataService = datasetTableDataService;
+        this.dataElementDataService = dataElementDataService;
     }
+
+   
 
     @Override
     public Document getDataSetTableXMLSchema(int id) throws XmlExportException, ResourceNotFoundException {
@@ -123,8 +128,8 @@ public class DataSetTableServiceImpl implements DataSetTableService {
             rowComplexType.appendChild(rowSequence);
 
             //Ordering of DataElements according to their Position Number, ascending 
-            List<DataElement> datasetTableElementsList = new LinkedList<DataElement>();
-            datasetTableElementsList.addAll(dataSetTable.getDataElements());
+            List<DataElement> datasetTableElementsList = dataElementDataService.getLatestDataElementsOfDataSetTable(datasetId);
+          //  datasetTableElementsList.addAll(dataSetTable.getDataElements());
 
             Comparator<DataElement> positionsComparator = new Comparator<DataElement>() {
 

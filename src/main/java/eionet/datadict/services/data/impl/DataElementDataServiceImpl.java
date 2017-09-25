@@ -8,6 +8,8 @@ import eionet.datadict.model.DataElement;
 import eionet.datadict.model.DataSet;
 import eionet.datadict.services.data.DataElementDataService;
 import eionet.meta.DDUser;
+import java.util.LinkedList;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -49,6 +51,20 @@ public class DataElementDataServiceImpl implements DataElementDataService{
         Integer parentDatasetId = this.datasetTableDao.getParentDatasetId(parentTableId);
         DataSet parentDataset = this.datasetDao.getById(parentDatasetId);
         return (parentDataset.getWorkingCopy() && parentDataset.getWorkingUser() != null && parentDataset.getWorkingUser().equals(user.getUserName()));
+    }
+
+    @Override
+    public List<DataElement> getLatestDataElementsOfDataSetTable(int dataSetTableId) {
+        List<DataElement> dataElements = this.dataElementDao.getDataElementsOfDatasetTableOrderByPositionAsc(dataSetTableId);
+        List<DataElement> latestDataElements = new LinkedList<DataElement>();
+        String dataElementIdentifier = null;
+        for (DataElement dataElement : dataElements) {
+            if (dataElementIdentifier != null && dataElement.getIdentifier().equals(dataElementIdentifier)) {
+                    continue;
+                }
+            latestDataElements.add(dataElement);
+        }
+        return latestDataElements;
     }
     
     

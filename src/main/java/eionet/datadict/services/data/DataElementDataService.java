@@ -3,6 +3,7 @@ package eionet.datadict.services.data;
 import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.model.DataElement;
 import eionet.meta.DDUser;
+import java.util.List;
 
 
 public interface DataElementDataService {
@@ -18,4 +19,6 @@ public interface DataElementDataService {
     public DataElement getDataElement(int dataElementId) throws ResourceNotFoundException;
     
     public boolean isWorkingUser(DataElement dataElement, DDUser user);
+    
+    public List<DataElement> getLatestDataElementsOfDataSetTable(int dataSetTableId);
 }
