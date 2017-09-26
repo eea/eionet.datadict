@@ -44,7 +44,7 @@ public class DataDictXMLConstants {
     public static final String SCHEMA_LOCATION = "schemaLocation";
     public static final String IMPORT = "import";
     public static final String SCHEMA = "schema";
-    public static final String ROW = "row";
+    public static final String ROW = "Row";
     public static final String LANGUAGE_PREFIX="lang";
     public static final String MIN_OCCURS="minOccurs";
     public static final String MAX_OCCURS="maxOccurs";
