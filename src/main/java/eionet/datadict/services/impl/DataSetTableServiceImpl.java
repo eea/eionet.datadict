@@ -128,17 +128,9 @@ public class DataSetTableServiceImpl implements DataSetTableService {
             rowComplexType.appendChild(rowSequence);
 
             //Ordering of DataElements according to their Position Number, ascending 
-            List<DataElement> datasetTableElementsList = dataElementDataService.getLatestDataElementsOfDataSetTable(datasetId);
+            List<DataElement> datasetTableElementsList = dataElementDataService.getLatestDataElementsOfDataSetTable(dataSetTable.getId());
           //  datasetTableElementsList.addAll(dataSetTable.getDataElements());
 
-            Comparator<DataElement> positionsComparator = new Comparator<DataElement>() {
-
-                @Override
-                public int compare(DataElement o1, DataElement o2) {
-                    return Integer.valueOf(o1.getPosition()).compareTo(Integer.valueOf(o2.getPosition()));
-                }
-            };
-            Collections.sort(datasetTableElementsList, positionsComparator);
             for (DataElement dataElement : datasetTableElementsList) {
                 Element tableElement = elMaker.createElement(DataDictXMLConstants.ELEMENT);
                 tableElement.setAttribute(DataDictXMLConstants.REF, dataElement.getIdentifier());
@@ -147,7 +139,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                 rowSequence.appendChild(tableElement);
             }
 
-            for (DataElement dataElement : dataSetTable.getDataElements()) {
+            for (DataElement dataElement : datasetTableElementsList) {
                 Element xmlElement = elMaker.createElement(DataDictXMLConstants.ELEMENT, dataElement.getIdentifier());
                 String MinSize = "";
                 String MaxSize = "";

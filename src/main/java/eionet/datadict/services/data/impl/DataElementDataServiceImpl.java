@@ -8,6 +8,7 @@ import eionet.datadict.model.DataElement;
 import eionet.datadict.model.DataSet;
 import eionet.datadict.services.data.DataElementDataService;
 import eionet.meta.DDUser;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,12 +59,18 @@ public class DataElementDataServiceImpl implements DataElementDataService{
         List<DataElement> dataElements = this.dataElementDao.getDataElementsOfDatasetTableOrderByPositionAsc(dataSetTableId);
         List<DataElement> latestDataElements = new LinkedList<DataElement>();
         String dataElementIdentifier = null;
-        for (DataElement dataElement : dataElements) {
-            if (dataElementIdentifier != null && dataElement.getIdentifier().equals(dataElementIdentifier)) {
+        Iterator<DataElement> dataElementIterator = dataElements.iterator();
+        while (dataElementIterator.hasNext()) {
+            DataElement next = dataElementIterator.next();
+            if (dataElementIdentifier != null && next.getIdentifier().equals(dataElementIdentifier)) {
                     continue;
+                } else {
+                    dataElementIdentifier = next.getIdentifier();
                 }
-            latestDataElements.add(dataElement);
+             
+            latestDataElements.add(next);
         }
+       
         return latestDataElements;
     }
     
