@@ -54,9 +54,6 @@ public class DataSetServiceImpl implements DataSetService {
         this.dataElementDataService = dataElementDataService;
     }
 
-    
-   
-
     @Override
     public Document getDataSetXMLSchema(int id) throws XmlExportException, ResourceNotFoundException {
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
