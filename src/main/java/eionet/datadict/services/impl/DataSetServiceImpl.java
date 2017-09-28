@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import eionet.datadict.model.Namespace;
 import eionet.datadict.services.data.AttributeDataService;
+import eionet.datadict.services.data.DataElementDataService;
 import eionet.datadict.services.data.DataSetDataService;
 import eionet.meta.dao.domain.VocabularyConcept;
 import javax.xml.XMLConstants;
@@ -44,17 +45,17 @@ public class DataSetServiceImpl implements DataSetService {
     private final DatasetTableDao datasetTableDao;
     private final AttributeValueDao attributeValueDao;
     private final AttributeDao attributeDao;
-    private final DataElementDao dataElementDao;
     private final AttributeDataService attributeDataService;
+    private final DataElementDataService dataElementDataService;
 
     @Autowired
-    public DataSetServiceImpl(DataSetDataService dataSetDataService, DatasetTableDao datasetTableDao, AttributeValueDao attributeValueDao, AttributeDao attributeDao, DataElementDao dataElementDao, AttributeDataService attributeDataService) {
+    public DataSetServiceImpl(DataSetDataService dataSetDataService, DatasetTableDao datasetTableDao, AttributeValueDao attributeValueDao, AttributeDao attributeDao, AttributeDataService attributeDataService, DataElementDataService dataElementDataService) {
         this.dataSetDataService = dataSetDataService;
         this.datasetTableDao = datasetTableDao;
         this.attributeValueDao = attributeValueDao;
         this.attributeDao = attributeDao;
-        this.dataElementDao = dataElementDao;
         this.attributeDataService = attributeDataService;
+        this.dataElementDataService = dataElementDataService;
     }
 
     @Override
@@ -189,7 +190,7 @@ public class DataSetServiceImpl implements DataSetService {
             row.removeAttribute(XMLConstants.XMLNS_ATTRIBUTE);
             tableElement.appendChild(row);
             schemaRoot.appendChild(tableElement);
-            List<DataElement> dataElements = this.dataElementDao.getDataElementsOfDatasetTableOrderByPositionAsc(dsTable.getId());
+            List<DataElement> dataElements = this.dataElementDataService.getLatestDataElementsOfDataSetTable(dsTable.getId());
             for (DataElement dataElement : dataElements) {
                 if (dataElement != null && dataElement.getIdentifier() != null) {
                     try {
