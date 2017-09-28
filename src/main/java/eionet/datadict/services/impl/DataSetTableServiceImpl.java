@@ -46,7 +46,6 @@ public class DataSetTableServiceImpl implements DataSetTableService {
     private final DatasetTableDataService datasetTableDataService;
     private final DataElementDataService dataElementDataService;
 
-    
     @Autowired
     public DataSetTableServiceImpl(DatasetTableDao datasetTableDao, DataElementDao dataElementDao, AttributeValueDao attributeValueDao, AttributeDao attributeDao, DatasetTableDataService datasetTableDataService, DataElementDataService dataElementDataService) {
         this.datasetTableDao = datasetTableDao;
@@ -56,8 +55,6 @@ public class DataSetTableServiceImpl implements DataSetTableService {
         this.datasetTableDataService = datasetTableDataService;
         this.dataElementDataService = dataElementDataService;
     }
-
-   
 
     @Override
     public Document getDataSetTableXMLSchema(int id) throws XmlExportException, ResourceNotFoundException {
@@ -82,153 +79,172 @@ public class DataSetTableServiceImpl implements DataSetTableService {
             schemaRoot.setAttribute("attributeFormDefault", "unqualified");
             Element tableRootElement = elMaker.createElement(DataDictXMLConstants.ELEMENT, dataSetTable.getIdentifier());
             schemaRoot.appendChild(tableRootElement);
-            Element dsAnnotation = elMaker.createElement(DataDictXMLConstants.ANNOTATION);
-            tableRootElement.appendChild(dsAnnotation);
-            Element dsDocumentation = elMaker.createElement(DataDictXMLConstants.DOCUMENTATION);
-            dsDocumentation.setAttribute(XMLConstants.XML_NS_PREFIX + ":" + DataDictXMLConstants.LANGUAGE_PREFIX, DataDictXMLConstants.DEFAULT_XML_LANGUAGE);
-            dsAnnotation.appendChild(dsDocumentation);
 
-            for (Attribute dataSetTableAttribute : dataSetTable.getAttributes()) {
-                AttributeValue attributeValue = attributeValueDao.getByAttributeAndOwner(dataSetTableAttribute.getId(), new DataDictEntity(dataSetTable.getId(), DataDictEntity.Entity.T)).get(0);
-                if (dataSetTableAttribute.getShortName() != null && !dataSetTableAttribute.getShortName().equals("Keyword") && !dataSetTableAttribute.getShortName().equals("obligation") && dataSetTableAttribute.getNamespace() != null && dataSetTableAttribute.getNamespace().getShortName() != null) {
-                    Element attributeElement = elMaker.createElement(dataSetTableAttribute.getShortName().replace(" ", ""), null, dataSetTableAttribute.getNamespace().getShortName().replace("_", ""));
-                    if (attributeValue != null) {
-                        attributeElement.appendChild(doc.createTextNode(attributeValue.getValue()));
-                    }
-                    dsDocumentation.appendChild(attributeElement);
-                }
-
-            }
             List<Attribute> dataSetAttributes = attributeDao.getByDataDictEntity(new DataDictEntity(datasetId, DataDictEntity.Entity.DS));
             List<AttributeValue> dataSetAttributesValues = new ArrayList<AttributeValue>();
+            List<DataElement> datasetTableElementsList = dataElementDataService.getLatestDataElementsOfDataSetTable(dataSetTable.getId());
+
             for (Attribute dataSetAttribute : dataSetAttributes) {
                 List<AttributeValue> attributeValues = attributeValueDao.getByAttributeAndOwner(dataSetAttribute.getId(), new DataDictEntity(datasetId, DataDictEntity.Entity.DS));
                 dataSetAttributesValues.add(attributeValues.get(0));
-                if (dataSetAttribute.getShortName() != null && !dataSetAttribute.getShortName().equals("Keyword") && !dataSetAttribute.getShortName().equals("obligation") && dataSetAttribute.getNamespace() != null && dataSetAttribute.getNamespace().getShortName() != null) {
-                    Element attributeElement = elMaker.createElement(dataSetAttribute.getShortName().replace(" ", ""), null, dataSetAttribute.getNamespace().getShortName().replace("_", ""));
-                    if (attributeValues.get(0) != null) {
-                        attributeElement.appendChild(doc.createTextNode(attributeValues.get(0).getValue()));
-                    }
-                    dsDocumentation.appendChild(attributeElement);
-                }
-
-            }
-            Element complexType = elMaker.createElement(DataDictXMLConstants.COMPLEX_TYPE);
-            tableRootElement.appendChild(complexType);
-            Element sequence = elMaker.createElement(DataDictXMLConstants.SEQUENCE);
-            complexType.appendChild(sequence);
-            Element rowElement = elMaker.createElement(DataDictXMLConstants.ELEMENT);
-            rowElement.setAttribute(DataDictXMLConstants.NAME, "Row");
-            rowElement.setAttribute(DataDictXMLConstants.MIN_OCCURS, "1");
-            rowElement.setAttribute(DataDictXMLConstants.MAX_OCCURS, "unbounded");
-            sequence.appendChild(rowElement);
-            Element rowComplexType = elMaker.createElement(DataDictXMLConstants.COMPLEX_TYPE);
-            rowElement.appendChild(rowComplexType);
-            Element rowSequence = elMaker.createElement(DataDictXMLConstants.SEQUENCE);
-            rowComplexType.appendChild(rowSequence);
-
-            //Ordering of DataElements according to their Position Number, ascending 
-            List<DataElement> datasetTableElementsList = dataElementDataService.getLatestDataElementsOfDataSetTable(dataSetTable.getId());
-          //  datasetTableElementsList.addAll(dataSetTable.getDataElements());
-
-            for (DataElement dataElement : datasetTableElementsList) {
-                Element tableElement = elMaker.createElement(DataDictXMLConstants.ELEMENT);
-                tableElement.setAttribute(DataDictXMLConstants.REF, dataElement.getIdentifier());
-                tableElement.setAttribute(DataDictXMLConstants.MIN_OCCURS, "1");
-                tableElement.setAttribute(DataDictXMLConstants.MAX_OCCURS, "1");
-                rowSequence.appendChild(tableElement);
             }
 
-            for (DataElement dataElement : datasetTableElementsList) {
-                Element xmlElement = elMaker.createElement(DataDictXMLConstants.ELEMENT, dataElement.getIdentifier());
-                String MinSize = "";
-                String MaxSize = "";
-                String Datatype = "";
-                String MinInclusiveValue = "";
-                String MaxInclusiveValue = "";
+            this.setXSAnnotationAndDocumentationElementsToTableXmlSchema(elMaker, doc, tableRootElement, dataSetTable, dataSetAttributes, dataSetAttributesValues);
 
-                schemaRoot.appendChild(xmlElement);
-                Element elemAnnotation = elMaker.createElement(DataDictXMLConstants.ANNOTATION);
-                xmlElement.appendChild(elemAnnotation);
-                Element elemDocumentation = elMaker.createElement(DataDictXMLConstants.DOCUMENTATION);
-                elemDocumentation.setAttribute(XMLConstants.XML_NS_PREFIX + ":" + DataDictXMLConstants.LANGUAGE_PREFIX, DataDictXMLConstants.DEFAULT_XML_LANGUAGE);
-                elemAnnotation.appendChild(elemDocumentation);
-                List<AttributeValue> attributeValues = attributeValueDao.getByOwner(new DataDictEntity(dataElement.getId(), DataDictEntity.Entity.E));
-                attributeValues.addAll(dataSetAttributesValues);
-                for (AttributeValue attributeValue : attributeValues) {
-                    Attribute attribute = attributeDao.getById(attributeValue.getAttributeId());
-                    if (attribute.getShortName().equals("MinSize")) {
-                        MinSize = attributeValue.getValue();
-                        continue;
-                    }
-                    if (attribute.getShortName().equals("MaxSize")) {
-                        MaxSize = attributeValue.getValue();
-                        continue;
-                    }
-                    if (attribute.getShortName().equals("Datatype")) {
-                        Datatype = attributeValue.getValue();
-                        continue;
-                    }
-                    if (attribute.getShortName().equals("MinInclusiveValue")) {
-                        MinInclusiveValue = attributeValue.getValue();
-                        continue;
-                    }
-                    if (attribute.getShortName().equals("MaxInclusiveValue")) {
-                        MaxInclusiveValue = attributeValue.getValue();
-                        continue;
-                    }
-                    if (attribute != null && attribute.getShortName() != null && !attribute.getShortName().equals("Keyword") && !attribute.getShortName().equals("obligation") && attribute.getNamespace() != null && attribute.getNamespace().getShortName() != null) {
-                        Element attributeElement = elMaker.createElement(attribute.getShortName().replace(" ", ""), null, attribute.getNamespace().getShortName().replace("_", ""));
-                        attributeElement.appendChild(doc.createTextNode(attributeValue.getValue()));
-                        elemDocumentation.appendChild(attributeElement);
-                    }
-                }
-                Element dataElementSimpleType = elMaker.createElement(DataDictXMLConstants.SIMPLE_TYPE);
-                xmlElement.appendChild(dataElementSimpleType);
-                Element dataElementRestriction = elMaker.createElement(DataDictXMLConstants.RESTRICTION);
-                dataElementRestriction.setAttribute(DataDictXMLConstants.BASE, DataDictXMLConstants.XS_PREFIX + ":" + Datatype);
-                dataElementSimpleType.appendChild(dataElementRestriction);
-                if (Datatype.equals("decimal")) {
-                    if (!MaxSize.equals("")) {
-                        Element totalDigitsElement = elMaker.createElement("totalDigits");
-                        totalDigitsElement.setAttribute("value", MaxSize);
-                        dataElementRestriction.appendChild(totalDigitsElement);
-                    }
-                    if (!MinInclusiveValue.equals("")) {
-                        Element minInclusiveElement = elMaker.createElement("minInclusive");
-                        minInclusiveElement.setAttribute("value", MinInclusiveValue);
-                        dataElementRestriction.appendChild(minInclusiveElement);
-                    }
-                    if (!MaxInclusiveValue.equals("")) {
-                        Element maxInclusiveElement = elMaker.createElement("maxInclusive");
-                        maxInclusiveElement.setAttribute("value", MaxInclusiveValue);
-                        dataElementRestriction.appendChild(maxInclusiveElement);
-                    }
-                }
-                if (Datatype.equals("integer") && !MaxSize.equals("")) {
-                    Element totalDigitsElement = elMaker.createElement("totalDigits");
-                    totalDigitsElement.setAttribute("value", MaxSize);
-                    dataElementRestriction.appendChild(totalDigitsElement);
-                }
-                if (Datatype.equals("string")) {
-                    if (!MaxSize.equals("")) {
-                        Element minLengthElement = elMaker.createElement("minLength");
-                        minLengthElement.setAttribute("value", MinSize);
-                        dataElementRestriction.appendChild(minLengthElement);
-                    }
-                    if (!MaxSize.equals("")) {
-                        Element maxLengthElement = elMaker.createElement("maxLength");
-                        maxLengthElement.setAttribute("value", MaxSize);
-                        dataElementRestriction.appendChild(maxLengthElement);
-                    }
-                }
-            }
+            this.setXSComplexTypeAndRowSequenceElementsToTableXMLSchema(elMaker, tableRootElement, datasetTableElementsList);
+
+            this.setXSDataElementsToTableXmlSchema(doc, elMaker, schemaRoot, datasetTableElementsList, dataSetAttributesValues);
+
             doc.appendChild(schemaRoot);
             return doc;
         } catch (ParserConfigurationException ex) {
             Logger.getLogger(DataSetServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
             throw new XmlExportException(ex);
         }
+    }
+
+    private void setXSAnnotationAndDocumentationElementsToTableXmlSchema(NameTypeElementMaker elMaker, Document doc, Element tableRootElement, DatasetTable dataSetTable, List<Attribute> dataSetAttributes, List<AttributeValue> dataSetAttributesValues) {
+        Element dsAnnotation = elMaker.createElement(DataDictXMLConstants.ANNOTATION);
+        tableRootElement.appendChild(dsAnnotation);
+        Element dsDocumentation = elMaker.createElement(DataDictXMLConstants.DOCUMENTATION);
+        dsDocumentation.setAttribute(XMLConstants.XML_NS_PREFIX + ":" + DataDictXMLConstants.LANGUAGE_PREFIX, DataDictXMLConstants.DEFAULT_XML_LANGUAGE);
+        dsAnnotation.appendChild(dsDocumentation);
+
+        for (Attribute dataSetTableAttribute : dataSetTable.getAttributes()) {
+            AttributeValue attributeValue = attributeValueDao.getByAttributeAndOwner(dataSetTableAttribute.getId(), new DataDictEntity(dataSetTable.getId(), DataDictEntity.Entity.T)).get(0);
+            if (dataSetTableAttribute.getShortName() != null && !dataSetTableAttribute.getShortName().equals("Keyword") && !dataSetTableAttribute.getShortName().equals("obligation") && dataSetTableAttribute.getNamespace() != null && dataSetTableAttribute.getNamespace().getShortName() != null) {
+                Element attributeElement = elMaker.createElement(dataSetTableAttribute.getShortName().replace(" ", ""), null, dataSetTableAttribute.getNamespace().getShortName().replace("_", ""));
+                if (attributeValue != null) {
+                    attributeElement.appendChild(doc.createTextNode(attributeValue.getValue()));
+                }
+                dsDocumentation.appendChild(attributeElement);
+            }
+        }
+        for (Attribute dataSetAttribute : dataSetAttributes) {
+            List<AttributeValue> attributeValues = attributeValueDao.getByAttributeAndOwner(dataSetAttribute.getId(), new DataDictEntity(dataSetTable.getDataSet().getId(), DataDictEntity.Entity.DS));
+            dataSetAttributesValues.add(attributeValues.get(0));
+            if (dataSetAttribute.getShortName() != null && !dataSetAttribute.getShortName().equals("Keyword") && !dataSetAttribute.getShortName().equals("obligation") && dataSetAttribute.getNamespace() != null && dataSetAttribute.getNamespace().getShortName() != null) {
+                Element attributeElement = elMaker.createElement(dataSetAttribute.getShortName().replace(" ", ""), null, dataSetAttribute.getNamespace().getShortName().replace("_", ""));
+                if (attributeValues.get(0) != null) {
+                    attributeElement.appendChild(doc.createTextNode(attributeValues.get(0).getValue()));
+                }
+                dsDocumentation.appendChild(attributeElement);
+            }
+
+        }
+    }
+
+    private void setXSComplexTypeAndRowSequenceElementsToTableXMLSchema(NameTypeElementMaker elMaker, Element tableRootElement, List<DataElement> datasetTableElementsList) {
+
+        Element complexType = elMaker.createElement(DataDictXMLConstants.COMPLEX_TYPE);
+        tableRootElement.appendChild(complexType);
+        Element sequence = elMaker.createElement(DataDictXMLConstants.SEQUENCE);
+        complexType.appendChild(sequence);
+        Element rowElement = elMaker.createElement(DataDictXMLConstants.ELEMENT);
+        rowElement.setAttribute(DataDictXMLConstants.NAME, "Row");
+        rowElement.setAttribute(DataDictXMLConstants.MIN_OCCURS, "1");
+        rowElement.setAttribute(DataDictXMLConstants.MAX_OCCURS, "unbounded");
+        sequence.appendChild(rowElement);
+        Element rowComplexType = elMaker.createElement(DataDictXMLConstants.COMPLEX_TYPE);
+        rowElement.appendChild(rowComplexType);
+        Element rowSequence = elMaker.createElement(DataDictXMLConstants.SEQUENCE);
+        rowComplexType.appendChild(rowSequence);
+
+        for (DataElement dataElement : datasetTableElementsList) {
+            Element tableElement = elMaker.createElement(DataDictXMLConstants.ELEMENT);
+            tableElement.setAttribute(DataDictXMLConstants.REF, dataElement.getIdentifier());
+            tableElement.setAttribute(DataDictXMLConstants.MIN_OCCURS, "1");
+            tableElement.setAttribute(DataDictXMLConstants.MAX_OCCURS, "1");
+            rowSequence.appendChild(tableElement);
+        }
+    }
+
+    private void setXSDataElementsToTableXmlSchema(Document doc, NameTypeElementMaker elMaker, Element schemaRoot, List<DataElement> datasetTableElementsList, List<AttributeValue> dataSetAttributesValues) {
+        for (DataElement dataElement : datasetTableElementsList) {
+            Element xmlElement = elMaker.createElement(DataDictXMLConstants.ELEMENT, dataElement.getIdentifier());
+            String MinSize = "";
+            String MaxSize = "";
+            String Datatype = "";
+            String MinInclusiveValue = "";
+            String MaxInclusiveValue = "";
+
+            schemaRoot.appendChild(xmlElement);
+            Element elemAnnotation = elMaker.createElement(DataDictXMLConstants.ANNOTATION);
+            xmlElement.appendChild(elemAnnotation);
+            Element elemDocumentation = elMaker.createElement(DataDictXMLConstants.DOCUMENTATION);
+            elemDocumentation.setAttribute(XMLConstants.XML_NS_PREFIX + ":" + DataDictXMLConstants.LANGUAGE_PREFIX, DataDictXMLConstants.DEFAULT_XML_LANGUAGE);
+            elemAnnotation.appendChild(elemDocumentation);
+            List<AttributeValue> attributeValues = attributeValueDao.getByOwner(new DataDictEntity(dataElement.getId(), DataDictEntity.Entity.E));
+            attributeValues.addAll(dataSetAttributesValues);
+            for (AttributeValue attributeValue : attributeValues) {
+                Attribute attribute = attributeDao.getById(attributeValue.getAttributeId());
+                if (attribute.getShortName().equals("MinSize")) {
+                    MinSize = attributeValue.getValue();
+                    continue;
+                }
+                if (attribute.getShortName().equals("MaxSize")) {
+                    MaxSize = attributeValue.getValue();
+                    continue;
+                }
+                if (attribute.getShortName().equals("Datatype")) {
+                    Datatype = attributeValue.getValue();
+                    continue;
+                }
+                if (attribute.getShortName().equals("MinInclusiveValue")) {
+                    MinInclusiveValue = attributeValue.getValue();
+                    continue;
+                }
+                if (attribute.getShortName().equals("MaxInclusiveValue")) {
+                    MaxInclusiveValue = attributeValue.getValue();
+                    continue;
+                }
+                if (attribute != null && attribute.getShortName() != null && !attribute.getShortName().equals("Keyword") && !attribute.getShortName().equals("obligation") && attribute.getNamespace() != null && attribute.getNamespace().getShortName() != null) {
+                    Element attributeElement = elMaker.createElement(attribute.getShortName().replace(" ", ""), null, attribute.getNamespace().getShortName().replace("_", ""));
+                    attributeElement.appendChild(doc.createTextNode(attributeValue.getValue()));
+                    elemDocumentation.appendChild(attributeElement);
+                }
+            }
+            Element dataElementSimpleType = elMaker.createElement(DataDictXMLConstants.SIMPLE_TYPE);
+            xmlElement.appendChild(dataElementSimpleType);
+            Element dataElementRestriction = elMaker.createElement(DataDictXMLConstants.RESTRICTION);
+            dataElementRestriction.setAttribute(DataDictXMLConstants.BASE, DataDictXMLConstants.XS_PREFIX + ":" + Datatype);
+            dataElementSimpleType.appendChild(dataElementRestriction);
+            if (Datatype.equals("decimal")) {
+                if (!MaxSize.equals("")) {
+                    Element totalDigitsElement = elMaker.createElement("totalDigits");
+                    totalDigitsElement.setAttribute("value", MaxSize);
+                    dataElementRestriction.appendChild(totalDigitsElement);
+                }
+                if (!MinInclusiveValue.equals("")) {
+                    Element minInclusiveElement = elMaker.createElement("minInclusive");
+                    minInclusiveElement.setAttribute("value", MinInclusiveValue);
+                    dataElementRestriction.appendChild(minInclusiveElement);
+                }
+                if (!MaxInclusiveValue.equals("")) {
+                    Element maxInclusiveElement = elMaker.createElement("maxInclusive");
+                    maxInclusiveElement.setAttribute("value", MaxInclusiveValue);
+                    dataElementRestriction.appendChild(maxInclusiveElement);
+                }
+            }
+            if (Datatype.equals("integer") && !MaxSize.equals("")) {
+                Element totalDigitsElement = elMaker.createElement("totalDigits");
+                totalDigitsElement.setAttribute("value", MaxSize);
+                dataElementRestriction.appendChild(totalDigitsElement);
+            }
+            if (Datatype.equals("string")) {
+                if (!MaxSize.equals("")) {
+                    Element minLengthElement = elMaker.createElement("minLength");
+                    minLengthElement.setAttribute("value", MinSize);
+                    dataElementRestriction.appendChild(minLengthElement);
+                }
+                if (!MaxSize.equals("")) {
+                    Element maxLengthElement = elMaker.createElement("maxLength");
+                    maxLengthElement.setAttribute("value", MaxSize);
+                    dataElementRestriction.appendChild(maxLengthElement);
+                }
+            }
+        }
+
     }
 
     @Override

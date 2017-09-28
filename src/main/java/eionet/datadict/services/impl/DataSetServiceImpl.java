@@ -2,12 +2,8 @@ package eionet.datadict.services.impl;
 
 import eionet.datadict.commons.DataDictXMLConstants;
 import eionet.datadict.commons.util.XMLUtils;
-import eionet.datadict.dal.AttributeDao;
-import eionet.datadict.dal.AttributeValueDao;
-import eionet.datadict.dal.DataElementDao;
 import eionet.datadict.model.DataElement;
 
-import eionet.datadict.dal.DatasetTableDao;
 import eionet.datadict.errors.EmptyParameterException;
 import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.errors.XmlExportException;
@@ -27,6 +23,7 @@ import eionet.datadict.model.Namespace;
 import eionet.datadict.services.data.AttributeDataService;
 import eionet.datadict.services.data.DataElementDataService;
 import eionet.datadict.services.data.DataSetDataService;
+import eionet.datadict.services.data.DatasetTableDataService;
 import eionet.meta.dao.domain.VocabularyConcept;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
@@ -46,6 +43,7 @@ public class DataSetServiceImpl implements DataSetService {
     private final AttributeValueDao attributeValueDao;
     private final AttributeDao attributeDao;
     private final AttributeDataService attributeDataService;
+    private final AttributeValueDataService attributeValueDataService;
     private final DataElementDataService dataElementDataService;
 
     @Autowired
@@ -55,16 +53,20 @@ public class DataSetServiceImpl implements DataSetService {
         this.attributeValueDao = attributeValueDao;
         this.attributeDao = attributeDao;
         this.attributeDataService = attributeDataService;
+        this.attributeValueDataService = attributeValueDataService;
         this.dataElementDataService = dataElementDataService;
     }
+
+   
+    
 
     @Override
     public Document getDataSetXMLSchema(int id) throws XmlExportException, ResourceNotFoundException {
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = null;
-        DataSet dataset = dataSetDataService.getDatasetWithoutRelations(id);
-        List<DatasetTable> dsTables = datasetTableDao.getAllByDatasetId(dataset.getId());
-        List<AttributeValue> attributeValues = attributeValueDao.getByOwner(new DataDictEntity(dataset.getId(), DataDictEntity.Entity.DS));
+        DataSet dataset = this.dataSetDataService.getDatasetWithoutRelations(id);
+        List<DatasetTable> dsTables = this.datasetTableDataService.getAllTablesByDatasetId(dataset.getId());
+        List<AttributeValue> attributeValues = this.attributeValueDataService.getAllByDataSetId(dataset.getId());
 
         try {
             docBuilder = docFactory.newDocumentBuilder();
@@ -119,7 +121,7 @@ public class DataSetServiceImpl implements DataSetService {
         documentation.setAttribute(XMLConstants.XML_NS_PREFIX + ":" + DataDictXMLConstants.LANGUAGE_PREFIX, DataDictXMLConstants.DEFAULT_XML_LANGUAGE);
         annotation.appendChild(documentation);
         for (AttributeValue attributeValue : attributeValues) {
-            Attribute attribute = attributeDao.getById(attributeValue.getAttributeId());
+            Attribute attribute = this.attributeDataService.getAttribute(attributeValue.getAttributeId());
 
             if (attribute != null && attribute.getDisplayType().equals(Attribute.DisplayType.VOCABULARY)) {
 
@@ -162,7 +164,7 @@ public class DataSetServiceImpl implements DataSetService {
         DocumentBuilder docBuilder = null;
         try {
             DataSet dataset = this.dataSetDataService.getDatasetWithoutRelations(id);
-            List<DatasetTable> dsTables = datasetTableDao.getAllByDatasetId(dataset.getId());
+            List<DatasetTable> dsTables = this.datasetTableDataService.getAllTablesByDatasetId(dataset.getId());
             docFactory.setNamespaceAware(true);
             docBuilder = docFactory.newDocumentBuilder();
             Document doc = docBuilder.newDocument();
