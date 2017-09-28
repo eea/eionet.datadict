@@ -2,12 +2,8 @@ package eionet.datadict.services.impl;
 
 import eionet.datadict.commons.DataDictXMLConstants;
 import eionet.datadict.commons.util.XMLUtils;
-import eionet.datadict.dal.AttributeDao;
-import eionet.datadict.dal.AttributeValueDao;
-import eionet.datadict.dal.DataElementDao;
 import eionet.datadict.model.DataElement;
 
-import eionet.datadict.dal.DatasetTableDao;
 import eionet.datadict.errors.EmptyParameterException;
 import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.errors.XmlExportException;
@@ -25,7 +21,10 @@ import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import eionet.datadict.model.Namespace;
 import eionet.datadict.services.data.AttributeDataService;
+import eionet.datadict.services.data.AttributeValueDataService;
+import eionet.datadict.services.data.DataElementDataService;
 import eionet.datadict.services.data.DataSetDataService;
+import eionet.datadict.services.data.DatasetTableDataService;
 import eionet.meta.dao.domain.VocabularyConcept;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
@@ -41,29 +40,30 @@ import org.w3c.dom.Element;
 public class DataSetServiceImpl implements DataSetService {
 
     private final DataSetDataService dataSetDataService;
-    private final DatasetTableDao datasetTableDao;
-    private final AttributeValueDao attributeValueDao;
-    private final AttributeDao attributeDao;
-    private final DataElementDao dataElementDao;
+    private final DatasetTableDataService datasetTableDataService;
     private final AttributeDataService attributeDataService;
+    private final AttributeValueDataService attributeValueDataService;
+    private final DataElementDataService dataElementDataService;
 
     @Autowired
-    public DataSetServiceImpl(DataSetDataService dataSetDataService, DatasetTableDao datasetTableDao, AttributeValueDao attributeValueDao, AttributeDao attributeDao, DataElementDao dataElementDao, AttributeDataService attributeDataService) {
+    public DataSetServiceImpl(DataSetDataService dataSetDataService, DatasetTableDataService datasetTableDataService, AttributeDataService attributeDataService, AttributeValueDataService attributeValueDataService, DataElementDataService dataElementDataService) {
         this.dataSetDataService = dataSetDataService;
-        this.datasetTableDao = datasetTableDao;
-        this.attributeValueDao = attributeValueDao;
-        this.attributeDao = attributeDao;
-        this.dataElementDao = dataElementDao;
+        this.datasetTableDataService = datasetTableDataService;
         this.attributeDataService = attributeDataService;
+        this.attributeValueDataService = attributeValueDataService;
+        this.dataElementDataService = dataElementDataService;
     }
+
+    
+   
 
     @Override
     public Document getDataSetXMLSchema(int id) throws XmlExportException, ResourceNotFoundException {
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = null;
-        DataSet dataset = dataSetDataService.getDatasetWithoutRelations(id);
-        List<DatasetTable> dsTables = datasetTableDao.getAllByDatasetId(dataset.getId());
-        List<AttributeValue> attributeValues = attributeValueDao.getByOwner(new DataDictEntity(dataset.getId(), DataDictEntity.Entity.DS));
+        DataSet dataset = this.dataSetDataService.getDatasetWithoutRelations(id);
+        List<DatasetTable> dsTables = this.datasetTableDataService.getAllTablesByDatasetId(dataset.getId());
+        List<AttributeValue> attributeValues = this.attributeValueDataService.getAllByDataSetId(dataset.getId());
 
         try {
             docBuilder = docFactory.newDocumentBuilder();
@@ -118,7 +118,7 @@ public class DataSetServiceImpl implements DataSetService {
         documentation.setAttribute(XMLConstants.XML_NS_PREFIX + ":" + DataDictXMLConstants.LANGUAGE_PREFIX, DataDictXMLConstants.DEFAULT_XML_LANGUAGE);
         annotation.appendChild(documentation);
         for (AttributeValue attributeValue : attributeValues) {
-            Attribute attribute = attributeDao.getById(attributeValue.getAttributeId());
+            Attribute attribute = this.attributeDataService.getAttribute(attributeValue.getAttributeId());
 
             if (attribute != null && attribute.getDisplayType().equals(Attribute.DisplayType.VOCABULARY)) {
 
@@ -161,7 +161,7 @@ public class DataSetServiceImpl implements DataSetService {
         DocumentBuilder docBuilder = null;
         try {
             DataSet dataset = this.dataSetDataService.getDatasetWithoutRelations(id);
-            List<DatasetTable> dsTables = datasetTableDao.getAllByDatasetId(dataset.getId());
+            List<DatasetTable> dsTables = this.datasetTableDataService.getAllTablesByDatasetId(dataset.getId());
             docFactory.setNamespaceAware(true);
             docBuilder = docFactory.newDocumentBuilder();
             Document doc = docBuilder.newDocument();
@@ -189,7 +189,7 @@ public class DataSetServiceImpl implements DataSetService {
             row.removeAttribute(XMLConstants.XMLNS_ATTRIBUTE);
             tableElement.appendChild(row);
             schemaRoot.appendChild(tableElement);
-            List<DataElement> dataElements = this.dataElementDao.getDataElementsOfDatasetTableOrderByPositionAsc(dsTable.getId());
+            List<DataElement> dataElements = this.dataElementDataService.getLatestDataElementsOfDataSetTable(dsTable.getId());
             for (DataElement dataElement : dataElements) {
                 if (dataElement != null && dataElement.getIdentifier() != null) {
                     try {

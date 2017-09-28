@@ -95,4 +95,9 @@ public class DatasetTableDataServiceImpl implements DatasetTableDataService {
         return datasetTable;
     }
 
+    @Override
+    public List<DatasetTable> getAllTablesByDatasetId(int datasetId) {
+        return this.datasetTableDao.getAllByDatasetId(datasetId);
+    }
+
 }
