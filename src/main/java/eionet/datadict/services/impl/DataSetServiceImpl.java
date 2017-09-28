@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import eionet.datadict.model.Namespace;
 import eionet.datadict.services.data.AttributeDataService;
+import eionet.datadict.services.data.AttributeValueDataService;
 import eionet.datadict.services.data.DataElementDataService;
 import eionet.datadict.services.data.DataSetDataService;
 import eionet.datadict.services.data.DatasetTableDataService;
@@ -42,16 +43,15 @@ public class DataSetServiceImpl implements DataSetService {
     private final DatasetTableDao datasetTableDao;
     private final AttributeValueDao attributeValueDao;
     private final AttributeDao attributeDao;
+    private final DatasetTableDataService datasetTableDataService;
     private final AttributeDataService attributeDataService;
     private final AttributeValueDataService attributeValueDataService;
     private final DataElementDataService dataElementDataService;
 
     @Autowired
-    public DataSetServiceImpl(DataSetDataService dataSetDataService, DatasetTableDao datasetTableDao, AttributeValueDao attributeValueDao, AttributeDao attributeDao, AttributeDataService attributeDataService, DataElementDataService dataElementDataService) {
+    public DataSetServiceImpl(DataSetDataService dataSetDataService, DatasetTableDataService datasetTableDataService, AttributeDataService attributeDataService, AttributeValueDataService attributeValueDataService, DataElementDataService dataElementDataService) {
         this.dataSetDataService = dataSetDataService;
-        this.datasetTableDao = datasetTableDao;
-        this.attributeValueDao = attributeValueDao;
-        this.attributeDao = attributeDao;
+        this.datasetTableDataService = datasetTableDataService;
         this.attributeDataService = attributeDataService;
         this.attributeValueDataService = attributeValueDataService;
         this.dataElementDataService = dataElementDataService;
