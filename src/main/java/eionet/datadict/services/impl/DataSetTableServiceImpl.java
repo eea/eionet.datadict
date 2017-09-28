@@ -1,25 +1,19 @@
 package eionet.datadict.services.impl;
 
 import eionet.datadict.commons.DataDictXMLConstants;
-import eionet.datadict.dal.AttributeDao;
-import eionet.datadict.dal.AttributeValueDao;
-import eionet.datadict.dal.DataElementDao;
-import eionet.datadict.dal.DatasetTableDao;
 import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.errors.XmlExportException;
 import eionet.datadict.model.Attribute;
 import eionet.datadict.model.AttributeValue;
-import eionet.datadict.model.DataDictEntity;
 import eionet.datadict.model.DataElement;
 import eionet.datadict.model.DatasetTable;
 import eionet.datadict.model.Namespace;
 import eionet.datadict.services.DataSetTableService;
+import eionet.datadict.services.data.AttributeDataService;
+import eionet.datadict.services.data.AttributeValueDataService;
 import eionet.datadict.services.data.DataElementDataService;
 import eionet.datadict.services.data.DatasetTableDataService;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -39,21 +33,18 @@ import org.w3c.dom.Element;
 @Service
 public class DataSetTableServiceImpl implements DataSetTableService {
 
-    private final DatasetTableDao datasetTableDao;
-    private final DataElementDao dataElementDao;
-    private final AttributeValueDao attributeValueDao;
-    private final AttributeDao attributeDao;
+    private final AttributeDataService attributeDataService;
     private final DatasetTableDataService datasetTableDataService;
     private final DataElementDataService dataElementDataService;
+    private final AttributeValueDataService attributeValueDataService;
 
+    
     @Autowired
-    public DataSetTableServiceImpl(DatasetTableDao datasetTableDao, DataElementDao dataElementDao, AttributeValueDao attributeValueDao, AttributeDao attributeDao, DatasetTableDataService datasetTableDataService, DataElementDataService dataElementDataService) {
-        this.datasetTableDao = datasetTableDao;
-        this.dataElementDao = dataElementDao;
-        this.attributeValueDao = attributeValueDao;
-        this.attributeDao = attributeDao;
+    public DataSetTableServiceImpl(AttributeDataService attributeDataService, DatasetTableDataService datasetTableDataService, DataElementDataService dataElementDataService, AttributeValueDataService attributeValueDataService) {
+        this.attributeDataService = attributeDataService;
         this.datasetTableDataService = datasetTableDataService;
         this.dataElementDataService = dataElementDataService;
+        this.attributeValueDataService = attributeValueDataService;
     }
 
     @Override
@@ -80,12 +71,12 @@ public class DataSetTableServiceImpl implements DataSetTableService {
             Element tableRootElement = elMaker.createElement(DataDictXMLConstants.ELEMENT, dataSetTable.getIdentifier());
             schemaRoot.appendChild(tableRootElement);
 
-            List<Attribute> dataSetAttributes = attributeDao.getByDataDictEntity(new DataDictEntity(datasetId, DataDictEntity.Entity.DS));
+            List<Attribute> dataSetAttributes = this.attributeDataService.getAllByDatasetId(datasetId);
             List<AttributeValue> dataSetAttributesValues = new ArrayList<AttributeValue>();
             List<DataElement> datasetTableElementsList = dataElementDataService.getLatestDataElementsOfDataSetTable(dataSetTable.getId());
 
             for (Attribute dataSetAttribute : dataSetAttributes) {
-                List<AttributeValue> attributeValues = attributeValueDao.getByAttributeAndOwner(dataSetAttribute.getId(), new DataDictEntity(datasetId, DataDictEntity.Entity.DS));
+                List<AttributeValue> attributeValues = this.attributeValueDataService.getAllByAttributeAndDataSetId(dataSetAttribute.getId(),datasetId);
                 dataSetAttributesValues.add(attributeValues.get(0));
             }
 
@@ -111,7 +102,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
         dsAnnotation.appendChild(dsDocumentation);
 
         for (Attribute dataSetTableAttribute : dataSetTable.getAttributes()) {
-            AttributeValue attributeValue = attributeValueDao.getByAttributeAndOwner(dataSetTableAttribute.getId(), new DataDictEntity(dataSetTable.getId(), DataDictEntity.Entity.T)).get(0);
+            AttributeValue attributeValue = this.attributeValueDataService.getAllByAttributeAndDataSetTableId(dataSetTableAttribute.getId(),dataSetTable.getId()).get(0);
             if (dataSetTableAttribute.getShortName() != null && !dataSetTableAttribute.getShortName().equals("Keyword") && !dataSetTableAttribute.getShortName().equals("obligation") && dataSetTableAttribute.getNamespace() != null && dataSetTableAttribute.getNamespace().getShortName() != null) {
                 Element attributeElement = elMaker.createElement(dataSetTableAttribute.getShortName().replace(" ", ""), null, dataSetTableAttribute.getNamespace().getShortName().replace("_", ""));
                 if (attributeValue != null) {
@@ -121,7 +112,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
             }
         }
         for (Attribute dataSetAttribute : dataSetAttributes) {
-            List<AttributeValue> attributeValues = attributeValueDao.getByAttributeAndOwner(dataSetAttribute.getId(), new DataDictEntity(dataSetTable.getDataSet().getId(), DataDictEntity.Entity.DS));
+            List<AttributeValue> attributeValues = this.attributeValueDataService.getAllByAttributeAndDataSetId(dataSetAttribute.getId(),dataSetTable.getDataSet().getId());
             dataSetAttributesValues.add(attributeValues.get(0));
             if (dataSetAttribute.getShortName() != null && !dataSetAttribute.getShortName().equals("Keyword") && !dataSetAttribute.getShortName().equals("obligation") && dataSetAttribute.getNamespace() != null && dataSetAttribute.getNamespace().getShortName() != null) {
                 Element attributeElement = elMaker.createElement(dataSetAttribute.getShortName().replace(" ", ""), null, dataSetAttribute.getNamespace().getShortName().replace("_", ""));
@@ -130,7 +121,6 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                 }
                 dsDocumentation.appendChild(attributeElement);
             }
-
         }
     }
 
@@ -159,7 +149,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
         }
     }
 
-    private void setXSDataElementsToTableXmlSchema(Document doc, NameTypeElementMaker elMaker, Element schemaRoot, List<DataElement> datasetTableElementsList, List<AttributeValue> dataSetAttributesValues) {
+    private void setXSDataElementsToTableXmlSchema(Document doc, NameTypeElementMaker elMaker, Element schemaRoot, List<DataElement> datasetTableElementsList, List<AttributeValue> dataSetAttributesValues) throws ResourceNotFoundException {
         for (DataElement dataElement : datasetTableElementsList) {
             Element xmlElement = elMaker.createElement(DataDictXMLConstants.ELEMENT, dataElement.getIdentifier());
             String MinSize = "";
@@ -174,10 +164,10 @@ public class DataSetTableServiceImpl implements DataSetTableService {
             Element elemDocumentation = elMaker.createElement(DataDictXMLConstants.DOCUMENTATION);
             elemDocumentation.setAttribute(XMLConstants.XML_NS_PREFIX + ":" + DataDictXMLConstants.LANGUAGE_PREFIX, DataDictXMLConstants.DEFAULT_XML_LANGUAGE);
             elemAnnotation.appendChild(elemDocumentation);
-            List<AttributeValue> attributeValues = attributeValueDao.getByOwner(new DataDictEntity(dataElement.getId(), DataDictEntity.Entity.E));
+            List<AttributeValue> attributeValues = this.attributeValueDataService.getAllByDataElementId(dataElement.getId());
             attributeValues.addAll(dataSetAttributesValues);
             for (AttributeValue attributeValue : attributeValues) {
-                Attribute attribute = attributeDao.getById(attributeValue.getAttributeId());
+                Attribute attribute = this.attributeDataService.getAttribute(attributeValue.getAttributeId());
                 if (attribute.getShortName().equals("MinSize")) {
                     MinSize = attributeValue.getValue();
                     continue;
@@ -260,7 +250,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
             schemaRoot.setAttribute(XMLConstants.XMLNS_ATTRIBUTE + ":" + DataDictXMLConstants.XSI_PREFIX, XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
             schemaRoot.setAttribute(DataDictXMLConstants.XSI_PREFIX + ":" + DataDictXMLConstants.SCHEMA_LOCATION, DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dataSetTable.getCorrespondingNS().getId() + "  " + DataDictXMLConstants.APP_CONTEXT + "/" + DataDictXMLConstants.SCHEMAS_API_V2_PREFIX + "/" + DataDictXMLConstants.DATASET + "/" + dataSetTable.getDataSet().getId() + "/"
                     + DataDictXMLConstants.TABLE_SCHEMA_LOCATION_PARTIAL_FILE_NAME + dataSetTable.getId() + DataDictXMLConstants.XSD_FILE_EXTENSION);
-            List<DataElement> dataElements = this.dataElementDao.getDataElementsOfDatasetTableOrderByPositionAsc(dataSetTable.getId());
+            List<DataElement> dataElements = this.dataElementDataService.getLatestDataElementsOfDataSetTable(dataSetTable.getId());
             String tableNS = DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dataSetTable.getCorrespondingNS().getId();
             Element row = doc.createElementNS(tableNS, DataDictXMLConstants.ROW);
             schemaRoot.appendChild(row);
@@ -281,15 +271,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
 
     }
 
-    @Override
-    public DatasetTable getDatasetTable(int id) throws ResourceNotFoundException {
-        DatasetTable datasetTable = this.datasetTableDao.getById(id);
-        if (datasetTable != null) {
-            return datasetTable;
-        } else {
-            throw new ResourceNotFoundException("DatasetTable with id:" + id + "does not exist");
-        }
-    }
+
 
     private static class NameTypeElementMaker {
 

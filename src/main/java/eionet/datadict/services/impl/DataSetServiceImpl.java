@@ -40,9 +40,6 @@ import org.w3c.dom.Element;
 public class DataSetServiceImpl implements DataSetService {
 
     private final DataSetDataService dataSetDataService;
-    private final DatasetTableDao datasetTableDao;
-    private final AttributeValueDao attributeValueDao;
-    private final AttributeDao attributeDao;
     private final DatasetTableDataService datasetTableDataService;
     private final AttributeDataService attributeDataService;
     private final AttributeValueDataService attributeValueDataService;
@@ -56,9 +53,6 @@ public class DataSetServiceImpl implements DataSetService {
         this.attributeValueDataService = attributeValueDataService;
         this.dataElementDataService = dataElementDataService;
     }
-
-   
-    
 
     @Override
     public Document getDataSetXMLSchema(int id) throws XmlExportException, ResourceNotFoundException {

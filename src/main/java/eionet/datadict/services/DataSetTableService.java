@@ -15,5 +15,4 @@ public interface DataSetTableService {
     
     Document getDataSetTableXMLInstance(int id) throws XmlExportException , ResourceNotFoundException;
     
-    DatasetTable getDatasetTable(int id)throws ResourceNotFoundException;
 }

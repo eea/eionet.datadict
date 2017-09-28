@@ -289,4 +289,9 @@ public class AttributeDataServiceImpl implements AttributeDataService {
         return vocabularyConceptDAO.getVocabularyConcepts(conceptIds);
     }
 
+    @Override
+    public List<Attribute> getAllByDatasetId(int datasetId) {
+        return this.attributeDao.getByDataDictEntity(new DataDictEntity(datasetId, DataDictEntity.Entity.DS));
+    }
+
 }

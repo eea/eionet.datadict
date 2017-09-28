@@ -197,4 +197,6 @@ public interface AttributeDataService {
      * @throws ResourceNotFoundException 
      */
     Attribute setNewVocabularyToAttributeObject(Attribute attribute, int vocabularyId) throws ResourceNotFoundException;
+    
+    List<Attribute> getAllByDatasetId(int datasetId);
 }

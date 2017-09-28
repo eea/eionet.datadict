@@ -24,7 +24,27 @@ public class AttributeValueDataServiceImpl implements AttributeValueDataService 
 
     @Override
     public List<AttributeValue> getAllByDataSetId(Integer datasetId) {
-        return attributeValueDao.getByOwner(new DataDictEntity(datasetId, DataDictEntity.Entity.DS));
+        return this.attributeValueDao.getByOwner(new DataDictEntity(datasetId, DataDictEntity.Entity.DS));
+    }
+
+    @Override
+    public List<AttributeValue> getAllByAttributeAndDataSetId(Integer attributeId, Integer datasetId) {
+        return this.attributeValueDao.getByAttributeAndOwner(attributeId, new DataDictEntity(datasetId, DataDictEntity.Entity.DS));
+    }
+
+    @Override
+    public List<AttributeValue> getAllByDataSetTableId(Integer datasetTableId) {
+        return this.attributeValueDao.getByOwner(new DataDictEntity(datasetTableId, DataDictEntity.Entity.T));
+    }
+
+    @Override
+    public List<AttributeValue> getAllByAttributeAndDataSetTableId(Integer attributeId, Integer datasetTableId) {
+        return this.attributeValueDao.getByAttributeAndOwner(attributeId, new DataDictEntity(datasetTableId, DataDictEntity.Entity.T));
+    }
+
+    @Override
+    public List<AttributeValue> getAllByDataElementId(Integer dataElementId) {
+        return this.attributeValueDao.getByOwner( new DataDictEntity(dataElementId, DataDictEntity.Entity.E));
     }
 
 }
