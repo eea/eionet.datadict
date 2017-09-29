@@ -55,7 +55,8 @@ public class DatasetControllerTestIT {
 
     @Test
     public void testFailToGetDatasetXMLSchemaBecauseOfNotFoundDatasetWithGivenId() throws Exception {
-        MockHttpServletRequestBuilder request = get("/dataset/4242/schema");
+        MockHttpServletRequestBuilder request = get("/dataset/4242/schema-dst-4242.xsd");
+        
         request.contentType(MediaType.APPLICATION_JSON);
         mockMvc.perform(request).andExpect(status().is3xxRedirection());
         mockMvc.perform(request).andDo(print());
@@ -63,7 +64,7 @@ public class DatasetControllerTestIT {
 
     @Test
     public void testSuccessToGetDatasetXMLSchema() throws Exception {
-        MockHttpServletRequestBuilder request = get("/dataset/2827/schema");
+        MockHttpServletRequestBuilder request = get("/dataset/2827/schema-dst-2827.xsd");
         request.contentType(MediaType.APPLICATION_JSON);
         mockMvc.perform(request).andExpect(status().isOk());
         mockMvc.perform(request).andDo(print());
@@ -78,7 +79,7 @@ public class DatasetControllerTestIT {
 
     @Test
     public void testFailToGetDatasetXMLInstanceBecauseOfNotFoundDatasetWithGivenId() throws Exception {
-        MockHttpServletRequestBuilder request = get("/dataset/4242/instance");
+        MockHttpServletRequestBuilder request = get("/dataset/4242/dataset-instance.xml");
         request.contentType(MediaType.APPLICATION_JSON);
         mockMvc.perform(request).andExpect(status().is3xxRedirection());
         mockMvc.perform(request).andDo(print());
@@ -86,7 +87,7 @@ public class DatasetControllerTestIT {
 
     @Test
     public void testSuccessToGetDatasetXMLInstance() throws Exception {
-        MockHttpServletRequestBuilder request = get("/dataset/2827/instance");
+        MockHttpServletRequestBuilder request = get("/dataset/2827/dataset-instance.xml");
         request.contentType(MediaType.APPLICATION_JSON);
         mockMvc.perform(request).andExpect(status().isOk());
         mockMvc.perform(request).andDo(print());

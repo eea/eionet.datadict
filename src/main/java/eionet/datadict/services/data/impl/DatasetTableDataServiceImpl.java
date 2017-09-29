@@ -96,8 +96,14 @@ public class DatasetTableDataServiceImpl implements DatasetTableDataService {
     }
 
     @Override
-    public List<DatasetTable> getAllTablesByDatasetId(int datasetId) {
-        return this.datasetTableDao.getAllByDatasetId(datasetId);
+    public List<DatasetTable> getAllTablesByDatasetId(int datasetId) throws ResourceNotFoundException {
+        
+        List<DatasetTable> datasetTables = this.datasetTableDao.getAllByDatasetId(datasetId);
+        System.out.println("DatasetTableData Invocation with datasetId ="+datasetId);
+        if(datasetTables==null){
+            throw new ResourceNotFoundException(String.format("No Tables found with dataset id %d",datasetId));
+        }
+        return datasetTables;
     }
 
 }

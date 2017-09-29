@@ -21,6 +21,6 @@ public interface DatasetTableDataService {
 
     DatasetTable getFullDatasetTableDefinition(int tableId) throws ResourceNotFoundException;
 
-    public List<DatasetTable> getAllTablesByDatasetId(int datasetId);
+    public List<DatasetTable> getAllTablesByDatasetId(int datasetId) throws ResourceNotFoundException;
 
 }

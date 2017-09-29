@@ -58,7 +58,11 @@ public class DataSetServiceImpl implements DataSetService {
     public Document getDataSetXMLSchema(int id) throws XmlExportException, ResourceNotFoundException {
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = null;
+
         DataSet dataset = this.dataSetDataService.getDatasetWithoutRelations(id);
+        if (dataset == null) {
+            throw new ResourceNotFoundException(String.format("Dataset with id %d not found", id));
+        }
         List<DatasetTable> dsTables = this.datasetTableDataService.getAllTablesByDatasetId(dataset.getId());
         List<AttributeValue> attributeValues = this.attributeValueDataService.getAllByDataSetId(dataset.getId());
 
@@ -156,9 +160,13 @@ public class DataSetServiceImpl implements DataSetService {
     public Document getDataSetXMLInstance(int id) throws XmlExportException, ResourceNotFoundException {
         DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = null;
+
+        DataSet dataset = this.dataSetDataService.getDatasetWithoutRelations(id);
+        if (dataset == null) {
+            throw new ResourceNotFoundException(String.format("Dataset with id %d not found", id));
+        }
+        List<DatasetTable> dsTables = this.datasetTableDataService.getAllTablesByDatasetId(dataset.getId());
         try {
-            DataSet dataset = this.dataSetDataService.getDatasetWithoutRelations(id);
-            List<DatasetTable> dsTables = this.datasetTableDataService.getAllTablesByDatasetId(dataset.getId());
             docFactory.setNamespaceAware(true);
             docBuilder = docFactory.newDocumentBuilder();
             Document doc = docBuilder.newDocument();

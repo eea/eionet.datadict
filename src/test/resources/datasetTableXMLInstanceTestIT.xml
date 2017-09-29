@@ -2,9 +2,9 @@
 <DF1_MAir xmlns="http://dd.eionet.europa.eu/namespaces/689"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://dd.eionet.europa.eu/namespaces/689  schema-tbl-6661.xsd">
-   <row>
+   <Row>
       <ReportingEntityUniqueCode></ReportingEntityUniqueCode>
       <AirportName></AirportName>
       <IcaoCode></IcaoCode>
-   </row>
+   </Row>
 </DF1_MAir>
