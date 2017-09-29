@@ -75,7 +75,6 @@ public class DataSetServiceTestIT {
         DOMSource source = new DOMSource(XMlDocument);
         transformer.transform(source, actualXMLResult);
         ClassLoader classLoader = getClass().getClassLoader();
-        System.out.println(actualXMLResult.getWriter().toString());
         String expectedXMLResultString = IOUtils.toString(classLoader.getResourceAsStream("datasetXMLInstanceTestIT.xml"));
         Diff diff = new Diff(expectedXMLResultString, actualXMLResult.getWriter().toString());
         assertTrue(diff.similar());

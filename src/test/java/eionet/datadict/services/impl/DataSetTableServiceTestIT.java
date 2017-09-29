@@ -61,7 +61,6 @@ public class DataSetTableServiceTestIT {
         ClassLoader classLoader = getClass().getClassLoader();
         String expectedXMLResultString = IOUtils.toString(classLoader.getResourceAsStream("datasetTableXMLSchemaTestIT-2.xsd"));
         Diff diff = new Diff(expectedXMLResultString, actualXMLResult.getWriter().toString());
-        System.out.println(actualXMLResult.getWriter().toString());
         assertTrue(diff.similar());
     }
 
@@ -75,7 +74,6 @@ public class DataSetTableServiceTestIT {
         DOMSource source = new DOMSource(xmlDocument);
         transformer.transform(source, actualXMLResult);
         ClassLoader classLoader = getClass().getClassLoader();
-        System.out.println(actualXMLResult.getWriter().toString());
         String expectedXMLResultString = IOUtils.toString(classLoader.getResourceAsStream("datasetTableXMLInstanceTestIT.xml"));
         Diff diff = new Diff(expectedXMLResultString, actualXMLResult.getWriter().toString());
         assertTrue(diff.similar());
