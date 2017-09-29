@@ -88,7 +88,7 @@ public class DataSetController {
      */
     @RequestMapping(value = "/{id}/{variable:.+}")
     @ResponseBody
-    public void getDataSetOrDataSetTableSchemaByFileName(@PathVariable int id, @PathVariable String variable, HttpServletResponse response) throws XmlExportException, IOException, ResourceNotFoundException, TransformerConfigurationException, TransformerException, BadRequestException {
+    public void getDataSetOrDataSetTableSchemaOrInstanceByFileName(@PathVariable int id, @PathVariable String variable, HttpServletResponse response) throws XmlExportException, IOException, ResourceNotFoundException, TransformerConfigurationException, TransformerException, BadRequestException {
         Document xml = null;
         Pattern TableFileNamePattern = Pattern.compile("\\b" + SCHEMA_DATASET_TABLE_FILE_NAME_PREFIX + "\\d+.xsd");
         Pattern DataSetFileNamePattern = Pattern.compile("\\b" + SCHEMA_DATASET_FILE_NAME_PREFIX + "\\d+.xsd");
@@ -116,7 +116,7 @@ public class DataSetController {
         } else if (DatasetTableInstanceFileNamePatternMatcher.find()) {
             String tableId = DatasetTableInstanceFileNamePatternMatcher.group(1);
             xml = this.dataSetTableService.getDataSetTableXMLInstance(Integer.parseInt(tableId));
-            String fileName = "table" + tableId + "-instance.xml";
+            String fileName = "table-" + tableId + "-instance.xml";
             response.setContentType("application/xml");
             response.setHeader("Content-Disposition", "attachment;filename=" + fileName);
 

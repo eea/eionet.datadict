@@ -42,6 +42,26 @@ attributes originating from ISO11179" PARENT_NS="1" />
                  SHORT_NAME="Keyword"  NAMESPACE_ID="2" DISP_TYPE="text" DISP_ORDER="5" DISP_WHEN="8" DISP_WIDTH="40"  DISP_HEIGHT="1"  DISP_MULTIPLE="1"  INHERIT="1"  LANGUAGE_USED="0" />
 
     
+      
+    
+    <ATTRIBUTE M_ATTRIBUTE_ID="17" DATAELEM_ID="6661" VALUE="European Parliament and Council Directive 2002/49/EC, relating to the assessment and management of environmental noise requires data and reports from Member States to be supplied to the European Commission.  In Data Flow 1 (and 5), for Major Airports, Member States must report the general description of the Major Airports, their location and traffic.  This data specification details the table structure for Member States to supply this information. The table must be supplied with supporting xml metadata compliant with the current European Environment Agency, Dublin Core Metadata Element Set (http://cr.eionet.europa.eu/dcmes.jsp)." PARENT_TYPE="T"/>
+    <ATTRIBUTE M_ATTRIBUTE_ID="15" DATAELEM_ID="6661" VALUE="Data Flow 1 (and 5), Source definition - Major Airports" PARENT_TYPE="T"/>
+    <ATTRIBUTE M_ATTRIBUTE_ID="44"  DATAELEM_ID="6661" VALUE="This dataset allows Member States to define Major Airports and their traffic." PARENT_TYPE="T"/>
+    <ATTRIBUTE M_ATTRIBUTE_ID="1"  DATAELEM_ID="6661" VALUE="DF1_MAir" PARENT_TYPE="T"/>
+
+    <M_ATTRIBUTE M_ATTRIBUTE_ID="44"  NAME="Definition" OBLIGATION="O"  DEFINITION="Statement that expresses the essential nature of a data element and permits its differentiation from all other data elements. Source: ISO 11179."
+                 SHORT_NAME="Definition"  NAMESPACE_ID="2"  DISP_TYPE="textarea" DISP_ORDER="8" DISP_WHEN="1483" DISP_WIDTH="60" DISP_HEIGHT="4" 
+                 DISP_MULTIPLE="0" INHERIT="0"  LANGUAGE_USED="0"  />
+
+
+    <M_ATTRIBUTE M_ATTRIBUTE_ID="15" NAME="Short Description" OBLIGATION="O" DEFINITION="Brief text about the content of the dataset." SHORT_NAME="ShortDescription" NAMESPACE_ID="3" DISP_TYPE="textarea" DISP_ORDER="7" DISP_WHEN="72" DISP_WIDTH="60"  DISP_HEIGHT="1" DISP_MULTIPLE="0" INHERIT="0" LANGUAGE_USED="0" />
+
+
+    <M_ATTRIBUTE M_ATTRIBUTE_ID="17" NAME="Methodology for obtaining data" OBLIGATION="O" DEFINITION="Brief description of methodology for obtaining data in dataset." SHORT_NAME="Methodology" NAMESPACE_ID="3" DISP_TYPE="textarea" DISP_ORDER="20" DISP_WHEN="75" DISP_WIDTH="60" DISP_HEIGHT="6" DISP_MULTIPLE="0" INHERIT="0" LANGUAGE_USED="0" />
+
+
+    
+    
     <DATASET DATASET_ID="2827" SHORT_NAME="NoiseDirectiveDF1" VERSION="5" WORKING_COPY="N"   REG_STATUS="Released" DATE="1272974730726" CORRESP_NS="688"  IDENTIFIER="NoiseDirectiveDF1" DISP_CREATE_LINKS="43"/>
 
     

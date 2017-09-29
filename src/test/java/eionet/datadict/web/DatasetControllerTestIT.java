@@ -76,6 +76,30 @@ public class DatasetControllerTestIT {
         Diff diff = new Diff(expectedXMLResultString, xmlResult);
         assertTrue(diff.similar());
     }
+    
+    @Test
+    public void testFailToGetDatasetTableXMLSchemaBecauseOfNotFoundDatasetTableWithGivenId() throws Exception {
+        MockHttpServletRequestBuilder request = get("/dataset/4242/schema-tbl-42222.xsd");
+        request.contentType(MediaType.APPLICATION_JSON);
+        mockMvc.perform(request).andExpect(status().is3xxRedirection());
+        mockMvc.perform(request).andDo(print());
+    }
+
+    @Test
+    public void testSuccessToGetDatasetTableXMLSchema() throws Exception {
+        MockHttpServletRequestBuilder request = get("/dataset/2827/schema-tbl-6661.xsd");
+        request.contentType(MediaType.APPLICATION_JSON);
+        mockMvc.perform(request).andExpect(status().isOk());
+        mockMvc.perform(request).andDo(print());
+        assertEquals(MediaType.APPLICATION_XML.toString(), mockMvc.perform(request).andReturn().getResponse().getContentType());
+        assertEquals("attachment;filename=schema-tbl-6661.xsd", mockMvc.perform(request).andReturn().getResponse().getHeader("Content-Disposition"));
+        String xmlResult = mockMvc.perform(request).andReturn().getResponse().getContentAsString();
+        ClassLoader classLoader = getClass().getClassLoader();
+        System.out.println(xmlResult);
+        String expectedXMLResultString = IOUtils.toString(classLoader.getResourceAsStream("datasetTableXMLSchemaTestIT.xsd"));
+        Diff diff = new Diff(expectedXMLResultString, xmlResult);
+        assertTrue(diff.similar());
+    }
 
     @Test
     public void testFailToGetDatasetXMLInstanceBecauseOfNotFoundDatasetWithGivenId() throws Exception {
@@ -100,4 +124,26 @@ public class DatasetControllerTestIT {
         assertTrue(diff.similar());
     }
 
+    @Test
+    public void testFailToGetDatasetTableXMLInstanceBecauseOfNotFoundDatasetTableWithGivenId() throws Exception {
+        MockHttpServletRequestBuilder request = get("/dataset/4242/table-42222-instance.xml");
+        request.contentType(MediaType.APPLICATION_JSON);
+        mockMvc.perform(request).andExpect(status().is3xxRedirection());
+        mockMvc.perform(request).andDo(print());
+    }
+
+    @Test
+    public void testSuccessToGetDatasetTableXMLInstance() throws Exception {
+        MockHttpServletRequestBuilder request = get("/dataset/2827/table-6661-instance.xml");
+        request.contentType(MediaType.APPLICATION_JSON);
+        mockMvc.perform(request).andExpect(status().isOk());
+        mockMvc.perform(request).andDo(print());
+        assertEquals(MediaType.APPLICATION_XML.toString(), mockMvc.perform(request).andReturn().getResponse().getContentType());
+        assertEquals("attachment;filename=table-6661-instance.xml", mockMvc.perform(request).andReturn().getResponse().getHeader("Content-Disposition"));
+        String xmlResult = mockMvc.perform(request).andReturn().getResponse().getContentAsString();
+        ClassLoader classLoader = getClass().getClassLoader();
+        String expectedXMLResultString = IOUtils.toString(classLoader.getResourceAsStream("datasetTableXMLInstanceTestIT.xml"));
+        Diff diff = new Diff(expectedXMLResultString, xmlResult);
+        assertTrue(diff.similar());
+    }
 }
