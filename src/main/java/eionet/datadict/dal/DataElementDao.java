@@ -31,4 +31,8 @@ public interface DataElementDao {
      * @return an {@list Integer} corresponding to the id of the parent table.
      */
     public Integer getParentTableId(int elementId);
+    
+    public Boolean isDataSetTableElementMandatory(int tableId,int elementId);
+    
+    public Character getDataElementMultiValueDelimiter(int tableId, int elementId);
 }

@@ -73,6 +73,16 @@ public class DataElementDataServiceImpl implements DataElementDataService{
        
         return latestDataElements;
     }
+
+    @Override
+    public Boolean isDataElementMandatory(int tableId,int dataElementId) {
+        return this.dataElementDao.isDataSetTableElementMandatory(tableId,dataElementId);
+    }
+
+    @Override
+    public Character getDataElementMultiValueDelimiter(int tableId, int dataElementId) {
+        return this.dataElementDao.getDataElementMultiValueDelimiter(tableId, dataElementId);
+    }
     
     
 }

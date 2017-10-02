@@ -19,6 +19,9 @@ public interface DataElementDataService {
     public DataElement getDataElement(int dataElementId) throws ResourceNotFoundException;
     
     public boolean isWorkingUser(DataElement dataElement, DDUser user);
-    
-    public List<DataElement> getLatestDataElementsOfDataSetTable(int dataSetTableId);
+        public List<DataElement> getLatestDataElementsOfDataSetTable(int dataSetTableId);
+
+   public Boolean isDataElementMandatory(int tableId,int dataElementId);
+   
+   public Character getDataElementMultiValueDelimiter(int tableId, int dataElementId);
 }

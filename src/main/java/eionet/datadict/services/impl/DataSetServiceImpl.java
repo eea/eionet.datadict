@@ -134,6 +134,7 @@ public class DataSetServiceImpl implements DataSetService {
                 Element attributeElement = doc.createElement(attribute.getNamespace().getShortName().concat(":").replace("_", "").concat(attribute.getShortName()).replace(" ", ""));
                 attributeElement.appendChild(doc.createTextNode(attributeValue.getValue()));
                 documentation.appendChild(attributeElement);
+                
             }
         }
     }

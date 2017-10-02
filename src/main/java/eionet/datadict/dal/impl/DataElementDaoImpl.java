@@ -95,6 +95,35 @@ public class DataElementDaoImpl extends JdbcDaoBase implements DataElementDao {
         }
     }
 
+    @Override
+    public Boolean isDataSetTableElementMandatory(int tableId,int elementId) {
+        String sql = "SELECT MANDATORY FROM TBL2ELEM "
+                + "WHERE DATAELEM_ID = :id AND TABLE_ID= :tableId";
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("id", elementId);
+        params.put("tableId", tableId);
+
+        try {
+            return this.getNamedParameterJdbcTemplate().queryForObject(sql, params, Boolean.class);
+        } catch (EmptyResultDataAccessException ex) {
+            return null;
+        }
+    }
+
+    @Override
+    public Character getDataElementMultiValueDelimiter(int tableId, int elementId) {
+        String sql = "SELECT MULTIVAL_DELIM FROM TBL2ELEM "
+                + "WHERE DATAELEM_ID = :id AND TABLE_ID= :tableId";
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("id", elementId);
+        params.put("tableId", tableId);
+
+        try {
+            return this.getNamedParameterJdbcTemplate().queryForObject(sql, params, Character.class);
+        } catch (EmptyResultDataAccessException ex) {
+            return null;
+        }    }
+
     public static class DataElementRowMapper implements RowMapper<DataElement> {
 
         @Override

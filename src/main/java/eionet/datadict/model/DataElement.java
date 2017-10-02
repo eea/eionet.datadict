@@ -43,7 +43,10 @@ public abstract class DataElement implements AttributeOwner {
     private Integer vocabularyId;
     private Boolean allConceptsLegal;
     private Integer position;
+    private boolean mandatory;
+    private Character multiValueDelimiter;
 
+    
     @ManyToOne
     private DatasetTable datasetTable;
     @ManyToOne
@@ -325,4 +328,20 @@ public abstract class DataElement implements AttributeOwner {
         this.datasetTable = datasetTable;
     }
 
+    public boolean isMandatory() {
+        return mandatory;
+    }
+
+    public void setMandatory(boolean mandatory) {
+        this.mandatory = mandatory;
+    }
+
+    public Character getMultiValueDelimiter() {
+        return multiValueDelimiter;
+    }
+
+    public void setMultiValueDelimiter(Character multiValueDelimiter) {
+        this.multiValueDelimiter = multiValueDelimiter;
+    }
+ 
 }

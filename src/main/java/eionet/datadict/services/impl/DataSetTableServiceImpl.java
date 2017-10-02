@@ -143,7 +143,10 @@ public class DataSetTableServiceImpl implements DataSetTableService {
         for (DataElement dataElement : datasetTableElementsList) {
             Element tableElement = elMaker.createElement(DataDictXMLConstants.ELEMENT);
             tableElement.setAttribute(DataDictXMLConstants.REF, dataElement.getIdentifier());
-            tableElement.setAttribute(DataDictXMLConstants.MIN_OCCURS, "1");
+            tableElement.setAttribute(DataDictXMLConstants.MIN_OCCURS,this.dataElementDataService.isDataElementMandatory(dataElement.getDatasetTable().getId(),dataElement.getId())?"1":"0");
+            if(this.dataElementDataService.getDataElementMultiValueDelimiter(dataElement.getDatasetTable().getId(), dataElement.getId())!=null){
+            
+            }
             tableElement.setAttribute(DataDictXMLConstants.MAX_OCCURS, "1");
             rowSequence.appendChild(tableElement);
         }
