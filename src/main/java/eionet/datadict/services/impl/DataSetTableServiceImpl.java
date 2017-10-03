@@ -144,9 +144,9 @@ public class DataSetTableServiceImpl implements DataSetTableService {
             Element tableElement = elMaker.createElement(DataDictXMLConstants.ELEMENT);
             tableElement.setAttribute(DataDictXMLConstants.REF, dataElement.getIdentifier());
             tableElement.setAttribute(DataDictXMLConstants.MIN_OCCURS,this.dataElementDataService.isDataElementMandatory(dataElement.getDatasetTable().getId(),dataElement.getId())?"1":"0");
-            if(this.dataElementDataService.getDataElementMultiValueDelimiter(dataElement.getDatasetTable().getId(), dataElement.getId())!=null){
-            
-            }
+           // if(this.dataElementDataService.getDataElementMultiValueDelimiter(dataElement.getDatasetTable().getId(), dataElement.getId())!=null){
+      //      
+        //    }
             tableElement.setAttribute(DataDictXMLConstants.MAX_OCCURS, "1");
             rowSequence.appendChild(tableElement);
         }
@@ -223,6 +223,16 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                 Element totalDigitsElement = elMaker.createElement("totalDigits");
                 totalDigitsElement.setAttribute("value", MaxSize);
                 dataElementRestriction.appendChild(totalDigitsElement);
+                  if (!MinInclusiveValue.equals("")) {
+                    Element minInclusiveElement = elMaker.createElement("minInclusive");
+                    minInclusiveElement.setAttribute("value", MinInclusiveValue);
+                    dataElementRestriction.appendChild(minInclusiveElement);
+                }
+                if (!MaxInclusiveValue.equals("")) {
+                    Element maxInclusiveElement = elMaker.createElement("maxInclusive");
+                    maxInclusiveElement.setAttribute("value", MaxInclusiveValue);
+                    dataElementRestriction.appendChild(maxInclusiveElement);
+                }
             }
             if (Datatype.equals("string")) {
                 if (!MaxSize.equals("")) {
