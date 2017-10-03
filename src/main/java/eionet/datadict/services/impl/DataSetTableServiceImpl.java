@@ -1,10 +1,12 @@
 package eionet.datadict.services.impl;
 
 import eionet.datadict.commons.DataDictXMLConstants;
+import eionet.datadict.errors.EmptyParameterException;
 import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.errors.XmlExportException;
 import eionet.datadict.model.Attribute;
 import eionet.datadict.model.AttributeValue;
+import eionet.datadict.model.DataDictEntity;
 import eionet.datadict.model.DataElement;
 import eionet.datadict.model.DatasetTable;
 import eionet.datadict.model.Namespace;
@@ -13,8 +15,16 @@ import eionet.datadict.services.data.AttributeDataService;
 import eionet.datadict.services.data.AttributeValueDataService;
 import eionet.datadict.services.data.DataElementDataService;
 import eionet.datadict.services.data.DatasetTableDataService;
+import eionet.meta.DDException;
+import eionet.meta.DDSearchEngine;
+import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.util.sql.ConnectionUtil;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.XMLConstants;
@@ -88,7 +98,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
 
             doc.appendChild(schemaRoot);
             return doc;
-        } catch (ParserConfigurationException ex) {
+        } catch (ParserConfigurationException | EmptyParameterException ex) {
             Logger.getLogger(DataSetServiceImpl.class.getName()).log(Level.SEVERE, null, ex);
             throw new XmlExportException(ex);
         }
@@ -152,7 +162,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
         }
     }
 
-    private void setXSDataElementsToTableXmlSchema(Document doc, NameTypeElementMaker elMaker, Element schemaRoot, List<DataElement> datasetTableElementsList, List<AttributeValue> dataSetAttributesValues) throws ResourceNotFoundException {
+    private void setXSDataElementsToTableXmlSchema(Document doc, NameTypeElementMaker elMaker, Element schemaRoot, List<DataElement> datasetTableElementsList, List<AttributeValue> dataSetAttributesValues) throws ResourceNotFoundException, EmptyParameterException {
         for (DataElement dataElement : datasetTableElementsList) {
             Element xmlElement = elMaker.createElement(DataDictXMLConstants.ELEMENT, dataElement.getIdentifier());
             String MinSize = "";
@@ -160,6 +170,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
             String Datatype = "";
             String MinInclusiveValue = "";
             String MaxInclusiveValue = "";
+           List<VocabularyConcept> vocabularyConcepts = new LinkedList<VocabularyConcept>();
 
             schemaRoot.appendChild(xmlElement);
             Element elemAnnotation = elMaker.createElement(DataDictXMLConstants.ANNOTATION);
@@ -171,6 +182,9 @@ public class DataSetTableServiceImpl implements DataSetTableService {
             attributeValues.addAll(dataSetAttributesValues);
             for (AttributeValue attributeValue : attributeValues) {
                 Attribute attribute = this.attributeDataService.getAttribute(attributeValue.getAttributeId());
+                if(attribute.getDisplayType().equals(Attribute.DisplayType.VOCABULARY)){
+                 // Fetch fixed values 
+                }
                 if (attribute.getShortName().equals("MinSize")) {
                     MinSize = attributeValue.getValue();
                     continue;
@@ -244,6 +258,13 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                     Element maxLengthElement = elMaker.createElement("maxLength");
                     maxLengthElement.setAttribute("value", MaxSize);
                     dataElementRestriction.appendChild(maxLengthElement);
+                }
+            }
+            if(Datatype.equals("reference")){
+                    for (VocabularyConcept vocConcept : vocabularyConcepts) {
+                    Element enumerationElement = elMaker.createElement("enumeration");
+                    enumerationElement.setAttribute("value", vocConcept.getLabel());
+                    dataElementRestriction.appendChild(enumerationElement);
                 }
             }
         }
