@@ -22,9 +22,9 @@
             <xs:element maxOccurs="unbounded" minOccurs="1" name="Row">
                <xs:complexType>
                   <xs:sequence>
-                     <xs:element maxOccurs="1" minOccurs="1" ref="ReportingEntityUniqueCode"/>
-                     <xs:element maxOccurs="1" minOccurs="1" ref="AirportName"/>
-                     <xs:element maxOccurs="1" minOccurs="1" ref="IcaoCode"/>
+                     <xs:element maxOccurs="1" minOccurs="0" ref="ReportingEntityUniqueCode"/>
+                     <xs:element maxOccurs="1" minOccurs="0" ref="AirportName"/>
+                     <xs:element maxOccurs="1" minOccurs="0" ref="IcaoCode"/>
                   </xs:sequence>
                </xs:complexType>
             </xs:element>
@@ -36,7 +36,7 @@
          <xs:documentation xml:lang="en"/>
       </xs:annotation>
       <xs:simpleType>
-         <xs:restriction base="xs:"/>
+         <xs:restriction/>
       </xs:simpleType>
    </xs:element>
    <xs:element name="AirportName">
@@ -44,7 +44,7 @@
          <xs:documentation xml:lang="en"/>
       </xs:annotation>
       <xs:simpleType>
-         <xs:restriction base="xs:"/>
+         <xs:restriction/>
       </xs:simpleType>
    </xs:element>
    <xs:element name="IcaoCode">
@@ -52,7 +52,7 @@
          <xs:documentation xml:lang="en"/>
       </xs:annotation>
       <xs:simpleType>
-         <xs:restriction base="xs:"/>
+         <xs:restriction/>
       </xs:simpleType>
    </xs:element>
 </xs:schema>

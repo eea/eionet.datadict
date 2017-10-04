@@ -7,6 +7,10 @@
          <ReportingEntityUniqueCode></ReportingEntityUniqueCode>
          <AirportName></AirportName>
          <IcaoCode></IcaoCode>
+         <AnnualTraffic></AnnualTraffic>
+         <LocAirNodeX></LocAirNodeX>
+         <LocAirNodeY></LocAirNodeY>
+         <LocAirCoordSystem></LocAirCoordSystem>
       </Row>
    </DF1_MAir>
    <DF1_MRoad xmlns="http://dd.eionet.europa.eu/namespaces/690">
