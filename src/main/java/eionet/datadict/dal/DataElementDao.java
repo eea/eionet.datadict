@@ -34,5 +34,5 @@ public interface DataElementDao {
     
     public Boolean isDataSetTableElementMandatory(int tableId,int elementId);
     
-    public Character getDataElementMultiValueDelimiter(int tableId, int elementId);
+    public String getDataElementMultiValueDelimiter(int tableId, int elementId);
 }

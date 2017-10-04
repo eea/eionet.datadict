@@ -6,7 +6,6 @@ import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.errors.XmlExportException;
 import eionet.datadict.model.Attribute;
 import eionet.datadict.model.AttributeValue;
-import eionet.datadict.model.DataDictEntity;
 import eionet.datadict.model.DataElement;
 import eionet.datadict.model.DatasetTable;
 import eionet.datadict.model.Namespace;
@@ -15,16 +14,12 @@ import eionet.datadict.services.data.AttributeDataService;
 import eionet.datadict.services.data.AttributeValueDataService;
 import eionet.datadict.services.data.DataElementDataService;
 import eionet.datadict.services.data.DatasetTableDataService;
-import eionet.meta.DDException;
-import eionet.meta.DDSearchEngine;
+import eionet.datadict.services.data.VocabularyDataService;
+import eionet.meta.dao.domain.StandardGenericStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.util.sql.ConnectionUtil;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.XMLConstants;
@@ -47,14 +42,15 @@ public class DataSetTableServiceImpl implements DataSetTableService {
     private final DatasetTableDataService datasetTableDataService;
     private final DataElementDataService dataElementDataService;
     private final AttributeValueDataService attributeValueDataService;
+    private final VocabularyDataService vocabularyDataService;
 
-    
     @Autowired
-    public DataSetTableServiceImpl(AttributeDataService attributeDataService, DatasetTableDataService datasetTableDataService, DataElementDataService dataElementDataService, AttributeValueDataService attributeValueDataService) {
+    public DataSetTableServiceImpl(AttributeDataService attributeDataService, DatasetTableDataService datasetTableDataService, DataElementDataService dataElementDataService, AttributeValueDataService attributeValueDataService, VocabularyDataService vocabularyDataService) {
         this.attributeDataService = attributeDataService;
         this.datasetTableDataService = datasetTableDataService;
         this.dataElementDataService = dataElementDataService;
         this.attributeValueDataService = attributeValueDataService;
+        this.vocabularyDataService = vocabularyDataService;
     }
 
     @Override
@@ -86,7 +82,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
             List<DataElement> datasetTableElementsList = dataElementDataService.getLatestDataElementsOfDataSetTable(dataSetTable.getId());
 
             for (Attribute dataSetAttribute : dataSetAttributes) {
-                List<AttributeValue> attributeValues = this.attributeValueDataService.getAllByAttributeAndDataSetId(dataSetAttribute.getId(),datasetId);
+                List<AttributeValue> attributeValues = this.attributeValueDataService.getAllByAttributeAndDataSetId(dataSetAttribute.getId(), datasetId);
                 dataSetAttributesValues.add(attributeValues.get(0));
             }
 
@@ -112,7 +108,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
         dsAnnotation.appendChild(dsDocumentation);
 
         for (Attribute dataSetTableAttribute : dataSetTable.getAttributes()) {
-            AttributeValue attributeValue = this.attributeValueDataService.getAllByAttributeAndDataSetTableId(dataSetTableAttribute.getId(),dataSetTable.getId()).get(0);
+            AttributeValue attributeValue = this.attributeValueDataService.getAllByAttributeAndDataSetTableId(dataSetTableAttribute.getId(), dataSetTable.getId()).get(0);
             if (dataSetTableAttribute.getShortName() != null && !dataSetTableAttribute.getShortName().equals("Keyword") && !dataSetTableAttribute.getShortName().equals("obligation") && dataSetTableAttribute.getNamespace() != null && dataSetTableAttribute.getNamespace().getShortName() != null) {
                 Element attributeElement = elMaker.createElement(dataSetTableAttribute.getShortName().replace(" ", ""), null, dataSetTableAttribute.getNamespace().getShortName().replace("_", ""));
                 if (attributeValue != null) {
@@ -122,7 +118,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
             }
         }
         for (Attribute dataSetAttribute : dataSetAttributes) {
-            List<AttributeValue> attributeValues = this.attributeValueDataService.getAllByAttributeAndDataSetId(dataSetAttribute.getId(),dataSetTable.getDataSet().getId());
+            List<AttributeValue> attributeValues = this.attributeValueDataService.getAllByAttributeAndDataSetId(dataSetAttribute.getId(), dataSetTable.getDataSet().getId());
             dataSetAttributesValues.add(attributeValues.get(0));
             if (dataSetAttribute.getShortName() != null && !dataSetAttribute.getShortName().equals("Keyword") && !dataSetAttribute.getShortName().equals("obligation") && dataSetAttribute.getNamespace() != null && dataSetAttribute.getNamespace().getShortName() != null) {
                 Element attributeElement = elMaker.createElement(dataSetAttribute.getShortName().replace(" ", ""), null, dataSetAttribute.getNamespace().getShortName().replace("_", ""));
@@ -141,7 +137,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
         Element sequence = elMaker.createElement(DataDictXMLConstants.SEQUENCE);
         complexType.appendChild(sequence);
         Element rowElement = elMaker.createElement(DataDictXMLConstants.ELEMENT);
-        rowElement.setAttribute(DataDictXMLConstants.NAME, "Row");
+        rowElement.setAttribute(DataDictXMLConstants.NAME, DataDictXMLConstants.ROW);
         rowElement.setAttribute(DataDictXMLConstants.MIN_OCCURS, "1");
         rowElement.setAttribute(DataDictXMLConstants.MAX_OCCURS, "unbounded");
         sequence.appendChild(rowElement);
@@ -153,10 +149,12 @@ public class DataSetTableServiceImpl implements DataSetTableService {
         for (DataElement dataElement : datasetTableElementsList) {
             Element tableElement = elMaker.createElement(DataDictXMLConstants.ELEMENT);
             tableElement.setAttribute(DataDictXMLConstants.REF, dataElement.getIdentifier());
-            tableElement.setAttribute(DataDictXMLConstants.MIN_OCCURS,this.dataElementDataService.isDataElementMandatory(dataElement.getDatasetTable().getId(),dataElement.getId())?"1":"0");
-           // if(this.dataElementDataService.getDataElementMultiValueDelimiter(dataElement.getDatasetTable().getId(), dataElement.getId())!=null){
-      //      
-        //    }
+            tableElement.setAttribute(DataDictXMLConstants.MIN_OCCURS, this.dataElementDataService.isDataElementMandatory(dataElement.getDatasetTable().getId(), dataElement.getId()) ? "1" : "0");
+            String delimiter = this.dataElementDataService.getDataElementMultiValueDelimiter(dataElement.getDatasetTable().getId(), dataElement.getId());
+            if (delimiter != null) {
+                tableElement.setAttribute(DataDictXMLConstants.MULTI_VALUE_DELIM, delimiter);
+            }
+
             tableElement.setAttribute(DataDictXMLConstants.MAX_OCCURS, "1");
             rowSequence.appendChild(tableElement);
         }
@@ -170,8 +168,10 @@ public class DataSetTableServiceImpl implements DataSetTableService {
             String Datatype = "";
             String MinInclusiveValue = "";
             String MaxInclusiveValue = "";
-           List<VocabularyConcept> vocabularyConcepts = new LinkedList<VocabularyConcept>();
-
+            List<VocabularyConcept> vocabularyConcepts = new LinkedList<VocabularyConcept>();
+            if (dataElement.getVocabularyId() != null) {
+                vocabularyConcepts = this.vocabularyDataService.getVocabularyConcepts(dataElement.getVocabularyId(), StandardGenericStatus.VALID);
+            }
             schemaRoot.appendChild(xmlElement);
             Element elemAnnotation = elMaker.createElement(DataDictXMLConstants.ANNOTATION);
             xmlElement.appendChild(elemAnnotation);
@@ -182,9 +182,6 @@ public class DataSetTableServiceImpl implements DataSetTableService {
             attributeValues.addAll(dataSetAttributesValues);
             for (AttributeValue attributeValue : attributeValues) {
                 Attribute attribute = this.attributeDataService.getAttribute(attributeValue.getAttributeId());
-                if(attribute.getDisplayType().equals(Attribute.DisplayType.VOCABULARY)){
-                 // Fetch fixed values 
-                }
                 if (attribute.getShortName().equals("MinSize")) {
                     MinSize = attributeValue.getValue();
                     continue;
@@ -214,9 +211,9 @@ public class DataSetTableServiceImpl implements DataSetTableService {
             Element dataElementSimpleType = elMaker.createElement(DataDictXMLConstants.SIMPLE_TYPE);
             xmlElement.appendChild(dataElementSimpleType);
             Element dataElementRestriction = elMaker.createElement(DataDictXMLConstants.RESTRICTION);
-            dataElementRestriction.setAttribute(DataDictXMLConstants.BASE, DataDictXMLConstants.XS_PREFIX + ":" + Datatype);
             dataElementSimpleType.appendChild(dataElementRestriction);
             if (Datatype.equals("decimal")) {
+                dataElementRestriction.setAttribute(DataDictXMLConstants.BASE, DataDictXMLConstants.XS_PREFIX + ":" + Datatype);
                 if (!MaxSize.equals("")) {
                     Element totalDigitsElement = elMaker.createElement("totalDigits");
                     totalDigitsElement.setAttribute("value", MaxSize);
@@ -234,10 +231,11 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                 }
             }
             if (Datatype.equals("integer") && !MaxSize.equals("")) {
+                dataElementRestriction.setAttribute(DataDictXMLConstants.BASE, DataDictXMLConstants.XS_PREFIX + ":" + Datatype);
                 Element totalDigitsElement = elMaker.createElement("totalDigits");
                 totalDigitsElement.setAttribute("value", MaxSize);
                 dataElementRestriction.appendChild(totalDigitsElement);
-                  if (!MinInclusiveValue.equals("")) {
+                if (!MinInclusiveValue.equals("")) {
                     Element minInclusiveElement = elMaker.createElement("minInclusive");
                     minInclusiveElement.setAttribute("value", MinInclusiveValue);
                     dataElementRestriction.appendChild(minInclusiveElement);
@@ -249,6 +247,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                 }
             }
             if (Datatype.equals("string")) {
+                dataElementRestriction.setAttribute(DataDictXMLConstants.BASE, DataDictXMLConstants.XS_PREFIX + ":" + Datatype);
                 if (!MaxSize.equals("")) {
                     Element minLengthElement = elMaker.createElement("minLength");
                     minLengthElement.setAttribute("value", MinSize);
@@ -257,13 +256,16 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                 if (!MaxSize.equals("")) {
                     Element maxLengthElement = elMaker.createElement("maxLength");
                     maxLengthElement.setAttribute("value", MaxSize);
+
                     dataElementRestriction.appendChild(maxLengthElement);
                 }
             }
-            if(Datatype.equals("reference")){
-                    for (VocabularyConcept vocConcept : vocabularyConcepts) {
+            if (Datatype.equals("reference")) {
+                //If datatype of attribute is reference, it means it has a vocabulary relation
+                for (VocabularyConcept vocConcept : vocabularyConcepts) {
                     Element enumerationElement = elMaker.createElement("enumeration");
-                    enumerationElement.setAttribute("value", vocConcept.getLabel());
+                    enumerationElement.setAttribute("value", vocConcept.getIdentifier());
+                    dataElementRestriction.setAttribute(DataDictXMLConstants.BASE, DataDictXMLConstants.XS_PREFIX + ":" + "String");
                     dataElementRestriction.appendChild(enumerationElement);
                 }
             }
@@ -304,8 +306,6 @@ public class DataSetTableServiceImpl implements DataSetTableService {
         }
 
     }
-
-
 
     private static class NameTypeElementMaker {
 

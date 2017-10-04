@@ -80,7 +80,7 @@ public class DataElementDataServiceImpl implements DataElementDataService{
     }
 
     @Override
-    public Character getDataElementMultiValueDelimiter(int tableId, int dataElementId) {
+    public String getDataElementMultiValueDelimiter(int tableId, int dataElementId) {
         return this.dataElementDao.getDataElementMultiValueDelimiter(tableId, dataElementId);
     }
     

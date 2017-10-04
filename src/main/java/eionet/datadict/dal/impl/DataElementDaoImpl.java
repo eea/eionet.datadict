@@ -111,7 +111,7 @@ public class DataElementDaoImpl extends JdbcDaoBase implements DataElementDao {
     }
 
     @Override
-    public Character getDataElementMultiValueDelimiter(int tableId, int elementId) {
+    public String getDataElementMultiValueDelimiter(int tableId, int elementId) {
         String sql = "SELECT MULTIVAL_DELIM FROM TBL2ELEM "
                 + "WHERE DATAELEM_ID = :id AND TABLE_ID= :tableId";
         Map<String, Object> params = new HashMap<String, Object>();
@@ -119,7 +119,7 @@ public class DataElementDaoImpl extends JdbcDaoBase implements DataElementDao {
         params.put("tableId", tableId);
 
         try {
-            return this.getNamedParameterJdbcTemplate().queryForObject(sql, params, Character.class);
+            return this.getNamedParameterJdbcTemplate().queryForObject(sql, params, String.class);
         } catch (EmptyResultDataAccessException ex) {
             return null;
         }    }

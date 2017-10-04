@@ -23,5 +23,5 @@ public interface DataElementDataService {
 
    public Boolean isDataElementMandatory(int tableId,int dataElementId);
    
-   public Character getDataElementMultiValueDelimiter(int tableId, int dataElementId);
+   public String getDataElementMultiValueDelimiter(int tableId, int dataElementId);
 }

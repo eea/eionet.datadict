@@ -49,5 +49,6 @@ public class DataDictXMLConstants {
     public static final String MIN_OCCURS="minOccurs";
     public static final String MAX_OCCURS="maxOccurs";
     public static final String SCHEMAS_API_V2_PREFIX="v2";
+    public static final String MULTI_VALUE_DELIM="multiValueDelim";
     
 }
