@@ -26,6 +26,8 @@ import eionet.datadict.services.data.DataElementDataService;
 import eionet.datadict.services.data.DataSetDataService;
 import eionet.datadict.services.data.DatasetTableDataService;
 import eionet.meta.dao.domain.VocabularyConcept;
+import java.util.Collections;
+import java.util.Comparator;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -64,6 +66,14 @@ public class DataSetServiceImpl implements DataSetService {
             throw new ResourceNotFoundException(String.format("Dataset with id %d not found", id));
         }
         List<DatasetTable> dsTables = this.datasetTableDataService.getAllTablesByDatasetId(dataset.getId());
+        Collections.sort(dsTables, new Comparator<DatasetTable>() {
+            public int compare(DatasetTable o1, DatasetTable o2) {
+                if (o1.getPosition() == o2.getPosition()) {
+                    return 0;
+                }
+                return o1.getPosition() < o2.getPosition() ? -1 : 1;
+            }
+        });
         List<AttributeValue> attributeValues = this.attributeValueDataService.getAllByDataSetId(dataset.getId());
 
         try {
@@ -134,7 +144,7 @@ public class DataSetServiceImpl implements DataSetService {
                 Element attributeElement = doc.createElement(attribute.getNamespace().getShortName().concat(":").replace("_", "").concat(attribute.getShortName()).replace(" ", ""));
                 attributeElement.appendChild(doc.createTextNode(attributeValue.getValue()));
                 documentation.appendChild(attributeElement);
-                
+
             }
         }
     }

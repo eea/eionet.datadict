@@ -58,15 +58,26 @@ public class DatasetTableDaoImpl extends JdbcDaoBase implements DatasetTableDao 
     @Override
     public List<DatasetTable> getAllByDatasetId(int datasetId) {
          List<DatasetTable> dsTables = new ArrayList<DatasetTable>();
-         String sql = "SELECT TABLE_ID FROM DST2TBL "
+         String sql = "SELECT TABLE_ID ,POSITION FROM DST2TBL "
                 + "WHERE  DATASET_ID=  :datasetId";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("datasetId", datasetId);
         try {
-            List<Integer> dataTableIds= this.getNamedParameterJdbcTemplate().queryForList(sql, params,Integer.class);
-            for (Integer dataTableId : dataTableIds) {
-                dsTables.add(this.getById(dataTableId));
+             List<TableIdAndPosition> idsAndPositions = this.getNamedParameterJdbcTemplate().query(sql, params, new RowMapper<TableIdAndPosition>() {
+                @Override
+                public TableIdAndPosition mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    TableIdAndPosition tableIdAndPosition = new TableIdAndPosition();
+                    tableIdAndPosition.setTableId(rs.getInt("TABLE_ID"));
+                    tableIdAndPosition.setPosition(rs.getInt("POSITION"));
+                    return tableIdAndPosition;
+                }
+            });
+            for (TableIdAndPosition idAndPosition : idsAndPositions) {
+                DatasetTable dsTable = this.getById(idAndPosition.getTableId());
+                dsTable.setPosition(idAndPosition.getPosition());
+                dsTables.add(dsTable);
             }
+             
             return dsTables;
         }catch (EmptyResultDataAccessException ex) {
             return null;
@@ -121,5 +132,27 @@ public class DatasetTableDaoImpl extends JdbcDaoBase implements DatasetTableDao 
             datasetTable.getParentNamespace().setWorkingUser(rs.getString("PARENT.WORKING_USER"));
             
         }
+    
+    private class TableIdAndPosition{
+        private Integer tableId;
+        private Integer position;
+
+        public Integer getTableId() {
+            return tableId;
+        }
+
+        public void setTableId(Integer tableId) {
+            this.tableId = tableId;
+        }
+
+        public Integer getPosition() {
+            return position;
+        }
+
+        public void setPosition(Integer position) {
+            this.position = position;
+        }
+        
+    }
         
 }

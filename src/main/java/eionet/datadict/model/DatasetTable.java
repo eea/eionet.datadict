@@ -10,10 +10,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-@JsonIgnoreProperties(ignoreUnknown=true)
-@Table(name="DS_TABLE")
+@JsonIgnoreProperties(ignoreUnknown = true)
+@Table(name = "DS_TABLE")
 public class DatasetTable implements AttributeOwner {
 
     @Id
@@ -28,6 +27,7 @@ public class DatasetTable implements AttributeOwner {
     private Namespace correspondingNS;
     private Namespace parentNamespace;
     private String identifier;
+    private Integer position;
     @ManyToOne
     private DataSet dataSet;
     @ManyToOne
@@ -35,7 +35,7 @@ public class DatasetTable implements AttributeOwner {
 
     @JsonIgnore
     @OneToMany(mappedBy = "datasetTable")
-    private Set<DataElement> dataElements ;
+    private Set<DataElement> dataElements;
     @JsonIgnore
     private Set<Attribute> attributes;
     @OneToMany(mappedBy = "owner")
@@ -48,12 +48,10 @@ public class DatasetTable implements AttributeOwner {
     public DatasetTable(Integer id) {
         this.id = id;
     }
-    
-    
 
     @Override
     public AttributeOwnerType getAttributeOwnerType() {
-        return new AttributeOwnerType(id,AttributeOwnerType.Type.T);
+        return new AttributeOwnerType(id, AttributeOwnerType.Type.T);
     }
 
     public Integer getId() {
@@ -168,7 +166,6 @@ public class DatasetTable implements AttributeOwner {
         this.dataElements = dataElements;
     }
 
-
     public Set<Attribute> getAttributes() {
         return attributes;
     }
@@ -185,6 +182,13 @@ public class DatasetTable implements AttributeOwner {
         this.attributesValues = attributesValues;
     }
 
+    public Integer getPosition() {
+        return position;
+    }
+
+    public void setPosition(Integer position) {
+        this.position = position;
+    }
 
     @Override
     public boolean equals(Object obj) {

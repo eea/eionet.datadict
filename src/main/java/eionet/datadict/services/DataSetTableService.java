@@ -2,7 +2,6 @@ package eionet.datadict.services;
 
 import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.errors.XmlExportException;
-import eionet.datadict.model.DatasetTable;
 import org.w3c.dom.Document;
 
 /**
