@@ -138,7 +138,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
         complexType.appendChild(sequence);
         Element rowElement = elMaker.createElement(DataDictXMLConstants.ELEMENT);
         rowElement.setAttribute(DataDictXMLConstants.NAME, DataDictXMLConstants.ROW);
-        rowElement.setAttribute(DataDictXMLConstants.MIN_OCCURS, "1");
+        rowElement.setAttribute(DataDictXMLConstants.MIN_OCCURS, "0");
         rowElement.setAttribute(DataDictXMLConstants.MAX_OCCURS, "unbounded");
         sequence.appendChild(rowElement);
         Element rowComplexType = elMaker.createElement(DataDictXMLConstants.COMPLEX_TYPE);
@@ -209,9 +209,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                 }
             }
             Element dataElementSimpleType = elMaker.createElement(DataDictXMLConstants.SIMPLE_TYPE);
-            xmlElement.appendChild(dataElementSimpleType);
             Element dataElementRestriction = elMaker.createElement(DataDictXMLConstants.RESTRICTION);
-            dataElementSimpleType.appendChild(dataElementRestriction);
             if (Datatype.equals("decimal")) {
                 dataElementRestriction.setAttribute(DataDictXMLConstants.BASE, DataDictXMLConstants.XS_PREFIX + ":" + Datatype);
                 if (!MaxSize.equals("")) {
@@ -229,6 +227,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                     maxInclusiveElement.setAttribute("value", MaxInclusiveValue);
                     dataElementRestriction.appendChild(maxInclusiveElement);
                 }
+                dataElementSimpleType.appendChild(dataElementRestriction);
             }
             if (Datatype.equals("integer") && !MaxSize.equals("")) {
                 dataElementRestriction.setAttribute(DataDictXMLConstants.BASE, DataDictXMLConstants.XS_PREFIX + ":" + Datatype);
@@ -245,6 +244,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                     maxInclusiveElement.setAttribute("value", MaxInclusiveValue);
                     dataElementRestriction.appendChild(maxInclusiveElement);
                 }
+                dataElementSimpleType.appendChild(dataElementRestriction);
             }
             if (Datatype.equals("string")) {
                 dataElementRestriction.setAttribute(DataDictXMLConstants.BASE, DataDictXMLConstants.XS_PREFIX + ":" + Datatype);
@@ -259,16 +259,23 @@ public class DataSetTableServiceImpl implements DataSetTableService {
 
                     dataElementRestriction.appendChild(maxLengthElement);
                 }
+                dataElementSimpleType.appendChild(dataElementRestriction);
             }
             if (Datatype.equals("reference")) {
                 //If datatype of attribute is reference, it means it has a vocabulary relation
                 for (VocabularyConcept vocConcept : vocabularyConcepts) {
                     Element enumerationElement = elMaker.createElement("enumeration");
                     enumerationElement.setAttribute("value", vocConcept.getIdentifier());
-                    dataElementRestriction.setAttribute(DataDictXMLConstants.BASE, DataDictXMLConstants.XS_PREFIX + ":" + "String");
+                    dataElementRestriction.setAttribute(DataDictXMLConstants.BASE, DataDictXMLConstants.XS_PREFIX + ":" + "string");
                     dataElementRestriction.appendChild(enumerationElement);
                 }
+            dataElementSimpleType.appendChild(dataElementRestriction);
             }
+          //Determine if simpleType is Empty before appending it
+           if(dataElementSimpleType.hasAttributes() || dataElementSimpleType.hasChildNodes()){
+          xmlElement.appendChild(dataElementSimpleType);
+           }
+
         }
 
     }
