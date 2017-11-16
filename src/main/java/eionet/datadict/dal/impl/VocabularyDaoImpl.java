@@ -80,7 +80,7 @@ public class VocabularyDaoImpl extends JdbcDaoBase implements VocabularyDao {
     
     @Override
     public List<VocabularyConcept> getVocabularyConcepts(int vocabularyId, List<StandardGenericStatus> allowedStatuses) {
-        String sql = "SELECT IDENTIFIER, LABEL, STATUS FROM VOCABULARY_CONCEPT WHERE VOCABULARY_ID = :vocabularyId  AND (";
+        String sql = "SELECT IDENTIFIER, LABEL, NOTATION, STATUS FROM VOCABULARY_CONCEPT WHERE VOCABULARY_ID = :vocabularyId  AND (";
         Map paramMap = new HashMap<String, Object>();
         paramMap.put("vocabularyId", vocabularyId);
         int statusCounter = 0;
@@ -103,6 +103,7 @@ public class VocabularyDaoImpl extends JdbcDaoBase implements VocabularyDao {
             VocabularyConcept concept = new VocabularyConcept();
             concept.setIdentifier(rs.getString("IDENTIFIER"));
             concept.setLabel(rs.getString("LABEL"));
+            concept.setNotation(rs.getString("NOTATION"));
             concept.setStatus(rs.getInt("STATUS"));
             return concept;
         }

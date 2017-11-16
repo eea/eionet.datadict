@@ -265,7 +265,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                 //If datatype of attribute is reference, it means it has a vocabulary relation
                 for (VocabularyConcept vocConcept : vocabularyConcepts) {
                     Element enumerationElement = elMaker.createElement("enumeration");
-                    enumerationElement.setAttribute("value", vocConcept.getIdentifier());
+                    enumerationElement.setAttribute("value", vocConcept.getNotation());
                     dataElementRestriction.setAttribute(DataDictXMLConstants.BASE, DataDictXMLConstants.XS_PREFIX + ":" + "string");
                     dataElementRestriction.appendChild(enumerationElement);
                 }

@@ -1,4 +1,4 @@
-package eionet.datadict.web;
+    package eionet.datadict.web;
 
 import eionet.datadict.errors.BadRequestException;
 import eionet.datadict.errors.ResourceNotFoundException;

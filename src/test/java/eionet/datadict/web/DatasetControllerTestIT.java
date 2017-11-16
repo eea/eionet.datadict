@@ -93,10 +93,10 @@ public class DatasetControllerTestIT {
         mockMvc.perform(request).andDo(print());
         assertEquals(MediaType.APPLICATION_XML.toString(), mockMvc.perform(request).andReturn().getResponse().getContentType());
         assertEquals("attachment;filename=schema-tbl-6661.xsd", mockMvc.perform(request).andReturn().getResponse().getHeader("Content-Disposition"));
-        String xmlResult = mockMvc.perform(request).andReturn().getResponse().getContentAsString();
+        String actualXMLResult = mockMvc.perform(request).andReturn().getResponse().getContentAsString();
         ClassLoader classLoader = getClass().getClassLoader();
         String expectedXMLResultString = IOUtils.toString(classLoader.getResourceAsStream("datasetTableXMLSchemaTestIT.xsd"));
-        Diff diff = new Diff(expectedXMLResultString, xmlResult);
+        Diff diff = new Diff(expectedXMLResultString, actualXMLResult);
         assertTrue(diff.similar());
     }
 
