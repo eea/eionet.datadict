@@ -162,7 +162,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
 
     private void setXSDataElementsToTableXmlSchema(Document doc, NameTypeElementMaker elMaker, Element schemaRoot, List<DataElement> datasetTableElementsList, List<AttributeValue> dataSetAttributesValues) throws ResourceNotFoundException, EmptyParameterException {
         for (DataElement dataElement : datasetTableElementsList) {
-            Element xmlElement = elMaker.createElement(DataDictXMLConstants.ELEMENT, dataElement.getIdentifier());
+          //  Element xmlElement = elMaker.createElement(DataDictXMLConstants.ELEMENT, dataElement.getIdentifier());
             String MinSize = "";
             String MaxSize = "";
             String Datatype = "";
@@ -172,9 +172,9 @@ public class DataSetTableServiceImpl implements DataSetTableService {
             if (dataElement.getVocabularyId() != null) {
                 vocabularyConcepts = this.vocabularyDataService.getVocabularyConcepts(dataElement.getVocabularyId(), StandardGenericStatus.VALID);
             }
-            schemaRoot.appendChild(xmlElement);
+           // schemaRoot.appendChild(xmlElement);
             Element elemAnnotation = elMaker.createElement(DataDictXMLConstants.ANNOTATION);
-            xmlElement.appendChild(elemAnnotation);
+           // xmlElement.appendChild(elemAnnotation);
             Element elemDocumentation = elMaker.createElement(DataDictXMLConstants.DOCUMENTATION);
             elemDocumentation.setAttribute(XMLConstants.XML_NS_PREFIX + ":" + DataDictXMLConstants.LANGUAGE_PREFIX, DataDictXMLConstants.DEFAULT_XML_LANGUAGE);
             elemAnnotation.appendChild(elemDocumentation);
@@ -208,6 +208,13 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                     elemDocumentation.appendChild(attributeElement);
                 }
             }
+             Element xmlElement = elMaker.createElement(DataDictXMLConstants.ELEMENT, dataElement.getIdentifier(),Datatype,null);
+             if(Datatype!=""){
+             xmlElement.setAttribute(XMLConstants.XML_NS_PREFIX + ":"+DataDictXMLConstants.TYPE, Datatype);
+             }
+            schemaRoot.appendChild(xmlElement);
+            xmlElement.appendChild(elemAnnotation);
+
             Element dataElementSimpleType = elMaker.createElement(DataDictXMLConstants.SIMPLE_TYPE);
             Element dataElementRestriction = elMaker.createElement(DataDictXMLConstants.RESTRICTION);
             if (Datatype.equals("decimal")) {
