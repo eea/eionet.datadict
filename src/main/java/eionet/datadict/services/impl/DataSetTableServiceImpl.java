@@ -210,7 +210,8 @@ public class DataSetTableServiceImpl implements DataSetTableService {
             }
              Element xmlElement = elMaker.createElement(DataDictXMLConstants.ELEMENT, dataElement.getIdentifier(),Datatype,null);
              if(Datatype!=""){
-             xmlElement.setAttribute(XMLConstants.XML_NS_PREFIX + ":"+DataDictXMLConstants.TYPE, Datatype);
+                 //set type attibute
+                 xmlElement.setAttribute(DataDictXMLConstants.TYPE, DataDictXMLConstants.XS_PREFIX + ":"+ Datatype);
              }
             schemaRoot.appendChild(xmlElement);
             xmlElement.appendChild(elemAnnotation);
