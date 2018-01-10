@@ -117,7 +117,7 @@ public class DataSetServiceImpl implements DataSetService {
             schemaRoot.setAttribute(XMLConstants.XMLNS_ATTRIBUTE + ":" + DataDictXMLConstants.DD_PREFIX + dsTable.getCorrespondingNS().getId(), DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dsTable.getCorrespondingNS().getId());
             Element importElement = doc.createElement(DataDictXMLConstants.XS_PREFIX + ":" + DataDictXMLConstants.IMPORT);
             importElement.setAttribute(DataDictXMLConstants.NAMESPACE, DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dsTable.getCorrespondingNS().getId());
-            importElement.setAttribute(DataDictXMLConstants.SCHEMA_LOCATION, DataDictXMLConstants.TABLE_SCHEMA_LOCATION_PARTIAL_FILE_NAME + dsTable.getId() + DataDictXMLConstants.XSD_FILE_EXTENSION);
+            importElement.setAttribute(DataDictXMLConstants.SCHEMA_LOCATION, DataDictXMLConstants.APP_CONTEXT + "/" + DataDictXMLConstants.TABLE_SCHEMA_LOCATION_PARTIAL_FILE_NAME + dsTable.getId() + DataDictXMLConstants.XSD_FILE_EXTENSION);
             schemaRoot.appendChild(importElement);
         }
     }
