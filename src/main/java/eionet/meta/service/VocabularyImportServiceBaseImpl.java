@@ -102,7 +102,7 @@ public abstract class VocabularyImportServiceBaseImpl implements IVocabularyImpo
      *
      * @param vocabularyId                        vocabulary id.
      * @param vocabularyConceptsToUpdate          concepts of vocabulary to be updated.
-     * @param vocabularyConceptsToUpdate          concepts of vocabulary to be deleted.
+     * @param vocabularyConceptsToDelete          concepts of vocabulary to be deleted.
      * @param newBoundElements                    newly bound elements.
      * @param elementsRelatedToNotCreatedConcepts data elements which are related to newly created concepts.
      * @throws ServiceException when an error occurs.
