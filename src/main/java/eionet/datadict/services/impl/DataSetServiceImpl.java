@@ -91,7 +91,7 @@ public class DataSetServiceImpl implements DataSetService {
             schemaRoot.setAttribute("attributeFormDefault", "unqualified");
             schemaRoot.setAttribute(XMLConstants.XMLNS_ATTRIBUTE + ":" + DataDictXMLConstants.DD_PREFIX + dataset.getCorrespondingNS().getId(), DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dataset.getCorrespondingNS().getId());
 
-            this.setXSImportStatementsToDataSetXmlSchema(doc, dsTables, schemaRoot);
+            this.setXSImportStatementsToDataSetXmlSchema(doc, dsTables, schemaRoot,id);
 
             Element rootDataSetelement = doc.createElement(DataDictXMLConstants.XS_PREFIX + ":" + DataDictXMLConstants.ELEMENT);
             rootDataSetelement.setAttribute(DataDictXMLConstants.NAME, dataset.getIdentifier());
@@ -112,12 +112,12 @@ public class DataSetServiceImpl implements DataSetService {
         }
     }
 
-    private void setXSImportStatementsToDataSetXmlSchema(Document doc, List<DatasetTable> dsTables, Element schemaRoot) {
+    private void setXSImportStatementsToDataSetXmlSchema(Document doc, List<DatasetTable> dsTables, Element schemaRoot,int datasetId) {
         for (DatasetTable dsTable : dsTables) {
             schemaRoot.setAttribute(XMLConstants.XMLNS_ATTRIBUTE + ":" + DataDictXMLConstants.DD_PREFIX + dsTable.getCorrespondingNS().getId(), DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dsTable.getCorrespondingNS().getId());
             Element importElement = doc.createElement(DataDictXMLConstants.XS_PREFIX + ":" + DataDictXMLConstants.IMPORT);
             importElement.setAttribute(DataDictXMLConstants.NAMESPACE, DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dsTable.getCorrespondingNS().getId());
-            importElement.setAttribute(DataDictXMLConstants.SCHEMA_LOCATION, DataDictXMLConstants.APP_CONTEXT + "/" + DataDictXMLConstants.TABLE_SCHEMA_LOCATION_PARTIAL_FILE_NAME + dsTable.getId() + DataDictXMLConstants.XSD_FILE_EXTENSION);
+            importElement.setAttribute(DataDictXMLConstants.SCHEMA_LOCATION, DataDictXMLConstants.APP_CONTEXT + "/"  + DataDictXMLConstants.SCHEMAS_API_V2_PREFIX + "/" +DataDictXMLConstants.DATASET + "/" + datasetId+"/"+ DataDictXMLConstants.TABLE_SCHEMA_LOCATION_PARTIAL_FILE_NAME + dsTable.getId() + DataDictXMLConstants.XSD_FILE_EXTENSION);
             schemaRoot.appendChild(importElement);
         }
     }

@@ -251,6 +251,24 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                 }
                 dataElementSimpleType.appendChild(dataElementRestriction);
             }
+             if (Datatype.equals("float") && !MaxSize.equals("")) {
+                dataElementRestriction.setAttribute(DataDictXMLConstants.BASE, DataDictXMLConstants.XS_PREFIX + ":" + Datatype);
+                Element totalDigitsElement = elMaker.createElement("totalDigits");
+                totalDigitsElement.setAttribute("value", MaxSize);
+                dataElementRestriction.appendChild(totalDigitsElement);
+                if (!MinInclusiveValue.equals("")) {
+                    Element minInclusiveElement = elMaker.createElement("minInclusive");
+                    minInclusiveElement.setAttribute("value", MinInclusiveValue);
+                    dataElementRestriction.appendChild(minInclusiveElement);
+                }
+                if (!MaxInclusiveValue.equals("")) {
+                    Element maxInclusiveElement = elMaker.createElement("maxInclusive");
+                    maxInclusiveElement.setAttribute("value", MaxInclusiveValue);
+                    dataElementRestriction.appendChild(maxInclusiveElement);
+                }
+                dataElementSimpleType.appendChild(dataElementRestriction);
+            }
+            
             if (Datatype.equals("string")) {
                 dataElementRestriction.setAttribute(DataDictXMLConstants.BASE, DataDictXMLConstants.XS_PREFIX + ":" + Datatype);
                 if (!MaxSize.equals("")) {
