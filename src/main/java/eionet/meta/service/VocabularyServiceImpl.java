@@ -759,11 +759,14 @@ public class VocabularyServiceImpl implements IVocabularyService {
 
         if (!referenceDataElementIds.isEmpty()) {
             Map<Integer, Collection<Integer>> inverseElementIdsToConceptIds = new HashMap<Integer, Collection<Integer>>();
+            Map<Integer, Integer> elementIdToInverseElementId = new HashMap<Integer, Integer>();
 
             // find inverse data elements
             for (Iterator<Integer> it = referenceDataElementIds.iterator(); it.hasNext();) {
-                int inverseElementId = dataElementDAO.getInverseElementID(it.next());
+                int elementId = it.next();
+                int inverseElementId = dataElementDAO.getInverseElementID(elementId);
                 if (inverseElementId > 0) {
+                    elementIdToInverseElementId.put(elementId, inverseElementId);
                     inverseElementIdsToConceptIds.put(inverseElementId, new ArrayList<Integer>());
                 }
             }
@@ -772,15 +775,16 @@ public class VocabularyServiceImpl implements IVocabularyService {
                 for (VocabularyConcept concept : concepts) {
                     List<List<DataElement>> elementAttributes = concept.getElementAttributes();
                     for (List<DataElement> elementAttribute : elementAttributes) {
-                        if (inverseElementIdsToConceptIds.containsKey(elementAttribute.get(0).getId())) {
-                            inverseElementIdsToConceptIds.get(elementAttribute.get(0).getId()).add(concept.getId());
+                        int elementId = elementAttribute.get(0).getId();
+                        if (elementIdToInverseElementId.containsKey(elementId)) {
+                            int inverseElementId = elementIdToInverseElementId.get(elementId);
+                            inverseElementIdsToConceptIds.get(inverseElementId).add(concept.getId());
                         }
                     }
                 }
 
-                // delete relations for inverse data elements 
-                for (Iterator<Integer> it = inverseElementIdsToConceptIds.keySet().iterator(); it.hasNext();) {
-                    Integer inverseElementId = it.next();
+                // delete relations for inverse data elements
+                for (Integer inverseElementId : inverseElementIdsToConceptIds.keySet()) {
                     dataElementDAO.deleteRelatedConcepts(inverseElementId, inverseElementIdsToConceptIds.get(inverseElementId));
                 }
             }
