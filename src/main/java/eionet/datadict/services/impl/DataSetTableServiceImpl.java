@@ -168,6 +168,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
             String Datatype = "";
             String MinInclusiveValue = "";
             String MaxInclusiveValue = "";
+            String DecimalPrecision = "";
             List<VocabularyConcept> vocabularyConcepts = new LinkedList<VocabularyConcept>();
             if (dataElement.getVocabularyId() != null) {
                 vocabularyConcepts = this.vocabularyDataService.getVocabularyConcepts(dataElement.getVocabularyId(), StandardGenericStatus.VALID);
@@ -202,7 +203,11 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                     MaxInclusiveValue = attributeValue.getValue();
                     continue;
                 }
-                if (attribute != null && attribute.getShortName() != null && !attribute.getShortName().equals("Keyword") && !attribute.getShortName().equals("obligation") && attribute.getNamespace() != null && attribute.getNamespace().getShortName() != null) {
+                if (attribute.getShortName().equals("DecimalPrecision")) {
+                    DecimalPrecision = attributeValue.getValue();
+                    continue;
+                }
+                if (attribute != null && attribute.getShortName() != null && !attribute.getShortName().equals("Keyword") && !attribute.getShortName().equals("obligation") && !attribute.getShortName().equals("DecimalPrecision") && attribute.getNamespace() != null && attribute.getNamespace().getShortName() != null) {
                     Element attributeElement = elMaker.createElement(attribute.getShortName().replace(" ", ""), null, attribute.getNamespace().getShortName().replace("_", ""));
                     attributeElement.appendChild(doc.createTextNode(attributeValue.getValue()));
                     elemDocumentation.appendChild(attributeElement);
@@ -211,11 +216,11 @@ public class DataSetTableServiceImpl implements DataSetTableService {
 
             Element dataElementSimpleType = elMaker.createElement(DataDictXMLConstants.SIMPLE_TYPE);
             Element dataElementRestriction = elMaker.createElement(DataDictXMLConstants.RESTRICTION);
-            if (Datatype.equals("boolean")) {
+            if (Datatype.equalsIgnoreCase("boolean")) {
                 dataElementRestriction.setAttribute(DataDictXMLConstants.BASE, DataDictXMLConstants.XS_PREFIX + ":" + Datatype);
                 dataElementSimpleType.appendChild(dataElementRestriction);
             }
-            if (Datatype.equals("decimal")) {
+            if (Datatype.equalsIgnoreCase("decimal")) {
                 dataElementRestriction.setAttribute(DataDictXMLConstants.BASE, DataDictXMLConstants.XS_PREFIX + ":" + Datatype);
                 if (!MaxSize.equals("")) {
                     Element totalDigitsElement = elMaker.createElement("totalDigits");
@@ -232,9 +237,14 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                     maxInclusiveElement.setAttribute("value", MaxInclusiveValue);
                     dataElementRestriction.appendChild(maxInclusiveElement);
                 }
+                if (!DecimalPrecision.equals("")) {
+                    Element fractionDigitsElement = elMaker.createElement("fractionDigits");
+                    fractionDigitsElement.setAttribute("value", DecimalPrecision);
+                    dataElementRestriction.appendChild(fractionDigitsElement);
+                }
                 dataElementSimpleType.appendChild(dataElementRestriction);
             }
-            if (Datatype.equals("integer") && !MaxSize.equals("")) {
+            if (Datatype.equalsIgnoreCase("integer") && !MaxSize.equals("")) {
                 dataElementRestriction.setAttribute(DataDictXMLConstants.BASE, DataDictXMLConstants.XS_PREFIX + ":" + Datatype);
                 Element totalDigitsElement = elMaker.createElement("totalDigits");
                 totalDigitsElement.setAttribute("value", MaxSize);
@@ -251,11 +261,8 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                 }
                 dataElementSimpleType.appendChild(dataElementRestriction);
             }
-             if (Datatype.equals("float") && !MaxSize.equals("")) {
+             if (Datatype.equalsIgnoreCase("float")) {
                 dataElementRestriction.setAttribute(DataDictXMLConstants.BASE, DataDictXMLConstants.XS_PREFIX + ":" + Datatype);
-                Element totalDigitsElement = elMaker.createElement("totalDigits");
-                totalDigitsElement.setAttribute("value", MaxSize);
-                dataElementRestriction.appendChild(totalDigitsElement);
                 if (!MinInclusiveValue.equals("")) {
                     Element minInclusiveElement = elMaker.createElement("minInclusive");
                     minInclusiveElement.setAttribute("value", MinInclusiveValue);
@@ -268,8 +275,13 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                 }
                 dataElementSimpleType.appendChild(dataElementRestriction);
             }
+             if (Datatype.equalsIgnoreCase("Date")) {
+                dataElementRestriction.setAttribute(DataDictXMLConstants.BASE, DataDictXMLConstants.XS_PREFIX + ":" + Datatype);
+                dataElementSimpleType.appendChild(dataElementRestriction);
+            }
+             
             
-            if (Datatype.equals("string")) {
+            if (Datatype.equalsIgnoreCase("string")) {
                 dataElementRestriction.setAttribute(DataDictXMLConstants.BASE, DataDictXMLConstants.XS_PREFIX + ":" + Datatype);
                 if (!MaxSize.equals("")) {
                     Element minLengthElement = elMaker.createElement("minLength");
@@ -284,7 +296,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                 }
                 dataElementSimpleType.appendChild(dataElementRestriction);
             }
-            if (Datatype.equals("reference")) {
+            if (Datatype.equalsIgnoreCase("reference")) {
                 //If datatype of attribute is reference, it means it has a vocabulary relation
                 for (VocabularyConcept vocConcept : vocabularyConcepts) {
                     Element enumerationElement = elMaker.createElement("enumeration");
