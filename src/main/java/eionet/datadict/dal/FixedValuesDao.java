@@ -7,4 +7,5 @@ public interface FixedValuesDao {
 
     List<FixedValue> getValueListCodesOfDataElementsInTable(int tableId);
     
+    List<FixedValue> getFixedValues(int DataElementId);
 }

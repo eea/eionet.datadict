@@ -1,6 +1,7 @@
 package eionet.datadict.services.impl;
 
 import eionet.datadict.commons.DataDictXMLConstants;
+import eionet.datadict.dal.FixedValuesDao;
 import eionet.datadict.errors.EmptyParameterException;
 import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.errors.XmlExportException;
@@ -8,6 +9,7 @@ import eionet.datadict.model.Attribute;
 import eionet.datadict.model.AttributeValue;
 import eionet.datadict.model.DataElement;
 import eionet.datadict.model.DatasetTable;
+import eionet.datadict.model.FixedValue;
 import eionet.datadict.model.Namespace;
 import eionet.datadict.services.DataSetTableService;
 import eionet.datadict.services.data.AttributeDataService;
@@ -43,15 +45,18 @@ public class DataSetTableServiceImpl implements DataSetTableService {
     private final DataElementDataService dataElementDataService;
     private final AttributeValueDataService attributeValueDataService;
     private final VocabularyDataService vocabularyDataService;
+    private final FixedValuesDao fixedValuesDao;
 
     @Autowired
-    public DataSetTableServiceImpl(AttributeDataService attributeDataService, DatasetTableDataService datasetTableDataService, DataElementDataService dataElementDataService, AttributeValueDataService attributeValueDataService, VocabularyDataService vocabularyDataService) {
+    public DataSetTableServiceImpl(AttributeDataService attributeDataService, DatasetTableDataService datasetTableDataService, DataElementDataService dataElementDataService, AttributeValueDataService attributeValueDataService, VocabularyDataService vocabularyDataService, FixedValuesDao fixedValuesDao) {
         this.attributeDataService = attributeDataService;
         this.datasetTableDataService = datasetTableDataService;
         this.dataElementDataService = dataElementDataService;
         this.attributeValueDataService = attributeValueDataService;
         this.vocabularyDataService = vocabularyDataService;
+        this.fixedValuesDao = fixedValuesDao;
     }
+
 
     @Override
     public Document getDataSetTableXMLSchema(int id) throws XmlExportException, ResourceNotFoundException {
@@ -180,6 +185,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
             elemDocumentation.setAttribute(XMLConstants.XML_NS_PREFIX + ":" + DataDictXMLConstants.LANGUAGE_PREFIX, DataDictXMLConstants.DEFAULT_XML_LANGUAGE);
             elemAnnotation.appendChild(elemDocumentation);
             List<AttributeValue> attributeValues = this.attributeValueDataService.getAllByDataElementId(dataElement.getId());
+            List<FixedValue> fixedValues = this.fixedValuesDao.getFixedValues(dataElement.getId());
             attributeValues.addAll(dataSetAttributesValues);
             for (AttributeValue attributeValue : attributeValues) {
                 Attribute attribute = this.attributeDataService.getAttribute(attributeValue.getAttributeId());
@@ -216,6 +222,13 @@ public class DataSetTableServiceImpl implements DataSetTableService {
 
             Element dataElementSimpleType = elMaker.createElement(DataDictXMLConstants.SIMPLE_TYPE);
             Element dataElementRestriction = elMaker.createElement(DataDictXMLConstants.RESTRICTION);
+            if (fixedValues!=null && !fixedValues.isEmpty()) {
+                for (FixedValue fixedValue : fixedValues) {
+                    Element enumerationElement = elMaker.createElement("enumeration");
+                    enumerationElement.setAttribute("value", fixedValue.getValue());
+                    dataElementRestriction.appendChild(enumerationElement);
+                }
+            }
             if (Datatype.equalsIgnoreCase("boolean")) {
                 dataElementRestriction.setAttribute(DataDictXMLConstants.BASE, DataDictXMLConstants.XS_PREFIX + ":" + Datatype);
                 dataElementSimpleType.appendChild(dataElementRestriction);

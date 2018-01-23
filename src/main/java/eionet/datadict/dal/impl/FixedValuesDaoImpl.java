@@ -5,6 +5,7 @@ import eionet.datadict.model.DataElement;
 import eionet.datadict.model.DataElementWithFixedValues;
 import eionet.datadict.model.DataElementWithQuantitativeValues;
 import eionet.datadict.model.FixedValue;
+import eionet.datadict.model.FixedValuesOwner;
 import eionet.datadict.model.FixedValuesOwnerType;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -43,6 +44,29 @@ public class FixedValuesDaoImpl extends JdbcDaoBase implements FixedValuesDao {
             return null;
         }
 
+    }
+
+    @Override
+    public List<FixedValue> getFixedValues(int dataElementId) {
+          String sql = "select * from FXV where OWNER_ID=:ownerId and OWNER_TYPE=:ownerType order by FXV_ID";
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("ownerId", dataElementId);
+        params.put("ownerType", "elem");
+
+        List<FixedValue> result = getNamedParameterJdbcTemplate().query(sql, params, new RowMapper<FixedValue>() {
+            @Override
+            public FixedValue mapRow(ResultSet rs, int rowNum) throws SQLException {
+                FixedValue fv = new FixedValue();
+                fv.setId(rs.getInt("FXV_ID"));
+                fv.setValue(rs.getString("VALUE"));
+                fv.setDefinition(rs.getString("DEFINITION"));
+                fv.setShortDescription(rs.getString("SHORT_DESC"));
+                return fv;
+            }
+        });
+
+        return result;
     }
 
     public static class FixedValueRowMapper implements RowMapper {
