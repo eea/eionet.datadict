@@ -222,13 +222,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
 
             Element dataElementSimpleType = elMaker.createElement(DataDictXMLConstants.SIMPLE_TYPE);
             Element dataElementRestriction = elMaker.createElement(DataDictXMLConstants.RESTRICTION);
-            if (fixedValues!=null && !fixedValues.isEmpty()) {
-                for (FixedValue fixedValue : fixedValues) {
-                    Element enumerationElement = elMaker.createElement("enumeration");
-                    enumerationElement.setAttribute("value", fixedValue.getValue());
-                    dataElementRestriction.appendChild(enumerationElement);
-                }
-            }
+           
             if (Datatype.equalsIgnoreCase("boolean")) {
                 dataElementRestriction.setAttribute(DataDictXMLConstants.BASE, DataDictXMLConstants.XS_PREFIX + ":" + Datatype);
                 dataElementSimpleType.appendChild(dataElementRestriction);
@@ -307,6 +301,13 @@ public class DataSetTableServiceImpl implements DataSetTableService {
 
                     dataElementRestriction.appendChild(maxLengthElement);
                 }
+                  if (fixedValues!=null && !fixedValues.isEmpty()) {
+                for (FixedValue fixedValue : fixedValues) {
+                    Element enumerationElement = elMaker.createElement("enumeration");
+                    enumerationElement.setAttribute("value", fixedValue.getValue());
+                    dataElementRestriction.appendChild(enumerationElement);
+                }
+            }
                 dataElementSimpleType.appendChild(dataElementRestriction);
             }
             if (Datatype.equalsIgnoreCase("reference")) {
@@ -317,6 +318,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                     dataElementRestriction.setAttribute(DataDictXMLConstants.BASE, DataDictXMLConstants.XS_PREFIX + ":" + "string");
                     dataElementRestriction.appendChild(enumerationElement);
                 }
+               
             dataElementSimpleType.appendChild(dataElementRestriction);
             }
           //Determine if simpleType is Empty before appending it
