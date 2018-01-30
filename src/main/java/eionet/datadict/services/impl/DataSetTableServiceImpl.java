@@ -57,7 +57,6 @@ public class DataSetTableServiceImpl implements DataSetTableService {
         this.fixedValuesDao = fixedValuesDao;
     }
 
-
     @Override
     public Document getDataSetTableXMLSchema(int id) throws XmlExportException, ResourceNotFoundException {
 
@@ -176,7 +175,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
             String DecimalPrecision = "";
             List<VocabularyConcept> vocabularyConcepts = new LinkedList<VocabularyConcept>();
             if (dataElement.getVocabularyId() != null) {
-                vocabularyConcepts = this.vocabularyDataService.getVocabularyConcepts(dataElement.getVocabularyId(), StandardGenericStatus.VALID);
+                vocabularyConcepts = this.vocabularyDataService.getVocabularyConcepts(dataElement.getVocabularyId(), StandardGenericStatus.ACCEPTED);
             }
             schemaRoot.appendChild(xmlElement);
             Element elemAnnotation = elMaker.createElement(DataDictXMLConstants.ANNOTATION);
@@ -222,7 +221,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
 
             Element dataElementSimpleType = elMaker.createElement(DataDictXMLConstants.SIMPLE_TYPE);
             Element dataElementRestriction = elMaker.createElement(DataDictXMLConstants.RESTRICTION);
-           
+
             if (Datatype.equalsIgnoreCase("boolean")) {
                 dataElementRestriction.setAttribute(DataDictXMLConstants.BASE, DataDictXMLConstants.XS_PREFIX + ":" + Datatype);
                 dataElementSimpleType.appendChild(dataElementRestriction);
@@ -268,7 +267,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                 }
                 dataElementSimpleType.appendChild(dataElementRestriction);
             }
-             if (Datatype.equalsIgnoreCase("float")) {
+            if (Datatype.equalsIgnoreCase("float")) {
                 dataElementRestriction.setAttribute(DataDictXMLConstants.BASE, DataDictXMLConstants.XS_PREFIX + ":" + Datatype);
                 if (!MinInclusiveValue.equals("")) {
                     Element minInclusiveElement = elMaker.createElement("minInclusive");
@@ -282,12 +281,11 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                 }
                 dataElementSimpleType.appendChild(dataElementRestriction);
             }
-             if (Datatype.equalsIgnoreCase("Date")) {
+            if (Datatype.equalsIgnoreCase("Date")) {
                 dataElementRestriction.setAttribute(DataDictXMLConstants.BASE, DataDictXMLConstants.XS_PREFIX + ":" + Datatype);
                 dataElementSimpleType.appendChild(dataElementRestriction);
             }
-             
-            
+
             if (Datatype.equalsIgnoreCase("string")) {
                 dataElementRestriction.setAttribute(DataDictXMLConstants.BASE, DataDictXMLConstants.XS_PREFIX + ":" + Datatype);
                 if (!MaxSize.equals("")) {
@@ -301,30 +299,36 @@ public class DataSetTableServiceImpl implements DataSetTableService {
 
                     dataElementRestriction.appendChild(maxLengthElement);
                 }
-                  if (fixedValues!=null && !fixedValues.isEmpty()) {
-                for (FixedValue fixedValue : fixedValues) {
-                    Element enumerationElement = elMaker.createElement("enumeration");
-                    enumerationElement.setAttribute("value", fixedValue.getValue());
-                    dataElementRestriction.appendChild(enumerationElement);
+                if (fixedValues != null && !fixedValues.isEmpty()) {
+                    for (FixedValue fixedValue : fixedValues) {
+                        Element enumerationElement = elMaker.createElement("enumeration");
+                        enumerationElement.setAttribute("value", fixedValue.getValue());
+                        dataElementRestriction.appendChild(enumerationElement);
+                    }
+                    for (VocabularyConcept vocConcept : vocabularyConcepts) {
+                        Element enumerationElement = elMaker.createElement("enumeration");
+                        enumerationElement.setAttribute("value", vocConcept.getNotation());
+                        dataElementRestriction.setAttribute(DataDictXMLConstants.BASE, DataDictXMLConstants.XS_PREFIX + ":" + "string");
+                        dataElementRestriction.appendChild(enumerationElement);
+                    }
+                    dataElementSimpleType.appendChild(dataElementRestriction);
                 }
             }
-                dataElementSimpleType.appendChild(dataElementRestriction);
-            }
             if (Datatype.equalsIgnoreCase("reference")) {
-                //If datatype of attribute is reference, it means it has a vocabulary relation
+                 //If datatype of attribute is reference, it means it has a vocabulary relation
                 for (VocabularyConcept vocConcept : vocabularyConcepts) {
                     Element enumerationElement = elMaker.createElement("enumeration");
                     enumerationElement.setAttribute("value", vocConcept.getNotation());
                     dataElementRestriction.setAttribute(DataDictXMLConstants.BASE, DataDictXMLConstants.XS_PREFIX + ":" + "string");
                     dataElementRestriction.appendChild(enumerationElement);
                 }
-               
-            dataElementSimpleType.appendChild(dataElementRestriction);
+
+                dataElementSimpleType.appendChild(dataElementRestriction);
             }
-          //Determine if simpleType is Empty before appending it
-           if(dataElementSimpleType.hasAttributes() || dataElementSimpleType.hasChildNodes()){
-          xmlElement.appendChild(dataElementSimpleType);
-           }
+            //Determine if simpleType is Empty before appending it
+            if (dataElementSimpleType.hasAttributes() || dataElementSimpleType.hasChildNodes()) {
+                xmlElement.appendChild(dataElementSimpleType);
+            }
 
         }
 
