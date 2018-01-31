@@ -300,16 +300,20 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                     dataElementRestriction.appendChild(maxLengthElement);
                 }
                 if (fixedValues != null && !fixedValues.isEmpty()) {
+                    if(!dataElement.getType().equals(DataElement.DataElementType.CH3)){
                     for (FixedValue fixedValue : fixedValues) {
                         Element enumerationElement = elMaker.createElement("enumeration");
                         enumerationElement.setAttribute("value", fixedValue.getValue());
                         dataElementRestriction.appendChild(enumerationElement);
                     }
+                    }
+                    else{
                     for (VocabularyConcept vocConcept : vocabularyConcepts) {
                         Element enumerationElement = elMaker.createElement("enumeration");
                         enumerationElement.setAttribute("value", vocConcept.getNotation());
                         dataElementRestriction.setAttribute(DataDictXMLConstants.BASE, DataDictXMLConstants.XS_PREFIX + ":" + "string");
                         dataElementRestriction.appendChild(enumerationElement);
+                    }
                     }
                     dataElementSimpleType.appendChild(dataElementRestriction);
                 }
