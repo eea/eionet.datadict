@@ -40,6 +40,9 @@ public abstract class Xls implements XlsIF {
     protected String cacheFileName = null;
 
     protected String fileName = "xls.xls";
+    
+    protected boolean newSchema = true;
+
 
     /*
      *
@@ -76,8 +79,12 @@ public abstract class Xls implements XlsIF {
         row = sheet.createRow(3);
         cell = row.createCell((short) 0);
         cell.setCellValue(schemaUrl + id);
+        if(newSchema){
         cell.setCellValue(datadictUrlBase + "/v2/dataset/"+searchEngine.getDatasetTable(id.replace("TBL","")).getDatasetID()+"/schema-tbl-"+id.replace("TBL","")+".xsd");
-
+        }
+        else{
+        cell.setCellValue(schemaUrl + id);
+        }
     }
 
     /*
@@ -119,9 +126,13 @@ public abstract class Xls implements XlsIF {
         // dataset schema url
         row = sheet.createRow(3);
         cell = row.createCell((short) 0);
-//        cell.setCellValue(schemaUrlBase + "DST" + dstID);
+        if(newSchema){
         cell.setCellValue(datadictUrlBase + "/v2/dataset/"+dstID+"/schema-dst-"+dstID+".xsd");
+        }
+        else{
+        cell.setCellValue(schemaUrlBase + "DST" + dstID);
         
+        }
         // New DST URL:
         // 
         // create the rows with the table schema urls
@@ -145,8 +156,13 @@ public abstract class Xls implements XlsIF {
             cell = row.createCell((short) 0);
             cell.setCellValue(idfier);
             cell = row.createCell((short) 1);
-         //   cell.setCellValue(schemaUrlBase + "TBL" + id);
+            if(newSchema){
+            
             cell.setCellValue(datadictUrlBase + "/v2/dataset/"+dstID+"/schema-tbl-"+id+".xsd");
+            }
+            else{
+            cell.setCellValue(schemaUrlBase + "TBL" + id);
+            }
         }
     }
 
@@ -184,5 +200,6 @@ public abstract class Xls implements XlsIF {
     public HSSFSheet getSheet(HSSFWorkbook workbook, String sheetName) {
         return workbook.getSheet(StringUtils.left(sheetName, MAX_SHEET_NAME_LENGTH));
     }
+
 
 }

@@ -900,7 +900,13 @@ else if (mode.equals("add"))
                                                     if (dispAll || dispXLS) { %>
                                                         <li>
                                                             <a rel="nofollow" href="<%=request.getContextPath()%>/GetXls?obj_type=dst&amp;obj_id=<%=ds_id%>" class="excel" onclick="return warnDatasetStatus('<%=regStatus%>', 'download')">
-                                                                Create an MS Excel template for this dataset
+                                                                Create an MS Excel template for this dataset using the new schema
+                                                            </a>
+                                                            <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=excel"></a>
+                                                        </li>
+                                                        <li>
+                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetXls?obj_type=dst&amp;obj_id=<%=ds_id%>&amp;new_schema=false" class="excel" onclick="return warnDatasetStatus('<%=regStatus%>', 'download')">
+                                                                Create an MS Excel template for this dataset using the old schema
                                                             </a>
                                                             <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=excel"></a>
                                                         </li>

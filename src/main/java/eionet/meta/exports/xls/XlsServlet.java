@@ -50,9 +50,16 @@ public class XlsServlet extends HttpServlet {
             }
 
             String action = req.getParameter("obj_act");
+            String  newSchemaParameter = req.getParameter("new_schema");
             boolean dropDownAction = !Util.isEmpty(action) && action.equals("dd"); // if no action sent or invalid action send
-                                                                                   // ignore it
-
+                                                                                 // ignore it
+            
+            boolean newSchema = true;                                                                     
+            if(!Util.isEmpty(newSchemaParameter)){
+              newSchema = Boolean.getBoolean(newSchemaParameter);
+             }
+                                                                                  
+                                                                                  
             // ServletContext ctx = getServletContext();
             String cachePath = Props.getProperty(PropsIF.DOC_PATH);
 
@@ -63,14 +70,17 @@ public class XlsServlet extends HttpServlet {
             os = res.getOutputStream();
 
             XlsIF xls = null;
+            
             if (type.equals("dst")) {
-                xls = new DstXls(searchEngine, os, dropDownAction);
+                xls = new DstXls(searchEngine, os, dropDownAction,newSchema);
+                
                 ((CachableIF) xls).setCachePath(cachePath);
+                
             } else {
-                xls = new TblXls(searchEngine, os, dropDownAction);
+                xls = new TblXls(searchEngine, os, dropDownAction,newSchema);
                 ((CachableIF) xls).setCachePath(cachePath);
             }
-
+            
             xls.create(id);
             res.setContentType("application/vnd.ms-excel");
             StringBuffer buf = new StringBuffer("attachment; filename=\"").append(xls.getName()).append("\"");

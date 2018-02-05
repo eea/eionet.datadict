@@ -25,6 +25,7 @@ public class DstXls extends TblXls {
 
     /** Default file name. */
     private static final String DEFAULT_FILE_NAME = "dataset.xls";
+    
 
     /** All tables in dataset. */
     private Vector<DsTable> tables = null;
@@ -63,6 +64,15 @@ public class DstXls extends TblXls {
         this.os = os;
         this.withDropDown = withDropDown;
     }
+    
+    public DstXls(DDSearchEngine searchEngine, OutputStream os, boolean withDropDown,boolean newSchema) {
+        this();
+        super.newSchema=newSchema;
+        this.searchEngine = searchEngine;
+        this.os = os;
+        this.withDropDown = withDropDown;
+    }
+    
 
     /**
      * Create empty sheet for table

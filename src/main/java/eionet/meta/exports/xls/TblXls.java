@@ -99,6 +99,13 @@ public class TblXls extends Xls implements CachableIF {
         this.withDropDown = withDropDown;
     }
 
+     public TblXls(DDSearchEngine searchEngine, OutputStream os, boolean withDropDown,boolean newSchema) {
+        this();
+        super.newSchema= newSchema;
+        this.searchEngine = searchEngine;
+        this.os = os;
+        this.withDropDown = withDropDown;
+    }
     /*
      * (non-Javadoc)
      *
