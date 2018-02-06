@@ -7,7 +7,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-@Table(name="DATASET")
+@Table(name = "DATASET")
 public class DataSet implements AttributeOwner {
 
     @Id
@@ -35,17 +35,25 @@ public class DataSet implements AttributeOwner {
     private Integer dispCreateLinks;
     private Integer checkedOutCopyId;
 
+    private Boolean allowExcelDownload;
+
+    private Boolean allowMSAccessDownload;
+
     public DataSet() {
         super();
+        this.allowMSAccessDownload = true;
+        this.allowExcelDownload = true;
     }
 
     public DataSet(Integer id) {
+        this.allowMSAccessDownload = true;
+        this.allowExcelDownload = true;
         this.id = id;
     }
 
     @Override
     public AttributeOwnerType getAttributeOwnerType() {
-        return new AttributeOwnerType(id,AttributeOwnerType.Type.DS);
+        return new AttributeOwnerType(id, AttributeOwnerType.Type.DS);
     }
 
     @Override
@@ -225,6 +233,22 @@ public class DataSet implements AttributeOwner {
     @Override
     public void setAttributes(Set<Attribute> attributes) {
         this.attributes = attributes;
+    }
+
+    public Boolean getAllowExcelDownload() {
+        return allowExcelDownload;
+    }
+
+    public void setAllowExcelDownload(Boolean allowExcelDownload) {
+        this.allowExcelDownload = allowExcelDownload;
+    }
+
+    public Boolean getAllowMSAccessDownload() {
+        return allowMSAccessDownload;
+    }
+
+    public void setAllowMSAccessDownload(Boolean allowMSAccessDownload) {
+        this.allowMSAccessDownload = allowMSAccessDownload;
     }
 
 }

@@ -884,7 +884,15 @@ else if (mode.equals("add"))
                                                             <a rel="nofollow" href="<%=request.getContextPath()%>/v2/dataset/<%=ds_id%>/schema-dst-<%=ds_id%>.xsd" class="xsd">
                                                                 Create an XML Schema for this dataset
                                                             </a>
-                                                        </li><%
+                                                        </li>
+                                                    <li>
+                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetSchema?id=DST<%=ds_id%>" class="xsd">
+                                                                Create an XML Schema for this dataset(using the old schema structure)
+                                                            </a>
+                                                        </li>
+                                                    
+                                                    
+                                                    <%
                                                     }
 
                                                     // XML Instance link
@@ -899,7 +907,7 @@ else if (mode.equals("add"))
                                                     // MS Excel link
                                                     if (dispAll || dispXLS) { %>
                                                         <li>
-                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetXls?obj_type=dst&amp;obj_id=<%=ds_id%>" class="excel" onclick="return warnDatasetStatus('<%=regStatus%>', 'download')">
+                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetXls?obj_type=dst&amp;obj_id=<%=ds_id%>&amp;new_schema=true" class="excel" onclick="return warnDatasetStatus('<%=regStatus%>', 'download')">
                                                                 Create an MS Excel template for this dataset using the new schema
                                                             </a>
                                                             <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=excel"></a>
@@ -921,15 +929,6 @@ else if (mode.equals("add"))
                                                         <%
                                                     }
 
-                                                    // OpenDocument spreadsheet link
-                                                    if (dispAll || dispODS) { %>
-                                                        <li>
-                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetOds?type=dst&amp;id=<%=ds_id%>" class="open-doc" onclick="return warnDatasetStatus('<%=regStatus%>', 'download')">
-                                                                Create an OpenDocument spreadsheet template for this dataset
-                                                            </a>
-                                                            <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=ods"></a>
-                                                        </li><%
-                                                    }
 
                                                     // MS Access link
                                                     if (dispAll || dispMDB) { %>

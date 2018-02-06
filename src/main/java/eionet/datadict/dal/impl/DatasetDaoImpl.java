@@ -59,6 +59,8 @@ public class DatasetDaoImpl extends JdbcDaoBase implements DatasetDao {
             dataset.setIdentifier(rs.getString("DATASET.IDENTIFIER"));
             dataset.setDispCreateLinks(rs.getInt("DATASET.DISP_CREATE_LINKS"));
             dataset.setRegStatus(DatasetRegStatus.fromString(rs.getString("DATASET.REG_STATUS")));
+            dataset.setAllowExcelDownload(rs.getBoolean("DATASET.ALLOW_EXCEL_DOWNLOAD"));
+            dataset.setAllowMSAccessDownload(rs.getBoolean("DATASET.ALLOW_MSACCESS_DOWNLOAD"));
             
             Integer checkedoutCopyId = rs.getInt("DATASET.CHECKEDOUT_COPY_ID");
             if (rs.wasNull()){

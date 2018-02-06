@@ -2763,4 +2763,20 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
         <dropPrimaryKey tableName="INFERENCE_RULE"/>
     </changeSet>
 
+  <changeSet author="vskiadas90" id="rev-200">
+        <comment>
+            Add a column in the DATASET table to be used by admins to decide whether to show or hide EXCEL template download for a dataset. Refs #92071.
+        </comment>
+        <addColumn tableName="DATASET">
+            <column name="ALLOW_EXCEL_DOWNLOAD" type="TINYINT(1)"/>
+        </addColumn>
+    </changeSet>
+   <changeSet author="vskiadas90" id="rev-201">
+        <comment>
+            Add a column in the DATASET table to be used by admins to decide whether to show or hide MS-access template download for a dataset. Refs #92071.
+        </comment>
+        <addColumn tableName="DATASET">
+            <column name="ALLOW_MSACCESS_DOWNLOAD" type="TINYINT(1)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

@@ -56,7 +56,7 @@ public class XlsServlet extends HttpServlet {
             
             boolean newSchema = true;                                                                     
             if(!Util.isEmpty(newSchemaParameter)){
-              newSchema = Boolean.getBoolean(newSchemaParameter);
+              newSchema = Boolean.parseBoolean(newSchemaParameter);
              }
                                                                                   
                                                                                   
