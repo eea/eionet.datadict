@@ -315,8 +315,9 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                         dataElementRestriction.appendChild(enumerationElement);
                     }
                     }
-                    dataElementSimpleType.appendChild(dataElementRestriction);
                 }
+                    dataElementSimpleType.appendChild(dataElementRestriction);
+
             }
             if (Datatype.equalsIgnoreCase("reference")) {
                  //If datatype of attribute is reference, it means it has a vocabulary relation

@@ -395,7 +395,7 @@
             // check out the dataset
             String copyID = verMan.checkOut(ds_id, "dst");
             if (!ds_id.equals(copyID)) {
-                // send to copy if created successfully, remove previous url (edit original) from history
+                // send to copy if created successfully, remove previous uAdminrl (edit original) from history
                 history.remove(history.getCurrentIndex());
                 response.sendRedirect(request.getContextPath() + "/datasets/" + copyID + "/?feedback=checkout");
             }
@@ -994,6 +994,28 @@ else if (mode.equals("add"))
                                     </div>
                                         <%
                                     }
+                                }
+                //Display Administrative Tools Options 
+                       if (mode.equals("view-disabled")) {
+
+                            
+                                        %>
+                                            <script type="text/javascript">
+                                                $(function() {
+                                                    applyAdminToolsToggle();
+                                                });
+                                            </script>
+                                            <div id="createBoxAdminTools">
+                                                <ul>
+                                                     <li>
+                                                         
+<input type="checkbox" name="incl_histver" id="incl_histver" value="true"  />
+                                                        </li>
+                                                    
+                                                </ul>
+                                    </div>
+                                        <%
+                                    
                                 }
                                 %>
 
