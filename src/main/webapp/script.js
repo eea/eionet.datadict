@@ -163,6 +163,75 @@ function applySearchToggle(searchFormId) {
     });
 }
 
+var DropDownSlidesWatcher = (function () {
+    var parentArrowIconClass = "li.expand";
+    var slide = {
+        id: null,
+        elementClass: null,
+        open: false
+    };
+    var isCurrentOpenSlide = function (slideId) {
+        if (slide.id === slideId && slide.open === true) {
+            return true;
+        }
+    }
+    var isCurrentSlideClosed = function (slideId) {
+        if (slide.id === slideId && slide.open === false) {
+            return true;
+        }
+    }
+    var isOtherSlideOpen = function (slideId) {
+        if (slide.id !== null && slide.id !== slideId) {
+            return true;
+        }
+    }
+    return {
+        getSlide: function () {
+            return slide;
+        },
+        /**
+         * 
+         * @argument elementClass is used in accordance with its parent Class "li.expand" in order to alter the arrow symbol direction if present.
+         */
+        slideInteract: function (slideId,elementClass) {
+            if (isCurrentOpenSlide(slideId)) {
+                jQuery(slideId).slideToggle("slow");
+                jQuery(elementClass).parent(parentArrowIconClass).toggleClass("active");
+                slide.open = false;
+                slide.id = null;
+                slide.elementClass = null;
+                return;
+            }
+            if (isCurrentSlideClosed(slideId)) {
+                jQuery(slideId).slideToggle("slow");
+                jQuery(elementClass).parent(parentArrowIconClass).toggleClass("active");
+                slide.elementClass = elementClass;
+                slide.open = true;
+                return;
+            }
+            if (isOtherSlideOpen(slideId)) {
+                jQuery(slide.id).slideToggle("slow");
+                jQuery(slide.elementClass).parent(parentArrowIconClass).toggleClass("active");
+                slide.id = slideId;
+                jQuery(slideId).slideToggle("slow");
+                slide.elementClass = elementClass;
+                jQuery(elementClass).parent(parentArrowIconClass).toggleClass("active");
+                slide.open = true;
+                return;
+            }
+            slide.id = slideId;
+            slide.open = true;
+            slide.elementClass = elementClass;
+            jQuery(slideId).slideToggle("slow");
+            jQuery(elementClass).parent("li.expand").toggleClass("active");
+
+        }
+    }
+
+})();
+
+
+
 function applyExportOptionsToggle() {
     var $dropOperations = jQuery("#drop-operations ul");
     if ($dropOperations.length) {
@@ -172,8 +241,22 @@ function applyExportOptionsToggle() {
     }
 
     jQuery("a#exportLink").click(function() {
-        jQuery("#createbox").slideToggle("slow");
-        jQuery(this).parent("li.expand").toggleClass("active");
+        DropDownSlidesWatcher.slideInteract("#createbox","a#exportLink");
+        return false;
+    });
+}
+
+
+function applyAdminToolsToggle() {
+    var $dropOperations = jQuery("#drop-operations ul");
+    if ($dropOperations.length) {
+        $dropOperations.append('<li class="expand"><a id="adminToolsLink" href="#">Admin Tools</a></li>');
+    } else {
+        jQuery("#form1").before('<div id="drop-operations"><ul><li class="expandTools"><a id="adminToolsLink" href="#">Admin Tools</a></li></ul></div>');
+    }
+
+    jQuery("a#adminToolsLink").click(function() {
+        DropDownSlidesWatcher.slideInteract("#createBoxAdminTools","a#adminToolsLink");
         return false;
     });
 }
@@ -259,3 +342,19 @@ function applyConceptDefinitionBalloon() {
         applySelectionStyle();
     });
 })(jQuery);
+
+ function closeAllActiveTabs(){
+     //   var activeTabs = document.getElementsByClassName("active");
+         var activeTabs = document.querySelector('.active') // Using a class instead, see note below.
+        activeTabs.classList.toggle('active');
+        var i;
+  /**      for (i = 0; i < activeTabs.length; i++) {
+            console.log(activeTabs[i]);
+            if(activeTabs[i]!=null){
+                activeTabs[i].classList.toggleClass("active");
+            }
+        }
+        **/
+    }
+
+ 

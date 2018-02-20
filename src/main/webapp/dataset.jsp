@@ -996,7 +996,7 @@ else if (mode.equals("add"))
                                     }
                                 }
                 //Display Administrative Tools Options 
-                       if (mode.equals("view-disabled")) {
+                       if (mode.equals("view")) {
 
                             
                                         %>
@@ -1008,10 +1008,13 @@ else if (mode.equals("add"))
                                             <div id="createBoxAdminTools">
                                                 <ul>
                                                      <li>
-                                                         
+                                                         Show the links for downloading Excel templates and XML schemas for this dataset.
 <input type="checkbox" name="incl_histver" id="incl_histver" value="true"  />
                                                         </li>
-                                                    
+                                                    <li>
+                                                         Show the link "Create advanced MS Access template" for this dataset.
+<input type="checkbox" name="incl_histver" id="incl_histver" value="true"  />
+                                                        </li>    
                                                 </ul>
                                     </div>
                                         <%
