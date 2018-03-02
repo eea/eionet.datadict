@@ -35,19 +35,19 @@ public class DataSet implements AttributeOwner {
     private Integer dispCreateLinks;
     private Integer checkedOutCopyId;
 
-    private Boolean allowExcelDownload;
+    private Boolean allowExcelXMLDownload;
 
     private Boolean allowMSAccessDownload;
 
     public DataSet() {
         super();
         this.allowMSAccessDownload = true;
-        this.allowExcelDownload = true;
+        this.allowExcelXMLDownload = true;
     }
 
     public DataSet(Integer id) {
         this.allowMSAccessDownload = true;
-        this.allowExcelDownload = true;
+        this.allowExcelXMLDownload = true;
         this.id = id;
     }
 
@@ -235,12 +235,12 @@ public class DataSet implements AttributeOwner {
         this.attributes = attributes;
     }
 
-    public Boolean getAllowExcelDownload() {
-        return allowExcelDownload;
+    public Boolean getAllowExcelXMLDownload() {
+        return allowExcelXMLDownload;
     }
 
-    public void setAllowExcelDownload(Boolean allowExcelDownload) {
-        this.allowExcelDownload = allowExcelDownload;
+    public void setAllowExcelXMLDownload(Boolean allowExcelXMLDownload) {
+        this.allowExcelXMLDownload = allowExcelXMLDownload;
     }
 
     public Boolean getAllowMSAccessDownload() {

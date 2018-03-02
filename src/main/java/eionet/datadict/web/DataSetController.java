@@ -5,9 +5,12 @@ import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.errors.XmlExportException;
 import eionet.datadict.services.DataSetService;
 import eionet.datadict.services.DataSetTableService;
+import eionet.meta.DDUser;
+import eionet.util.SecurityUtil;
 import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -22,7 +25,9 @@ import javax.xml.transform.stream.StreamResult;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -48,6 +53,7 @@ public class DataSetController {
     private static final String SCHEMA_DATASET_FILE_NAME_PREFIX = "schema-dst-";
     private static final String DATASET_INSTANCE_FILE_NAME = "dataset-instance";
 
+    
     @Autowired
     public DataSetController(DataSetService dataSetService, DataSetTableService dataSetTableService) {
         this.dataSetService = dataSetService;
@@ -161,6 +167,32 @@ public class DataSetController {
         outStream.close();
     }
 
+    @RequestMapping(value = "{id}/allowMsAccessDownload/{value}")
+    public ResponseEntity<?> allowMSAccessTemplateDownload(@PathVariable int id, @PathVariable boolean value, HttpServletRequest request) {
+
+        DDUser user = SecurityUtil.getUser(request);
+        if (user != null && user.hasPermission("/datasets", "u")) {
+            SecurityUtil.getUser(request).hasPermission("/datasets", "u");
+            this.dataSetService.setMSAccessTemplateDownloadLinkVisibility(id, value);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @RequestMapping(value = "{id}/allowExcelXmlDownload/{value}")
+    public ResponseEntity<?> allowExcelTemplatesAndXmlSchemasDownload(@PathVariable int id, @PathVariable boolean value, HttpServletRequest request) {
+        DDUser user = SecurityUtil.getUser(request);
+        if (user != null && user.hasPermission("/datasets", "u")) {
+            SecurityUtil.getUser(request).hasPermission("/datasets", "u");
+            this.dataSetService.setExcelXMLFileDownloadLinkVisibility(id, value);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    
     @ExceptionHandler(ResourceNotFoundException.class)
     public void HandleResourceNotFoundException(Exception exception, HttpServletRequest request, HttpServletResponse response) throws IOException {
         LOGGER.log(Level.ERROR, null, exception);

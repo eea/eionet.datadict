@@ -16,5 +16,8 @@ public interface DataSetService {
    Document getDataSetXMLInstance(int id) throws XmlExportException ,  ResourceNotFoundException;
    
    Document getDataSetXMLInstanceWithNS(int id) throws XmlExportException;
-    
+
+   void setMSAccessTemplateDownloadLinkVisibility(int id, boolean value);
+
+   void setExcelXMLFileDownloadLinkVisibility(int id, boolean value);
 }

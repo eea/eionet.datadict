@@ -1920,6 +1920,18 @@ public class DDSearchEngine {
                 ds.setDate(rs.getString("DATE"));
                 ds.setUser(rs.getString("USER"));
                 ds.setSuccessorId(rs.getString("SUCCESSOR"));
+                Boolean excelXmlDownloadValue = rs.getBoolean("ALLOW_EXCEL_DOWNLOAD");
+                if (rs.wasNull()) {
+                    ds.setAllowExcelXMLDownload(true);
+                } else {
+                    ds.setAllowExcelXMLDownload(excelXmlDownloadValue);
+                }
+                Boolean msAccessDownloadValue = rs.getObject("ALLOW_MSACCESS_DOWNLOAD", Boolean.class);
+                if (rs.wasNull()) {
+                    ds.setAllowMSAccessDownload(true);
+                } else {
+                    ds.setAllowMSAccessDownload(msAccessDownloadValue);
+                }
 
                 v.add(ds);
             }

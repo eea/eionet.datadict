@@ -12,9 +12,9 @@
            targetNamespace="http://dd.eionet.europa.eu/namespaces/688"
            xsi:schemaLocation="http://www.w3.org/2001/XMLSchema http://www.w3.org/2001/XMLSchema.xsd">
    <xs:import namespace="http://dd.eionet.europa.eu/namespaces/689"
-              schemaLocation="schema-tbl-6661.xsd"/>
+              schemaLocation="http://dd.eionet.europa.eu/v2/dataset/2827/schema-tbl-6661.xsd"/>
    <xs:import namespace="http://dd.eionet.europa.eu/namespaces/690"
-              schemaLocation="schema-tbl-6662.xsd"/>
+              schemaLocation="http://dd.eionet.europa.eu/v2/dataset/2827/schema-tbl-6662.xsd"/>
    <xs:element name="NoiseDirectiveDF1">
       <xs:annotation>
          <xs:documentation xml:lang="en">

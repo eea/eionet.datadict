@@ -27,4 +27,10 @@ public interface DataSetDataService {
      * @throws ResourceNotFoundException 
      */
     DataSet getDatasetWithoutRelations(int dataSetId);
+
+
+    void setDatasetExcelXMLDownloadOption(int dataSetId,boolean value);
+
+
+    void setDatasetMSAccessDownloadOption(int dataSetId,boolean value);
 }

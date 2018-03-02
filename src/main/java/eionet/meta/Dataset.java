@@ -39,6 +39,9 @@ public class Dataset implements Comparable {
     private String checkedoutCopyID = null;
     private String successorId = null;
 
+    private Boolean allowExcelXMLDownload;
+    private Boolean allowMSAccessDownload;
+
     /** */
     private String user;
 
@@ -344,5 +347,21 @@ public class Dataset implements Comparable {
      */
     public void setUser(String user) {
         this.user = user;
+    }
+
+    public Boolean getAllowExcelXMLDownload() {
+        return allowExcelXMLDownload;
+    }
+
+    public void setAllowExcelXMLDownload(Boolean allowExcelXMLDownload) {
+        this.allowExcelXMLDownload = allowExcelXMLDownload;
+    }
+
+    public Boolean getAllowMSAccessDownload() {
+        return allowMSAccessDownload;
+    }
+
+    public void setAllowMSAccessDownload(Boolean allowMSAccessDownload) {
+        this.allowMSAccessDownload = allowMSAccessDownload;
     }
 }

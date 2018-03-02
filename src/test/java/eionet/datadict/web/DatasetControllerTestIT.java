@@ -10,6 +10,7 @@ import org.custommonkey.xmlunit.Diff;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
@@ -144,5 +145,14 @@ public class DatasetControllerTestIT {
         String expectedXMLResultString = IOUtils.toString(classLoader.getResourceAsStream("datasetTableXMLInstanceTestIT.xml"));
         Diff diff = new Diff(expectedXMLResultString, xmlResult);
         assertTrue(diff.similar());
+    }
+
+
+    @Test
+    @Ignore
+    public void testSuccessToAllowMsAccessTemplateDownload() throws Exception{
+        MockHttpServletRequestBuilder request = get("/dataset/2827/allowMsAccessDownload/true");
+        mockMvc.perform(request).andExpect(status().isOk());
+        // We should just get a 200 ok here.
     }
 }

@@ -225,4 +225,14 @@ public class DataSetServiceImpl implements DataSetService {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
+    public void setMSAccessTemplateDownloadLinkVisibility(int id, boolean value) {
+        this.dataSetDataService.setDatasetMSAccessDownloadOption(id, value);
+    }
+    
+    @Override
+    public void setExcelXMLFileDownloadLinkVisibility(int id, boolean value) {
+        this.dataSetDataService.setDatasetExcelXMLDownloadOption(id, value);
+    }
+
 }

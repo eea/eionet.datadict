@@ -11,4 +11,8 @@ public interface DatasetDao {
      * @return the {@link Dataset} with the given id.
      */
     public DataSet getById(int id);
+
+    public int updateExcelXMLDownload(int id, boolean value);
+
+    public int updateMSAccessDownload(int id,boolean value);
 }

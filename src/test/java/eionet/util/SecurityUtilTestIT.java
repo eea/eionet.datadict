@@ -1,38 +1,39 @@
 package eionet.util;
 
-import eionet.meta.ActionBeanUtils;
 import eionet.meta.DDUser;
-import eionet.meta.service.DBUnitHelper;
 import org.easymock.EasyMock;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import eionet.config.ApplicationTestContext;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.util.CollectionUtils;
-import org.unitils.UnitilsJUnit4;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-public class SecurityUtilTest extends UnitilsJUnit4  {
-    /**
-     * Load seed data file.
-     * @throws Exception if loading fails
-     */
-    @BeforeClass
-    public static void loadData() throws Exception {
-        ActionBeanUtils.getServletContext();
-        DBUnitHelper.loadData("seed-acldata.xml");
-    }
 
-    /**
-     * Delete helper data.
-     * @throws Exception if delete fails
-     */
-    @AfterClass
-    public static void deleteData() throws Exception {
-        DBUnitHelper.deleteData("seed-acldata.xml");
-    }
+import com.github.springtestdbunit.DbUnitTestExecutionListener;
+import com.github.springtestdbunit.annotation.DatabaseSetup;
+import com.github.springtestdbunit.annotation.DatabaseTearDown;
+import com.github.springtestdbunit.annotation.DatabaseOperation;
+
+
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {ApplicationTestContext.class})
+@TestExecutionListeners({DbUnitTestExecutionListener.class,
+    TransactionalTestExecutionListener.class,
+    DbUnitTestExecutionListener.class})
+@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT,
+        value = "classpath:seed-acldata.xml")
+@DatabaseTearDown(type = DatabaseOperation.DELETE_ALL,
+        value = "classpath:seed-acldata.xml")
+public class SecurityUtilTestIT   {
+  
 
     @Test
     public void testGetUserCountryFromRoles() {
@@ -67,7 +68,8 @@ public class SecurityUtilTest extends UnitilsJUnit4  {
     public void testUserPermission() throws Exception {
         String aclPath = "/testacl";
 
-        assertTrue("heinlja should have 'i' permission.", SecurityUtil.hasPerm("heinlja", aclPath, "i"));
+        assertTrue("heinlja should have '78' permission.", SecurityUtil.hasPerm("heinlja", aclPath, "i"));
+        
         assertTrue("heinlja should have 'er' permission.",!SecurityUtil.hasPerm("heinlja", aclPath, "er"));
         assertTrue("heinlja should NOT have 'u' permission as overriden by entry ACL.", !SecurityUtil.hasPerm("heinlja", aclPath, "u"));
 

@@ -250,6 +250,7 @@
         boolean advancedAccess = false;
         boolean canCheckout = false;
         boolean canNewVersion = false;
+        boolean adminToolsAuthority = false;
 
         // if not in add mode, get the dataset object and some parameters based on it
         if (!mode.equals("add")) {
@@ -300,13 +301,15 @@
                 latestID = searchEngine.getLatestDstID(idfier, v);
                 isLatestDst = latestID!=null && ds_id.equals(latestID);
 
+                adminToolsAuthority = !dataset.isWorkingCopy() && workingUser == null && regStatus!=null && user!=null && isLatestDst;
+                
                 canNewVersion = !dataset.isWorkingCopy() && workingUser == null && regStatus!=null && user!=null && isLatestDst;
                 if (canNewVersion) {
                     canNewVersion = regStatus.equals("Released") || regStatus.equals("Recorded") || regStatus.equals("Retired") || regStatus.equals("Superseded");
                     if (canNewVersion)
                         canNewVersion = editPrm || editReleasedPrm;
                 }
-
+                
                 canCheckout = !dataset.isWorkingCopy() 
                         && workingUser == null 
                         && regStatus!=null
@@ -879,7 +882,7 @@ else if (mode.equals("add"))
                                                     }
 
                                                     // XML Schema link
-                                                    if (dispAll || dispXmlSchema) { %>
+                                                    if (((dispAll || dispXmlSchema)&& dataset.getAllowExcelXMLDownload() )) { %>
                                                         <li>
                                                             <a rel="nofollow" href="<%=request.getContextPath()%>/v2/dataset/<%=ds_id%>/schema-dst-<%=ds_id%>.xsd" class="xsd">
                                                                 Create an XML Schema for this dataset
@@ -905,7 +908,7 @@ else if (mode.equals("add"))
                                                     }
 
                                                     // MS Excel link
-                                                    if (dispAll || dispXLS) { %>
+                                                    if ((dispAll || dispXLS) && dataset.getAllowExcelXMLDownload()) { %>
                                                         <li>
                                                             <a rel="nofollow" href="<%=request.getContextPath()%>/GetXls?obj_type=dst&amp;obj_id=<%=ds_id%>&amp;new_schema=true" class="excel" onclick="return warnDatasetStatus('<%=regStatus%>', 'download')">
                                                                 Create an MS Excel template for this dataset using the new schema
@@ -919,7 +922,7 @@ else if (mode.equals("add"))
                                                             <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=excel"></a>
                                                         </li>
                                                     <% }
-                                                    if ((dispAll || dispXLS) && user != null) { %>
+                                                    if (((dispAll || dispXLS) && user != null) && dataset.getAllowExcelXMLDownload()) { %>
                                                          <li>
                                                             <a rel="nofollow" href="<%=request.getContextPath()%>/GetXls?obj_type=dst&amp;obj_act=dd&amp;obj_id=<%=ds_id%>" class="excel" onclick="return warnDatasetStatus('<%=regStatus%>', 'download')">
                                                                 Create an MS Excel template for this dataset with drop-down boxes (BETA)
@@ -931,7 +934,7 @@ else if (mode.equals("add"))
 
 
                                                     // MS Access link
-                                                    if (dispAll || dispMDB) { %>
+                                                    if ((dispAll || dispMDB)&& dataset.getAllowMSAccessDownload()) { %>
                                                         <li>
                                                             <a rel="nofollow" href="<%=request.getContextPath()%>/GetMdb?dstID=<%=ds_id%>&amp;vmdonly=true" class="access" onclick="return warnDatasetStatus('<%=regStatus%>', 'download')">
                                                                 Create validation metadata for MS Access template
@@ -941,7 +944,7 @@ else if (mode.equals("add"))
                                                     }
 
                                                     // Advanced MS Access template generation link
-                                                    if (dispAll || advancedAccess) {
+                                                    if ((dispAll || advancedAccess)&& dataset.getAllowMSAccessDownload()) {
                                                         %>
                                                         <li>
                                                             <a rel="nofollow" href="<%=request.getContextPath()%>/GetMSAccess?dstID=<%=ds_id%>" class="access" onclick="return warnDatasetStatus('<%=regStatus%>', 'download')">
@@ -996,7 +999,7 @@ else if (mode.equals("add"))
                                     }
                                 }
                 //Display Administrative Tools Options 
-                       if (mode.equals("view")) {
+                       if (mode.equals("view") && adminToolsAuthority) {
 
                             
                                         %>
@@ -1009,11 +1012,11 @@ else if (mode.equals("add"))
                                                 <ul>
                                                      <li>
                                                          Show the links for downloading Excel templates and XML schemas for this dataset.
-<input type="checkbox" name="incl_histver" id="incl_histver" value="true"  />
+                                  <input type="checkbox" name="incl_histver" id="excelXMLDownloadOption"  <%=(dataset.getAllowExcelXMLDownload() ? "checked":"")%>  onclick="setDatasetExcelXMLDownloadLinksVisibility('<%=request.getContextPath()%>',<%=ds_id%>)" />
                                                         </li>
                                                     <li>
                                                          Show the link "Create advanced MS Access template" for this dataset.
-<input type="checkbox" name="incl_histver" id="incl_histver" value="true"  />
+                                 <input type="checkbox" name="incl_histver" id="msAccessDownloadOption" <%=(dataset.getAllowMSAccessDownload() ? "checked":"")%> onclick="setDatasetMsAccessDownloadLinksVisibility('<%=request.getContextPath()%>',<%=ds_id%>)"/>
                                                         </li>    
                                                 </ul>
                                     </div>

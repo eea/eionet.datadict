@@ -54,6 +54,14 @@ public class DataSetDataServiceImpl implements DataSetDataService {
         return datasetDao.getById(dataSetId);
     }
 
-    
-    
+    @Override
+    public void setDatasetExcelXMLDownloadOption(int dataSetId, boolean value) {
+        datasetDao.updateExcelXMLDownload(dataSetId, value);
+    }
+
+    @Override
+    public void setDatasetMSAccessDownloadOption(int dataSetId, boolean value) {
+        datasetDao.updateMSAccessDownload(dataSetId, value);
+    }
+
 }

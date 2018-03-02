@@ -15,7 +15,7 @@ public class AsyncTaskExecutionEntry {
 
     public AsyncTaskExecutionEntry() {
     }
-
+           
     public AsyncTaskExecutionEntry(String taskId, String taskClassName, AsyncTaskExecutionStatus executionStatus, Date scheduledDate, Date startDate, Date endDate, String serializedParameters, String serializedResult) {
         this.taskId = taskId;
         this.taskClassName = taskClassName;

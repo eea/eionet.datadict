@@ -41,6 +41,43 @@ public class DatasetDaoImpl extends JdbcDaoBase implements DatasetDao {
         }          
     }
     
+    @Override
+    public int updateExcelXMLDownload(int id, boolean value) {
+        String sql = "UPDATE "
+                + "DATASET "
+                + "SET ALLOW_EXCEL_DOWNLOAD = :value"
+                + " WHERE DATASET_ID = :id";
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("id", id);
+        params.put("value", value ? 1 : 0);
+        try {
+            return this.getNamedParameterJdbcTemplate().update(sql, params);
+
+        } catch (EmptyResultDataAccessException ex) {
+            return 0;
+        }
+    }
+
+    @Override
+    public int updateMSAccessDownload(int id, boolean value) {
+        String sql = "UPDATE "
+                + "DATASET "
+                + "SET ALLOW_MSACCESS_DOWNLOAD = :value"
+                + " WHERE DATASET_ID = :id";
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("id", id);
+        params.put("value", value ? 1 : 0);
+        try {
+            return this.getNamedParameterJdbcTemplate().update(sql, params);
+
+        } catch (EmptyResultDataAccessException ex) {
+            return 0;
+        }
+
+    }
+
     public static class DataSetRowMapper implements RowMapper<DataSet> {
 
         @Override
@@ -59,7 +96,7 @@ public class DatasetDaoImpl extends JdbcDaoBase implements DatasetDao {
             dataset.setIdentifier(rs.getString("DATASET.IDENTIFIER"));
             dataset.setDispCreateLinks(rs.getInt("DATASET.DISP_CREATE_LINKS"));
             dataset.setRegStatus(DatasetRegStatus.fromString(rs.getString("DATASET.REG_STATUS")));
-            dataset.setAllowExcelDownload(rs.getBoolean("DATASET.ALLOW_EXCEL_DOWNLOAD"));
+            dataset.setAllowExcelXMLDownload(rs.getBoolean("DATASET.ALLOW_EXCEL_DOWNLOAD"));
             dataset.setAllowMSAccessDownload(rs.getBoolean("DATASET.ALLOW_MSACCESS_DOWNLOAD"));
             
             Integer checkedoutCopyId = rs.getInt("DATASET.CHECKEDOUT_COPY_ID");
@@ -93,5 +130,5 @@ public class DatasetDaoImpl extends JdbcDaoBase implements DatasetDao {
         
  
     }
-    
+
 }
