@@ -1,0 +1,1681 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+   <changeSet author="dev-vs (generated)" id="1520438945019-1">
+      <createTable tableName="ACL_ROWS">
+         <column defaultValueNumeric="0" name="ACL_ID" type="INT">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValue="'object'"
+                 name="TYPE"
+                 type="enum('object','doc','dcc')">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValue="'user'"
+                 name="ENTRY_TYPE"
+                 type="enum('owner','user','localgroup','other','foreign','unauthenticated','authenticated','mask')">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValue="" name="PRINCIPAL" type="CHAR(16)">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValue="" name="PERMISSIONS" type="CHAR(255)">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValueNumeric="0" name="STATUS" type="INT">
+            <constraints nullable="false"/>
+         </column>
+      </createTable>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-2">
+      <createTable tableName="ACLS">
+         <column autoIncrement="true" name="ACL_ID" type="INT">
+            <constraints nullable="false" primaryKey="true"/>
+         </column>
+         <column defaultValue="" name="ACL_NAME" type="VARCHAR(100)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="PARENT_NAME" type="VARCHAR(100)"/>
+         <column defaultValue="" name="OWNER" type="VARCHAR(255)">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValue="" name="DESCRIPTION" type="VARCHAR(255)"/>
+      </createTable>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-3">
+      <createTable tableName="API_KEY">
+         <column name="IDENTIFIER" type="VARCHAR(100)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="SCOPE" type="VARCHAR(100)"/>
+         <column name="KEY_VALUE" type="VARCHAR(255)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="REMOTE_ADDR" type="VARCHAR(255)"/>
+         <column name="EXPIRES" type="DATETIME"/>
+         <column name="NOTES" type="VARCHAR(255)"/>
+      </createTable>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-4">
+      <createTable tableName="ASYNC_TASK_ENTRY">
+         <column name="TASK_ID" type="VARCHAR(200)">
+            <constraints nullable="false" primaryKey="true"/>
+         </column>
+         <column name="TASK_CLASS_NAME" type="VARCHAR(250)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="EXECUTION_STATUS" type="TINYINT">
+            <constraints nullable="false"/>
+         </column>
+         <column name="SCHEDULED_DATE" type="BIGINT">
+            <constraints nullable="false"/>
+         </column>
+         <column name="START_DATE" type="BIGINT"/>
+         <column name="END_DATE" type="BIGINT"/>
+         <column name="SERIALIZED_PARAMETERS" type="LONGTEXT"/>
+         <column name="SERIALIZED_RESULT" type="LONGTEXT"/>
+      </createTable>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-5">
+      <createTable tableName="ASYNC_TASK_ENTRY_HISTORY">
+         <column autoIncrement="true" name="ID" type="BIGINT">
+            <constraints nullable="false" primaryKey="true"/>
+         </column>
+         <column name="TASK_ID" type="VARCHAR(200)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="TASK_CLASS_NAME" type="VARCHAR(250)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="EXECUTION_STATUS" type="TINYINT">
+            <constraints nullable="false"/>
+         </column>
+         <column name="SCHEDULED_DATE" type="BIGINT">
+            <constraints nullable="false"/>
+         </column>
+         <column name="START_DATE" type="BIGINT"/>
+         <column name="END_DATE" type="BIGINT"/>
+         <column name="SERIALIZED_PARAMETERS" type="LONGTEXT"/>
+         <column name="SERIALIZED_RESULT" type="LONGTEXT"/>
+      </createTable>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-6">
+      <createTable tableName="ATTRIBUTE">
+         <column defaultValueNumeric="0" name="M_ATTRIBUTE_ID" type="INT UNSIGNED">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValueNumeric="0" name="DATAELEM_ID" type="INT UNSIGNED">
+            <constraints nullable="false"/>
+         </column>
+         <column name="VALUE" type="TEXT">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValue="'E'"
+                 name="PARENT_TYPE"
+                 type="enum('E','T','DS','SCH','SCS','VCF')">
+            <constraints nullable="false"/>
+         </column>
+      </createTable>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-7">
+      <createTable tableName="CACHE">
+         <column defaultValueNumeric="0" name="OBJ_ID" type="INT UNSIGNED">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValue="'dst'" name="OBJ_TYPE" type="enum('dst','tbl','elm')">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValue="'pdf'"
+                 name="ARTICLE"
+                 type="enum('pdf','xls','xform','xmlinst')">
+            <constraints nullable="false"/>
+         </column>
+         <column name="FILENAME" type="VARCHAR(255)"/>
+         <column defaultValueNumeric="0" name="CREATED" type="BIGINT">
+            <constraints nullable="false"/>
+         </column>
+      </createTable>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-8">
+      <createTable tableName="DATAELEM">
+         <column defaultValue="'CH2'" name="TYPE" type="enum('CH1','CH2','CH3')">
+            <constraints nullable="false"/>
+         </column>
+         <column autoIncrement="true" name="DATAELEM_ID" type="INT UNSIGNED">
+            <constraints nullable="false" primaryKey="true"/>
+         </column>
+         <column defaultValueNumeric="1" name="NAMESPACE_ID" type="INT UNSIGNED">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValue="" name="SHORT_NAME" type="VARCHAR(50)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="WORKING_USER" type="VARCHAR(255)"/>
+         <column defaultValue="'N'" name="WORKING_COPY" type="enum('Y','N')">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValue="'Incomplete'"
+                 name="REG_STATUS"
+                 type="enum('Recorded','Qualified','Released','Incomplete','Candidate','Retired','Superseded')">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValueNumeric="1" name="VERSION" type="INT UNSIGNED">
+            <constraints nullable="false"/>
+         </column>
+         <column name="USER" type="VARCHAR(255)"/>
+         <column defaultValueNumeric="0" name="DATE" type="BIGINT">
+            <constraints nullable="false"/>
+         </column>
+         <column name="PARENT_NS" type="INT"/>
+         <column name="TOP_NS" type="INT"/>
+         <column defaultValue="" name="IDENTIFIER" type="VARCHAR(50)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="CHECKEDOUT_COPY_ID" type="INT UNSIGNED"/>
+         <column name="VOCABULARY_ID" type="INT UNSIGNED"/>
+         <column defaultValueBoolean="true" name="ALL_CONCEPTS_LEGAL" type="BIT"/>
+         <column name="SUCCESSOR" type="INT UNSIGNED"/>
+      </createTable>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-9">
+      <createTable tableName="DATASET">
+         <column autoIncrement="true" name="DATASET_ID" type="INT UNSIGNED">
+            <constraints nullable="false" primaryKey="true"/>
+         </column>
+         <column name="SHORT_NAME" type="VARCHAR(50)"/>
+         <column defaultValueNumeric="1" name="VERSION" type="INT UNSIGNED">
+            <constraints nullable="false"/>
+         </column>
+         <column name="VISUAL" type="TEXT"/>
+         <column name="DETAILED_VISUAL" type="TEXT"/>
+         <column name="WORKING_USER" type="VARCHAR(255)"/>
+         <column defaultValue="'N'" name="WORKING_COPY" type="enum('Y','N')">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValue="'Incomplete'"
+                 name="REG_STATUS"
+                 type="enum('Recorded','Qualified','Released','Incomplete','Candidate','Retired','Superseded')">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValueNumeric="0" name="DATE" type="BIGINT">
+            <constraints nullable="false"/>
+         </column>
+         <column name="USER" type="VARCHAR(255)"/>
+         <column defaultValueNumeric="0" name="CORRESP_NS" type="INT UNSIGNED">
+            <constraints nullable="false"/>
+         </column>
+         <column name="DELETED" type="VARCHAR(255)"/>
+         <column defaultValue="" name="IDENTIFIER" type="VARCHAR(50)">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValueNumeric="43" name="DISP_CREATE_LINKS" type="INT">
+            <constraints nullable="false"/>
+         </column>
+         <column name="CHECKEDOUT_COPY_ID" type="INT UNSIGNED"/>
+         <column name="SUCCESSOR" type="INT UNSIGNED"/>
+         <column name="ALLOW_EXCEL_DOWNLOAD" type="BIT"/>
+         <column name="ALLOW_MSACCESS_DOWNLOAD" type="BIT"/>
+      </createTable>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-10">
+      <createTable tableName="DOC">
+         <column defaultValueNumeric="0" name="OWNER_ID" type="INT UNSIGNED">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValue="'dst'"
+                 name="OWNER_TYPE"
+                 type="enum('dst','tbl','elm')">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValue="" name="MD5_PATH" type="VARCHAR(32)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="ABS_PATH" type="TEXT">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValue="" name="TITLE" type="VARCHAR(255)">
+            <constraints nullable="false"/>
+         </column>
+      </createTable>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-11">
+      <createTable tableName="documentation">
+         <column name="page_id" type="VARCHAR(255)">
+            <constraints nullable="false" primaryKey="true"/>
+         </column>
+         <column defaultValue="text/html" name="content_type" type="VARCHAR(100)">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValue="" name="title" type="VARCHAR(512)"/>
+      </createTable>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-12">
+      <createTable tableName="DS_TABLE">
+         <column autoIncrement="true" name="TABLE_ID" type="INT UNSIGNED">
+            <constraints nullable="false" primaryKey="true"/>
+         </column>
+         <column defaultValue="" name="SHORT_NAME" type="VARCHAR(50)">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValue="" name="NAME" type="VARCHAR(255)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="WORKING_USER" type="VARCHAR(255)"/>
+         <column defaultValue="'N'" name="WORKING_COPY" type="enum('Y','N')">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValueNumeric="1" name="VERSION" type="INT UNSIGNED">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValueNumeric="0" name="DATE" type="BIGINT">
+            <constraints nullable="false"/>
+         </column>
+         <column name="USER" type="VARCHAR(255)"/>
+         <column defaultValueNumeric="0" name="CORRESP_NS" type="INT UNSIGNED">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValueNumeric="0" name="PARENT_NS" type="INT UNSIGNED">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValue="" name="IDENTIFIER" type="VARCHAR(50)">
+            <constraints nullable="false"/>
+         </column>
+      </createTable>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-13">
+      <createTable tableName="DST2TBL">
+         <column defaultValueNumeric="0" name="DATASET_ID" type="INT UNSIGNED">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValueNumeric="0" name="TABLE_ID" type="INT UNSIGNED">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValueNumeric="0" name="POSITION" type="INT UNSIGNED">
+            <constraints nullable="false"/>
+         </column>
+      </createTable>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-14">
+      <createTable tableName="FK_RELATION">
+         <column autoIncrement="true" name="REL_ID" type="INT UNSIGNED">
+            <constraints nullable="false" primaryKey="true"/>
+         </column>
+         <column defaultValueNumeric="0" name="A_ID" type="INT UNSIGNED">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValueNumeric="0" name="B_ID" type="INT UNSIGNED">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValue="'1'" name="A_CARDIN" type="enum('0','1','+','*')"/>
+         <column defaultValue="'1'" name="B_CARDIN" type="enum('0','1','+','*')"/>
+         <column name="DEFINITION" type="TEXT">
+            <constraints nullable="false"/>
+         </column>
+      </createTable>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-15">
+      <createTable tableName="FXV">
+         <column autoIncrement="true" name="FXV_ID" type="INT UNSIGNED">
+            <constraints nullable="false" primaryKey="true"/>
+         </column>
+         <column defaultValueNumeric="0" name="OWNER_ID" type="INT UNSIGNED">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValue="'elem'" name="OWNER_TYPE" type="enum('elem','attr')">
+            <constraints nullable="false"/>
+         </column>
+         <column name="VALUE" type="TEXT">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValue="'N'" name="IS_DEFAULT" type="enum('Y','N')">
+            <constraints nullable="false"/>
+         </column>
+         <column name="DEFINITION" type="TEXT">
+            <constraints nullable="false"/>
+         </column>
+         <column name="SHORT_DESC" type="TEXT">
+            <constraints nullable="false"/>
+         </column>
+      </createTable>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-16">
+      <createTable tableName="HLP_AREA">
+         <column defaultValue="" name="AREA_ID" type="VARCHAR(100)">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValue="" name="SCREEN_ID" type="VARCHAR(100)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="DESCRIPTION" type="TEXT">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValue="" name="LANGUAGE" type="VARCHAR(100)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="HTML" type="TEXT">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValue="" name="MD5" type="VARCHAR(32)">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValue="400" name="POPUP_WIDTH" type="VARCHAR(10)">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValue="400" name="POPUP_LENGTH" type="VARCHAR(10)">
+            <constraints nullable="false"/>
+         </column>
+      </createTable>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-17">
+      <createTable tableName="HLP_SCREEN">
+         <column defaultValue="" name="SCREEN_ID" type="VARCHAR(100)">
+            <constraints nullable="false" primaryKey="true"/>
+         </column>
+         <column name="DESCRIPTION" type="TEXT">
+            <constraints nullable="false"/>
+         </column>
+      </createTable>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-18">
+      <createTable tableName="INFERENCE_RULE">
+         <column name="DATAELEM_ID" type="INT UNSIGNED">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValue="'owl:inverseOf'"
+                 name="RULE"
+                 type="enum('owl:inverseOf')">
+            <constraints nullable="false"/>
+         </column>
+         <column name="TARGET_ELEM_ID" type="INT UNSIGNED">
+            <constraints nullable="false"/>
+         </column>
+      </createTable>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-19">
+      <createTable tableName="M_ATTRIBUTE">
+         <column autoIncrement="true" name="M_ATTRIBUTE_ID" type="INT UNSIGNED">
+            <constraints nullable="false" primaryKey="true"/>
+         </column>
+         <column defaultValue="" name="NAME" type="VARCHAR(255)">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValue="'M'" name="OBLIGATION" type="enum('M','O','C')">
+            <constraints nullable="false"/>
+         </column>
+         <column name="DEFINITION" type="TEXT">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValue="" name="SHORT_NAME" type="VARCHAR(50)">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValueNumeric="44" name="NAMESPACE_ID" type="INT UNSIGNED">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValue="'text'"
+                 name="DISP_TYPE"
+                 type="enum('text','textarea','select','image','vocabulary')"/>
+         <column defaultValueNumeric="999" name="DISP_ORDER" type="INT UNSIGNED">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValueNumeric="31" name="DISP_WHEN" type="INT UNSIGNED">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValueNumeric="20" name="DISP_WIDTH" type="INT UNSIGNED">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValueNumeric="1" name="DISP_HEIGHT" type="INT UNSIGNED">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValue="'0'" name="DISP_MULTIPLE" type="enum('0','1')">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValue="'0'" name="INHERIT" type="enum('0','1','2')">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValueBoolean="false" name="LANGUAGE_USED" type="BIT"/>
+         <column defaultValue="NULL"
+                 name="DATA_TYPE"
+                 type="enum('reference','','string','integer','decimal','boolean','dateTime','date')"/>
+         <column name="RDF_PROPERTY_NAMESPACE_ID" type="INT UNSIGNED"/>
+         <column name="RDF_PROPERTY_NAME" type="VARCHAR(255)"/>
+      </createTable>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-20">
+      <createTable tableName="M_ATTRIBUTE_VOCABULARY">
+         <column defaultValueNumeric="0" name="M_ATTRIBUTE_ID" type="INT UNSIGNED">
+            <constraints nullable="false" primaryKey="true"/>
+         </column>
+         <column name="VOCABULARY_ID" type="INT UNSIGNED"/>
+      </createTable>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-21">
+      <createTable tableName="NAMESPACE">
+         <column autoIncrement="true" name="NAMESPACE_ID" type="INT UNSIGNED">
+            <constraints nullable="false" primaryKey="true"/>
+         </column>
+         <column defaultValue="" name="SHORT_NAME" type="VARCHAR(255)">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValue="" name="FULL_NAME" type="VARCHAR(255)">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValue="" name="DEFINITION" type="VARCHAR(255)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="PARENT_NS" type="INT UNSIGNED"/>
+         <column name="WORKING_USER" type="VARCHAR(255)"/>
+      </createTable>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-22">
+      <createTable tableName="QRTZ_BLOB_TRIGGERS">
+         <column name="SCHED_NAME" type="VARCHAR(120)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="TRIGGER_NAME" type="VARCHAR(200)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="TRIGGER_GROUP" type="VARCHAR(200)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="BLOB_DATA" type="BLOB"/>
+      </createTable>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-23">
+      <createTable tableName="QRTZ_CALENDARS">
+         <column name="SCHED_NAME" type="VARCHAR(120)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="CALENDAR_NAME" type="VARCHAR(200)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="CALENDAR" type="BLOB">
+            <constraints nullable="false"/>
+         </column>
+      </createTable>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-24">
+      <createTable tableName="QRTZ_CRON_TRIGGERS">
+         <column name="SCHED_NAME" type="VARCHAR(120)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="TRIGGER_NAME" type="VARCHAR(200)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="TRIGGER_GROUP" type="VARCHAR(200)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="CRON_EXPRESSION" type="VARCHAR(200)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="TIME_ZONE_ID" type="VARCHAR(80)"/>
+      </createTable>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-25">
+      <createTable tableName="QRTZ_FIRED_TRIGGERS">
+         <column name="SCHED_NAME" type="VARCHAR(120)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="ENTRY_ID" type="VARCHAR(95)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="TRIGGER_NAME" type="VARCHAR(200)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="TRIGGER_GROUP" type="VARCHAR(200)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="INSTANCE_NAME" type="VARCHAR(200)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="FIRED_TIME" type="BIGINT">
+            <constraints nullable="false"/>
+         </column>
+         <column name="SCHED_TIME" type="BIGINT">
+            <constraints nullable="false"/>
+         </column>
+         <column name="PRIORITY" type="INT">
+            <constraints nullable="false"/>
+         </column>
+         <column name="STATE" type="VARCHAR(16)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="JOB_NAME" type="VARCHAR(200)"/>
+         <column name="JOB_GROUP" type="VARCHAR(200)"/>
+         <column name="IS_NONCONCURRENT" type="VARCHAR(1)"/>
+         <column name="REQUESTS_RECOVERY" type="VARCHAR(1)"/>
+      </createTable>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-26">
+      <createTable tableName="QRTZ_JOB_DETAILS">
+         <column name="SCHED_NAME" type="VARCHAR(120)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="JOB_NAME" type="VARCHAR(200)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="JOB_GROUP" type="VARCHAR(200)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="DESCRIPTION" type="VARCHAR(250)"/>
+         <column name="JOB_CLASS_NAME" type="VARCHAR(250)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="IS_DURABLE" type="VARCHAR(1)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="IS_NONCONCURRENT" type="VARCHAR(1)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="IS_UPDATE_DATA" type="VARCHAR(1)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="REQUESTS_RECOVERY" type="VARCHAR(1)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="JOB_DATA" type="BLOB"/>
+      </createTable>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-27">
+      <createTable tableName="QRTZ_LOCKS">
+         <column name="SCHED_NAME" type="VARCHAR(120)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="LOCK_NAME" type="VARCHAR(40)">
+            <constraints nullable="false"/>
+         </column>
+      </createTable>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-28">
+      <createTable tableName="QRTZ_PAUSED_TRIGGER_GRPS">
+         <column name="SCHED_NAME" type="VARCHAR(120)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="TRIGGER_GROUP" type="VARCHAR(200)">
+            <constraints nullable="false"/>
+         </column>
+      </createTable>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-29">
+      <createTable tableName="QRTZ_SCHEDULER_STATE">
+         <column name="SCHED_NAME" type="VARCHAR(120)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="INSTANCE_NAME" type="VARCHAR(200)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="LAST_CHECKIN_TIME" type="BIGINT">
+            <constraints nullable="false"/>
+         </column>
+         <column name="CHECKIN_INTERVAL" type="BIGINT">
+            <constraints nullable="false"/>
+         </column>
+      </createTable>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-30">
+      <createTable tableName="QRTZ_SIMPLE_TRIGGERS">
+         <column name="SCHED_NAME" type="VARCHAR(120)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="TRIGGER_NAME" type="VARCHAR(200)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="TRIGGER_GROUP" type="VARCHAR(200)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="REPEAT_COUNT" type="BIGINT">
+            <constraints nullable="false"/>
+         </column>
+         <column name="REPEAT_INTERVAL" type="BIGINT">
+            <constraints nullable="false"/>
+         </column>
+         <column name="TIMES_TRIGGERED" type="BIGINT">
+            <constraints nullable="false"/>
+         </column>
+      </createTable>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-31">
+      <createTable tableName="QRTZ_SIMPROP_TRIGGERS">
+         <column name="SCHED_NAME" type="VARCHAR(120)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="TRIGGER_NAME" type="VARCHAR(200)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="TRIGGER_GROUP" type="VARCHAR(200)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="STR_PROP_1" type="VARCHAR(512)"/>
+         <column name="STR_PROP_2" type="VARCHAR(512)"/>
+         <column name="STR_PROP_3" type="VARCHAR(512)"/>
+         <column name="INT_PROP_1" type="INT"/>
+         <column name="INT_PROP_2" type="INT"/>
+         <column name="LONG_PROP_1" type="BIGINT"/>
+         <column name="LONG_PROP_2" type="BIGINT"/>
+         <column name="DEC_PROP_1" type="DECIMAL(13,4)"/>
+         <column name="DEC_PROP_2" type="DECIMAL(13,4)"/>
+         <column name="BOOL_PROP_1" type="VARCHAR(1)"/>
+         <column name="BOOL_PROP_2" type="VARCHAR(1)"/>
+      </createTable>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-32">
+      <createTable tableName="QRTZ_TRIGGERS">
+         <column name="SCHED_NAME" type="VARCHAR(120)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="TRIGGER_NAME" type="VARCHAR(200)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="TRIGGER_GROUP" type="VARCHAR(200)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="JOB_NAME" type="VARCHAR(200)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="JOB_GROUP" type="VARCHAR(200)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="DESCRIPTION" type="VARCHAR(250)"/>
+         <column name="NEXT_FIRE_TIME" type="BIGINT"/>
+         <column name="PREV_FIRE_TIME" type="BIGINT"/>
+         <column name="PRIORITY" type="INT"/>
+         <column name="TRIGGER_STATE" type="VARCHAR(16)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="TRIGGER_TYPE" type="VARCHAR(8)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="START_TIME" type="BIGINT">
+            <constraints nullable="false"/>
+         </column>
+         <column name="END_TIME" type="BIGINT"/>
+         <column name="CALENDAR_NAME" type="VARCHAR(250)"/>
+         <column name="MISFIRE_INSTR" type="SMALLINT"/>
+         <column name="JOB_DATA" type="BLOB"/>
+      </createTable>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-33">
+      <createTable tableName="T_RDF_NAMESPACE">
+         <column autoIncrement="true" name="ID" type="INT UNSIGNED">
+            <constraints nullable="false" primaryKey="true"/>
+         </column>
+         <column name="URI" type="VARCHAR(255)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="NAME_PREFIX" type="VARCHAR(10)">
+            <constraints nullable="false"/>
+         </column>
+      </createTable>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-34">
+      <createTable tableName="T_SCHEMA">
+         <column autoIncrement="true" name="SCHEMA_ID" type="INT UNSIGNED">
+            <constraints nullable="false" primaryKey="true"/>
+         </column>
+         <column name="FILENAME" type="VARCHAR(255)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="SCHEMA_SET_ID" type="INT UNSIGNED"/>
+         <column name="CONTINUITY_ID" type="VARCHAR(36)"/>
+         <column defaultValue="NULL"
+                 name="REG_STATUS"
+                 type="enum('Draft','Public draft','Released')"/>
+         <column defaultValueBoolean="false" name="WORKING_COPY" type="BIT">
+            <constraints nullable="false"/>
+         </column>
+         <column name="WORKING_USER" type="VARCHAR(50)"/>
+         <column defaultValueComputed="CURRENT_TIMESTAMP"
+                 name="DATE_MODIFIED"
+                 type="TIMESTAMP">
+            <constraints nullable="false"/>
+         </column>
+         <column name="USER_MODIFIED" type="VARCHAR(50)"/>
+         <column name="COMMENT" type="TEXT"/>
+         <column name="CHECKEDOUT_COPY_ID" type="INT UNSIGNED"/>
+         <column defaultValueBoolean="false" name="OTHER_DOCUMENT" type="BIT">
+            <constraints nullable="false"/>
+         </column>
+      </createTable>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-35">
+      <createTable tableName="T_SCHEMA_SET">
+         <column autoIncrement="true" name="SCHEMA_SET_ID" type="INT UNSIGNED">
+            <constraints nullable="false" primaryKey="true"/>
+         </column>
+         <column name="IDENTIFIER" type="VARCHAR(255)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="CONTINUITY_ID" type="VARCHAR(36)">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValue="'Draft'"
+                 name="REG_STATUS"
+                 type="enum('Draft','Public draft','Released','Deprecated')"/>
+         <column defaultValueBoolean="false" name="WORKING_COPY" type="BIT">
+            <constraints nullable="false"/>
+         </column>
+         <column name="WORKING_USER" type="VARCHAR(50)"/>
+         <column defaultValueComputed="CURRENT_TIMESTAMP"
+                 name="DATE_MODIFIED"
+                 type="TIMESTAMP">
+            <constraints nullable="false"/>
+         </column>
+         <column name="USER_MODIFIED" type="VARCHAR(50)"/>
+         <column name="COMMENT" type="TEXT"/>
+         <column name="CHECKEDOUT_COPY_ID" type="INT UNSIGNED"/>
+         <column name="STATUS_MODIFIED" type="DATETIME"/>
+      </createTable>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-36">
+      <createTable tableName="T_SITE_CODE">
+         <column name="VOCABULARY_CONCEPT_ID" type="INT UNSIGNED">
+            <constraints nullable="false" primaryKey="true"/>
+         </column>
+         <column name="SITE_CODE" type="VARCHAR(100)"/>
+         <column name="INITIAL_SITE_NAME" type="VARCHAR(200)"/>
+         <column name="SITE_CODE_NAT" type="VARCHAR(30)"/>
+         <column defaultValue="'AVAILABLE'"
+                 name="STATUS"
+                 type="enum('AVAILABLE','ALLOCATED','ASSIGNED','DELETED','DISAPPEARED')">
+            <constraints nullable="false"/>
+         </column>
+         <column name="CC_ISO2" type="CHAR(2)"/>
+         <column name="PARENT_ISO" type="CHAR(3)"/>
+         <column name="DATE_CREATED" type="DATETIME"/>
+         <column name="USER_CREATED" type="VARCHAR(50)"/>
+         <column name="DATE_ALLOCATED" type="DATETIME"/>
+         <column name="USER_ALLOCATED" type="VARCHAR(50)"/>
+         <column name="YEARS_DELETED" type="VARCHAR(100)"/>
+         <column name="YEARS_DISAPPEARED" type="VARCHAR(100)"/>
+         <column name="DATE_DELETED" type="DATE"/>
+      </createTable>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-37">
+      <createTable tableName="TBL2ELEM">
+         <column defaultValueNumeric="0" name="TABLE_ID" type="INT UNSIGNED">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValueNumeric="0" name="DATAELEM_ID" type="INT UNSIGNED">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValueNumeric="0" name="POSITION" type="INT UNSIGNED">
+            <constraints nullable="false"/>
+         </column>
+         <column name="MULTIVAL_DELIM" type="VARCHAR(1)"/>
+         <column defaultValueBoolean="false" name="MANDATORY" type="BIT">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValueBoolean="false" name="PRIM_KEY" type="BIT">
+            <constraints nullable="false"/>
+         </column>
+      </createTable>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-38">
+      <createTable tableName="VOCABULARY">
+         <column autoIncrement="true" name="VOCABULARY_ID" type="INT UNSIGNED">
+            <constraints nullable="false" primaryKey="true"/>
+         </column>
+         <column name="CONTINUITY_ID" type="VARCHAR(36)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="IDENTIFIER" type="VARCHAR(100)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="LABEL" type="VARCHAR(255)">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValue="'Draft'"
+                 name="REG_STATUS"
+                 type="enum('Draft','Public draft','Released')">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValueBoolean="false" name="WORKING_COPY" type="BIT">
+            <constraints nullable="false"/>
+         </column>
+         <column name="CHECKEDOUT_COPY_ID" type="INT UNSIGNED"/>
+         <column name="WORKING_USER" type="VARCHAR(50)"/>
+         <column defaultValueComputed="CURRENT_TIMESTAMP"
+                 name="DATE_MODIFIED"
+                 type="TIMESTAMP">
+            <constraints nullable="false"/>
+         </column>
+         <column name="USER_MODIFIED" type="VARCHAR(50)"/>
+         <column defaultValueBoolean="false"
+                 name="CONCEPT_IDENTIFIER_NUMERIC"
+                 type="BIT">
+            <constraints nullable="false"/>
+         </column>
+         <column name="BASE_URI" type="VARCHAR(255)">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValue="COMMON" name="VOCABULARY_TYPE" type="VARCHAR(50)">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValueNumeric="1" name="FOLDER_ID" type="INT UNSIGNED">
+            <constraints nullable="false"/>
+         </column>
+         <column defaultValueBoolean="false"
+                 name="NOTATIONS_EQUAL_IDENTIFIERS"
+                 type="BIT">
+            <constraints nullable="false"/>
+         </column>
+      </createTable>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-39">
+      <createTable tableName="VOCABULARY2ELEM">
+         <column name="VOCABULARY_ID" type="INT UNSIGNED"/>
+         <column name="DATAELEM_ID" type="INT UNSIGNED">
+            <constraints nullable="false"/>
+         </column>
+      </createTable>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-40">
+      <createTable tableName="VOCABULARY_CONCEPT">
+         <column autoIncrement="true"
+                 name="VOCABULARY_CONCEPT_ID"
+                 type="INT UNSIGNED">
+            <constraints nullable="false" primaryKey="true"/>
+         </column>
+         <column name="VOCABULARY_ID" type="INT UNSIGNED"/>
+         <column name="IDENTIFIER" type="VARCHAR(100)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="LABEL" type="TEXT">
+            <constraints nullable="false"/>
+         </column>
+         <column name="DEFINITION" type="TEXT"/>
+         <column name="NOTATION" type="VARCHAR(100)"/>
+         <column name="ORIGINAL_CONCEPT_ID" type="INT UNSIGNED"/>
+         <column defaultValueNumeric="145" name="STATUS" type="TINYINT UNSIGNED">
+            <constraints nullable="false"/>
+         </column>
+         <column name="STATUS_MODIFIED" type="DATETIME"/>
+         <column name="ACCEPTED_DATE" type="DATETIME"/>
+         <column name="NOT_ACCEPTED_DATE" type="DATETIME"/>
+      </createTable>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-41">
+      <createTable tableName="VOCABULARY_CONCEPT_ELEMENT">
+         <column autoIncrement="true" name="ID" type="INT UNSIGNED">
+            <constraints nullable="false" primaryKey="true"/>
+         </column>
+         <column name="VOCABULARY_CONCEPT_ID" type="INT UNSIGNED">
+            <constraints nullable="false"/>
+         </column>
+         <column name="DATAELEM_ID" type="INT UNSIGNED">
+            <constraints nullable="false"/>
+         </column>
+         <column name="ELEMENT_VALUE" type="TEXT"/>
+         <column name="LANGUAGE" type="VARCHAR(10)"/>
+         <column name="RELATED_CONCEPT_ID" type="INT UNSIGNED"/>
+         <column name="LINK_TEXT" type="VARCHAR(255)"/>
+         <column name="ATTR_MD5" type="VARCHAR(32)"/>
+      </createTable>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-42">
+      <createTable tableName="VOCABULARY_SET">
+         <column autoIncrement="true" name="ID" type="INT UNSIGNED">
+            <constraints nullable="false" primaryKey="true"/>
+         </column>
+         <column name="IDENTIFIER" type="VARCHAR(255)">
+            <constraints nullable="false"/>
+         </column>
+         <column name="LABEL" type="VARCHAR(255)">
+            <constraints nullable="false"/>
+         </column>
+      </createTable>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-43">
+      <addPrimaryKey columnNames="ACL_ID, TYPE, ENTRY_TYPE, PRINCIPAL, STATUS"
+                     tableName="ACL_ROWS"/>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-44">
+      <addPrimaryKey columnNames="OBJ_ID, OBJ_TYPE, ARTICLE" tableName="CACHE"/>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-45">
+      <addPrimaryKey columnNames="AREA_ID, SCREEN_ID, LANGUAGE" tableName="HLP_AREA"/>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-46">
+      <addPrimaryKey columnNames="SCHED_NAME, TRIGGER_NAME, TRIGGER_GROUP"
+                     tableName="QRTZ_BLOB_TRIGGERS"/>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-47">
+      <addPrimaryKey columnNames="SCHED_NAME, CALENDAR_NAME" tableName="QRTZ_CALENDARS"/>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-48">
+      <addPrimaryKey columnNames="SCHED_NAME, TRIGGER_NAME, TRIGGER_GROUP"
+                     tableName="QRTZ_CRON_TRIGGERS"/>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-49">
+      <addPrimaryKey columnNames="SCHED_NAME, ENTRY_ID" tableName="QRTZ_FIRED_TRIGGERS"/>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-50">
+      <addPrimaryKey columnNames="SCHED_NAME, JOB_NAME, JOB_GROUP"
+                     tableName="QRTZ_JOB_DETAILS"/>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-51">
+      <addPrimaryKey columnNames="SCHED_NAME, LOCK_NAME" tableName="QRTZ_LOCKS"/>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-52">
+      <addPrimaryKey columnNames="SCHED_NAME, TRIGGER_GROUP"
+                     tableName="QRTZ_PAUSED_TRIGGER_GRPS"/>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-53">
+      <addPrimaryKey columnNames="SCHED_NAME, INSTANCE_NAME"
+                     tableName="QRTZ_SCHEDULER_STATE"/>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-54">
+      <addPrimaryKey columnNames="SCHED_NAME, TRIGGER_NAME, TRIGGER_GROUP"
+                     tableName="QRTZ_SIMPLE_TRIGGERS"/>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-55">
+      <addPrimaryKey columnNames="SCHED_NAME, TRIGGER_NAME, TRIGGER_GROUP"
+                     tableName="QRTZ_SIMPROP_TRIGGERS"/>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-56">
+      <addPrimaryKey columnNames="SCHED_NAME, TRIGGER_NAME, TRIGGER_GROUP"
+                     tableName="QRTZ_TRIGGERS"/>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-57">
+      <addForeignKeyConstraint baseColumnNames="SUCCESSOR"
+                               baseTableName="DATAELEM"
+                               baseTableSchemaName="dd85613"
+                               constraintName="FK_SUPERSEDED_SUCCESSOR_DE"
+                               deferrable="false"
+                               initiallyDeferred="false"
+                               onDelete="NO ACTION"
+                               onUpdate="NO ACTION"
+                               referencedColumnNames="DATAELEM_ID"
+                               referencedTableName="DATAELEM"
+                               referencedTableSchemaName="dd85613"
+                               referencesUniqueColumn="false"/>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-58">
+      <addForeignKeyConstraint baseColumnNames="VOCABULARY_ID"
+                               baseTableName="DATAELEM"
+                               baseTableSchemaName="dd85613"
+                               constraintName="FK_ELEM_VOCABULARY_ID"
+                               deferrable="false"
+                               initiallyDeferred="false"
+                               onDelete="NO ACTION"
+                               onUpdate="CASCADE"
+                               referencedColumnNames="VOCABULARY_ID"
+                               referencedTableName="VOCABULARY"
+                               referencedTableSchemaName="dd85613"
+                               referencesUniqueColumn="false"/>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-59">
+      <addForeignKeyConstraint baseColumnNames="SUCCESSOR"
+                               baseTableName="DATASET"
+                               baseTableSchemaName="dd85613"
+                               constraintName="FK_SUPERSEDED_SUCCESSOR_DS"
+                               deferrable="false"
+                               initiallyDeferred="false"
+                               onDelete="NO ACTION"
+                               onUpdate="NO ACTION"
+                               referencedColumnNames="DATASET_ID"
+                               referencedTableName="DATASET"
+                               referencedTableSchemaName="dd85613"
+                               referencesUniqueColumn="false"/>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-60">
+      <addForeignKeyConstraint baseColumnNames="DATAELEM_ID"
+                               baseTableName="INFERENCE_RULE"
+                               baseTableSchemaName="dd85613"
+                               constraintName="FK_DATAELEM_ID"
+                               deferrable="false"
+                               initiallyDeferred="false"
+                               onDelete="CASCADE"
+                               onUpdate="CASCADE"
+                               referencedColumnNames="DATAELEM_ID"
+                               referencedTableName="DATAELEM"
+                               referencedTableSchemaName="dd85613"
+                               referencesUniqueColumn="false"/>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-61">
+      <addForeignKeyConstraint baseColumnNames="TARGET_ELEM_ID"
+                               baseTableName="INFERENCE_RULE"
+                               baseTableSchemaName="dd85613"
+                               constraintName="FK_TARGET_ELEM_ID"
+                               deferrable="false"
+                               initiallyDeferred="false"
+                               onDelete="CASCADE"
+                               onUpdate="CASCADE"
+                               referencedColumnNames="DATAELEM_ID"
+                               referencedTableName="DATAELEM"
+                               referencedTableSchemaName="dd85613"
+                               referencesUniqueColumn="false"/>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-62">
+      <addForeignKeyConstraint baseColumnNames="RDF_PROPERTY_NAMESPACE_ID"
+                               baseTableName="M_ATTRIBUTE"
+                               baseTableSchemaName="dd85613"
+                               constraintName="FK_RDF_PROPERTY_NAMESPACE_ID"
+                               deferrable="false"
+                               initiallyDeferred="false"
+                               onDelete="CASCADE"
+                               onUpdate="CASCADE"
+                               referencedColumnNames="ID"
+                               referencedTableName="T_RDF_NAMESPACE"
+                               referencedTableSchemaName="dd85613"
+                               referencesUniqueColumn="false"/>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-63">
+      <addForeignKeyConstraint baseColumnNames="M_ATTRIBUTE_ID"
+                               baseTableName="M_ATTRIBUTE_VOCABULARY"
+                               baseTableSchemaName="dd85613"
+                               constraintName="FK_M_ATTRIBUTE"
+                               deferrable="false"
+                               initiallyDeferred="false"
+                               onDelete="NO ACTION"
+                               onUpdate="NO ACTION"
+                               referencedColumnNames="M_ATTRIBUTE_ID"
+                               referencedTableName="M_ATTRIBUTE"
+                               referencedTableSchemaName="dd85613"
+                               referencesUniqueColumn="false"/>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-64">
+      <addForeignKeyConstraint baseColumnNames="VOCABULARY_ID"
+                               baseTableName="M_ATTRIBUTE_VOCABULARY"
+                               baseTableSchemaName="dd85613"
+                               constraintName="FK_VOCABULARY"
+                               deferrable="false"
+                               initiallyDeferred="false"
+                               onDelete="NO ACTION"
+                               onUpdate="NO ACTION"
+                               referencedColumnNames="VOCABULARY_ID"
+                               referencedTableName="VOCABULARY"
+                               referencedTableSchemaName="dd85613"
+                               referencesUniqueColumn="false"/>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-65">
+      <addForeignKeyConstraint baseColumnNames="SCHED_NAME, TRIGGER_NAME, TRIGGER_GROUP"
+                               baseTableName="QRTZ_BLOB_TRIGGERS"
+                               baseTableSchemaName="dd85613"
+                               constraintName="QRTZ_BLOB_TRIGGERS_ibfk_1"
+                               deferrable="false"
+                               initiallyDeferred="false"
+                               onDelete="NO ACTION"
+                               onUpdate="NO ACTION"
+                               referencedColumnNames="SCHED_NAME, TRIGGER_NAME, TRIGGER_GROUP"
+                               referencedTableName="QRTZ_TRIGGERS"
+                               referencedTableSchemaName="dd85613"
+                               referencesUniqueColumn="false"/>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-66">
+      <addForeignKeyConstraint baseColumnNames="SCHED_NAME, TRIGGER_NAME, TRIGGER_GROUP"
+                               baseTableName="QRTZ_CRON_TRIGGERS"
+                               baseTableSchemaName="dd85613"
+                               constraintName="QRTZ_CRON_TRIGGERS_ibfk_1"
+                               deferrable="false"
+                               initiallyDeferred="false"
+                               onDelete="NO ACTION"
+                               onUpdate="NO ACTION"
+                               referencedColumnNames="SCHED_NAME, TRIGGER_NAME, TRIGGER_GROUP"
+                               referencedTableName="QRTZ_TRIGGERS"
+                               referencedTableSchemaName="dd85613"
+                               referencesUniqueColumn="false"/>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-67">
+      <addForeignKeyConstraint baseColumnNames="SCHED_NAME, TRIGGER_NAME, TRIGGER_GROUP"
+                               baseTableName="QRTZ_SIMPLE_TRIGGERS"
+                               baseTableSchemaName="dd85613"
+                               constraintName="QRTZ_SIMPLE_TRIGGERS_ibfk_1"
+                               deferrable="false"
+                               initiallyDeferred="false"
+                               onDelete="NO ACTION"
+                               onUpdate="NO ACTION"
+                               referencedColumnNames="SCHED_NAME, TRIGGER_NAME, TRIGGER_GROUP"
+                               referencedTableName="QRTZ_TRIGGERS"
+                               referencedTableSchemaName="dd85613"
+                               referencesUniqueColumn="false"/>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-68">
+      <addForeignKeyConstraint baseColumnNames="SCHED_NAME, TRIGGER_NAME, TRIGGER_GROUP"
+                               baseTableName="QRTZ_SIMPROP_TRIGGERS"
+                               baseTableSchemaName="dd85613"
+                               constraintName="QRTZ_SIMPROP_TRIGGERS_ibfk_1"
+                               deferrable="false"
+                               initiallyDeferred="false"
+                               onDelete="NO ACTION"
+                               onUpdate="NO ACTION"
+                               referencedColumnNames="SCHED_NAME, TRIGGER_NAME, TRIGGER_GROUP"
+                               referencedTableName="QRTZ_TRIGGERS"
+                               referencedTableSchemaName="dd85613"
+                               referencesUniqueColumn="false"/>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-69">
+      <addForeignKeyConstraint baseColumnNames="SCHED_NAME, JOB_NAME, JOB_GROUP"
+                               baseTableName="QRTZ_TRIGGERS"
+                               baseTableSchemaName="dd85613"
+                               constraintName="QRTZ_TRIGGERS_ibfk_1"
+                               deferrable="false"
+                               initiallyDeferred="false"
+                               onDelete="NO ACTION"
+                               onUpdate="NO ACTION"
+                               referencedColumnNames="SCHED_NAME, JOB_NAME, JOB_GROUP"
+                               referencedTableName="QRTZ_JOB_DETAILS"
+                               referencedTableSchemaName="dd85613"
+                               referencesUniqueColumn="false"/>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-70">
+      <addForeignKeyConstraint baseColumnNames="SCHEMA_SET_ID"
+                               baseTableName="T_SCHEMA"
+                               baseTableSchemaName="dd85613"
+                               constraintName="FK_SCHEMA_SET_ID"
+                               deferrable="false"
+                               initiallyDeferred="false"
+                               onDelete="CASCADE"
+                               onUpdate="CASCADE"
+                               referencedColumnNames="SCHEMA_SET_ID"
+                               referencedTableName="T_SCHEMA_SET"
+                               referencedTableSchemaName="dd85613"
+                               referencesUniqueColumn="false"/>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-71">
+      <addForeignKeyConstraint baseColumnNames="VOCABULARY_CONCEPT_ID"
+                               baseTableName="T_SITE_CODE"
+                               baseTableSchemaName="dd85613"
+                               constraintName="FK_VOCABULARY_CONCEPT_ID"
+                               deferrable="false"
+                               initiallyDeferred="false"
+                               onDelete="CASCADE"
+                               onUpdate="NO ACTION"
+                               referencedColumnNames="VOCABULARY_CONCEPT_ID"
+                               referencedTableName="VOCABULARY_CONCEPT"
+                               referencedTableSchemaName="dd85613"
+                               referencesUniqueColumn="false"/>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-72">
+      <addForeignKeyConstraint baseColumnNames="FOLDER_ID"
+                               baseTableName="VOCABULARY"
+                               baseTableSchemaName="dd85613"
+                               constraintName="FK_FOLDER_ID"
+                               deferrable="false"
+                               initiallyDeferred="false"
+                               onDelete="CASCADE"
+                               onUpdate="CASCADE"
+                               referencedColumnNames="ID"
+                               referencedTableName="VOCABULARY_SET"
+                               referencedTableSchemaName="dd85613"
+                               referencesUniqueColumn="false"/>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-73">
+      <addForeignKeyConstraint baseColumnNames="DATAELEM_ID"
+                               baseTableName="VOCABULARY2ELEM"
+                               baseTableSchemaName="dd85613"
+                               constraintName="FK_ELEMENT_DATAELEM_ID"
+                               deferrable="false"
+                               initiallyDeferred="false"
+                               onDelete="CASCADE"
+                               onUpdate="CASCADE"
+                               referencedColumnNames="DATAELEM_ID"
+                               referencedTableName="DATAELEM"
+                               referencedTableSchemaName="dd85613"
+                               referencesUniqueColumn="false"/>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-74">
+      <addForeignKeyConstraint baseColumnNames="VOCABULARY_ID"
+                               baseTableName="VOCABULARY2ELEM"
+                               baseTableSchemaName="dd85613"
+                               constraintName="FK_ELEMENT_VOCABULARY_ID"
+                               deferrable="false"
+                               initiallyDeferred="false"
+                               onDelete="CASCADE"
+                               onUpdate="CASCADE"
+                               referencedColumnNames="VOCABULARY_ID"
+                               referencedTableName="VOCABULARY"
+                               referencedTableSchemaName="dd85613"
+                               referencesUniqueColumn="false"/>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-75">
+      <addForeignKeyConstraint baseColumnNames="VOCABULARY_ID"
+                               baseTableName="VOCABULARY_CONCEPT"
+                               baseTableSchemaName="dd85613"
+                               constraintName="FK_VOCABULARY_ID"
+                               deferrable="false"
+                               initiallyDeferred="false"
+                               onDelete="CASCADE"
+                               onUpdate="CASCADE"
+                               referencedColumnNames="VOCABULARY_ID"
+                               referencedTableName="VOCABULARY"
+                               referencedTableSchemaName="dd85613"
+                               referencesUniqueColumn="false"/>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-76">
+      <addForeignKeyConstraint baseColumnNames="DATAELEM_ID"
+                               baseTableName="VOCABULARY_CONCEPT_ELEMENT"
+                               baseTableSchemaName="dd85613"
+                               constraintName="FK_VALUE_DATAELEM_ID"
+                               deferrable="false"
+                               initiallyDeferred="false"
+                               onDelete="CASCADE"
+                               onUpdate="CASCADE"
+                               referencedColumnNames="DATAELEM_ID"
+                               referencedTableName="DATAELEM"
+                               referencedTableSchemaName="dd85613"
+                               referencesUniqueColumn="false"/>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-77">
+      <addForeignKeyConstraint baseColumnNames="RELATED_CONCEPT_ID"
+                               baseTableName="VOCABULARY_CONCEPT_ELEMENT"
+                               baseTableSchemaName="dd85613"
+                               constraintName="FK_ELEM_RELATED_CONCEPT_ID"
+                               deferrable="false"
+                               initiallyDeferred="false"
+                               onDelete="CASCADE"
+                               onUpdate="CASCADE"
+                               referencedColumnNames="VOCABULARY_CONCEPT_ID"
+                               referencedTableName="VOCABULARY_CONCEPT"
+                               referencedTableSchemaName="dd85613"
+                               referencesUniqueColumn="false"/>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-78">
+      <addForeignKeyConstraint baseColumnNames="VOCABULARY_CONCEPT_ID"
+                               baseTableName="VOCABULARY_CONCEPT_ELEMENT"
+                               baseTableSchemaName="dd85613"
+                               constraintName="FK_VALUE_VOCABULARY_CONCEPT_ID"
+                               deferrable="false"
+                               initiallyDeferred="false"
+                               onDelete="CASCADE"
+                               onUpdate="CASCADE"
+                               referencedColumnNames="VOCABULARY_CONCEPT_ID"
+                               referencedTableName="VOCABULARY_CONCEPT"
+                               referencedTableSchemaName="dd85613"
+                               referencesUniqueColumn="false"/>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-79">
+      <createIndex indexName="ACL_NAME" tableName="ACLS" unique="true">
+         <column name="ACL_NAME"/>
+         <column name="PARENT_NAME"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-80">
+      <createIndex indexName="IDENTIFIER" tableName="API_KEY" unique="true">
+         <column name="IDENTIFIER"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-81">
+      <createIndex indexName="KEY_VALUE" tableName="API_KEY" unique="true">
+         <column name="KEY_VALUE"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-82">
+      <createIndex indexName="ATTRIBUTE_UNIQUE" tableName="ATTRIBUTE" unique="true">
+         <column name="DATAELEM_ID"/>
+         <column name="PARENT_TYPE"/>
+         <column name="M_ATTRIBUTE_ID"/>
+         <column name="VALUE"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-83">
+      <createIndex indexName="DATAELEM_ID" tableName="ATTRIBUTE" unique="false">
+         <column name="DATAELEM_ID"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-84">
+      <createIndex indexName="IDX_PARENT_TYPE_ID" tableName="ATTRIBUTE" unique="false">
+         <column name="PARENT_TYPE"/>
+         <column name="DATAELEM_ID"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-85">
+      <createIndex indexName="M_ATTRIBUTE_ID" tableName="ATTRIBUTE" unique="false">
+         <column name="M_ATTRIBUTE_ID"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-86">
+      <createIndex indexName="PARENT_TYPE" tableName="ATTRIBUTE" unique="false">
+         <column name="PARENT_TYPE"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-87">
+      <createIndex indexName="IDENTIFIER" tableName="DATAELEM" unique="false">
+         <column name="IDENTIFIER"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-88">
+      <createIndex indexName="PARENT_NS" tableName="DATAELEM" unique="false">
+         <column name="PARENT_NS"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-89">
+      <createIndex indexName="SHORT_NAME" tableName="DATAELEM" unique="false">
+         <column name="SHORT_NAME"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-90">
+      <createIndex indexName="CORRESP_NS" tableName="DATASET" unique="false">
+         <column name="CORRESP_NS"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-91">
+      <createIndex indexName="IDENTIFIER" tableName="DATASET" unique="false">
+         <column name="IDENTIFIER"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-92">
+      <createIndex indexName="SHORT_NAME" tableName="DATASET" unique="false">
+         <column name="SHORT_NAME"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-93">
+      <createIndex indexName="DOC_UNIQUE" tableName="DOC" unique="true">
+         <column name="OWNER_ID"/>
+         <column name="OWNER_TYPE"/>
+         <column name="MD5_PATH"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-94">
+      <createIndex indexName="OWNER_ID" tableName="DOC" unique="false">
+         <column name="OWNER_ID"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-95">
+      <createIndex indexName="OWNER_TYPE" tableName="DOC" unique="false">
+         <column name="OWNER_TYPE"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-96">
+      <createIndex indexName="DATASET_ID" tableName="DST2TBL" unique="false">
+         <column name="DATASET_ID"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-97">
+      <createIndex indexName="DST2TBL_UNIQUE" tableName="DST2TBL" unique="true">
+         <column name="DATASET_ID"/>
+         <column name="TABLE_ID"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-98">
+      <createIndex indexName="TABLE_ID" tableName="DST2TBL" unique="false">
+         <column name="TABLE_ID"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-99">
+      <createIndex indexName="CORRESP_NS" tableName="DS_TABLE" unique="false">
+         <column name="CORRESP_NS"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-100">
+      <createIndex indexName="IDENTIFIER" tableName="DS_TABLE" unique="false">
+         <column name="IDENTIFIER"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-101">
+      <createIndex indexName="PARENT_NS" tableName="DS_TABLE" unique="false">
+         <column name="PARENT_NS"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-102">
+      <createIndex indexName="SHORT_NAME" tableName="DS_TABLE" unique="false">
+         <column name="SHORT_NAME"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-103">
+      <createIndex indexName="A_ID" tableName="FK_RELATION" unique="false">
+         <column name="A_ID"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-104">
+      <createIndex indexName="B_ID" tableName="FK_RELATION" unique="false">
+         <column name="B_ID"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-105">
+      <createIndex indexName="FXV_UNIQUE" tableName="FXV" unique="true">
+         <column name="OWNER_ID"/>
+         <column name="OWNER_TYPE"/>
+         <column name="VALUE"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-106">
+      <createIndex indexName="OWNER_TYPE" tableName="FXV" unique="false">
+         <column name="OWNER_TYPE"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-107">
+      <createIndex indexName="IDX_M_ATTRIBUTE_NAME"
+                   tableName="M_ATTRIBUTE"
+                   unique="false">
+         <column name="NAME"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-108">
+      <createIndex indexName="IDX_QRTZ_FT_INST_JOB_REQ_RCVRY"
+                   tableName="QRTZ_FIRED_TRIGGERS"
+                   unique="false">
+         <column name="SCHED_NAME"/>
+         <column name="INSTANCE_NAME"/>
+         <column name="REQUESTS_RECOVERY"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-109">
+      <createIndex indexName="IDX_QRTZ_FT_JG"
+                   tableName="QRTZ_FIRED_TRIGGERS"
+                   unique="false">
+         <column name="SCHED_NAME"/>
+         <column name="JOB_GROUP"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-110">
+      <createIndex indexName="IDX_QRTZ_FT_J_G"
+                   tableName="QRTZ_FIRED_TRIGGERS"
+                   unique="false">
+         <column name="SCHED_NAME"/>
+         <column name="JOB_NAME"/>
+         <column name="JOB_GROUP"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-111">
+      <createIndex indexName="IDX_QRTZ_FT_TG"
+                   tableName="QRTZ_FIRED_TRIGGERS"
+                   unique="false">
+         <column name="SCHED_NAME"/>
+         <column name="TRIGGER_GROUP"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-112">
+      <createIndex indexName="IDX_QRTZ_FT_TRIG_INST_NAME"
+                   tableName="QRTZ_FIRED_TRIGGERS"
+                   unique="false">
+         <column name="SCHED_NAME"/>
+         <column name="INSTANCE_NAME"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-113">
+      <createIndex indexName="IDX_QRTZ_FT_T_G"
+                   tableName="QRTZ_FIRED_TRIGGERS"
+                   unique="false">
+         <column name="SCHED_NAME"/>
+         <column name="TRIGGER_NAME"/>
+         <column name="TRIGGER_GROUP"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-114">
+      <createIndex indexName="IDX_QRTZ_J_GRP"
+                   tableName="QRTZ_JOB_DETAILS"
+                   unique="false">
+         <column name="SCHED_NAME"/>
+         <column name="JOB_GROUP"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-115">
+      <createIndex indexName="IDX_QRTZ_J_REQ_RECOVERY"
+                   tableName="QRTZ_JOB_DETAILS"
+                   unique="false">
+         <column name="SCHED_NAME"/>
+         <column name="REQUESTS_RECOVERY"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-116">
+      <createIndex indexName="IDX_QRTZ_T_C" tableName="QRTZ_TRIGGERS" unique="false">
+         <column name="SCHED_NAME"/>
+         <column name="CALENDAR_NAME"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-117">
+      <createIndex indexName="IDX_QRTZ_T_G" tableName="QRTZ_TRIGGERS" unique="false">
+         <column name="SCHED_NAME"/>
+         <column name="TRIGGER_GROUP"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-118">
+      <createIndex indexName="IDX_QRTZ_T_JG" tableName="QRTZ_TRIGGERS" unique="false">
+         <column name="SCHED_NAME"/>
+         <column name="JOB_GROUP"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-119">
+      <createIndex indexName="IDX_QRTZ_T_NEXT_FIRE_TIME"
+                   tableName="QRTZ_TRIGGERS"
+                   unique="false">
+         <column name="SCHED_NAME"/>
+         <column name="NEXT_FIRE_TIME"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-120">
+      <createIndex indexName="IDX_QRTZ_T_NFT_MISFIRE"
+                   tableName="QRTZ_TRIGGERS"
+                   unique="false">
+         <column name="SCHED_NAME"/>
+         <column name="MISFIRE_INSTR"/>
+         <column name="NEXT_FIRE_TIME"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-121">
+      <createIndex indexName="IDX_QRTZ_T_NFT_ST"
+                   tableName="QRTZ_TRIGGERS"
+                   unique="false">
+         <column name="SCHED_NAME"/>
+         <column name="TRIGGER_STATE"/>
+         <column name="NEXT_FIRE_TIME"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-122">
+      <createIndex indexName="IDX_QRTZ_T_NFT_ST_MISFIRE"
+                   tableName="QRTZ_TRIGGERS"
+                   unique="false">
+         <column name="SCHED_NAME"/>
+         <column name="MISFIRE_INSTR"/>
+         <column name="NEXT_FIRE_TIME"/>
+         <column name="TRIGGER_STATE"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-123">
+      <createIndex indexName="IDX_QRTZ_T_NFT_ST_MISFIRE_GRP"
+                   tableName="QRTZ_TRIGGERS"
+                   unique="false">
+         <column name="SCHED_NAME"/>
+         <column name="MISFIRE_INSTR"/>
+         <column name="NEXT_FIRE_TIME"/>
+         <column name="TRIGGER_GROUP"/>
+         <column name="TRIGGER_STATE"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-124">
+      <createIndex indexName="IDX_QRTZ_T_N_G_STATE"
+                   tableName="QRTZ_TRIGGERS"
+                   unique="false">
+         <column name="SCHED_NAME"/>
+         <column name="TRIGGER_GROUP"/>
+         <column name="TRIGGER_STATE"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-125">
+      <createIndex indexName="IDX_QRTZ_T_N_STATE"
+                   tableName="QRTZ_TRIGGERS"
+                   unique="false">
+         <column name="SCHED_NAME"/>
+         <column name="TRIGGER_NAME"/>
+         <column name="TRIGGER_GROUP"/>
+         <column name="TRIGGER_STATE"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-126">
+      <createIndex indexName="IDX_QRTZ_T_STATE"
+                   tableName="QRTZ_TRIGGERS"
+                   unique="false">
+         <column name="SCHED_NAME"/>
+         <column name="TRIGGER_STATE"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-127">
+      <createIndex indexName="DATAELEM_ID" tableName="TBL2ELEM" unique="false">
+         <column name="DATAELEM_ID"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-128">
+      <createIndex indexName="TABLE_ID" tableName="TBL2ELEM" unique="false">
+         <column name="TABLE_ID"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-129">
+      <createIndex indexName="TBL2ELEM_UNIQUE" tableName="TBL2ELEM" unique="true">
+         <column name="TABLE_ID"/>
+         <column name="DATAELEM_ID"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-130">
+      <createIndex indexName="CONTINUITY_ID" tableName="T_SCHEMA" unique="false">
+         <column name="CONTINUITY_ID"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-131">
+      <createIndex indexName="FILENAME" tableName="T_SCHEMA" unique="false">
+         <column name="FILENAME"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-132">
+      <createIndex indexName="CONTINUITY_ID" tableName="T_SCHEMA_SET" unique="false">
+         <column name="CONTINUITY_ID"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-133">
+      <createIndex indexName="IDENTIFIER" tableName="T_SCHEMA_SET" unique="false">
+         <column name="IDENTIFIER"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-134">
+      <createIndex indexName="IDENTIFIER" tableName="VOCABULARY" unique="false">
+         <column name="IDENTIFIER"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-135">
+      <createIndex indexName="UNIQUE_VOCABULARY" tableName="VOCABULARY" unique="true">
+         <column name="FOLDER_ID"/>
+         <column name="IDENTIFIER"/>
+         <column name="WORKING_COPY"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-136">
+      <createIndex indexName="UNIQUE_VOCABULARY_ELEMENT"
+                   tableName="VOCABULARY2ELEM"
+                   unique="true">
+         <column name="VOCABULARY_ID"/>
+         <column name="DATAELEM_ID"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-137">
+      <createIndex indexName="UNIQUE_CONCEPT"
+                   tableName="VOCABULARY_CONCEPT"
+                   unique="true">
+         <column name="VOCABULARY_ID"/>
+         <column name="IDENTIFIER"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-138">
+      <createIndex indexName="UNIQ_ATTR_MD5"
+                   tableName="VOCABULARY_CONCEPT_ELEMENT"
+                   unique="true">
+         <column name="VOCABULARY_CONCEPT_ID"/>
+         <column name="DATAELEM_ID"/>
+         <column name="ATTR_MD5"/>
+      </createIndex>
+   </changeSet>
+   <changeSet author="dev-vs (generated)" id="1520438945019-139">
+      <createIndex indexName="UNIQUE_FOLDER" tableName="VOCABULARY_SET" unique="true">
+         <column name="IDENTIFIER"/>
+      </createIndex>
+   </changeSet>
+</databaseChangeLog>
