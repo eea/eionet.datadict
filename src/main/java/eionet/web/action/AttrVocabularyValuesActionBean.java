@@ -12,7 +12,6 @@ import eionet.datadict.model.DataElement;
 import eionet.datadict.model.DataSet;
 import eionet.datadict.model.DatasetTable;
 import eionet.datadict.services.AttributeService;
-import eionet.datadict.services.DataSetService;
 import eionet.datadict.services.data.AttributeDataService;
 import eionet.datadict.services.data.DataElementDataService;
 import eionet.datadict.services.data.DataSetDataService;
@@ -499,7 +498,7 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
         return dataSet;
     }
 
-    public void setDataset(DataSet dataSet) {
+    public void setDataSet(DataSet dataSet) {
         this.dataSet = dataSet;
     }
 

@@ -6,7 +6,7 @@
     <stripes:layout-component name="contents">
         <c:choose>
             <c:when test="${actionBean.attrOwnerType eq 'dataset'}">
-                <c:set var="ddEntity" value="${actionBean.dataset}"/>
+                <c:set var="ddEntity" value="${actionBean.dataSet}"/>
                 <c:set var="ddEntityTitle" value="${ddEntity.shortName}"/>
                 <c:set var="backLabel" value="Back to dataset edit page"/>
                 <c:set var="backLink" value="${actionBean.contextPath}/datasets/${ddEntity.id}/edit"/>
