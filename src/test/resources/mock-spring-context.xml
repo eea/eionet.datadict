@@ -63,10 +63,10 @@
         <property name="fileLocalusers" value="${file.localusers}" />
         <property name="fileLocalgroups" value="${file.localgroups}" />
         <property name="filePermissions" value="${file.permissions}" />
-        <property name="dbDriver" value="${db.drv}" />
-        <property name="dbUrl" value="${db.url}" />
-        <property name="dbUser" value="${db.usr}" />
-        <property name="dbPwd" value="${db.psw}" />
+        <property name="dbDriver" value="${test.db.driver}" />
+        <property name="dbUrl" value="${test.db.jdbcurl}" />
+        <property name="dbUser" value="${test.db.user}" />
+        <property name="dbPwd" value="${test.db.password}" />
     </bean>
     
     <bean id="accessController" class="eionet.acl.AccessController">
