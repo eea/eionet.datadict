@@ -15,7 +15,7 @@ pipeline {
     }
     stage('Results') {
       steps {
-        junit '**/target/surefire-reports/*.xml'
+        junit '**/target/failsafe-reports/*.xml'
         pmd canComputeNew: false
         dry canComputeNew: false
         checkstyle canComputeNew: false
