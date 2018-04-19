@@ -137,7 +137,6 @@
                         <id>stop</id>
                         <phase>post-integration-test</phase>
                         <goals>
-                            <goal>logs</goal>
                             <goal>stop</goal>
                         </goals>
                     </execution>
