@@ -17,18 +17,12 @@ import org.openrdf.rio.rdfxml.RDFXMLParser;
 import java.io.ByteArrayOutputStream;
 import java.io.Reader;
 import java.io.StringReader;
-import java.security.CodeSource;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.SAXParserFactory;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.xpath.XPathFactory;
 
 /**
  * Test VocabularyXmlWriter.
