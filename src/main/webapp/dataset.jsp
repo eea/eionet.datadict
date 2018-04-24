@@ -707,6 +707,10 @@
             return true;
         }
 
+        function openStructure(url){
+            window.open(url,null,"height=600,width=800,status=yes,toolbar=yes,scrollbars=yes,resizable=yes,menubar=yes,location=yes");
+        }
+
    // ]]>
     </script>
 </head>
@@ -1605,7 +1609,7 @@ else if (mode.equals("add"))
                                                     <div style="text-align:right">
                                                         The file representing the dataset stucture cannot be displayed on this web-page.
                                                         But you can see it by pressing the following link:<br/>
-                                                        <a href="javascript:openStructure('visuals/<%=Util.processForDisplay(dsVisual)%>')"><%=Util.processForDisplay(dsVisual)%></a>
+                                                        <a href="javascript:openStructure('<%=request.getContextPath()%>/visuals/<%=Util.processForDisplay(dsVisual)%>')"><%=Util.processForDisplay(dsVisual)%></a>
                                                     </div><%
                                                 }
                                             }

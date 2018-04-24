@@ -190,7 +190,7 @@ request.setAttribute("currentSection", "datasets");
                             else{ %>
                                 The file representing the dataset <%=type%> structure cannot be displayed on this web-page.
                                 But you can see it by pressing the following link:<br/>
-                                <a href="javascript:openStructure('visuals/<%=Util.processForDisplay(dsVisual, true)%>')"><%=Util.processForDisplay(dsVisual)%></a> <%
+                                <a href="javascript:openStructure('<%=request.getContextPath()%>/visuals/<%=Util.processForDisplay(dsVisual, true)%>')"><%=Util.processForDisplay(dsVisual)%></a> <%
                             } %>
                             </td>
                         </tr>
