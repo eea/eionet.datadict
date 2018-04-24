@@ -24,11 +24,38 @@
     <listener>
         <listener-class>eionet.meta.scheduled.VocabularyReferenceMatchJob</listener-class>
     </listener>
+
     <listener>
         <listener-class>eionet.meta.ContainerContextClosedHandler</listener-class>
     </listener>
 
     <!-- filters -->
+    <filter>
+        <filter-name>CompressionFilter</filter-name>
+        <filter-class>net.sf.ehcache.constructs.web.filter.GzipFilter</filter-class>
+    </filter>
+    
+    <filter>
+        <description>
+            Java Servlet API port of Apache mod_expires to add 'Expires' and 'Cache-Control: max-age=' 
+            headers to static assets
+        </description>
+        <filter-name>ExpiresFilter</filter-name>
+        <filter-class>org.apache.catalina.filters.ExpiresFilter</filter-class>
+        <init-param>
+           <param-name>ExpiresByType image</param-name>
+           <param-value>access plus 1 day</param-value>
+        </init-param>
+        <init-param>
+           <param-name>ExpiresByType text/css</param-name>
+           <param-value>access plus 1 day</param-value>
+        </init-param>
+        <init-param>
+           <param-name>ExpiresByType application/javascript</param-name>
+           <param-value>access plus 1 day</param-value>
+        </init-param>
+    </filter>
+
     <filter>
         <filter-name>CAS Filter</filter-name>
         <filter-class>eionet.meta.filters.EionetCASFilter</filter-class>
@@ -47,7 +74,6 @@
         <filter-name>springSecurityFilterChain</filter-name>
         <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
     </filter>
-
 
     <filter>
         <description>
@@ -92,35 +118,49 @@
         <filter-name>DatasetJspFilter</filter-name>
         <filter-class>eionet.meta.filters.DatasetJspFilter</filter-class>
     </filter>
+
     <filter>
         <filter-name>DDCORSFilter</filter-name>
         <filter-class>eionet.meta.filters.DDCORSFilter</filter-class>
     </filter>
+
     <filter>
         <filter-name>DsTableJspFilter</filter-name>
         <filter-class>eionet.meta.filters.DsTableJspFilter</filter-class>
     </filter>
+
     <filter>
         <filter-name>DataElementJspFilter</filter-name>
         <filter-class>eionet.meta.filters.DataElementJspFilter</filter-class>
     </filter>
+
     <filter>
         <filter-name>ContentNegotiationFilter</filter-name>
         <filter-class>eionet.web.filter.ContentNegotiationFilter</filter-class>
     </filter>
+
     <filter>
         <filter-name>ResponseOverrideFilter</filter-name>
         <filter-class>org.displaytag.filter.ResponseOverrideFilter</filter-class>
     </filter>
-
+    
     <!-- Filter Mappings -->
     <filter-mapping>
         <filter-name>StripesFilter</filter-name>
         <url-pattern>*.jsp</url-pattern>
         <dispatcher>REQUEST</dispatcher>
     </filter-mapping>
+  
+    <filter-mapping>
+        <filter-name>CompressionFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
 
- 
+    <filter-mapping>
+        <filter-name>ExpiresFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+    </filter-mapping>
 
     <filter-mapping>
         <filter-name>springSecurityFilterChain</filter-name>
@@ -131,22 +171,27 @@
         <filter-name>ContentNegotiationFilter</filter-name>
         <url-pattern>/tables/*</url-pattern>
     </filter-mapping>
+
     <filter-mapping>
         <filter-name>ContentNegotiationFilter</filter-name>
         <url-pattern>/dataelements/*</url-pattern>
     </filter-mapping>
+
     <filter-mapping>
         <filter-name>ContentNegotiationFilter</filter-name>
         <url-pattern>/schemasets/*</url-pattern>
     </filter-mapping>
+
     <filter-mapping>
         <filter-name>ContentNegotiationFilter</filter-name>
         <url-pattern>/vocabulary/*</url-pattern>
     </filter-mapping>
+
     <filter-mapping>
         <filter-name>DDCORSFilter</filter-name>
         <url-pattern>/vocabulary/*</url-pattern>
     </filter-mapping>
+
     <filter-mapping>
         <filter-name>ContentNegotiationFilter</filter-name>
         <url-pattern>/vocabularyfolder/*</url-pattern>
@@ -172,22 +217,27 @@
         <filter-name>DatasetJspFilter</filter-name>
         <url-pattern>/dataset.jsp</url-pattern>
     </filter-mapping>
+
     <filter-mapping>
         <filter-name>DsTableJspFilter</filter-name>
         <url-pattern>/dstable.jsp</url-pattern>
     </filter-mapping>
+
     <filter-mapping>
         <filter-name>DataElementJspFilter</filter-name>
         <url-pattern>/data_element.jsp</url-pattern>
     </filter-mapping>
+
     <filter-mapping>
         <filter-name>ResponseOverrideFilter</filter-name>
         <url-pattern>/services/siteCodes/search</url-pattern>
     </filter-mapping>
+
     <filter-mapping>
         <filter-name>ResponseOverrideFilter</filter-name>
         <url-pattern>/vocabulary/*</url-pattern>
     </filter-mapping>
+
     <!-- servlets -->
     <servlet>
         <servlet-name>StripesDispatcher</servlet-name>
@@ -433,10 +483,7 @@
         <servlet-class>eionet.meta.DownloadServlet</servlet-class>
     </servlet>
    
-
     <!-- servlet mappings -->
-
-
     <servlet-mapping>
         <servlet-name>rpcrouter</servlet-name>
         <url-pattern>/rpcrouter</url-pattern>
