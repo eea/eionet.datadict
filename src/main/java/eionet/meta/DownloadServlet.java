@@ -9,7 +9,6 @@ import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.zip.GZIPOutputStream;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -274,11 +273,7 @@ public class DownloadServlet extends HttpServlet {
                 response.setHeader("Content-Range", "bytes " + r.start + "-" + r.end + "/" + r.total);
 
                 if (content) {
-                    if (acceptsGzip) {
-                        // The browser accepts GZIP, so GZIP the content.
-                        response.setHeader("Content-Encoding", "gzip");
-                        output = new GZIPOutputStream(output, DEFAULT_BUFFER_SIZE);
-                    } else {
+                    if (!acceptsGzip) {
                         // Content length is not directly predictable in case of GZIP.
                         // So only add it if there is no means of GZIP, else browser will hang.
                         response.setHeader("Content-Length", String.valueOf(r.length));
