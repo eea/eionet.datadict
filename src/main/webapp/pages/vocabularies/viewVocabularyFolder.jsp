@@ -333,6 +333,16 @@
                             <label for="visibleDefinition" class="smallfont">Yes</label>
                         </td>
                     </tr>
+                    <tr>
+                        <td class="label">
+                            <label for="pageSize">Page size</label>
+                        </td>
+                        <td class="input">
+                            <stripes:select id="pageSize" name="filter.pageSize">
+                                <stripes:options-collection collection="${actionBean.filter.possibleResultsPerPage}" />
+                            </stripes:select>
+                        </td>
+                    </tr>
                 </table>
                 <p class="actions">
                     <stripes:submit name="view" value="Search" class="mediumbuttonb searchButton" />
