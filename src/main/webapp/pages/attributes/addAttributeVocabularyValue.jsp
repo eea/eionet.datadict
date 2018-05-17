@@ -87,6 +87,16 @@
                             </td>
                         </tr>
                     </c:if>
+                    <tr>
+                        <td class="label">
+                            <label for="pageSize">Page size</label>
+                        </td>
+                        <td class="input">
+                            <stripes:select id="pageSize" name="filter.pageSize">
+                                <stripes:options-collection collection="${actionBean.filter.possibleResultsPerPage}" />
+                            </stripes:select>
+                        </td>
+                    </tr>
                 </table>
                 <p class="actions">
                     <stripes:submit name="add" value="Search" class="mediumbuttonb searchButton" />
