@@ -21,6 +21,8 @@
 
 package eionet.meta.service.data;
 
+import java.util.Arrays;
+import java.util.List;
 import org.displaytag.properties.SortOrderEnum;
 
 /**
@@ -42,6 +44,10 @@ public class PagedRequest {
 
     private boolean usePaging = true;
 
+    public List<Integer> getPossibleResultsPerPage() {
+        return Arrays.asList(new Integer[] {20,50,100,500,1000});
+    }
+
     /**
      * Returns the offset of the first row for the search result to return.
      */
@@ -61,7 +67,11 @@ public class PagedRequest {
      *            the pageSize to set
      */
     public void setPageSize(int pageSize) {
-        this.pageSize = pageSize;
+        if (getPossibleResultsPerPage().contains(pageSize)) {
+            this.pageSize = pageSize;
+        } else {
+            this.pageSize = DEFAULT_PAGE_SIZE;
+        }
     }
 
     /**
