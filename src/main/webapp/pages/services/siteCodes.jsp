@@ -163,12 +163,8 @@
                             <label title="Result page size" for="pageSize">Page size</label>
                         </td>
                         <td class="input">
-                            <stripes:select name="filter.pageSize" id="pageSize" value="${actionBean.filter.pageSize}">
-                                <stripes:option value="20" label="20" />
-                                <stripes:option value="50" label="50" />
-                                <stripes:option value="100" label="100" />
-                                <stripes:option value="500" label="500" />
-                                <stripes:option value="1000" label="1000" />
+                            <stripes:select id="pageSize" name="filter.pageSize">
+                                <stripes:options-collection collection="${actionBean.filter.possibleResultsPerPage}" />
                             </stripes:select>
                         </td>
                     </tr>
