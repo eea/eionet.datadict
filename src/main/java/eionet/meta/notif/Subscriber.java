@@ -6,7 +6,6 @@ package eionet.meta.notif;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -125,7 +124,7 @@ public class Subscriber extends HttpServlet {
 
             // set up the filters
             Hashtable<String, String> filter = null;
-            ArrayList<Hashtable<String, String>> filters = new ArrayList<Hashtable<String, String>>();
+            Vector<Hashtable<String, String>> filters = new Vector<Hashtable<String, String>>();
 
             String newDatasets = req.getParameter("new_datasets");
             String newTables = req.getParameter("new_tables");
@@ -170,7 +169,6 @@ public class Subscriber extends HttpServlet {
 
             // call RPC method
             if (filters.size() > 0) {
-
                 subscribe(Collections.singleton(username), filters);
             }
 
