@@ -1,27 +1,21 @@
 package eionet.meta;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import eionet.datadict.errors.EmptyParameterException;
 import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.model.Attribute;
 import eionet.datadict.model.DataDictEntity;
 import eionet.datadict.services.AttributeService;
 import eionet.datadict.services.data.AttributeDataService;
+
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.StringTokenizer;
-import java.util.Vector;
+import java.util.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1904,7 +1898,7 @@ public class DDSearchEngine {
                 // JH101003 - unless were in 'restore' mode
                 if (!deleted && ds != null && idf.equals(ds.getIdentifier())) {
                     continue;
-                }
+                } 
 
                 ds = new Dataset(rs.getString("DATASET_ID"), rs.getString("SHORT_NAME"), rs.getString("VERSION"));
 
@@ -1920,21 +1914,14 @@ public class DDSearchEngine {
                 ds.setDate(rs.getString("DATE"));
                 ds.setUser(rs.getString("USER"));
                 ds.setSuccessorId(rs.getString("SUCCESSOR"));
-                Boolean excelXmlDownloadValue = rs.getBoolean("ALLOW_EXCEL_DOWNLOAD");
-                if (rs.wasNull()) {
-                    ds.setAllowExcelXMLDownload(true);
-                } else {
-                    ds.setAllowExcelXMLDownload(excelXmlDownloadValue);
-                }
-                Boolean msAccessDownloadValue = rs.getObject("ALLOW_MSACCESS_DOWNLOAD", Boolean.class);
-                if (rs.wasNull()) {
-                    ds.setAllowMSAccessDownload(true);
-                } else {
-                    ds.setAllowMSAccessDownload(msAccessDownloadValue);
-                }
+
+                ds.setDesirializedDisplayDownloadLinksFromSerializedMap(rs.getString("DISPLAY_DOWNLOAD_LINKS"));
 
                 v.add(ds);
             }
+        } catch (IOException e) {
+            LOGGER.error("Error Desirializing Dataset DisplayDownloadLinks",e);
+
         } finally {
             try {
                 if (rs != null) {

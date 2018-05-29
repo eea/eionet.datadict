@@ -1,8 +1,12 @@
 package eionet.meta;
 
+import java.io.IOException;
 import java.util.Hashtable;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Vector;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 
@@ -39,11 +43,37 @@ public class Dataset implements Comparable {
     private String checkedoutCopyID = null;
     private String successorId = null;
 
-    private Boolean allowExcelXMLDownload;
-    private Boolean allowMSAccessDownload;
 
+
+    private String serializedDisplayDownloadLinks;
     /** */
     private String user;
+
+
+    private Map<DISPLAY_DOWNLOAD_LINKS,Boolean> deserializedDisplayDownloadLinks = this.initializeDiSplayDownloadLinksMap();
+
+    public  enum DISPLAY_DOWNLOAD_LINKS{
+        PDF(""),
+        XML_SCHEMA(""),
+        XML_SCHEMA_OLD_STRUCTURE(""),
+        XML_INSTANCE(""),
+        MS_EXCEL(""),
+        XLS_VALIDATION_METADATA(""),
+        MS_EXCEL_OLD_STRUCTURE(""),
+        MS_EXCEL_DROPDOWN_BOXES(""),
+        ADVANCED_ACCESS(""),
+        CODELISTS_CSV(""),
+        CODELISTS_XML("");
+
+        private String value;
+        DISPLAY_DOWNLOAD_LINKS(String value){
+            this.value=value;
+        }
+        public String getValue(){
+            return value;
+        }
+    }
+
 
     /*
      *
@@ -349,19 +379,51 @@ public class Dataset implements Comparable {
         this.user = user;
     }
 
-    public Boolean getAllowExcelXMLDownload() {
-        return allowExcelXMLDownload;
+
+
+    public String getSerializedDisplayDownloadLinks() {
+        return serializedDisplayDownloadLinks;
     }
 
-    public void setAllowExcelXMLDownload(Boolean allowExcelXMLDownload) {
-        this.allowExcelXMLDownload = allowExcelXMLDownload;
+    public void setSerializedDisplayDownloadLinks(String serializedDisplayDownloadLinks) {
+        this.serializedDisplayDownloadLinks = serializedDisplayDownloadLinks;
     }
 
-    public Boolean getAllowMSAccessDownload() {
-        return allowMSAccessDownload;
+    public Map<DISPLAY_DOWNLOAD_LINKS, Boolean> getDeserializedDisplayDownloadLinks() {
+        return deserializedDisplayDownloadLinks;
+    }
+ 
+    public void setDesirializedDisplayDownloadLinks(Map<DISPLAY_DOWNLOAD_LINKS, Boolean> deserializedDisplayDownloadLinks) {
+        this.deserializedDisplayDownloadLinks = deserializedDisplayDownloadLinks;
     }
 
-    public void setAllowMSAccessDownload(Boolean allowMSAccessDownload) {
-        this.allowMSAccessDownload = allowMSAccessDownload;
+    public void setDesirializedDisplayDownloadLinksFromSerializedMap(String serializedDisplayDownloadLinks) throws IOException {
+        if(serializedDisplayDownloadLinks==null ||serializedDisplayDownloadLinks.isEmpty()){
+                  //case when it is the first time that the new  mechanism for Display DownloadLinks is used for this Dataset
+            for (Dataset.DISPLAY_DOWNLOAD_LINKS value : Dataset.DISPLAY_DOWNLOAD_LINKS.values()) {
+                this.deserializedDisplayDownloadLinks.put(value, true);
+            }
+            return; 
+        } 
+        ObjectMapper mapper = new ObjectMapper(); 
+        Map<String, String> results = mapper.readValue(serializedDisplayDownloadLinks, Map.class);
+        Map<Dataset.DISPLAY_DOWNLOAD_LINKS, Boolean> databaseValues = new LinkedHashMap<>();
+        for (DISPLAY_DOWNLOAD_LINKS value : DISPLAY_DOWNLOAD_LINKS.values()) {
+            String enumasName = value.name();
+          //  System.out.println(enumasName);
+            Object res = results.get(enumasName);
+            if (res != null) { 
+                this.deserializedDisplayDownloadLinks.put(value, res.toString().equals("true") ? true : false);
+            }    
+        }    
+    }       
+
+    private Map<DISPLAY_DOWNLOAD_LINKS, Boolean> initializeDiSplayDownloadLinksMap() {
+        Map<DISPLAY_DOWNLOAD_LINKS, Boolean> map = new LinkedHashMap<>();
+        for (DISPLAY_DOWNLOAD_LINKS value : DISPLAY_DOWNLOAD_LINKS.values()) {
+            map.put(value, true);
+        } 
+        return map;
+
     }
 }

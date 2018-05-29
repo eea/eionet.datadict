@@ -1,5 +1,6 @@
 package eionet.datadict.services.data.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import eionet.datadict.dal.AttributeDao;
 import eionet.datadict.dal.AttributeValueDao;
 import eionet.datadict.dal.DataElementDao;
@@ -11,9 +12,15 @@ import eionet.datadict.model.DataSet;
 import eionet.datadict.model.DatasetTable;
 import eionet.datadict.orm.OrmUtils;
 import eionet.datadict.services.data.DataSetDataService;
+
+import java.io.IOException;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.serializer.support.SerializationFailedException;
 import org.springframework.stereotype.Service;
 
 /**
@@ -45,7 +52,7 @@ public class DataSetDataServiceImpl implements DataSetDataService {
         dataset.setDatasetTables(new HashSet<DatasetTable>(dsTables));
         OrmUtils.link(dataset, dsTables);
         List<AttributeValue> attributeValues = attributeValueDao.getByOwner(new DataDictEntity(dataset.getId(), DataDictEntity.Entity.DS));
-        
+
         return dataset;
     }
 
@@ -55,13 +62,59 @@ public class DataSetDataServiceImpl implements DataSetDataService {
     }
 
     @Override
-    public void setDatasetExcelXMLDownloadOption(int dataSetId, boolean value) {
-        datasetDao.updateExcelXMLDownload(dataSetId, value);
+    public void update(DataSet dataSet) {
+        datasetDao.updateDataSet(dataSet);
     }
 
     @Override
-    public void setDatasetMSAccessDownloadOption(int dataSetId, boolean value) {
-        datasetDao.updateMSAccessDownload(dataSetId, value);
+    public void updateDatasetDispDownloadLinks(int dataSetId, DataSet.DISPLAY_DOWNLOAD_LINKS linkInfo) {
+        DataSet dataSet = this.datasetDao.getById(dataSetId);
+        //case when it is the first time that the new  mechanism for Display DownloadLinks is used for this Dataset
+        if (dataSet.getSerializedDisplayDownloadLinks() == null || dataSet.getSerializedDisplayDownloadLinks().isEmpty()) {
+            Map<DataSet.DISPLAY_DOWNLOAD_LINKS, Boolean> defaultValues = new LinkedHashMap<>();
+            for (DataSet.DISPLAY_DOWNLOAD_LINKS value : DataSet.DISPLAY_DOWNLOAD_LINKS.values()) {
+                defaultValues.put(value, true);
+            }
+            defaultValues.put(linkInfo, linkInfo.getValue().equals("true") ? true : false);
+            datasetDao.updateDataSetDispDownloadLinks(dataSetId, this.serializeDatasetDisplayDownloadLinks(defaultValues));
+            return;
+        }
+        Map<DataSet.DISPLAY_DOWNLOAD_LINKS, Boolean> deserializedResults = this.deserializeDatasetDisplayDownloadLinks(dataSet.getSerializedDisplayDownloadLinks());
+        deserializedResults.put(linkInfo, linkInfo.getValue().equals("true") ? true : false);
+        datasetDao.updateDataSetDispDownloadLinks(dataSetId, this.serializeDatasetDisplayDownloadLinks(deserializedResults));
+    }
+
+    @Override
+    public Map<DataSet.DISPLAY_DOWNLOAD_LINKS, Boolean> deserializeDatasetDisplayDownloadLinks(String serializedDisplayDownloadLinks) {
+        Map<DataSet.DISPLAY_DOWNLOAD_LINKS, Boolean> parsedResults = new LinkedHashMap<>();
+        //initialize map with default values  
+        for (DataSet.DISPLAY_DOWNLOAD_LINKS value : DataSet.DISPLAY_DOWNLOAD_LINKS.values()) {
+            parsedResults.put(value, true);
+        }
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            Map<String, Object> rawResults = mapper.readValue(serializedDisplayDownloadLinks, Map.class);
+            for (DataSet.DISPLAY_DOWNLOAD_LINKS value : DataSet.DISPLAY_DOWNLOAD_LINKS.values()) {
+                Object res = rawResults.get(value.name());
+                if (res != null) {
+                    parsedResults.put(value, (Boolean) res);
+                }
+            }
+        } catch (IOException ex) {
+            throw new SerializationFailedException("failed to Deserialize :" + serializedDisplayDownloadLinks, ex);
+        }
+        return parsedResults;
+    }
+
+    @Override
+    public String serializeDatasetDisplayDownloadLinks(Map<DataSet.DISPLAY_DOWNLOAD_LINKS, Boolean> deserializedDisplayDownloadLinks) {
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            return mapper.writeValueAsString(deserializedDisplayDownloadLinks);
+        } catch (IOException ex) {
+            throw new SerializationFailedException("failed to Serialize :" + deserializedDisplayDownloadLinks, ex);
+
+        }
     }
 
 }

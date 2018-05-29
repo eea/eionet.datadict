@@ -13,6 +13,7 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -22,7 +23,7 @@ public class DatasetDaoImpl extends JdbcDaoBase implements DatasetDao {
     public DatasetDaoImpl(DataSource dataSource) {
         super(dataSource);
     }
-    
+
     @Override
     public DataSet getById(int id) {
         String sql = "select "
@@ -31,51 +32,65 @@ public class DatasetDaoImpl extends JdbcDaoBase implements DatasetDao {
                 + "FROM DATASET "
                 + "LEFT JOIN NAMESPACE ON DATASET.CORRESP_NS = NAMESPACE.NAMESPACE_ID "
                 + "WHERE DATASET_ID = :id";
-        
+
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("id", id);
         try {
             return this.getNamedParameterJdbcTemplate().queryForObject(sql, params, new DataSetRowMapper());
-        }catch (EmptyResultDataAccessException ex) {
+        } catch (EmptyResultDataAccessException ex) {
             return null;
-        }          
-    }
-    
-    @Override
-    public int updateExcelXMLDownload(int id, boolean value) {
-        String sql = "UPDATE "
-                + "DATASET "
-                + "SET ALLOW_EXCEL_DOWNLOAD = :value"
-                + " WHERE DATASET_ID = :id";
-
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("id", id);
-        params.put("value", value ? 1 : 0);
-        try {
-            return this.getNamedParameterJdbcTemplate().update(sql, params);
-
-        } catch (EmptyResultDataAccessException ex) {
-            return 0;
         }
     }
 
     @Override
-    public int updateMSAccessDownload(int id, boolean value) {
-        String sql = "UPDATE "
-                + "DATASET "
-                + "SET ALLOW_MSACCESS_DOWNLOAD = :value"
-                + " WHERE DATASET_ID = :id";
+    public void updateDataSet(DataSet dataSet) {
+        String sql = "UPDATE datadict.DATASET\n"
+                + "SET SHORT_NAME= :short_name,"
+                + " VERSION= :version, "
+                + "VISUAL= :visual,"
+                + " DETAILED_VISUAL= :detailed_visual,"
+                + " WORKING_USER= :working_user,"
+                + " WORKING_COPY= :working_copy,"
+                + " REG_STATUS= :reg_status,"
+                + " `DATE`= :date, "
+                + "`USER`= :user,"
+                + " CORRESP_NS= :corresp_ns"
+                + ", DELETED= :deleted, "
+                + "IDENTIFIER= :identifier,"
+                + " DISP_DOWNLOAD_LINKS= :disp_download_links,"
+                + " CHECKEDOUT_COPY_ID= :checkout_copy_id, "
+                + "SUCCESSOR= :successor\n"
+                + "WHERE DATASET_ID= :datasetId;";
 
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put("id", id);
-        params.put("value", value ? 1 : 0);
-        try {
-            return this.getNamedParameterJdbcTemplate().update(sql, params);
+        params.put("datasetId", dataSet.getId());
+        params.put("short_name", dataSet.getShortName());
+        params.put("version", dataSet.getVersion());
+        params.put("visual", dataSet.getVisual());
+        params.put("detailed_visual", dataSet.getDetailedVisual());
+        params.put("working_user", dataSet.getWorkingUser());
+        params.put("working_copy", dataSet.getWorkingCopy());
+        params.put("reg_status", dataSet.getRegStatus());
+        params.put("date", dataSet.getDate());
+        params.put("user", dataSet.getUser());
+        params.put("deleted", dataSet.getDeleted());
+        params.put("identifier", dataSet.getIdentifier());
+        params.put("dispDownloadLinks", dataSet.getSerializedDisplayDownloadLinks());
+        params.put("checkout_copy_id", dataSet.getCheckedOutCopyId());
+        MapSqlParameterSource parameterMap = new MapSqlParameterSource(params);
+        getNamedParameterJdbcTemplate().update(sql, parameterMap);
+    }
 
-        } catch (EmptyResultDataAccessException ex) {
-            return 0;
-        }
+    @Override
+    public void updateDataSetDispDownloadLinks(int id, String dispDownloadLinks) {
+        String sql = "UPDATE DATASET  SET DISPLAY_DOWNLOAD_LINKS= :disp_download_links WHERE DATASET_ID= :datasetId;";
 
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("datasetId", id);
+
+        params.put("disp_download_links", dispDownloadLinks);
+        MapSqlParameterSource parameterMap = new MapSqlParameterSource(params);
+        getNamedParameterJdbcTemplate().update(sql, parameterMap);
     }
 
     public static class DataSetRowMapper implements RowMapper<DataSet> {
@@ -96,15 +111,13 @@ public class DatasetDaoImpl extends JdbcDaoBase implements DatasetDao {
             dataset.setIdentifier(rs.getString("DATASET.IDENTIFIER"));
             dataset.setDispCreateLinks(rs.getInt("DATASET.DISP_CREATE_LINKS"));
             dataset.setRegStatus(DatasetRegStatus.fromString(rs.getString("DATASET.REG_STATUS")));
-            dataset.setAllowExcelXMLDownload(rs.getBoolean("DATASET.ALLOW_EXCEL_DOWNLOAD"));
-            dataset.setAllowMSAccessDownload(rs.getBoolean("DATASET.ALLOW_MSACCESS_DOWNLOAD"));
-            
+            dataset.setSerializedDisplayDownloadLinks(rs.getString("DISPLAY_DOWNLOAD_LINKS"));
             Integer checkedoutCopyId = rs.getInt("DATASET.CHECKEDOUT_COPY_ID");
-            if (rs.wasNull()){
+            if (rs.wasNull()) {
                 checkedoutCopyId = null;
             }
             dataset.setCheckedOutCopyId(checkedoutCopyId);
-            
+
             int namespaceId = rs.getInt("DATASET.CORRESP_NS");
             if (!rs.wasNull()) {
                 Namespace namespace = new Namespace();
@@ -113,7 +126,7 @@ public class DatasetDaoImpl extends JdbcDaoBase implements DatasetDao {
             }
             return dataset;
         }
-        
+
         protected void readNamespace(ResultSet rs, DataSet dataset) throws SQLException {
             rs.getInt("NAMESPACE.NAMESPACE_ID");
 
@@ -127,8 +140,6 @@ public class DatasetDaoImpl extends JdbcDaoBase implements DatasetDao {
             dataset.getCorrespondingNS().setWorkingUser(rs.getString("NAMESPACE.WORKING_USER"));
         }
 
-        
- 
     }
 
 }

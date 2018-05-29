@@ -247,20 +247,6 @@ function applyExportOptionsToggle() {
 }
 
 
-function applyAdminToolsToggle() {
-    var $dropOperations = jQuery("#drop-operations ul");
-    if ($dropOperations.length) {
-        $dropOperations.append('<li class="expand"><a id="adminToolsLink" href="#">Admin Tools</a></li>');
-    } else {
-        jQuery("#form1").before('<div id="drop-operations"><ul><li class="expandTools"><a id="adminToolsLink" href="#">Admin Tools</a></li></ul></div>');
-    }
-
-    jQuery("a#adminToolsLink").click(function() {
-        DropDownSlidesWatcher.slideInteract("#createBoxAdminTools","a#adminToolsLink");
-        return false;
-    });
-}
-
 function setDatasetExcelXMLDownloadLinksVisibility(contextPath,datasetId) {
         var checked = $('#excelXMLDownloadOption').is(':checked');
         $.ajax({
@@ -290,7 +276,45 @@ function setDatasetMsAccessDownloadLinksVisibility(contextPath,datasetId) {
                 alert('An error occurred. Please try again later.');
             }
         });
+        return false;
 }
+
+function setDatasetDisplayLinkVisibility(contextPath, datasetId,elementId) {
+    var isChecked= $('#'+elementId).is(':checked');
+
+    $.ajax({
+        type: "GET",
+        url: contextPath + '/v2/dataset/' + datasetId + '/updateDispCreateLinks/' + elementId+"/"+isChecked,
+        success: function (data) {
+            alert('Value successfully updated.');
+            window.location.reload(true);
+        },
+        error: function () {
+            alert('An error occurred. Please try again later.');
+        }
+    });
+
+    //For each click to change the displayability of an element, we have to know the status of all the elements to be displayed on the page.
+  /**
+    var pdfChecked = $('#PDFDisplayCreateLink').is(':checked');
+    var XlsChecked = $('#XLSDisplayCreateLink').is(':checked');
+    var XmlSchemaChecked = $('#XMLSCHEMADisplayCreateLink').is(':checked');
+    var OdsChecked = $('#ODScreateLink').is(':checked');
+
+    $.ajax({
+        type: "GET",
+        url: contextPath + '/v2/dataset/' + datasetId + '/updateDispCreateLinks?' + "PDF=" + pdfChecked + "&XLS=" + XlsChecked + "&ODS=" + OdsChecked + "&XMLSCHEMA=" + XmlSchemaChecked,
+        success: function (data) {
+            alert('Value successfully updated.');
+            window.location.reload(true);
+        },
+        error: function () {
+            alert('An error occurred. Please try again later.');
+        }
+    });
+   **/
+}
+
 
 
 function applySelectionStyle() {

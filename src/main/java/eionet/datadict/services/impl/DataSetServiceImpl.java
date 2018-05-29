@@ -2,6 +2,7 @@ package eionet.datadict.services.impl;
 
 import eionet.datadict.commons.DataDictXMLConstants;
 import eionet.datadict.commons.util.XMLUtils;
+import eionet.datadict.errors.IllegalParameterException;
 import eionet.datadict.model.DataElement;
 
 import eionet.datadict.errors.EmptyParameterException;
@@ -91,7 +92,7 @@ public class DataSetServiceImpl implements DataSetService {
             schemaRoot.setAttribute("attributeFormDefault", "unqualified");
             schemaRoot.setAttribute(XMLConstants.XMLNS_ATTRIBUTE + ":" + DataDictXMLConstants.DD_PREFIX + dataset.getCorrespondingNS().getId(), DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dataset.getCorrespondingNS().getId());
 
-            this.setXSImportStatementsToDataSetXmlSchema(doc, dsTables, schemaRoot,id);
+            this.setXSImportStatementsToDataSetXmlSchema(doc, dsTables, schemaRoot, id);
 
             Element rootDataSetelement = doc.createElement(DataDictXMLConstants.XS_PREFIX + ":" + DataDictXMLConstants.ELEMENT);
             rootDataSetelement.setAttribute(DataDictXMLConstants.NAME, dataset.getIdentifier());
@@ -112,12 +113,12 @@ public class DataSetServiceImpl implements DataSetService {
         }
     }
 
-    private void setXSImportStatementsToDataSetXmlSchema(Document doc, List<DatasetTable> dsTables, Element schemaRoot,int datasetId) {
+    private void setXSImportStatementsToDataSetXmlSchema(Document doc, List<DatasetTable> dsTables, Element schemaRoot, int datasetId) {
         for (DatasetTable dsTable : dsTables) {
             schemaRoot.setAttribute(XMLConstants.XMLNS_ATTRIBUTE + ":" + DataDictXMLConstants.DD_PREFIX + dsTable.getCorrespondingNS().getId(), DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dsTable.getCorrespondingNS().getId());
             Element importElement = doc.createElement(DataDictXMLConstants.XS_PREFIX + ":" + DataDictXMLConstants.IMPORT);
             importElement.setAttribute(DataDictXMLConstants.NAMESPACE, DataDictXMLConstants.APP_CONTEXT + "/" + Namespace.URL_PREFIX + "/" + dsTable.getCorrespondingNS().getId());
-            importElement.setAttribute(DataDictXMLConstants.SCHEMA_LOCATION, DataDictXMLConstants.APP_CONTEXT + "/"  + DataDictXMLConstants.SCHEMAS_API_V2_PREFIX + "/" +DataDictXMLConstants.DATASET + "/" + datasetId+"/"+ DataDictXMLConstants.TABLE_SCHEMA_LOCATION_PARTIAL_FILE_NAME + dsTable.getId() + DataDictXMLConstants.XSD_FILE_EXTENSION);
+            importElement.setAttribute(DataDictXMLConstants.SCHEMA_LOCATION, DataDictXMLConstants.APP_CONTEXT + "/" + DataDictXMLConstants.SCHEMAS_API_V2_PREFIX + "/" + DataDictXMLConstants.DATASET + "/" + datasetId + "/" + DataDictXMLConstants.TABLE_SCHEMA_LOCATION_PARTIAL_FILE_NAME + dsTable.getId() + DataDictXMLConstants.XSD_FILE_EXTENSION);
             schemaRoot.appendChild(importElement);
         }
     }
@@ -226,13 +227,13 @@ public class DataSetServiceImpl implements DataSetService {
     }
 
     @Override
-    public void setMSAccessTemplateDownloadLinkVisibility(int id, boolean value) {
-        this.dataSetDataService.setDatasetMSAccessDownloadOption(id, value);
-    }
-    
-    @Override
-    public void setExcelXMLFileDownloadLinkVisibility(int id, boolean value) {
-        this.dataSetDataService.setDatasetExcelXMLDownloadOption(id, value);
+    public void updateDatasetDisplayDownloadLinks(int datasetId, String dispDownloadLinkType, String dispDownloadLinkValue) throws IllegalParameterException {
+        if (DataSet.DISPLAY_DOWNLOAD_LINKS.valueOf(dispDownloadLinkType) == null) {
+            throw new IllegalParameterException(dispDownloadLinkType, dispDownloadLinkValue);
+        }
+        DataSet.DISPLAY_DOWNLOAD_LINKS displDownloadLink = DataSet.DISPLAY_DOWNLOAD_LINKS.valueOf(dispDownloadLinkType);
+        displDownloadLink.setValue(dispDownloadLinkValue);
+        this.dataSetDataService.updateDatasetDispDownloadLinks(datasetId, displDownloadLink);
     }
 
 }

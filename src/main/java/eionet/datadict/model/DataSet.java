@@ -1,7 +1,8 @@
 package eionet.datadict.model;
 
 import eionet.meta.dao.domain.DatasetRegStatus;
-import java.util.Set;
+
+import java.util.*;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -32,23 +33,56 @@ public class DataSet implements AttributeOwner {
     private String user;
     private Namespace correspondingNS;
     private String deleted;
-    private Integer dispCreateLinks;
+    private Integer dispCreateLinks =-1;
     private Integer checkedOutCopyId;
 
-    private Boolean allowExcelXMLDownload;
+    private String serializedDisplayDownloadLinks;
 
-    private Boolean allowMSAccessDownload;
+    private Map<DISPLAY_DOWNLOAD_LINKS,Boolean> deserializedDisplayDownloadLinks = this.initializeDiSplayDownloadLinksMap();
+
+    public  enum DISPLAY_DOWNLOAD_LINKS{
+        PDF(""),
+        XML_SCHEMA(""),
+        XML_SCHEMA_OLD_STRUCTURE(""),
+        XML_INSTANCE(""),
+        MS_EXCEL(""),
+        XLS_VALIDATION_METADATA(""),
+        MS_EXCEL_OLD_STRUCTURE(""),
+        MS_EXCEL_DROPDOWN_BOXES(""),
+        ADVANCED_ACCESS(""),
+        CODELISTS_CSV(""),
+        CODELISTS_XML("");
+
+        private String value;
+        DISPLAY_DOWNLOAD_LINKS(String value){
+            this.value=value;
+        }
+        public String getValue(){
+            return value;
+        }
+        public void setValue(String value){
+            this.value=value;
+        }
+    }
+
 
     public DataSet() {
         super();
-        this.allowMSAccessDownload = true;
-        this.allowExcelXMLDownload = true;
     }
 
     public DataSet(Integer id) {
-        this.allowMSAccessDownload = true;
-        this.allowExcelXMLDownload = true;
         this.id = id;
+    }
+    public static final Map<String, Integer> createLinkWeights;
+
+    static {
+        createLinkWeights = new HashMap<String, Integer>();
+        createLinkWeights.put("PDF", new Integer(1));
+        createLinkWeights.put("XLS", new Integer(2));
+        createLinkWeights.put("XMLINST", new Integer(4));
+        createLinkWeights.put("XMLSCHEMA", new Integer(8));
+        createLinkWeights.put("MDB", new Integer(16));
+        createLinkWeights.put("ODS", new Integer(32));
     }
 
     @Override
@@ -235,20 +269,31 @@ public class DataSet implements AttributeOwner {
         this.attributes = attributes;
     }
 
-    public Boolean getAllowExcelXMLDownload() {
-        return allowExcelXMLDownload;
+
+
+
+    private Map<DISPLAY_DOWNLOAD_LINKS, Boolean> initializeDiSplayDownloadLinksMap() {
+        Map<DISPLAY_DOWNLOAD_LINKS, Boolean> map = new LinkedHashMap<>();
+        for (DISPLAY_DOWNLOAD_LINKS value : DISPLAY_DOWNLOAD_LINKS.values()) {
+            map.put(value, true);
+        }
+        return map;
+
     }
 
-    public void setAllowExcelXMLDownload(Boolean allowExcelXMLDownload) {
-        this.allowExcelXMLDownload = allowExcelXMLDownload;
+    public String getSerializedDisplayDownloadLinks() {
+        return serializedDisplayDownloadLinks;
     }
 
-    public Boolean getAllowMSAccessDownload() {
-        return allowMSAccessDownload;
+    public void setSerializedDisplayDownloadLinks(String serializedDisplayDownloadLinks) {
+        this.serializedDisplayDownloadLinks = serializedDisplayDownloadLinks;
     }
 
-    public void setAllowMSAccessDownload(Boolean allowMSAccessDownload) {
-        this.allowMSAccessDownload = allowMSAccessDownload;
+    public Map<DISPLAY_DOWNLOAD_LINKS, Boolean> getDeserializedDisplayDownloadLinks() {
+        return deserializedDisplayDownloadLinks;
     }
 
+    public void setDeserializedDisplayDownloadLinks(Map<DISPLAY_DOWNLOAD_LINKS, Boolean> deserializedDisplayDownloadLinks) {
+        this.deserializedDisplayDownloadLinks = deserializedDisplayDownloadLinks;
+    }
 }

@@ -1,8 +1,10 @@
 package eionet.datadict.services;
 
+import eionet.datadict.errors.IllegalParameterException;
 import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.errors.XmlExportException;
 import org.w3c.dom.Document;
+
 
 /**
  *
@@ -10,14 +12,11 @@ import org.w3c.dom.Document;
  */
 public interface DataSetService {
 
-    
-   Document getDataSetXMLSchema(int id) throws  XmlExportException , ResourceNotFoundException;    
-   
-   Document getDataSetXMLInstance(int id) throws XmlExportException ,  ResourceNotFoundException;
-   
-   Document getDataSetXMLInstanceWithNS(int id) throws XmlExportException;
+    Document getDataSetXMLSchema(int datasetId) throws XmlExportException, ResourceNotFoundException;
 
-   void setMSAccessTemplateDownloadLinkVisibility(int id, boolean value);
+    Document getDataSetXMLInstance(int datasetId) throws XmlExportException, ResourceNotFoundException;
 
-   void setExcelXMLFileDownloadLinkVisibility(int id, boolean value);
+    Document getDataSetXMLInstanceWithNS(int datasetId) throws XmlExportException;
+
+    public void updateDatasetDisplayDownloadLinks(int datasetId, String dispDownloadLinkType, String dispDownloadLinkValue) throws IllegalParameterException;
 }

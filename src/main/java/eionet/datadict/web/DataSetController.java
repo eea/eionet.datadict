@@ -1,8 +1,10 @@
-    package eionet.datadict.web;
+package eionet.datadict.web;
 
 import eionet.datadict.errors.BadRequestException;
+import eionet.datadict.errors.IllegalParameterException;
 import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.errors.XmlExportException;
+import eionet.datadict.model.DataSet;
 import eionet.datadict.services.DataSetService;
 import eionet.datadict.services.DataSetTableService;
 import eionet.meta.DDUser;
@@ -10,7 +12,6 @@ import eionet.util.SecurityUtil;
 import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -53,13 +54,11 @@ public class DataSetController {
     private static final String SCHEMA_DATASET_FILE_NAME_PREFIX = "schema-dst-";
     private static final String DATASET_INSTANCE_FILE_NAME = "dataset-instance";
 
-    
     @Autowired
     public DataSetController(DataSetService dataSetService, DataSetTableService dataSetTableService) {
         this.dataSetService = dataSetService;
         this.dataSetTableService = dataSetTableService;
     }
-
 
     @RequestMapping(value = "/{id}/schema", method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
     @ResponseBody
@@ -167,32 +166,24 @@ public class DataSetController {
         outStream.close();
     }
 
-    @RequestMapping(value = "{id}/allowMsAccessDownload/{value}")
-    public ResponseEntity<?> allowMSAccessTemplateDownload(@PathVariable int id, @PathVariable boolean value, HttpServletRequest request) {
 
+    @RequestMapping(value = "{id}/updateDispCreateLinks/{dispDownloadLinkType}/{value}")
+    public ResponseEntity<?> updateDispCreateLinks(@PathVariable int id,@PathVariable String dispDownloadLinkType,@PathVariable String value,
+            HttpServletRequest request) {
         DDUser user = SecurityUtil.getUser(request);
         if (user != null && user.hasPermission("/datasets", "u")) {
-            SecurityUtil.getUser(request).hasPermission("/datasets", "u");
-            this.dataSetService.setMSAccessTemplateDownloadLinkVisibility(id, value);
-            return new ResponseEntity<>(HttpStatus.OK);
+            try {
+                this.dataSetService.updateDatasetDisplayDownloadLinks(id,dispDownloadLinkType,value);
+                return new ResponseEntity<>(HttpStatus.OK);
+
+            } catch (IllegalParameterException e) {
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
         } else {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
-    @RequestMapping(value = "{id}/allowExcelXmlDownload/{value}")
-    public ResponseEntity<?> allowExcelTemplatesAndXmlSchemasDownload(@PathVariable int id, @PathVariable boolean value, HttpServletRequest request) {
-        DDUser user = SecurityUtil.getUser(request);
-        if (user != null && user.hasPermission("/datasets", "u")) {
-            SecurityUtil.getUser(request).hasPermission("/datasets", "u");
-            this.dataSetService.setExcelXMLFileDownloadLinkVisibility(id, value);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    
     @ExceptionHandler(ResourceNotFoundException.class)
     public void HandleResourceNotFoundException(Exception exception, HttpServletRequest request, HttpServletResponse response) throws IOException {
         LOGGER.log(Level.ERROR, null, exception);

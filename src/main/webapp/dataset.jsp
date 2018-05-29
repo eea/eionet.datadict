@@ -286,12 +286,12 @@
                 editPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "u");
                 editReleasedPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "er");
                 advancedAccess = SecurityUtil.hasPerm(user != null ? user.getUserName() : null, "/datasets/" + dataset.getIdentifier(), DDUser.MSACCESS_ADVANCED_PRM);
-                
+
                 if (regStatus.equalsIgnoreCase("Superseded")){
                     successorId = dataset.getSuccessorId();
                     successorDataset =  successorId != null ? searchEngine.getDataset(successorId) : null;
                 }
-                
+
                 Vector v = null;
                 if (user == null) {
                     v = new Vector();
@@ -302,16 +302,16 @@
                 isLatestDst = latestID!=null && ds_id.equals(latestID);
 
                 adminToolsAuthority = !dataset.isWorkingCopy() && workingUser == null && regStatus!=null && user!=null && isLatestDst;
-                
+
                 canNewVersion = !dataset.isWorkingCopy() && workingUser == null && regStatus!=null && user!=null && isLatestDst;
                 if (canNewVersion) {
                     canNewVersion = regStatus.equals("Released") || regStatus.equals("Recorded") || regStatus.equals("Retired") || regStatus.equals("Superseded");
                     if (canNewVersion)
                         canNewVersion = editPrm || editReleasedPrm;
                 }
-                
-                canCheckout = !dataset.isWorkingCopy() 
-                        && workingUser == null 
+
+                canCheckout = !dataset.isWorkingCopy()
+                        && workingUser == null
                         && regStatus!=null
                         && user!=null && isLatestDst;
                 if (canCheckout) {
@@ -451,7 +451,7 @@
                 wLink.focus();
             }
         }
-        
+
         function pickDataset(id, shortName){
             document.forms["form1"].elements["successor_id"].value = id;
             document.getElementById("successorName").href = "<%=request.getContextPath()%>/datasets/"+id;
@@ -459,7 +459,7 @@
             document.getElementById("successorName").onclick = "return true";
             return true;
         }
-        
+
         function statusSelectionChanged(changedForm) {
             if (document.getElementById("reg_status_select").value.toLowerCase() == 'superseded') {
                 document.getElementById("successor").style.display = 'inline';
@@ -468,7 +468,7 @@
             }
             form_changed(changedForm);
         }
-        
+
         function warnDatasetStatus(datasetStatus, action) {
             if (datasetStatus.toLowerCase() == 'retired' || datasetStatus.toLowerCase() == 'superseded') {
                 if (['a', 'e', 'i', 'o', 'u'].indexOf(datasetStatus.toLowerCase().charAt(0))!=-1) {
@@ -481,12 +481,12 @@
                 return true;
             }
         }
-        
+
         function deleteDatasetReady() {
             document.forms["form1"].elements["mode"].value = "delete";
             document.forms["form1"].submit();
         }
-        
+
         function submitForm(mode) {
 
             if (mode == "delete") {
@@ -632,7 +632,7 @@
                                 "If you want to continue, click OK. Otherwise click Cancel.");
                 if (b==false) return;
                 <%
-            } 
+            }
             if (regStatus != null && (regStatus.equals("Retired") || regStatus.equals("Superseded"))){%>
                     var b = confirm("You are checking in with <%=regStatus%> status! This is a status for deprecated datasets. "+
                             "If you want to continue, click OK. Otherwise click Cancel.");
@@ -855,16 +855,64 @@ else if (mode.equals("add"))
 
                                 <%
                                 if (mode.equals("view")) {
-
+                                    System.out.println("WE GOT INTO DATASET>JSP ");
                                     Vector docs = searchEngine.getDocs(ds_id);
                                     boolean dispAll = editPrm || editReleasedPrm;
-                                    boolean dispPDF = dataset!=null && dataset.displayCreateLink("PDF");
-                                    boolean dispXLS = dataset!=null && dataset.displayCreateLink("XLS");
+                                    boolean dispPDF = dataset!=null && dataset.getDeserializedDisplayDownloadLinks().get(Dataset.DISPLAY_DOWNLOAD_LINKS.PDF);
+                                     String   checkedPDF= dataset.getDeserializedDisplayDownloadLinks().get(Dataset.DISPLAY_DOWNLOAD_LINKS.PDF)?"checked='checked'" : "";
+
+                                    boolean dispXmlSchema = dataset!=null && dataset.getDeserializedDisplayDownloadLinks().get(Dataset.DISPLAY_DOWNLOAD_LINKS.XML_SCHEMA);
+                                    String checkedXmlSchema = dataset.getDeserializedDisplayDownloadLinks().get(Dataset.DISPLAY_DOWNLOAD_LINKS.XML_SCHEMA)? "checked='checked'" : "";
+
+
+                                    boolean dispXmlSchemaOldStructure =dataset!=null && dataset.getDeserializedDisplayDownloadLinks().get(Dataset.DISPLAY_DOWNLOAD_LINKS.XML_SCHEMA_OLD_STRUCTURE);
+                                    String checkedXmlSchemaOldStructure = dataset.getDeserializedDisplayDownloadLinks().get(Dataset.DISPLAY_DOWNLOAD_LINKS.XML_SCHEMA_OLD_STRUCTURE)? "checked='checked'" : "";
+
+                                    boolean dispXmlInstance = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/", "xmli");
+                                    boolean checkXMLInstance = dataset!=null && dataset.getDeserializedDisplayDownloadLinks().get(Dataset.DISPLAY_DOWNLOAD_LINKS.XML_INSTANCE);
+                                    //For XML Instance, we will check the field on the dataset: if null, revert back to hasPerm scenery above,if not null, then the value of the field
+
+
+
+                                    boolean dispXLS = dataset!=null && dataset.getDeserializedDisplayDownloadLinks().get(Dataset.DISPLAY_DOWNLOAD_LINKS.MS_EXCEL);
+                                    String checkedXLS = dataset.getDeserializedDisplayDownloadLinks().get(Dataset.DISPLAY_DOWNLOAD_LINKS.MS_EXCEL)? "checked='checked'" : "";
+
+                                    boolean dispXLSOldStructure = dataset!=null && dataset.getDeserializedDisplayDownloadLinks().get(Dataset.DISPLAY_DOWNLOAD_LINKS.MS_EXCEL_OLD_STRUCTURE);
+                                    String checkedXLSOldStructure = dataset.getDeserializedDisplayDownloadLinks().get(Dataset.DISPLAY_DOWNLOAD_LINKS.MS_EXCEL_OLD_STRUCTURE)? "checked='checked'" : "";
+
+
+                                    boolean dispXLSDropDownBoxes = dataset!=null && dataset.getDeserializedDisplayDownloadLinks().get(Dataset.DISPLAY_DOWNLOAD_LINKS.MS_EXCEL_DROPDOWN_BOXES);
+                                    String checkedXLSDropDownBoxes = dataset.getDeserializedDisplayDownloadLinks().get(Dataset.DISPLAY_DOWNLOAD_LINKS.MS_EXCEL_DROPDOWN_BOXES)? "checked='checked'" : "";
+
+
+                                    boolean dispXLSwithValidationMetadata = dataset!=null && dataset.getDeserializedDisplayDownloadLinks().get(Dataset.DISPLAY_DOWNLOAD_LINKS.XLS_VALIDATION_METADATA);
+                                    String checkedXLSwithValidationMetadata = dataset.getDeserializedDisplayDownloadLinks().get(Dataset.DISPLAY_DOWNLOAD_LINKS.XLS_VALIDATION_METADATA)? "checked='checked'" : "";
+
+                                    boolean dispAdvancedAccess = dataset!=null && dataset.getDeserializedDisplayDownloadLinks().get(Dataset.DISPLAY_DOWNLOAD_LINKS.ADVANCED_ACCESS);
+                                    String checkedAdvancedAccess = dataset!=null && dataset.getDeserializedDisplayDownloadLinks().get(Dataset.DISPLAY_DOWNLOAD_LINKS.ADVANCED_ACCESS)? "checked='checked'" : "";
+
+                                    boolean dispCSVcodeLists = dataset!=null && dataset.getDeserializedDisplayDownloadLinks().get(Dataset.DISPLAY_DOWNLOAD_LINKS.CODELISTS_CSV);
+                                    String checkedCSVcodeLists = dataset!=null && dataset.getDeserializedDisplayDownloadLinks().get(Dataset.DISPLAY_DOWNLOAD_LINKS.CODELISTS_CSV)? "checked='checked'" : "";
+
+
+                                    boolean dispXMLcodeLists = dataset!=null && dataset.getDeserializedDisplayDownloadLinks().get(Dataset.DISPLAY_DOWNLOAD_LINKS.CODELISTS_XML);
+                                    String checkedXMLcodeLists = dataset!=null && dataset.getDeserializedDisplayDownloadLinks().get(Dataset.DISPLAY_DOWNLOAD_LINKS.CODELISTS_XML)? "checked='checked'" : "";
+
+
+
+                                    //For old XLS (MS EXCEL Template, another field on the dataset.
+
+
                                     boolean dispODS = dataset!=null && dataset.displayCreateLink("ODS");
                                     boolean dispMDB = dataset!=null && dataset.displayCreateLink("MDB");
-                                    boolean dispXmlSchema = dataset!=null && dataset.displayCreateLink("XMLSCHEMA");
-                                    boolean dispXmlInstance = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/", "xmli");
+
+
+
                                     boolean dispDocs = docs!=null && docs.size()>0;
+                               //     String checkedXLS = dataset.displayCreateLink("XLS") ? "checked='checked'" : "";
+
+                                    String checkedODS = dataset.displayCreateLink("ODS") ? "checked='checked'" : "";
+                                    String checkedMDB = dataset.displayCreateLink("MDB") ? "checked='checked'" : "";
 
                                     if (dispAll || dispPDF || dispXLS || dispXmlSchema || dispXmlInstance || dispDocs || dispMDB || dispODS) {
                                         %>
@@ -877,48 +925,140 @@ else if (mode.equals("add"))
                                                 <ul>
                                                     <%
                                                     // PDF link
-                                                    if (dispAll || dispPDF) { %>
+                                                    if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "u")) { %>
                                                         <li>
                                                             <a rel="nofollow" href="<%=request.getContextPath()%>/GetPrintout?format=PDF&amp;obj_type=DST&amp;obj_id=<%=ds_id%>&amp;out_type=GDLN" class="pdf"  onclick="return warnDatasetStatus('<%=regStatus%>', 'download')">
-                                                                Create technical specification for this dataset
+                                                                Create technical specification for this dataset 
+                                                            <% if(user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "u")){ %>
+                                                                <input type="checkbox" name="disp_create_links" value="PDF" <%=checkedPDF%> id="PDF" onclick="return setDatasetDisplayLinkVisibility('<%=request.getContextPath()%>',<%=ds_id%>,this.id)" />
+                                                                <%}
+                                                                %>
                                                             </a>
+                                                                
+
                                                         </li><%
                                                     }
-
+                                                   if(user==null ||(user!=null && !SecurityUtil.hasPerm(user.getUserName(), "/datasets", "u")) ){
+                                                    if (dispPDF) { %>
+                                                        <li> 
+                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetPrintout?format=PDF&amp;obj_type=DST&amp;obj_id=<%=ds_id%>&amp;out_type=GDLN" class="pdf"  onclick="return warnDatasetStatus('<%=regStatus%>', 'download')">
+                                                                Create technical specification for this dataset </a>
+                                                        </li><%
+                                                     }
+                                                   }
                                                     // XML Schema link
-                                                    if (((dispAll || dispXmlSchema)&& dataset.getAllowExcelXMLDownload() )) { %>
+                                                    if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "u")) { %>
+                                                        <li>
+                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/v2/dataset/<%=ds_id%>/schema-dst-<%=ds_id%>.xsd" class="xsd">
+                                                                Create an XML Schema for this dataset
+                                                                <% if(user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "u")){ %>
+                                                                <input type="checkbox" name="disp_create_links" value="XML_SCHEMA" <%=checkedXmlSchema%> id="XML_SCHEMA" onclick="return setDatasetDisplayLinkVisibility('<%=request.getContextPath()%>',<%=ds_id%>,this.id)" />
+                                                                <%}
+                                                                %>
+                                                            </a>
+                                                        </li>
+                                                    <%
+                                                    
+                                                   }
+                                                   if(user==null ||(user!=null && !SecurityUtil.hasPerm(user.getUserName(), "/datasets", "u")) ){
+                                                    if ( dispXmlSchema ) { %>
                                                         <li>
                                                             <a rel="nofollow" href="<%=request.getContextPath()%>/v2/dataset/<%=ds_id%>/schema-dst-<%=ds_id%>.xsd" class="xsd">
                                                                 Create an XML Schema for this dataset
                                                             </a>
                                                         </li>
-                                                    <li>
-                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetSchema?id=DST<%=ds_id%>" class="xsd">
-                                                                Create an XML Schema for this dataset(using the old schema structure)
-                                                            </a>
-                                                        </li>
-                                                    
-                                                    
                                                     <%
                                                     }
+                                                  }
 
+                                                    if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "u")) { %>
+
+                                                    <li>
+                                                        <a rel="nofollow" href="<%=request.getContextPath()%>/GetSchema?id=DST<%=ds_id%>" class="xsd">
+                                                            Create an XML Schema for this dataset(using the old schema structure)
+                                                            <% if(user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "u")){ %>
+                                                            <input type="checkbox" name="disp_create_links" value="XML_SCHEMA_OLD_STRUCTURE" id="XML_SCHEMA_OLD_STRUCTURE" <%=checkedXmlSchemaOldStructure%>  onclick="return setDatasetDisplayLinkVisibility('<%=request.getContextPath()%>',<%=ds_id%>,this.id)" />
+                                                            <%}
+                                                            %>
+                                                        </a>
+                                                    </li>
+
+
+                                                    <%
+                                                        }
+
+                                                   if(user==null ||(user!=null && !SecurityUtil.hasPerm(user.getUserName(), "/datasets", "u")) ){
+
+                                                        if ( dispXmlSchemaOldStructure ) { %>
+
+                                                    <li>
+                                                        <a rel="nofollow" href="<%=request.getContextPath()%>/GetSchema?id=DST<%=ds_id%>" class="xsd">
+                                                            Create an XML Schema for this dataset(using the old schema structure)
+                                                        </a>
+                                                    </li>
+
+
+                                                    <%
+                                                        }
+                                                   }
                                                     // XML Instance link
-                                                    if (dispAll || dispXmlInstance) { %>
+                                                    if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "u")) { %>
                                                         <li>
                                                             <a rel="nofollow" href="<%=request.getContextPath()%>/v2/dataset/<%=dataset.getID()%>/dataset-instance.xml" class="xml">
                                                                 Create an instance XML for this dataset
+                                                                <% if(user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "u")){ %>
+                                                                <input type="checkbox" name="disp_create_links" value="XML_INSTANCE" <%=checkXMLInstance%> id="XML_INSTANCE" onclick=" return setDatasetDisplayLinkVisibility('<%=request.getContextPath()%>',<%=ds_id%>,this.id)" />
+                                                                <%}
+                                                                %>
                                                             </a>
                                                         </li><%
                                                     }
 
+                                                   if(user==null ||(user!=null && !SecurityUtil.hasPerm(user.getUserName(), "/datasets", "u")) ){
+                                                    if (dispXmlInstance) { %>
+                                                        <li>
+                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/v2/dataset/<%=dataset.getID()%>/dataset-instance.xml" class="xml">
+                                                                Create an instance XML for this dataset
+                                                                <% if(user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "u")){ %>
+                                                                <input type="checkbox" name="disp_create_links" value="XML_INSTANCE" <%=checkXMLInstance%> id="XML_INSTANCE" onclick="return setDatasetDisplayLinkVisibility('<%=request.getContextPath()%>',<%=ds_id%>,this.id)" />
+                                                                <%}
+                                                                %>
+                                                            </a>
+                                                        </li><%
+                                                    }
+                                               }
+
                                                     // MS Excel link
-                                                    if ((dispAll || dispXLS) && dataset.getAllowExcelXMLDownload()) { %>
+                                                    if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "u")) { %>
                                                         <li>
                                                             <a rel="nofollow" href="<%=request.getContextPath()%>/GetXls?obj_type=dst&amp;obj_id=<%=ds_id%>&amp;new_schema=true" class="excel" onclick="return warnDatasetStatus('<%=regStatus%>', 'download')">
                                                                 Create an MS Excel template for this dataset using the new schema
+                                                                <% if(user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "u")){ %>
+                                                                <input type="checkbox" name="disp_create_links" value="MS_EXCEL" <%=checkedXLS%> id="MS_EXCEL" onclick="return setDatasetDisplayLinkVisibility('<%=request.getContextPath()%>',<%=ds_id%>,this.id)" />
+                                                                <%}
+                                                                %>
                                                             </a>
                                                             <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=excel"></a>
                                                         </li>
+                                                   <% } 
+
+                                                        // MS Excel link
+                                                   if(user==null ||(user!=null && !SecurityUtil.hasPerm(user.getUserName(), "/datasets", "u")) ){
+                                                    if (dispXLS)  { %>
+                                                        <li>
+                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetXls?obj_type=dst&amp;obj_id=<%=ds_id%>&amp;new_schema=true" class="excel" onclick="return warnDatasetStatus('<%=regStatus%>', 'download')">
+                                                                Create an MS Excel template for this dataset using the new schema
+                                                                <% if(user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "u")){ %>
+                                                                <input type="checkbox" name="disp_create_links" value="MS_EXCEL" <%=checkedXLS%> id="MS_EXCEL" onclick="return setDatasetDisplayLinkVisibility('<%=request.getContextPath()%>',<%=ds_id%>,this.id)" />
+                                                                <%}
+                                                                %>
+                                                            </a>
+                                                            <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=excel"></a>
+                                                        </li>
+                                                   <% } 
+                                                }
+                                                    // MS Excel link old structure
+                                                    if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "u")) { %>
                                                         <li>
                                                             <a rel="nofollow" href="<%=request.getContextPath()%>/GetXls?obj_type=dst&amp;obj_id=<%=ds_id%>&amp;new_schema=false" class="excel" onclick="return warnDatasetStatus('<%=regStatus%>', 'download')">
                                                                 Create an MS Excel template for this dataset using the old schema
@@ -926,7 +1066,36 @@ else if (mode.equals("add"))
                                                             <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=excel"></a>
                                                         </li>
                                                     <% }
-                                                    if (((dispAll || dispXLS) && user != null) && dataset.getAllowExcelXMLDownload()) { %>
+                                                    // MS Excel link old structure
+                                                   if(user==null ||(user!=null && !SecurityUtil.hasPerm(user.getUserName(), "/datasets", "u")) ){
+
+                                                    if (dispXLSOldStructure)  { %>
+                                                        <li>
+                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetXls?obj_type=dst&amp;obj_id=<%=ds_id%>&amp;new_schema=false" class="excel" onclick="return warnDatasetStatus('<%=regStatus%>', 'download')">
+                                                                Create an MS Excel template for this dataset using the old schema
+                                                            </a>
+                                                            <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=excel"></a>
+                                                        </li>
+                                                    <% }
+                                                    }
+                                                        
+                                          //Excell Drop down Boxes
+                                                    if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "u")) { %>
+                                                         <li>
+                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetXls?obj_type=dst&amp;obj_act=dd&amp;obj_id=<%=ds_id%>" class="excel" onclick="return warnDatasetStatus('<%=regStatus%>', 'download')">
+                                                                Create an MS Excel template for this dataset with drop-down boxes (BETA)
+                                                                <% if(user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "u")){ %>
+                                                                <input type="checkbox" name="disp_create_links" value="MS_EXCEL_DROPDOWN_BOXES" <%=checkedXLSDropDownBoxes%> id="MS_EXCEL_DROPDOWN_BOXES" onclick="return setDatasetDisplayLinkVisibility('<%=request.getContextPath()%>',<%=ds_id%>,this.id)" />
+                                                                <%}
+                                                                %>
+                                                            </a>
+                                                            <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=excel_dropdown"></a>
+                                                        </li>
+                                                        <%
+                                                    }
+                                                     //Excell Drop down Boxes
+                                                   if(user!=null && !SecurityUtil.hasPerm(user.getUserName(), "/datasets", "u") ){
+                                                    if (dispXLSDropDownBoxes ) { %>
                                                          <li>
                                                             <a rel="nofollow" href="<%=request.getContextPath()%>/GetXls?obj_type=dst&amp;obj_act=dd&amp;obj_id=<%=ds_id%>" class="excel" onclick="return warnDatasetStatus('<%=regStatus%>', 'download')">
                                                                 Create an MS Excel template for this dataset with drop-down boxes (BETA)
@@ -935,10 +1104,23 @@ else if (mode.equals("add"))
                                                         </li>
                                                         <%
                                                     }
-
-
+                                                 }
+                                                  // MS Access link
+                                                    if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "u")) { %>
+                                                        <li>
+                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetMdb?dstID=<%=ds_id%>&amp;vmdonly=true" class="access" onclick="return warnDatasetStatus('<%=regStatus%>', 'download')">
+                                                                Create validation metadata for MS Access template
+                                                                <% if(user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "u")){ %>
+                                                                <input type="checkbox" name="disp_create_links" value="XLS_VALIDATION_METADATA" <%=checkedXLSwithValidationMetadata%> id="XLS_VALIDATION_METADATA" onclick="return setDatasetDisplayLinkVisibility('<%=request.getContextPath()%>',<%=ds_id%>,this.id)" />
+                                                                <%}
+                                                                %>
+                                                            </a>
+                                                            <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=access"></a>
+                                                        </li><%
+                                                    }
                                                     // MS Access link
-                                                    if ((dispAll || dispMDB)&& dataset.getAllowMSAccessDownload()) { %>
+                                                   if(user==null ||(user!=null && !SecurityUtil.hasPerm(user.getUserName(), "/datasets", "u")) ){
+                                                    if (dispXLSwithValidationMetadata) { %>
                                                         <li>
                                                             <a rel="nofollow" href="<%=request.getContextPath()%>/GetMdb?dstID=<%=ds_id%>&amp;vmdonly=true" class="access" onclick="return warnDatasetStatus('<%=regStatus%>', 'download')">
                                                                 Create validation metadata for MS Access template
@@ -946,9 +1128,27 @@ else if (mode.equals("add"))
                                                             <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=access"></a>
                                                         </li><%
                                                     }
+                                                  }
 
                                                     // Advanced MS Access template generation link
-                                                    if ((dispAll || advancedAccess)&& dataset.getAllowMSAccessDownload()) {
+                                                    if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "u")) { %>
+                                                        %>
+                                                        <li>
+                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetMSAccess?dstID=<%=ds_id%>" class="access" onclick="return warnDatasetStatus('<%=regStatus%>', 'download')">
+                                                                Create advanced MS Access template
+                                                                <% if(user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "u")){ %>
+                                                                <input type="checkbox" name="disp_create_links" value="ADVANCED_ACCESS" <%=checkedAdvancedAccess%> id="ADVANCED_ACCESS" onclick="return setDatasetDisplayLinkVisibility('<%=request.getContextPath()%>',<%=ds_id%>,this.id)" />
+                                                                <%}
+                                                                %>
+                                                            </a>
+                                                            <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=advancedMSAccess"></a>
+                                                        </li><%
+                                                    }
+
+                                                    // Advanced MS Access template generation link
+                                                   if(user==null ||(user!=null && !SecurityUtil.hasPerm(user.getUserName(), "/datasets", "u")) ){
+
+                                                    if (dispAdvancedAccess) {
                                                         %>
                                                         <li>
                                                             <a rel="nofollow" href="<%=request.getContextPath()%>/GetMSAccess?dstID=<%=ds_id%>" class="access" onclick="return warnDatasetStatus('<%=regStatus%>', 'download')">
@@ -957,9 +1157,25 @@ else if (mode.equals("add"))
                                                             <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=advancedMSAccess"></a>
                                                         </li><%
                                                     }
-
-                                                    // codelists
-                                                    if (dispAll || dispXmlSchema) { %>
+                                                  }
+                                                    // codelists CSV
+                                                    if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "u")) { %>
+                                                        <li>
+                                                            <stripes:link rel="nofollow" beanclass="eionet.web.action.CodelistDownloadActionBean" class="csv">
+                                                                <stripes:param name="ownerType" value="datasets"/>
+                                                                <stripes:param name="ownerId" value="<%=dataset.getID()%>"/>
+                                                                <stripes:param name="format" value="csv"/>
+                                                                Get the comma-separated codelists of this dataset
+                                                                <% if(user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "u")){ %>
+                                                                <input type="checkbox" name="disp_create_links" value="CODELISTS_CSV" <%=checkedCSVcodeLists%> id="CODELISTS_CSV" onclick="return setDatasetDisplayLinkVisibility('<%=request.getContextPath()%>',<%=ds_id%>,this.id)" />
+                                                                <%}
+                                                                %>
+                                                            </stripes:link>
+                                                        </li>
+                                                        <%  }
+                                                        // codelists CSV
+                                               if(user==null ||(user!=null && !SecurityUtil.hasPerm(user.getUserName(), "/datasets", "u")) ){
+                                                    if (dispCSVcodeLists) { %>
                                                         <li>
                                                             <stripes:link rel="nofollow" beanclass="eionet.web.action.CodelistDownloadActionBean" class="csv">
                                                                 <stripes:param name="ownerType" value="datasets"/>
@@ -968,6 +1184,28 @@ else if (mode.equals("add"))
                                                                 Get the comma-separated codelists of this dataset
                                                             </stripes:link>
                                                         </li>
+                                                        <%  }
+                                                        }
+                                                     //codelists XML
+                                                    if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "u")) { %>
+                                                        %>
+                                                        <li>
+                                                            <stripes:link rel="nofollow" beanclass="eionet.web.action.CodelistDownloadActionBean" class="xml">
+                                                                <stripes:param name="ownerType" value="datasets"/>
+                                                                <stripes:param name="ownerId" value="<%=dataset.getID()%>"/>
+                                                                <stripes:param name="format" value="xml"/>
+                                                                Get the codelists of this dataset in XML format
+                                                                <% if(user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "u")){ %>
+                                                                <input type="checkbox" name="disp_create_links" value="CODELISTS_XML" <%=checkedXMLcodeLists%> id="CODELISTS_XML" onclick="return setDatasetDisplayLinkVisibility('<%=request.getContextPath()%>',<%=ds_id%>,this.id)" />
+                                                                <%}
+                                                                %>
+                                                            </stripes:link>
+                                                        </li>
+                                                    <%
+                                                    }
+                                               if(user==null ||(user!=null && !SecurityUtil.hasPerm(user.getUserName(), "/datasets", "u")) ){
+                                                    if (dispXMLcodeLists) { %>
+                                                        %>
                                                         <li>
                                                             <stripes:link rel="nofollow" beanclass="eionet.web.action.CodelistDownloadActionBean" class="xml">
                                                                 <stripes:param name="ownerType" value="datasets"/>
@@ -975,8 +1213,68 @@ else if (mode.equals("add"))
                                                                 <stripes:param name="format" value="xml"/>
                                                                 Get the codelists of this dataset in XML format
                                                             </stripes:link>
-                                                        </li><%
+                                                        </li>
+                                                    <%
                                                     }
+                                                  }
+                                                  %>
+
+
+                                                             <%
+                                            if (!mode.equals("add") && editPrm) {
+
+                                                %>
+
+                                                    <%
+                                                    if (!mode.equals("view")) {%>
+                                                        <td class="simple_attr_help">
+                                                            <img style="border:0" src="<%=request.getContextPath()%>/images/optional.gif" width="16" height="16" alt="optional"/>
+                                                        </td><%
+                                                    }
+                                                    %>
+
+                                                            <%--li>
+                                                             <a style="padding: 0px !important;"><input type="checkbox" name="disp_create_links" value="PDF" <%=checkedPDF%> id="PDFDisplayCreateLink" onclick="setDatasetDisplayLinkVisibility('<%=request.getContextPath()%>',<%=ds_id%>)" />
+                                                               Technical specification in PDF format</a>
+                                                            </li--%>
+                                                           <%--li>
+                                                             <a style="padding: 0px !important;">
+                                                            <input type="checkbox" name="disp_create_links" value="XLS" <%=checkedXLS%> id="XLSDisplayCreateLink" onclick="setDatasetDisplayLinkVisibility('<%=request.getContextPath()%>',<%=ds_id%>)"/>
+                                                               MS Excel template</a>
+                                                            </li>
+                                                           <li>
+                                                             <a style="padding: 0px !important;"> <input type="checkbox" name="disp_create_links" value="XMLSCHEMA" id="XMLSCHEMADisplayCreateLink" <%=checkedXmlSchema%> onclick="setDatasetDisplayLinkVisibility('<%=request.getContextPath()%>',<%=ds_id%>)"/>
+                                                                The definition on XML Schema format</a>
+                                                            </li>
+                                                           <li>
+                                                             <a style="padding: 0px !important;"> <input type="checkbox" name="disp_create_links" value="ODS" id="ODScreateLink" <%=checkedODS%> onclick="setDatasetDisplayLinkVisibility('<%=request.getContextPath()%>',<%=ds_id%>)"/>
+                                                                OpenDocument spreadsheet</a>
+                                                           </li--%>
+
+                                                <%--ul>
+                                                     <li>
+                                                         <a style="padding: 0px !important;">  <input type="checkbox" name="incl_histver" id="excelXMLDownloadOption"  <%=(dataset.getAllowExcelXMLDownload() ? "checked":"")%>  onclick="setDatasetExcelXMLDownloadLinksVisibility('<%=request.getContextPath()%>',<%=ds_id%>)" />
+                                                       Show the links for downloading Excel templates and XML schemas for this dataset.  </a></li>
+                                                    <li>
+                                                         <a style="padding: 0px !important;">     <input type="checkbox" name="incl_histver" id="msAccessDownloadOption" <%=(dataset.getAllowMSAccessDownload() ? "checked":"")%> onclick="setDatasetMsAccessDownloadLinksVisibility('<%=request.getContextPath()%>',<%=ds_id%>)"/>
+                                                       Show the link "Create advanced MS Access template" for this dataset.  </a>
+                                                    </li>
+                                                </ul--%>
+
+                                               <%
+                                            }%>
+
+
+
+
+
+
+
+
+                                                    <%
+
+
+
 
                                                     // display links to uploaded documents
                                                     for (int i=0; docs!=null && i<docs.size(); i++) {
@@ -1002,31 +1300,7 @@ else if (mode.equals("add"))
                                         <%
                                     }
                                 }
-                //Display Administrative Tools Options 
-                       if (mode.equals("view") && adminToolsAuthority) {
 
-                            
-                                        %>
-                                            <script type="text/javascript">
-                                                $(function() {
-                                                    applyAdminToolsToggle();
-                                                });
-                                            </script>
-                                            <div id="createBoxAdminTools">
-                                                <ul>
-                                                     <li>
-                                                         Show the links for downloading Excel templates and XML schemas for this dataset.
-                                  <input type="checkbox" name="incl_histver" id="excelXMLDownloadOption"  <%=(dataset.getAllowExcelXMLDownload() ? "checked":"")%>  onclick="setDatasetExcelXMLDownloadLinksVisibility('<%=request.getContextPath()%>',<%=ds_id%>)" />
-                                                        </li>
-                                                    <li>
-                                                         Show the link "Create advanced MS Access template" for this dataset.
-                                 <input type="checkbox" name="incl_histver" id="msAccessDownloadOption" <%=(dataset.getAllowMSAccessDownload() ? "checked":"")%> onclick="setDatasetMsAccessDownloadLinksVisibility('<%=request.getContextPath()%>',<%=ds_id%>)"/>
-                                                        </li>    
-                                                </ul>
-                                    </div>
-                                        <%
-                                    
-                                }
                                 %>
 
                                 <!-- start dotted -->
@@ -1113,7 +1387,7 @@ else if (mode.equals("add"))
                                                         <img src="<%=request.getContextPath()%>/images/mandatory.gif" alt="Mandatory"  title="Mandatory"/>
                                                     </td><%
                                                 }
-                                                
+
                                                 %>
                                                 <td class="simple_attr_value">
                                                     <%
@@ -1121,7 +1395,7 @@ else if (mode.equals("add"))
                                                         <%=Util.processForDisplay(regStatus)%>
                                                         <%
                                                         if (regStatus.equalsIgnoreCase("Superseded") && successorDataset!=null) {%>
-                                                            <small> by 
+                                                            <small> by
                                                                 <a  href="<%=request.getContextPath()%>/datasets/<%=successorDataset.getID()%>">
                                                                     <i><c:out value="<%=successorDataset.getShortName()%>"/></i>
                                                                 </a>
@@ -1179,7 +1453,7 @@ else if (mode.equals("add"))
                                                             <c:set var="checkedoutCopyId" value="<%=dataset.getCheckedoutCopyID()%>"/>
                                                             <%if (successorDataset != null){ %>
                                                                 <c:set var="successorName" value="<%=successorDataset.getShortName()%>"/>
-                                                                <c:set var="enableSuccessorLink" value="true"/> 
+                                                                <c:set var="enableSuccessorLink" value="true"/>
                                                                 <c:set var="successorId" value="<%=successorDataset.getID()%>"/>
                                                             <%}%>
                                                             <c:if test="${selected eq 'Superseded'}">
@@ -1439,7 +1713,7 @@ else if (mode.equals("add"))
                                                                         %>
                                                                     </select>
                                                                     <a class="helpButton" href="<%=request.getContextPath()%>/fixedvalues/attr/<%=attrID%>">
-                                                                        
+
                                                                     </a>
                                                                     <%
                                                                 } else if (dispType.equals("vocabulary")){
@@ -1467,65 +1741,6 @@ else if (mode.equals("add"))
                                                 <%
                                             }
                                             %>
-
-                                            <!-- public outputs -->
-
-                                            <%
-                                            if (!mode.equals("add") && editPrm) {
-                                                String checkedPDF = dataset.displayCreateLink("PDF") ? "checked='checked'" : "";
-                                                String checkedXLS = dataset.displayCreateLink("XLS") ? "checked='checked'" : "";
-                                                String checkedODS = dataset.displayCreateLink("ODS") ? "checked='checked'" : "";
-                                                String checkedMDB = dataset.displayCreateLink("MDB") ? "checked='checked'" : "";
-                                                String checkedXmlSchema = dataset.displayCreateLink("XMLSCHEMA") ? "checked='checked'" : "";
-                                                %>
-                                                <tr class="<%=isOdd%>">
-                                                    <th scope="row" class="scope-row simple_attr_title">
-                                                        Public outputs
-                                                        <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=public_outputs"></a>
-                                                    </th>
-                                                    <%
-                                                    if (!mode.equals("view")) {%>
-                                                        <td class="simple_attr_help">
-                                                            <img style="border:0" src="<%=request.getContextPath()%>/images/optional.gif" width="16" height="16" alt="optional"/>
-                                                        </td><%
-                                                    }
-                                                    %>
-                                                    <td class="simple_attr_value">
-                                                        <%
-                                                        if(mode.equals("view")) { %>
-                                                            <input type="checkbox" disabled="disabled" <%=checkedPDF%>/>
-                                                                <small>Technical specification in PDF format</small>
-                                                            <br/>
-                                                            <input type="checkbox" disabled="disabled" <%=checkedXLS%>/>
-                                                                <small>MS Excel template</small>
-                                                            <br/>
-                                                            <input type="checkbox" disabled="disabled" <%=checkedXmlSchema%>/>
-                                                                <small>The definition on XML Schema format</small>
-                                                            <br/>
-                                                            <input type="checkbox" disabled="disabled" <%=checkedODS%>/>
-                                                                <small>OpenDocument spreadsheet</small>
-                                                            <%
-                                                        }
-                                                        else{ %>
-                                                            <input type="checkbox" name="disp_create_links" value="PDF" <%=checkedPDF%>/>
-                                                                <small>Technical specification in PDF format</small>
-                                                            <br/>
-                                                            <input type="checkbox" name="disp_create_links" value="XLS" <%=checkedXLS%>/>
-                                                                <small>MS Excel template</small>
-                                                            <br/>
-                                                            <input type="checkbox" name="disp_create_links" value="XMLSCHEMA" <%=checkedXmlSchema%>/>
-                                                                <small>The definition on XML Schema format</small>
-                                                            <br/>
-                                                            <input type="checkbox" name="disp_create_links" value="ODS" <%=checkedODS%>/>
-                                                                <small>OpenDocument spreadsheet</small>
-                                                            <%
-                                                        }
-                                                        %>
-                                                    </td>
-
-                                                    <%isOdd = Util.isOdd(++displayed);%>
-                                                </tr><%
-                                            }%>
 
                                             <!-- dataset number -->
                                             <%

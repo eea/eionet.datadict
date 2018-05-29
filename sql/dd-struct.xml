@@ -2779,4 +2779,20 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
             <column name="ALLOW_MSACCESS_DOWNLOAD" type="TINYINT(1)"/>
         </addColumn>
     </changeSet>
+    <changeSet author="vskiadas90" id="rev-202">
+        <comment>
+            Add a column in the DATASET table to persist Dataset Display Download Links checkboxes
+        </comment>
+        <addColumn tableName="DATASET">
+            <column name="DISPLAY_DOWNLOAD_LINKS" type="TEXT"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="vskiadas90" id="rev-203">
+        <dropColumn    columnName="ALLOW_MSACCESS_DOWNLOAD"
+                       tableName="DATASET"/>
+    </changeSet>
+    <changeSet author="vskiadas90" id="rev-204">
+        <dropColumn    columnName="ALLOW_EXCEL_DOWNLOAD"
+                       tableName="DATASET"/>
+    </changeSet>
 </databaseChangeLog>
