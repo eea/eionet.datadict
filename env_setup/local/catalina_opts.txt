@@ -10,6 +10,7 @@ CATALINA_OPTS=
 -Denv.dd.url=localhost:8080/datadict
 -Denv.uns.xml.rpc.server.url=
 -Denv.uns.channel.name=
+-Denv.uns.subscriptions.url=
 -Denv.xmlConv.url=
 -Denv.ldap.url=
 -Denv.ldap.principal=

@@ -197,6 +197,16 @@
                         <label for="chkInclHistoricVersions" class="smallfont">Yes</label>
                     </td>
                 </tr>
+                <tr>
+                    <td class="label">
+                        <label for="pageSize">Page size</label>
+                    </td>
+                    <td class="input">
+                        <stripes:select id="pageSize" name="filter.pageSize" class="small">
+                            <stripes:options-collection collection="${actionBean.filter.possibleResultsPerPage}" />
+                        </stripes:select>
+                    </td>
+                </tr>
             </table>
             <p class="actions">
                 <stripes:submit class="mediumbuttonb searchButton" name="search" value="Search"/>

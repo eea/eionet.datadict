@@ -133,7 +133,6 @@ finally {
                        <%
                    }
                    String subscriptionsUrl = Props.getProperty(Subscriber.PROP_UNS_SUBSCRIPTIONS_URL);
-                   subscriptionsUrl = subscriptionsUrl + Props.getProperty(Subscriber.PROP_UNS_CHANNEL_NAME);
                    %>
 
                 <div class="system-msg">
