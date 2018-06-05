@@ -33,6 +33,7 @@ public class AuthenticationRequestFilter extends GenericFilterBean {
         interceptedUrlPatterns.add("/doc_upload.jsp.jsp");
         interceptedUrlPatterns.add("/cache");
         interceptedUrlPatterns.add("/dataelements/add/?common=true");
+        interceptedUrlPatterns.add("/administration");
         interceptedUrlPatterns.add("/checkouts");
         interceptedUrlPatterns.add("/attributes");
         interceptedUrlPatterns.add("/attribute");

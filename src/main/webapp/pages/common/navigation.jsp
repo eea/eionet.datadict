@@ -11,16 +11,7 @@
         if (_user!=null){
             %>
             <li ${currentSection eq 'checkouts' ? 'class="current"' : ''}><a href="${pageContext.request.contextPath}/checkouts">Your checkouts</a></li>
-            <li ${currentSection eq 'attributes' ? 'class="current"' : ''}><a href="${pageContext.request.contextPath}/attributes">Attributes</a></li><%
-        }
-
-        if (SecurityUtil.userHasPerm(request, "/import", "x")){ %>
-            <li ${currentSection eq 'import' ? 'class="current"' : ''}><a href="${pageContext.request.contextPath}/import.jsp">Import datasets</a></li><%
-        }
-        if (SecurityUtil.userHasPerm(request, "/cleanup", "x")){ %>
-            <li ${currentSection eq 'cleanup' ? 'class="current"' : ''}><a href="${pageContext.request.contextPath}/cleanup">Cleanup</a></li> <%
-        }
-        if (_user!=null){ %>
+            <li ${currentSection eq 'administration' ? 'class="current"' : ''}><a href="${pageContext.request.contextPath}/administration">Administration</a></li>
             <li ${currentSection eq 'subscribe' ? 'class="current"' : ''}><a href="${pageContext.request.contextPath}/subscribe.jsp">Subscribe</a></li><%
         }
         if (SecurityUtil.userHasPerm(request, "/schemasets", "v") || SecurityUtil.userHasPerm(request, "/schemas", "v")){ %>

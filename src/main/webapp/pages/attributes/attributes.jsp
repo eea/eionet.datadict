@@ -2,20 +2,23 @@
 
 <%@ include file="/pages/common/taglibs.jsp"%>
 
-<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Attributes" currentSection="attributes">
+<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Attributes" currentSection="administration">
     <stripes:layout-component name="contents">
         <h1>Attributes</h1>
-        <c:if test="${ddfn:userHasPermission(actionBean.user.userName, '/attributes', 'i')}">
-            <div id="drop-operations">
-                <ul>
+        <div id="drop-operations">
+            <ul>
+                <li class="back">
+                    <stripes:link href="/administration">Back to administration</stripes:link>
+                </li>
+                <c:if test="${ddfn:userHasPermission(actionBean.user.userName, '/attributes', 'i')}">
                     <li class="add">
                         <stripes:link beanclass="eionet.web.action.AttributeActionBean" event="add">
                             Add attribute
                         </stripes:link>
                     </li>
-                </ul>
-            </div>
-        </c:if>
+                </c:if>
+            </ul>
+        </div>
         <c:choose>
             <c:when test="${empty actionBean.attributes}">
                 <p class='not-found'>No attributes found.</p>
