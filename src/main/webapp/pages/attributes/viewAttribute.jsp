@@ -2,20 +2,23 @@
 
 <%@ include file="/pages/common/taglibs.jsp"%>
 
-<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Attribute" currentSection="attributes">
+<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Attribute" currentSection="administration">
     <stripes:layout-component name="contents">
         <h1>View attribute definition</h1>
         <div id="drop-operations">
-            <c:if test="${ddfn:userHasPermission(actionBean.user.userName, '/attributes/', 'u')}">
-                <ul>
+            <ul>
+                <li class="back">
+                    <stripes:link href="/attributes">Back to attributes</stripes:link>
+                </li>
+                <c:if test="${ddfn:userHasPermission(actionBean.user.userName, '/attributes/', 'u')}">
                     <li class="edit">
                         <stripes:link beanclass="eionet.web.action.AttributeActionBean" event="edit">
                             <stripes:param name="attribute.id" value="${actionBean.attribute.id}"/>
                             Edit
                         </stripes:link>
                     </li>
-                </ul>
-            </c:if>
+                </c:if>
+            </ul>
         </div>
         <table class="datatable results">
             <c:set var="rowStatus" value="0"/>

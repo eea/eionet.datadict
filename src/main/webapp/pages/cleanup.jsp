@@ -2,10 +2,17 @@
 
 <%@ include file="/pages/common/taglibs.jsp"%>
 
-<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Cleanup" currentSection="cleanup">
+<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Cleanup" currentSection="administration">
 
     <stripes:layout-component name="contents">
         <h1>Cleanup functions</h1>
+        <div id="drop-operations">
+            <ul>
+                <li class="back">
+                    <stripes:link href="/attributes">Back to attributes</stripes:link>
+                </li>
+            </ul>
+        </div>
         <p>
             Pressing the 'Cleanup' button below will execute the following cleanup operations<br/>
             in the database contents (in the given order!):
