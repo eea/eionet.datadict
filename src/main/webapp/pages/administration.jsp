@@ -14,6 +14,13 @@
             <c:if test="${ddfn:userHasPermission(actionBean.user.userName, '/cleanup', 'x')}">
                 <li><stripes:link href="/cleanup">Cleanup</stripes:link></li>
             </c:if>
+             <c:if test="${ddfn:userHasPermission(actionBean.user.userName, '/vocabularies', 'i')}">
+                <li>
+                    <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="viewScheduledJobs"> 
+                       View scheduled jobs
+                    </stripes:link>
+                </li>
+             </c:if>
         </ul>
     </stripes:layout-component>
 
