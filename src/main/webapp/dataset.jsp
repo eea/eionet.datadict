@@ -855,7 +855,6 @@ else if (mode.equals("add"))
 
                                 <%
                                 if (mode.equals("view")) {
-                                    System.out.println("WE GOT INTO DATASET>JSP ");
                                     Vector docs = searchEngine.getDocs(ds_id);
                                     boolean dispAll = editPrm || editReleasedPrm;
                                     boolean dispPDF = dataset!=null && dataset.getDeserializedDisplayDownloadLinks().get(Dataset.DISPLAY_DOWNLOAD_LINKS.PDF);
@@ -930,7 +929,7 @@ else if (mode.equals("add"))
                                                             <a rel="nofollow" href="<%=request.getContextPath()%>/GetPrintout?format=PDF&amp;obj_type=DST&amp;obj_id=<%=ds_id%>&amp;out_type=GDLN" class="pdf"  onclick="return warnDatasetStatus('<%=regStatus%>', 'download')">
                                                                 Create technical specification for this dataset 
                                                             <% if(user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "u")){ %>
-                                                                <input type="checkbox" name="disp_create_links" value="PDF" <%=checkedPDF%> id="PDF" onclick="return setDatasetDisplayLinkVisibility('<%=request.getContextPath()%>',<%=ds_id%>,this.id)" />
+                                                                <input type="checkbox" name="disp_create_links" value="PDF" <%=checkedPDF%> id="PDF" onclick="setDatasetDisplayLinkVisibility(event,'<%=request.getContextPath()%>',<%=ds_id%>,this.id)" />
                                                                 <%}
                                                                 %>
                                                             </a>
@@ -952,7 +951,7 @@ else if (mode.equals("add"))
                                                             <a rel="nofollow" href="<%=request.getContextPath()%>/v2/dataset/<%=ds_id%>/schema-dst-<%=ds_id%>.xsd" class="xsd">
                                                                 Create an XML Schema for this dataset
                                                                 <% if(user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "u")){ %>
-                                                                <input type="checkbox" name="disp_create_links" value="XML_SCHEMA" <%=checkedXmlSchema%> id="XML_SCHEMA" onclick="return setDatasetDisplayLinkVisibility('<%=request.getContextPath()%>',<%=ds_id%>,this.id)" />
+                                                                <input type="checkbox" name="disp_create_links" value="XML_SCHEMA" <%=checkedXmlSchema%> id="XML_SCHEMA" onclick="setDatasetDisplayLinkVisibility(event,'<%=request.getContextPath()%>',<%=ds_id%>,this.id)" />
                                                                 <%}
                                                                 %>
                                                             </a>
@@ -976,11 +975,13 @@ else if (mode.equals("add"))
                                                     <li>
                                                         <a rel="nofollow" href="<%=request.getContextPath()%>/GetSchema?id=DST<%=ds_id%>" class="xsd">
                                                             Create an XML Schema for this dataset(using the old schema structure)
-                                                            <% if(user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "u")){ %>
-                                                            <input type="checkbox" name="disp_create_links" value="XML_SCHEMA_OLD_STRUCTURE" id="XML_SCHEMA_OLD_STRUCTURE" <%=checkedXmlSchemaOldStructure%>  onclick="return setDatasetDisplayLinkVisibility('<%=request.getContextPath()%>',<%=ds_id%>,this.id)" />
+                                                        <% if(user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "u")){ %>
+                                                            <input type="checkbox" name="disp_create_links" value="XML_SCHEMA_OLD_STRUCTURE" id="XML_SCHEMA_OLD_STRUCTURE" <%=checkedXmlSchemaOldStructure%>  onclick="setDatasetDisplayLinkVisibility(event,'<%=request.getContextPath()%>',<%=ds_id%>,this.id)" />
                                                             <%}
                                                             %>
+                                                        
                                                         </a>
+                                                           
                                                     </li>
 
 
@@ -1007,7 +1008,7 @@ else if (mode.equals("add"))
                                                             <a rel="nofollow" href="<%=request.getContextPath()%>/v2/dataset/<%=dataset.getID()%>/dataset-instance.xml" class="xml">
                                                                 Create an instance XML for this dataset
                                                                 <% if(user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "u")){ %>
-                                                                <input type="checkbox" name="disp_create_links" value="XML_INSTANCE" <%=checkXMLInstance%> id="XML_INSTANCE" onclick=" return setDatasetDisplayLinkVisibility('<%=request.getContextPath()%>',<%=ds_id%>,this.id)" />
+                                                                <input type="checkbox" name="disp_create_links" value="XML_INSTANCE" <%=checkXMLInstance%> id="XML_INSTANCE" onclick="setDatasetDisplayLinkVisibility(event,'<%=request.getContextPath()%>',<%=ds_id%>,this.id)" />
                                                                 <%}
                                                                 %>
                                                             </a>
@@ -1020,7 +1021,7 @@ else if (mode.equals("add"))
                                                             <a rel="nofollow" href="<%=request.getContextPath()%>/v2/dataset/<%=dataset.getID()%>/dataset-instance.xml" class="xml">
                                                                 Create an instance XML for this dataset
                                                                 <% if(user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "u")){ %>
-                                                                <input type="checkbox" name="disp_create_links" value="XML_INSTANCE" <%=checkXMLInstance%> id="XML_INSTANCE" onclick="return setDatasetDisplayLinkVisibility('<%=request.getContextPath()%>',<%=ds_id%>,this.id)" />
+                                                                <input type="checkbox" name="disp_create_links" value="XML_INSTANCE" <%=checkXMLInstance%> id="XML_INSTANCE" onclick="setDatasetDisplayLinkVisibility(event,'<%=request.getContextPath()%>',<%=ds_id%>,this.id)" />
                                                                 <%}
                                                                 %>
                                                             </a>
@@ -1034,7 +1035,7 @@ else if (mode.equals("add"))
                                                             <a rel="nofollow" href="<%=request.getContextPath()%>/GetXls?obj_type=dst&amp;obj_id=<%=ds_id%>&amp;new_schema=true" class="excel" onclick="return warnDatasetStatus('<%=regStatus%>', 'download')">
                                                                 Create an MS Excel template for this dataset using the new schema
                                                                 <% if(user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "u")){ %>
-                                                                <input type="checkbox" name="disp_create_links" value="MS_EXCEL" <%=checkedXLS%> id="MS_EXCEL" onclick="return setDatasetDisplayLinkVisibility('<%=request.getContextPath()%>',<%=ds_id%>,this.id)" />
+                                                                <input type="checkbox" name="disp_create_links" value="MS_EXCEL" <%=checkedXLS%> id="MS_EXCEL" onclick="setDatasetDisplayLinkVisibility(event,'<%=request.getContextPath()%>',<%=ds_id%>,this.id)" />
                                                                 <%}
                                                                 %>
                                                             </a>
@@ -1049,7 +1050,7 @@ else if (mode.equals("add"))
                                                             <a rel="nofollow" href="<%=request.getContextPath()%>/GetXls?obj_type=dst&amp;obj_id=<%=ds_id%>&amp;new_schema=true" class="excel" onclick="return warnDatasetStatus('<%=regStatus%>', 'download')">
                                                                 Create an MS Excel template for this dataset using the new schema
                                                                 <% if(user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "u")){ %>
-                                                                <input type="checkbox" name="disp_create_links" value="MS_EXCEL" <%=checkedXLS%> id="MS_EXCEL" onclick="return setDatasetDisplayLinkVisibility('<%=request.getContextPath()%>',<%=ds_id%>,this.id)" />
+                                                                <input type="checkbox" name="disp_create_links" value="MS_EXCEL" <%=checkedXLS%> id="MS_EXCEL" onclick="return setDatasetDisplayLinkVisibility(event,'<%=request.getContextPath()%>',<%=ds_id%>,this.id)" />
                                                                 <%}
                                                                 %>
                                                             </a>
@@ -1062,6 +1063,10 @@ else if (mode.equals("add"))
                                                         <li>
                                                             <a rel="nofollow" href="<%=request.getContextPath()%>/GetXls?obj_type=dst&amp;obj_id=<%=ds_id%>&amp;new_schema=false" class="excel" onclick="return warnDatasetStatus('<%=regStatus%>', 'download')">
                                                                 Create an MS Excel template for this dataset using the old schema
+                                                                <% if(user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "u")){ %>
+                                                                <input type="checkbox" name="disp_create_links" value="MS_EXCEL_OLD_STRUTURE" <%=checkedXLSOldStructure%> id="MS_EXCEL_OLD_STRUCTURE" onclick="return setDatasetDisplayLinkVisibility(event,'<%=request.getContextPath()%>',<%=ds_id%>,this.id)" />
+                                                                <%}
+                                                                %>
                                                             </a>
                                                             <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=excel"></a>
                                                         </li>
@@ -1085,7 +1090,7 @@ else if (mode.equals("add"))
                                                             <a rel="nofollow" href="<%=request.getContextPath()%>/GetXls?obj_type=dst&amp;obj_act=dd&amp;obj_id=<%=ds_id%>" class="excel" onclick="return warnDatasetStatus('<%=regStatus%>', 'download')">
                                                                 Create an MS Excel template for this dataset with drop-down boxes (BETA)
                                                                 <% if(user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "u")){ %>
-                                                                <input type="checkbox" name="disp_create_links" value="MS_EXCEL_DROPDOWN_BOXES" <%=checkedXLSDropDownBoxes%> id="MS_EXCEL_DROPDOWN_BOXES" onclick="return setDatasetDisplayLinkVisibility('<%=request.getContextPath()%>',<%=ds_id%>,this.id)" />
+                                                                <input type="checkbox" name="disp_create_links" value="MS_EXCEL_DROPDOWN_BOXES" <%=checkedXLSDropDownBoxes%> id="MS_EXCEL_DROPDOWN_BOXES" onclick="setDatasetDisplayLinkVisibility(event,'<%=request.getContextPath()%>',<%=ds_id%>,this.id)" />
                                                                 <%}
                                                                 %>
                                                             </a>
@@ -1111,7 +1116,7 @@ else if (mode.equals("add"))
                                                             <a rel="nofollow" href="<%=request.getContextPath()%>/GetMdb?dstID=<%=ds_id%>&amp;vmdonly=true" class="access" onclick="return warnDatasetStatus('<%=regStatus%>', 'download')">
                                                                 Create validation metadata for MS Access template
                                                                 <% if(user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "u")){ %>
-                                                                <input type="checkbox" name="disp_create_links" value="XLS_VALIDATION_METADATA" <%=checkedXLSwithValidationMetadata%> id="XLS_VALIDATION_METADATA" onclick="return setDatasetDisplayLinkVisibility('<%=request.getContextPath()%>',<%=ds_id%>,this.id)" />
+                                                                <input type="checkbox" name="disp_create_links" value="XLS_VALIDATION_METADATA" <%=checkedXLSwithValidationMetadata%> id="XLS_VALIDATION_METADATA" onclick="setDatasetDisplayLinkVisibility(event,'<%=request.getContextPath()%>',<%=ds_id%>,this.id)" />
                                                                 <%}
                                                                 %>
                                                             </a>
@@ -1137,7 +1142,7 @@ else if (mode.equals("add"))
                                                             <a rel="nofollow" href="<%=request.getContextPath()%>/GetMSAccess?dstID=<%=ds_id%>" class="access" onclick="return warnDatasetStatus('<%=regStatus%>', 'download')">
                                                                 Create advanced MS Access template
                                                                 <% if(user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "u")){ %>
-                                                                <input type="checkbox" name="disp_create_links" value="ADVANCED_ACCESS" <%=checkedAdvancedAccess%> id="ADVANCED_ACCESS" onclick="return setDatasetDisplayLinkVisibility('<%=request.getContextPath()%>',<%=ds_id%>,this.id)" />
+                                                                <input type="checkbox" name="disp_create_links" value="ADVANCED_ACCESS" <%=checkedAdvancedAccess%> id="ADVANCED_ACCESS" onclick="setDatasetDisplayLinkVisibility(event,'<%=request.getContextPath()%>',<%=ds_id%>,this.id)" />
                                                                 <%}
                                                                 %>
                                                             </a>
@@ -1167,7 +1172,7 @@ else if (mode.equals("add"))
                                                                 <stripes:param name="format" value="csv"/>
                                                                 Get the comma-separated codelists of this dataset
                                                                 <% if(user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "u")){ %>
-                                                                <input type="checkbox" name="disp_create_links" value="CODELISTS_CSV" <%=checkedCSVcodeLists%> id="CODELISTS_CSV" onclick="return setDatasetDisplayLinkVisibility('<%=request.getContextPath()%>',<%=ds_id%>,this.id)" />
+                                                                <input type="checkbox" name="disp_create_links" value="CODELISTS_CSV" <%=checkedCSVcodeLists%> id="CODELISTS_CSV" onclick="setDatasetDisplayLinkVisibility(event,'<%=request.getContextPath()%>',<%=ds_id%>,this.id)" />
                                                                 <%}
                                                                 %>
                                                             </stripes:link>
@@ -1196,7 +1201,7 @@ else if (mode.equals("add"))
                                                                 <stripes:param name="format" value="xml"/>
                                                                 Get the codelists of this dataset in XML format
                                                                 <% if(user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "u")){ %>
-                                                                <input type="checkbox" name="disp_create_links" value="CODELISTS_XML" <%=checkedXMLcodeLists%> id="CODELISTS_XML" onclick="return setDatasetDisplayLinkVisibility('<%=request.getContextPath()%>',<%=ds_id%>,this.id)" />
+                                                                <input type="checkbox" name="disp_create_links" value="CODELISTS_XML" <%=checkedXMLcodeLists%> id="CODELISTS_XML" onclick="setDatasetDisplayLinkVisibility(event,'<%=request.getContextPath()%>',<%=ds_id%>,this.id)" />
                                                                 <%}
                                                                 %>
                                                             </stripes:link>

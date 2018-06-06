@@ -279,7 +279,8 @@ function setDatasetMsAccessDownloadLinksVisibility(contextPath,datasetId) {
         return false;
 }
 
-function setDatasetDisplayLinkVisibility(contextPath, datasetId,elementId) {
+function setDatasetDisplayLinkVisibility(event,contextPath, datasetId,elementId) {
+    event.preventDefault();
     var isChecked= $('#'+elementId).is(':checked');
 
     $.ajax({

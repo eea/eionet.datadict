@@ -410,7 +410,6 @@ public class Dataset implements Comparable {
         Map<Dataset.DISPLAY_DOWNLOAD_LINKS, Boolean> databaseValues = new LinkedHashMap<>();
         for (DISPLAY_DOWNLOAD_LINKS value : DISPLAY_DOWNLOAD_LINKS.values()) {
             String enumasName = value.name();
-          //  System.out.println(enumasName);
             Object res = results.get(enumasName);
             if (res != null) { 
                 this.deserializedDisplayDownloadLinks.put(value, res.toString().equals("true") ? true : false);

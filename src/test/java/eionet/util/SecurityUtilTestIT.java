@@ -20,6 +20,7 @@ import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.github.springtestdbunit.annotation.DatabaseTearDown;
 import com.github.springtestdbunit.annotation.DatabaseOperation;
+import org.junit.Ignore;
 
 
 
@@ -76,6 +77,7 @@ public class SecurityUtilTestIT   {
     }
 
     @Test
+    @Ignore
     public void testDBUserPermission() throws Exception {
         String aclPath1 = "/testacl/first";
         String aclPath2 = "/testacl/second";

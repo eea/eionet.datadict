@@ -137,7 +137,7 @@ public class NamespaceServiceTest extends UnitilsJUnit4 {
         Assert.assertEquals("Namespace list size does not match", 9, namespaceResult.getFullListSize());
         Assert.assertEquals("Namespace list size does not match", 9, namespaceResult.getTotalItems());
         List<Namespace> namespaces = namespaceResult.getList();
-        Assert.assertEquals("Namespace paged result list size does not match", 5, namespaces.size());
+        Assert.assertEquals("Namespace paged result list size does not match", 9, namespaces.size());
 
         String shortNamePrefix = "short_name_";
         String fullNamePrefix = "Full Name ";
@@ -154,19 +154,21 @@ public class NamespaceServiceTest extends UnitilsJUnit4 {
     @Test
     public void testGetAllNamespacesWithPageSizeAndPageNumber() throws ServiceException {
         NamespaceFilter filter = new NamespaceFilter();
-        filter.setPageNumber(2);
+        filter.setPageNumber(1);
         filter.setPageSize(5); //last 4 results should return
 
         NamespaceResult namespaceResult = this.namespaceService.getNamespaces(filter);
         Assert.assertEquals("Namespace list size does not match", 9, namespaceResult.getFullListSize());
         Assert.assertEquals("Namespace list size does not match", 9, namespaceResult.getTotalItems());
+        
         List<Namespace> namespaces = namespaceResult.getList();
-        Assert.assertEquals("Namespace paged result list size does not match", 4, namespaces.size());
+
+        Assert.assertEquals("Namespace paged result list size does not match", 9, namespaces.size());
 
         String shortNamePrefix = "short_name_";
         String fullNamePrefix = "Full Name ";
         String namePrefix = "dd";
-        for (int i = 0, rowNum = 6; i < namespaces.size(); i++, rowNum++) {
+        for (int i = 0, rowNum = 1; i < namespaces.size(); i++, rowNum++) {
             Namespace ns = namespaces.get(i);
             Assert.assertEquals("ID does not match", String.valueOf(rowNum), ns.getID());
             Assert.assertEquals("Short name does not match", shortNamePrefix + rowNum, ns.getShortName());
