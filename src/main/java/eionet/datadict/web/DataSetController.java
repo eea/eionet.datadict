@@ -4,12 +4,12 @@ import eionet.datadict.errors.BadRequestException;
 import eionet.datadict.errors.IllegalParameterException;
 import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.errors.XmlExportException;
-import eionet.datadict.model.DataSet;
 import eionet.datadict.services.DataSetService;
 import eionet.datadict.services.DataSetTableService;
 import eionet.meta.DDUser;
 import eionet.util.SecurityUtil;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.servlet.ServletException;
@@ -168,8 +168,8 @@ public class DataSetController {
 
 
     @RequestMapping(value = "{id}/updateDispCreateLinks/{dispDownloadLinkType}/{value}")
-    public ResponseEntity<?> updateDispCreateLinks(@PathVariable int id,@PathVariable String dispDownloadLinkType,@PathVariable String value,
-            HttpServletRequest request) {
+    public ResponseEntity<?> updateDisplayDownloadLinks(HttpServletResponse response,@PathVariable int id,@PathVariable String dispDownloadLinkType,@PathVariable String value,
+            HttpServletRequest request) throws IOException {
         DDUser user = SecurityUtil.getUser(request);
         if (user != null && user.hasPermission("/datasets", "u")) {
             try {
@@ -180,25 +180,27 @@ public class DataSetController {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
         } else {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            response.sendRedirect(SecurityUtil.getLoginURL(request));
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public void HandleResourceNotFoundException(Exception exception, HttpServletRequest request, HttpServletResponse response) throws IOException {
         LOGGER.log(Level.ERROR, null, exception);
-        response.sendRedirect(request.getContextPath() + GENERIC_DD_ERROR_PAGE_URL + exception.getMessage());
+        response.sendRedirect(request.getContextPath() + GENERIC_DD_ERROR_PAGE_URL + URLEncoder.encode(exception.getMessage(), "UTF-8"));
     }
 
     @ExceptionHandler(BadRequestException.class)
     public void HandleBadRequestException(Exception exception, HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.sendRedirect(request.getContextPath() + GENERIC_DD_ERROR_PAGE_URL + exception.getMessage());
+       
+        response.sendRedirect(request.getContextPath() + GENERIC_DD_ERROR_PAGE_URL +URLEncoder.encode(exception.getMessage(), "UTF-8"));
     }
 
     @ExceptionHandler({IOException.class, TransformerConfigurationException.class, TransformerException.class, XmlExportException.class, DOMException.class})
     public void HandleFatalExceptions(Exception exception, HttpServletRequest request, HttpServletResponse response) throws IOException {
         LOGGER.log(Level.ERROR, null, exception);
-        response.sendRedirect(request.getContextPath() + GENERIC_DD_ERROR_PAGE_URL + "error exporting XML. " + exception.getMessage());
+        response.sendRedirect(request.getContextPath() + GENERIC_DD_ERROR_PAGE_URL  +URLEncoder.encode(exception.getMessage(), "UTF-8"));
     }
 
 }

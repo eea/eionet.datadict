@@ -59,4 +59,9 @@ public class DatasetControllerTest {
         verify(dataSetService, times(1)).getDataSetXMLInstance(datasetIdCaptor.capture());
         assertThat(datasetIdCaptor.getValue(), equalTo(2827));
     }
+    
+    @Test
+    public void failToUpdateDisplayDownLoadLinksDueToUnauthorized(){
+    
+    }
 }
