@@ -12,6 +12,7 @@ import javax.xml.transform.TransformerException;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
@@ -61,6 +62,7 @@ public class DatasetControllerTest {
     }
     
     @Test
+    @Ignore
     public void failToUpdateDisplayDownLoadLinksDueToUnauthorized(){
     
     }
