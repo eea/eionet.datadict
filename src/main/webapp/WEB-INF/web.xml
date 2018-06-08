@@ -191,6 +191,11 @@
         <filter-name>DDCORSFilter</filter-name>
         <url-pattern>/vocabulary/*</url-pattern>
     </filter-mapping>
+    
+    <filter-mapping>
+        <filter-name>DDCORSFilter</filter-name>
+        <url-pattern>/tables/*</url-pattern>
+    </filter-mapping>
 
     <filter-mapping>
         <filter-name>ContentNegotiationFilter</filter-name>

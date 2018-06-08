@@ -53,7 +53,7 @@ public class DDCORSFilter implements Filter {
         // filter only if request ends with /json
         int lastIndexOfSlash = StringUtils.lastIndexOf(requestUrl, "/");
         String subString = StringUtils.substring(requestUrl, lastIndexOfSlash);
-        if (StringUtils.startsWith(subString, "/json")) {
+        if (StringUtils.startsWith(subString, "/json") || StringUtils.startsWith(subString, "/csv")) {
             response.setHeader("Access-Control-Allow-Origin", "*");
             response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
             response.setHeader("Access-Control-Max-Age", "3600");
