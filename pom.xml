@@ -130,7 +130,7 @@
                             <goal>start</goal>
                         </goals>
                     </execution>
-                    <!--execution>
+                    <execution>
                         <configuration>
                             <skip>${maven.test.skip}</skip>
                         </configuration>
@@ -139,7 +139,7 @@
                         <goals>
                             <goal>stop</goal>
                         </goals>
-                    </execution-->
+                    </execution>
                 </executions>
             </plugin>
 
