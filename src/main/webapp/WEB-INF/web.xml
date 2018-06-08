@@ -194,7 +194,7 @@
     
     <filter-mapping>
         <filter-name>DDCORSFilter</filter-name>
-        <url-pattern>/tables/*</url-pattern>
+        <url-pattern>/codelists/tables/*</url-pattern>
     </filter-mapping>
 
     <filter-mapping>
