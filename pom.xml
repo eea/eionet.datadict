@@ -79,7 +79,7 @@
             <plugin>
                 <groupId>io.fabric8</groupId>
                 <artifactId>docker-maven-plugin</artifactId>
-                <version>0.24.0</version>
+                <version>0.26.0</version>
                 <extensions>true</extensions>
                 <configuration>
                     <!-- Use the following for windows hosts -->
@@ -91,7 +91,7 @@
                             <name>mysql:5.5</name>
                             <run>
                                 <ports>
-                                    <port>53336:3306</port>
+                                    <port>mysql.port:3306</port>
                                 </ports>
                                 <env>
                                     <MYSQL_ROOT_PASSWORD>12345</MYSQL_ROOT_PASSWORD>
@@ -197,6 +197,7 @@
                     <trimStackTrace>false</trimStackTrace>
                     <systemPropertyVariables>
                         <docker.host.address>${docker.host.address}</docker.host.address>
+                        <mysql.port>${mysql.port}</mysql.port>
                     </systemPropertyVariables>
                     <includes>
                         <!--<include>**/*IT.java</include>-->
