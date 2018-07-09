@@ -68,7 +68,7 @@
                         <a id="printlink" title="Print this page" href="javascript:this.print();"><span>Print</span></a>
                         <a id="fullscreenlink" href="javascript:toggleFullScreenMode()" title="Switch to/from full screen mode"><span>Switch to/from full screen mode</span></a>
                         <a id="acronymlink" target="_blank" href="http://www.eionet.europa.eu/acronyms" title="Look up acronyms"><span>Acronyms</span></a>
-                        <form action="http://google.com/search" method="get">
+                        <form action="https://google.com/search" method="get">
                             <div id="freesrchform">
                                 <label for="freesrchfld">Search</label>
                                 <input type="text" id="freesrchfld" name="q"
