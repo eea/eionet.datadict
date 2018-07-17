@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<rdf:RDF xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:dctype="http://purl.org/dc/dcmitype/" xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dct="http://purl.org/dc/terms/" xmlns="http://dd.eionet.europa.eu/property/" xml:base="http://dd.eionet.europa.eu/vocabulary/test/referencesdelete/">
-    <skos:ConceptScheme rdf:about="http://dd.eionet.europa.eu/vocabulary/test/referencesdelete/">
+<rdf:RDF xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:dctype="http://purl.org/dc/dcmitype/" xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:dct="http://purl.org/dc/terms/" xmlns="https://dd.eionet.europa.eu/property/" xml:base="https://dd.eionet.europa.eu/vocabulary/test/referencesdelete/">
+    <skos:ConceptScheme rdf:about="https://dd.eionet.europa.eu/vocabulary/test/referencesdelete/">
         <rdfs:label>Investigate deletion of references</rdfs:label>
         <skos:notation>referencesdelete</skos:notation>
-        <dct:isPartOf rdf:resource="http://dd.eionet.europa.eu/vocabulary/test/"/>
+        <dct:isPartOf rdf:resource="https://dd.eionet.europa.eu/vocabulary/test/"/>
     </skos:ConceptScheme>
-    <skos:Concept rdf:about="http://dd.eionet.europa.eu/vocabulary/test/referencesdelete/1001">
+    <skos:Concept rdf:about="https://dd.eionet.europa.eu/vocabulary/test/referencesdelete/1001">
         <skos:notation>1001</skos:notation>
         <skos:prefLabel>Corallium rubrum</skos:prefLabel>
-        <skos:inScheme rdf:resource="http://dd.eionet.europa.eu/vocabulary/test/referencesdelete/"/>
-        <skos:exactMatch rdf:resource="http://eunis.eea.europa.eu/species/98"/>
-        <skos:exactMatch rdf:resource="http://eunis.eea.europa.eu/species/9898"/>
-        <dct:replaces rdf:resource="http://dd.eionet.europa.eu/vocabulary/test/referencesdelete/1002"/>
-        <dct:replaces rdf:resource="http://dd.eionet.europa.eu/vocabulary/test/referencesdelete/1003"/>
+        <skos:inScheme rdf:resource="https://dd.eionet.europa.eu/vocabulary/test/referencesdelete/"/>
+        <skos:exactMatch rdf:resource="https://eunis.eea.europa.eu/species/98"/>
+        <skos:exactMatch rdf:resource="https://eunis.eea.europa.eu/species/9898"/>
+        <dct:replaces rdf:resource="https://dd.eionet.europa.eu/vocabulary/test/referencesdelete/1002"/>
+        <dct:replaces rdf:resource="https://dd.eionet.europa.eu/vocabulary/test/referencesdelete/1003"/>
     </skos:Concept>
-    <skos:Concept rdf:about="http://dd.eionet.europa.eu/vocabulary/test/referencesdelete/1002">
+    <skos:Concept rdf:about="https://dd.eionet.europa.eu/vocabulary/test/referencesdelete/1002">
         <skos:notation>1002</skos:notation>
         <skos:prefLabel>Discula tabellata</skos:prefLabel>
-        <skos:inScheme rdf:resource="http://dd.eionet.europa.eu/vocabulary/test/referencesdelete/"/>
-        <dct:isReplacedBy rdf:resource="http://dd.eionet.europa.eu/vocabulary/test/referencesdelete/1001"/>
+        <skos:inScheme rdf:resource="https://dd.eionet.europa.eu/vocabulary/test/referencesdelete/"/>
+        <dct:isReplacedBy rdf:resource="https://dd.eionet.europa.eu/vocabulary/test/referencesdelete/1001"/>
     </skos:Concept>
-    <skos:Concept rdf:about="http://dd.eionet.europa.eu/vocabulary/test/referencesdelete/1003">
+    <skos:Concept rdf:about="https://dd.eionet.europa.eu/vocabulary/test/referencesdelete/1003">
         <skos:notation>1003</skos:notation>
         <skos:prefLabel>Discula testudinalis</skos:prefLabel>
-        <skos:inScheme rdf:resource="http://dd.eionet.europa.eu/vocabulary/test/referencesdelete/"/>
-        <dct:isReplacedBy rdf:resource="http://dd.eionet.europa.eu/vocabulary/test/referencesdelete/1001"/>
+        <skos:inScheme rdf:resource="https://dd.eionet.europa.eu/vocabulary/test/referencesdelete/"/>
+        <dct:isReplacedBy rdf:resource="https://dd.eionet.europa.eu/vocabulary/test/referencesdelete/1001"/>
     </skos:Concept>
 </rdf:RDF>

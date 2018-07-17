@@ -6,20 +6,20 @@
    xmlns:skos="http://www.w3.org/2004/02/skos/core#"
    xmlns:dcterms="http://purl.org/dc/terms/"
    xmlns:geo="http://geo.org#ws64"
-   xmlns="http://dd.eionet.europa.eu/property/"
-   xml:base="http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/">
+   xmlns="https://dd.eionet.europa.eu/property/"
+   xml:base="https://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/">
 
-   <skos:ConceptScheme rdf:about="http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/">
+   <skos:ConceptScheme rdf:about="https://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/">
       <rdfs:label>rdf_header_vocab_test</rdfs:label>
       <skos:notation>rdf_header_vocab</skos:notation>
-      <dcterms:isPartOf rdf:resource="http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/"/>
+      <dcterms:isPartOf rdf:resource="https://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/"/>
    </skos:ConceptScheme>
 
    <!-- Concept 5 -->
-   <skos:Concept rdf:about="http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/rdf_test_concept_5">
+   <skos:Concept rdf:about="https://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/rdf_test_concept_5">
       <skos:prefLabel>rdf_test_concept_label_5</skos:prefLabel>
       <skos:definition>rdf_test_concept_def_5</skos:definition>
-      <skos:inScheme rdf:resource="http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/"/>
+      <skos:inScheme rdf:resource="https://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/"/>
       <skos:prefLabel xml:lang="bg">bg_rdf_test_concept_5</skos:prefLabel>
       <skos:definition xml:lang="de">de_rdf_test_concept_5</skos:definition>
       <skos:definition xml:lang="en">en_rdf_test_concept_5</skos:definition>

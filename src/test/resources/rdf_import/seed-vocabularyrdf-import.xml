@@ -12,16 +12,16 @@
     <VOCABULARY_SET ID="10" IDENTIFIER="rdf_header_vs_2" LABEL="rdf_header_vs_test_2" />
     <VOCABULARY_SET ID="11" IDENTIFIER="reftest" LABEL="Ref Test" />
 
-    <VOCABULARY VOCABULARY_ID="3" CONTINUITY_ID="124" IDENTIFIER="rdf_header_vocab" LABEL="rdf_header_vocab_test" REG_STATUS="Released" WORKING_COPY="0" WORKING_USER="testUser" CHECKEDOUT_COPY_ID="[NULL]" BASE_URI="http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/" FOLDER_ID="5"/>
-    <VOCABULARY VOCABULARY_ID="4" CONTINUITY_ID="124" IDENTIFIER="rdf_header_vocab" LABEL="rdf_header_vocab_test" REG_STATUS="Released" WORKING_COPY="1" WORKING_USER="testUser" CHECKEDOUT_COPY_ID="3" BASE_URI="http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/" FOLDER_ID="5"/>
-    <VOCABULARY VOCABULARY_ID="6" CONTINUITY_ID="125" IDENTIFIER="rdf_header_vocab_2" LABEL="rdf_header_vocab_test_2" REG_STATUS="Released" WORKING_COPY="0" WORKING_USER="testUser" CHECKEDOUT_COPY_ID="[NULL]" BASE_URI="http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab_2/" FOLDER_ID="5"/>
-    <VOCABULARY VOCABULARY_ID="16" CONTINUITY_ID="125" IDENTIFIER="invalid_vocabulary" LABEL="invalid_vocabulary" REG_STATUS="Released" WORKING_COPY="1" WORKING_USER="testUser" CHECKEDOUT_COPY_ID="[NULL]" BASE_URI="http://127.0.0.1:8080/datadict/vocabulary/csv_header_vs/invalid_vocabulary//" FOLDER_ID="5"/>
+    <VOCABULARY VOCABULARY_ID="3" CONTINUITY_ID="124" IDENTIFIER="rdf_header_vocab" LABEL="rdf_header_vocab_test" REG_STATUS="Released" WORKING_COPY="0" WORKING_USER="testUser" CHECKEDOUT_COPY_ID="[NULL]" BASE_URI="https://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/" FOLDER_ID="5"/>
+    <VOCABULARY VOCABULARY_ID="4" CONTINUITY_ID="124" IDENTIFIER="rdf_header_vocab" LABEL="rdf_header_vocab_test" REG_STATUS="Released" WORKING_COPY="1" WORKING_USER="testUser" CHECKEDOUT_COPY_ID="3" BASE_URI="https://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/" FOLDER_ID="5"/>
+    <VOCABULARY VOCABULARY_ID="6" CONTINUITY_ID="125" IDENTIFIER="rdf_header_vocab_2" LABEL="rdf_header_vocab_test_2" REG_STATUS="Released" WORKING_COPY="0" WORKING_USER="testUser" CHECKEDOUT_COPY_ID="[NULL]" BASE_URI="https://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab_2/" FOLDER_ID="5"/>
+    <VOCABULARY VOCABULARY_ID="16" CONTINUITY_ID="125" IDENTIFIER="invalid_vocabulary" LABEL="invalid_vocabulary" REG_STATUS="Released" WORKING_COPY="1" WORKING_USER="testUser" CHECKEDOUT_COPY_ID="[NULL]" BASE_URI="https://127.0.0.1:8080/datadict/vocabulary/csv_header_vs/invalid_vocabulary//" FOLDER_ID="5"/>
 
-    <VOCABULARY VOCABULARY_ID="7" CONTINUITY_ID="126" IDENTIFIER="rdf_header_vocab_3" LABEL="rdf_header_vocab_test_3" REG_STATUS="Released" WORKING_COPY="0" WORKING_USER="testUser" CHECKEDOUT_COPY_ID="3" BASE_URI="http://tripledev.ee/vocabulary/a_vocabulary_folder/a_vocabulary_name/" FOLDER_ID="10"/>
+    <VOCABULARY VOCABULARY_ID="7" CONTINUITY_ID="126" IDENTIFIER="rdf_header_vocab_3" LABEL="rdf_header_vocab_test_3" REG_STATUS="Released" WORKING_COPY="0" WORKING_USER="testUser" CHECKEDOUT_COPY_ID="3" BASE_URI="https://tripledev.ee/vocabulary/a_vocabulary_folder/a_vocabulary_name/" FOLDER_ID="10"/>
 
-    <VOCABULARY VOCABULARY_ID="8" CONTINUITY_ID="126" IDENTIFIER="reftest" LABEL="reftest" REG_STATUS="Released" WORKING_COPY="0" WORKING_USER="testUser" CHECKEDOUT_COPY_ID="[NULL]" BASE_URI="http://dd.eionet.europa.eu/vocabulary/test/referencesdelete/" FOLDER_ID="11"/>
+    <VOCABULARY VOCABULARY_ID="8" CONTINUITY_ID="126" IDENTIFIER="reftest" LABEL="reftest" REG_STATUS="Released" WORKING_COPY="0" WORKING_USER="testUser" CHECKEDOUT_COPY_ID="[NULL]" BASE_URI="https://dd.eionet.europa.eu/vocabulary/test/referencesdelete/" FOLDER_ID="11"/>
 
-    <VOCABULARY VOCABULARY_ID="9" CONTINUITY_ID="127" IDENTIFIER="geography" LABEL="geography" REG_STATUS="Released" WORKING_COPY="0" WORKING_USER="testUser" CHECKEDOUT_COPY_ID="[NULL]" BASE_URI="http://dd.uat.eionet.europa.eu/vocabulary/test/geography/" FOLDER_ID="11"/>
+    <VOCABULARY VOCABULARY_ID="9" CONTINUITY_ID="127" IDENTIFIER="geography" LABEL="geography" REG_STATUS="Released" WORKING_COPY="0" WORKING_USER="testUser" CHECKEDOUT_COPY_ID="[NULL]" BASE_URI="https://dd.uat.eionet.europa.eu/vocabulary/test/geography/" FOLDER_ID="11"/>
 
     <VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="8" VOCABULARY_ID="4" ORIGINAL_CONCEPT_ID="[NULL]" IDENTIFIER="rdf_test_concept_1" LABEL="rdf_test_concept_label_1_lets_get_sure" DEFINITION="[NULL]" STATUS="145"/>
     <VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="9" VOCABULARY_ID="4" ORIGINAL_CONCEPT_ID="[NULL]" IDENTIFIER="rdf_test_concept_2" LABEL="rdf_test_concept_label_2" DEFINITION="rdf_test_concept_def_2" STATUS="145"/>
@@ -107,7 +107,7 @@
 
     <VOCABULARY_CONCEPT_ELEMENT ID="31" VOCABULARY_CONCEPT_ID="10" DATAELEM_ID="5" ELEMENT_VALUE="HCO3_rdf_test_concept_3" RELATED_CONCEPT_ID="[NULL]" LANGUAGE="[NULL]"/>
 
-    <VOCABULARY_CONCEPT_ELEMENT ID="32" VOCABULARY_CONCEPT_ID="10" DATAELEM_ID="6" ELEMENT_VALUE="http://test.tripledev.ee/datadict/vocabulary/test/test_another_source/another1" RELATED_CONCEPT_ID="[NULL]" LANGUAGE="[NULL]"/>
+    <VOCABULARY_CONCEPT_ELEMENT ID="32" VOCABULARY_CONCEPT_ID="10" DATAELEM_ID="6" ELEMENT_VALUE="https://test.tripledev.ee/datadict/vocabulary/test/test_another_source/another1" RELATED_CONCEPT_ID="[NULL]" LANGUAGE="[NULL]"/>
 
     <VOCABULARY_CONCEPT_ELEMENT ID="33" VOCABULARY_CONCEPT_ID="8" DATAELEM_ID="14" ELEMENT_VALUE="[NULL]" RELATED_CONCEPT_ID="9" LANGUAGE="[NULL]"/>
     <VOCABULARY_CONCEPT_ELEMENT ID="34" VOCABULARY_CONCEPT_ID="9" DATAELEM_ID="15" ELEMENT_VALUE="[NULL]" RELATED_CONCEPT_ID="8" LANGUAGE="[NULL]"/>

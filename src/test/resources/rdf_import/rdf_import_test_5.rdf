@@ -6,15 +6,15 @@
    xmlns:skos="http://www.w3.org/2004/02/skos/core#"
    xmlns:dcterms="http://purl.org/dc/terms/"
    xmlns:geo="http://geo.org#ws64"
-   xmlns="http://127.0.0.1:8080/datadict/property/"
-   xml:base="http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/">
+   xmlns="https://127.0.0.1:8080/datadict/property/"
+   xml:base="https://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/">
 
    <!-- Concept 3 -->
-   <skos:Concept rdf:about="http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/rdf_test_concept_3">
+   <skos:Concept rdf:about="https://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/rdf_test_concept_3">
       <skos:prefLabel>rdf_test_concept_label_3</skos:prefLabel>
       <skos:definition>rdf_test_concept_def_3_updated</skos:definition>
-      <skos:relatedMatch>http://test.tripledev.ee/datadict/vocabulary/test/test_another_source/another2</skos:relatedMatch>
-      <skos:related rdf:resource="http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/rdf_test_concept_2"/>
+      <skos:relatedMatch>https://test.tripledev.ee/datadict/vocabulary/test/test_another_source/another2</skos:relatedMatch>
+      <skos:related rdf:resource="https://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/rdf_test_concept_2"/>
       <skos:prefLabel xml:lang="bg_BG">bg_rdf_test_concept_3_updated</skos:prefLabel>      
    </skos:Concept>
 </rdf:RDF>
