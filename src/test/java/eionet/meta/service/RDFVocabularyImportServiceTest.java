@@ -1154,7 +1154,6 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
      */
     @Test
     @Rollback
-  //  @Ignore
     public void testIfConceptsUpdatedAndMissingConceptsInvalid() throws Exception {
         // get vocabulary folder
         VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCABULARY_ID);
@@ -1200,7 +1199,6 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
      */
     @Test
     @Rollback
-  //  @Ignore
     public void testIfConceptsUpdatedAndMissingConceptsRetired() throws Exception {
         // get vocabulary folder
         VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCABULARY_ID);
@@ -1244,7 +1242,6 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
      */
     @Test
     @Rollback
-   // @Ignore
     public void testIfConceptsUpdatedAddedAfterPerPredicatePurge() throws Exception {
         // get vocabulary folder
         VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCABULARY_ID);
@@ -1310,7 +1307,6 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
      */
     @Test
     @Rollback
- //   @Ignore
     public void testIfConceptsAreSkipped() throws Exception {
         // get vocabulary folder
         VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCABULARY_ID);
@@ -1377,7 +1373,6 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
      */
     @Test
     @Rollback
-  //  @Ignore
     public void testIfConceptsSetRelatedInOtherVocabularies() throws Exception {
         // get vocabulary folder
         VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCABULARY_ID);
@@ -1444,7 +1439,6 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
      */
     @Test
     @Rollback
-   // @Ignore
     public void testIfConceptsAddedWithCorrectLabelsAfterPurge() throws Exception {
         // get vocabulary folder
         VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCABULARY_ID);
@@ -1503,7 +1497,6 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
      */
     @Test
     @Rollback
-   // @Ignore
     public void testExceptionWhenVocabularyDoesNotHaveAValidBaseUri() throws Exception {
         // get vocabulary folder
         VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_INVALID_VOCABULARY_ID);
@@ -1526,7 +1519,6 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
      */
     @Test
     @Rollback
-   // @Ignore
     public void testNoErrorIsGeneratedWhenSendingNothing() throws Exception {
         // get vocabulary folder
         VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCABULARY_ID);
@@ -1557,7 +1549,6 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
      */
     @Test
     @Rollback
-   // @Ignore
     public void testIfRelatedElementAddedCorrectly() throws Exception {
         // get vocabulary folder
         VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCABULARY_ID);
@@ -1603,7 +1594,6 @@ public class RDFVocabularyImportServiceTest extends VocabularyImportServiceTestB
      */
     @Test
     @Rollback
-   // @Ignore
     public void testIfNewConceptAddedWithDDNamespace() throws Exception {
         // get vocabulary folder
         VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCABULARY_ID);
