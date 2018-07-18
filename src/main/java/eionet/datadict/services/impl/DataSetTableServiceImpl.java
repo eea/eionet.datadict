@@ -156,7 +156,7 @@ public class DataSetTableServiceImpl implements DataSetTableService {
             tableElement.setAttribute(DataDictXMLConstants.MIN_OCCURS, this.dataElementDataService.isDataElementMandatory(dataElement.getDatasetTable().getId(), dataElement.getId()) ? "1" : "0");
             String delimiter = this.dataElementDataService.getDataElementMultiValueDelimiter(dataElement.getDatasetTable().getId(), dataElement.getId());
             if (delimiter != null) {
-                tableElement.setAttribute(DataDictXMLConstants.MULTI_VALUE_DELIM, delimiter);
+                tableElement.setAttribute(DataDictXMLConstants.DD_ATTRS+":"+DataDictXMLConstants.MULTI_VALUE_DELIM, delimiter);
             }
 
             tableElement.setAttribute(DataDictXMLConstants.MAX_OCCURS, "1");

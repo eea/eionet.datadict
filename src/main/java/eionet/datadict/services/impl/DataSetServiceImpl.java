@@ -178,6 +178,15 @@ public class DataSetServiceImpl implements DataSetService {
             throw new ResourceNotFoundException(String.format("Dataset with id %d not found", id));
         }
         List<DatasetTable> dsTables = this.datasetTableDataService.getAllTablesByDatasetId(dataset.getId());
+        
+         Collections.sort(dsTables, new Comparator<DatasetTable>() {
+            public int compare(DatasetTable o1, DatasetTable o2) {
+                if (o1.getPosition() == o2.getPosition()) {
+                    return 0;
+                }
+                return o1.getPosition() < o2.getPosition() ? -1 : 1;
+            }
+        });
         try {
             docFactory.setNamespaceAware(true);
             docBuilder = docFactory.newDocumentBuilder();
