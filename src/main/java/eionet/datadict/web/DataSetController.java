@@ -9,6 +9,7 @@ import eionet.datadict.services.DataSetTableService;
 import eionet.meta.DDUser;
 import eionet.util.SecurityUtil;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.net.URLEncoder;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -37,7 +38,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
-
+import org.apache.jena.rdf.model.*;
+import org.apache.jena.vocabulary.*;
 /**
  *
  * @author Vasilis Skiadas<vs@eworx.gr>
@@ -165,8 +167,24 @@ public class DataSetController {
         outStream.flush();
         outStream.close();
     }
+    
+    @RequestMapping(value = "/rdf/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
+    @ResponseBody
+    public String getDatasetRDFExport(@PathVariable int id,HttpServletResponse response) throws XmlExportException, ResourceNotFoundException, IOException, TransformerConfigurationException, TransformerException {
+       
+        Model rdfModel = this.dataSetService.getDatasetRdf(id);
+        StringWriter sw = new StringWriter();
+        TransformerFactory tf = TransformerFactory.newInstance();
+        Transformer transformer = tf.newTransformer();
+        transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+        transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+        transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+        rdfModel.write(sw);
+        return sw.toString();
+    }
 
-
+    
     @RequestMapping(value = "{id}/updateDispCreateLinks/{dispDownloadLinkType}/{value}")
     public ResponseEntity<?> updateDisplayDownloadLinks(HttpServletResponse response,@PathVariable int id,@PathVariable String dispDownloadLinkType,@PathVariable String value,
             HttpServletRequest request) throws IOException {
@@ -184,7 +202,7 @@ public class DataSetController {
             return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         }
     }
-
+    
     @ExceptionHandler(ResourceNotFoundException.class)
     public void HandleResourceNotFoundException(Exception exception, HttpServletRequest request, HttpServletResponse response) throws IOException {
         LOGGER.log(Level.ERROR, null, exception);

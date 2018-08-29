@@ -29,7 +29,7 @@ public class DataSet implements AttributeOwner {
     private String workingUser;
     private Boolean workingCopy;
     private DatasetRegStatus regStatus;
-    private Integer date;
+    private Long date;
     private String user;
     private Namespace correspondingNS;
     private String deleted;
@@ -187,11 +187,11 @@ public class DataSet implements AttributeOwner {
         this.regStatus = regStatus;
     }
 
-    public Integer getDate() {
+    public Long getDate() {
         return date;
     }
 
-    public void setDate(Integer date) {
+    public void setDate(Long date) {
         this.date = date;
     }
 

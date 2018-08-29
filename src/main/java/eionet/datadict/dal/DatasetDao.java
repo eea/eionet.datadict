@@ -1,6 +1,8 @@
 package eionet.datadict.dal;
 
 import eionet.datadict.model.DataSet;
+import eionet.meta.dao.domain.DatasetRegStatus;
+import java.util.List;
 
 public interface DatasetDao {
 
@@ -15,4 +17,6 @@ public interface DatasetDao {
     public void updateDataSet(DataSet dataSet);
 
     public void updateDataSetDispDownloadLinks(int id, String dispDownloadLinks);
+    
+    public List<DataSet> getDatasetsByIdentifierAndWorkingCopyAndRegStatuses(String datasetIdentifier, boolean workingCopy,List<DatasetRegStatus> statuses);
 }

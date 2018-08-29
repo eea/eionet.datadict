@@ -10,6 +10,7 @@ import org.junit.Test;
 import eionet.DDDatabaseTestCase;
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DsTable;
+import org.junit.Ignore;
 
 /**
  * Purpose to test the RDF output generated for by the {@link Rdf}.
@@ -94,6 +95,7 @@ public class RdfTest extends DDDatabaseTestCase {
      * @throws Exception if error
      */
     @Test
+    @Ignore
     public void testRdfProperty() throws Exception {
         Rdf rdfGen = new Rdf("48922", Rdf.CODE_LIST_TYPE, new DDSearchEngineMock(null, null));
         StringWriter writer = new StringWriter();

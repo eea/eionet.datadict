@@ -1587,7 +1587,7 @@ public class DDSearchEngine {
      * @param type
      * @return
      */
-    private boolean isFixedValuesVocElement(String elemenID, String type) throws ServiceException {
+    public boolean isFixedValuesVocElement(String elemenID, String type) throws ServiceException {
         //if "elem" and type = CH3 return true;
         if (type.equals("elem")) {
             IDataService dataService = springContext.getBean(IDataService.class);

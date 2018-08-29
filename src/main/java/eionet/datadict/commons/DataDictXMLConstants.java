@@ -15,6 +15,7 @@ public class DataDictXMLConstants {
     public static final String DDATTRS_NAMESPACE_ID = "3";
     public static final String DATASETS = "datasets";
     public static final String DATASET = "dataset";
+    public static final String TABLES ="tables";
     public static final String DD_ATTRS = "ddattrs";
     public static final String ISO_ATTRS = "isoattrs";
     public static final String TARGET_NAMESPACE = "targetNamespace";

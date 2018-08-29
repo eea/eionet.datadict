@@ -971,6 +971,12 @@
             <version>${sesame.openrdf.version}</version>
         </dependency>
         <!-- end org.openrdf.sesame dependencies -->
+        <dependency>
+            <groupId>org.apache.jena</groupId>
+            <artifactId>apache-jena-libs</artifactId>
+            <type>pom</type>
+            <version>3.7.0</version>
+        </dependency>
         <!-- TEST dependencies -->
         <dependency>
             <groupId>junit</groupId>

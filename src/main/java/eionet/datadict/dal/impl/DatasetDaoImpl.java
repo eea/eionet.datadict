@@ -8,6 +8,7 @@ import eionet.meta.dao.domain.DatasetRegStatus;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,6 +94,39 @@ public class DatasetDaoImpl extends JdbcDaoBase implements DatasetDao {
         getNamedParameterJdbcTemplate().update(sql, parameterMap);
     }
 
+    @Override
+    public List<DataSet> getDatasetsByIdentifierAndWorkingCopyAndRegStatuses(String datasetIdentifier, boolean workingCopy, List<DatasetRegStatus> statuses) {
+         String sql = "select * "
+                + "FROM DATASET "
+                + "WHERE DATASET.DELETED is null and DATASET.IDENTIFIER= :identifier and DATASET.WORKING_COPY= :workingCopy andRegStatusIn order by DATASET.IDENTIFIER asc, DATASET.DATASET_ID desc";
+        String regStatuses="";
+        String partialRegStatusInSqlStatement ="and REG_STATUS IN (regStatusesValues)";
+      if(!statuses.isEmpty()){
+        for (DatasetRegStatus status : statuses) {
+            regStatuses=regStatuses.concat("'"+status.getName()+"',");
+        }
+       if(regStatuses.endsWith(","))
+         {
+          regStatuses = regStatuses.substring(0,regStatuses.length() - 1);
+         }
+        partialRegStatusInSqlStatement = partialRegStatusInSqlStatement.replace("regStatusesValues",regStatuses);  
+        sql = sql.replace("andRegStatusIn", partialRegStatusInSqlStatement);
+      }
+      else{
+      sql = sql.replace("andRegStatusIn","");
+      }
+       Map<String, Object> params = new HashMap<String, Object>();
+        params.put("identifier", datasetIdentifier);
+        params.put("workingCopy",workingCopy ? "Y" :"N");
+        
+        try {
+            return this.getNamedParameterJdbcTemplate().query(sql, params, new DataSetRowMapper());
+        } catch (EmptyResultDataAccessException ex) {
+            return null;
+        }
+
+    }
+
     public static class DataSetRowMapper implements RowMapper<DataSet> {
 
         @Override
@@ -105,7 +139,7 @@ public class DatasetDaoImpl extends JdbcDaoBase implements DatasetDao {
             dataset.setDetailedVisual(rs.getString("DATASET.DETAILED_VISUAL"));
             dataset.setWorkingUser(rs.getString("DATASET.WORKING_USER"));
             dataset.setWorkingCopy(new BooleanToMysqlEnumYesNoConverter(Boolean.FALSE).convertBack(rs.getString("DATASET.WORKING_COPY")));
-            dataset.setDate(rs.getInt("DATASET.DATE"));
+            dataset.setDate(rs.getLong("DATASET.DATE"));
             dataset.setUser(rs.getString("DATASET.USER"));
             dataset.setDeleted(rs.getString("DATASET.DELETED"));
             dataset.setIdentifier(rs.getString("DATASET.IDENTIFIER"));

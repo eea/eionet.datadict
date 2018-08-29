@@ -2,6 +2,7 @@ package eionet.datadict.services.impl;
 
 import eionet.datadict.commons.DataDictXMLConstants;
 import eionet.datadict.commons.util.XMLUtils;
+import eionet.datadict.dal.DatasetDao;
 import eionet.datadict.errors.IllegalParameterException;
 import eionet.datadict.model.DataElement;
 
@@ -26,13 +27,33 @@ import eionet.datadict.services.data.AttributeValueDataService;
 import eionet.datadict.services.data.DataElementDataService;
 import eionet.datadict.services.data.DataSetDataService;
 import eionet.datadict.services.data.DatasetTableDataService;
+import eionet.meta.dao.domain.DatasetRegStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
+import java.util.TimeZone;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import org.apache.jena.datatypes.RDFDatatype;
+import org.apache.jena.rdf.model.Literal;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.rdf.model.ResourceFactory;
+import org.apache.jena.sparql.vocabulary.FOAF;
+import org.apache.jena.vocabulary.DCTerms;
+import org.apache.jena.vocabulary.OWL;
+import org.apache.jena.vocabulary.RDFS;
+import org.openrdf.model.vocabulary.SKOS;
 import org.w3c.dom.Element;
 
 /**
@@ -47,14 +68,17 @@ public class DataSetServiceImpl implements DataSetService {
     private final AttributeDataService attributeDataService;
     private final AttributeValueDataService attributeValueDataService;
     private final DataElementDataService dataElementDataService;
+    private final DatasetDao datasetDao;
+    private static final String BASE = "http://dd.eionet.europa.eu/schema.rdf";
 
     @Autowired
-    public DataSetServiceImpl(DataSetDataService dataSetDataService, DatasetTableDataService datasetTableDataService, AttributeDataService attributeDataService, AttributeValueDataService attributeValueDataService, DataElementDataService dataElementDataService) {
+    public DataSetServiceImpl(DataSetDataService dataSetDataService, DatasetTableDataService datasetTableDataService, AttributeDataService attributeDataService, AttributeValueDataService attributeValueDataService, DataElementDataService dataElementDataService, DatasetDao datasetDao) {
         this.dataSetDataService = dataSetDataService;
         this.datasetTableDataService = datasetTableDataService;
         this.attributeDataService = attributeDataService;
         this.attributeValueDataService = attributeValueDataService;
         this.dataElementDataService = dataElementDataService;
+        this.datasetDao = datasetDao;
     }
 
     @Override
@@ -178,8 +202,8 @@ public class DataSetServiceImpl implements DataSetService {
             throw new ResourceNotFoundException(String.format("Dataset with id %d not found", id));
         }
         List<DatasetTable> dsTables = this.datasetTableDataService.getAllTablesByDatasetId(dataset.getId());
-        
-         Collections.sort(dsTables, new Comparator<DatasetTable>() {
+
+        Collections.sort(dsTables, new Comparator<DatasetTable>() {
             public int compare(DatasetTable o1, DatasetTable o2) {
                 if (o1.getPosition() == o2.getPosition()) {
                     return 0;
@@ -243,6 +267,70 @@ public class DataSetServiceImpl implements DataSetService {
         DataSet.DISPLAY_DOWNLOAD_LINKS displDownloadLink = DataSet.DISPLAY_DOWNLOAD_LINKS.valueOf(dispDownloadLinkType);
         displDownloadLink.setValue(dispDownloadLinkValue);
         this.dataSetDataService.updateDatasetDispDownloadLinks(datasetId, displDownloadLink);
+    }
+
+    @Override
+    public Model getDatasetRdf(int datasetId) throws ResourceNotFoundException {
+
+        DataSet dataset = this.dataSetDataService.getDatasetWithoutRelations(datasetId);
+        List<DatasetTable> dsTables = this.datasetTableDataService.getAllTablesByDatasetId(dataset.getId());
+
+        Model m2 = ModelFactory.createDefaultModel().setNsPrefix("dd", "http://dd.eionet.europa.eu/schema.rdf#")
+                .setNsPrefix("owl", OWL.getURI())
+                .setNsPrefix("foaf", FOAF.getURI())
+                .setNsPrefix(SKOS.PREFIX, SKOS.NAMESPACE)
+                .setNsPrefix("dct", DCTerms.getURI()).setNsPrefix("rdfs", "http://www.w3.org/2000/01/rdf-schema#");
+
+        TimeZone tz = TimeZone.getTimeZone("UTC");
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        df.setTimeZone(tz);
+        Date ourDate = new Date(dataset.getDate());
+
+        Resource resource = m2.createResource(DataDictXMLConstants.APP_CONTEXT.concat("/").concat(DataDictXMLConstants.DATASETS).concat("/").concat(dataset.getId().toString()).concat("/rdf"), RDFS.Class)
+                .addProperty(RDFS.label, dataset.getShortName())
+                .addProperty(DCTerms.identifier, dataset.getIdentifier())
+                .addProperty(DCTerms.modified, df.format(ourDate))
+                .addProperty(FOAF.isPrimaryTopicOf, m2.createResource(DataDictXMLConstants.APP_CONTEXT.concat("/").concat(DataDictXMLConstants.DATASETS).concat("/").concat(dataset.getId().toString())))
+                .addProperty(RDFS.isDefinedBy, m2.createResource(DataDictXMLConstants.APP_CONTEXT.concat("/v2/").concat(DataDictXMLConstants.DATASET).concat("/rdf/").concat(dataset.getId().toString())));
+        if (dataset.getRegStatus().equals(DatasetRegStatus.RELEASED)) {
+            resource.addProperty(DCTerms.issued, df.format(ourDate));
+        }
+        List<DatasetRegStatus> regStatuses = new ArrayList<DatasetRegStatus>();
+        regStatuses.add(DatasetRegStatus.RECORDED);
+        regStatuses.add(DatasetRegStatus.RELEASED);
+
+        for (DatasetTable tbl : dsTables) {
+            resource.addProperty(p("#hasTable"), m2.createResource(DataDictXMLConstants.APP_CONTEXT.concat("/").concat(DataDictXMLConstants.TABLES).concat("/").concat(tbl.getId().toString())));
+        }
+
+        List<DataSet> dataSetsPreviousVersions = datasetDao.getDatasetsByIdentifierAndWorkingCopyAndRegStatuses(dataset.getIdentifier(), false, regStatuses);
+
+        if (dataSetsPreviousVersions != null && !dataSetsPreviousVersions.isEmpty()) {
+            for (DataSet dataSetsPreviousVersion : dataSetsPreviousVersions) {
+                if (dataSetsPreviousVersion.getId() != dataset.getId()) {
+                    resource.addProperty(DCTerms.replaces, m2.createResource(DataDictXMLConstants.APP_CONTEXT.concat("/").concat(DataDictXMLConstants.DATASETS).concat("/").concat(dataSetsPreviousVersion.getId().toString())));
+                }
+            }
+
+        }
+
+        return m2;
+    }
+
+    private static Resource r(String localname) {
+        return ResourceFactory.createResource(BASE + localname);
+    }
+
+    private static Property p(String localname) {
+        return ResourceFactory.createProperty(BASE, localname);
+    }
+
+    private static Literal l(Object value) {
+        return ResourceFactory.createTypedLiteral(value);
+    }
+
+    private static Literal l(String lexicalform, RDFDatatype datatype) {
+        return ResourceFactory.createTypedLiteral(lexicalform, datatype);
     }
 
 }

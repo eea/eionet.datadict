@@ -31,6 +31,7 @@ import eionet.meta.service.ITableService;
 import eionet.meta.spring.SpringApplicationContext;
 import eionet.util.Props;
 import eionet.util.PropsIF;
+import java.util.LinkedList;
 
 /**
  *
@@ -165,11 +166,25 @@ public class Rdf {
      * Writes RDF output of CommonElement fixed values.
      *
      * @param writer
-     *            - output
+     *            - output  
      * @throws Exception
-     */
+     */ 
     private void writeCodeList(Writer writer) throws Exception {
-        List<FixedValue> fixedValues = dataService.getDataElementFixedValues(id);
+        List<eionet.meta.dao.domain.FixedValue> fixedValues = new Vector();
+         
+        if(searchEngine.isFixedValuesVocElement(String.valueOf(id), "elem")){ 
+          List<eionet.meta.FixedValue> metaFixedValues  = searchEngine.getFixedValuesOrderedByValue(String.valueOf(id), "elem");
+            for (eionet.meta.FixedValue metaFixedValue : metaFixedValues) {
+                FixedValue val = new FixedValue();
+                val.setDefaultValue(metaFixedValue.getDefault());
+                val.setDefinition(metaFixedValue.getDefinition());
+                val.setId(id);
+                val.setValue(metaFixedValue.getValue());
+                fixedValues.add(val);
+            }
+           }else{
+                fixedValues = dataService.getDataElementFixedValues(id);
+        }
         eionet.meta.dao.domain.DataElement dataElement = dataService.getDataElement(id);
         Map<String, List<String>> elemAttributeValues = dataService.getDataElementSimpleAttributeValues(id);
 

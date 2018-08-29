@@ -44,7 +44,10 @@ public class DatasetsServlet extends HttpServlet {
             return;
         }
 
+
         String[] pathInfoSegments = StringUtils.split(pathInfo, "/");
+
+
         if (pathInfoSegments[0].equals("latest")) {
 
             // a latest dataset definition is requested (i.e. by its alfa-numeric identifier)
@@ -54,7 +57,7 @@ public class DatasetsServlet extends HttpServlet {
 
             // RDF of all datasets is requested
             handleRequestForAllRdf(request, response, pathInfoSegments);
-            return;
+             return;
         } else if (pathInfoSegments[0].equals("add")) {
 
             // a request for adding a new dataset
@@ -122,7 +125,7 @@ public class DatasetsServlet extends HttpServlet {
         String datasetId = pathInfoSegments[0];
         String event = "view";
         if (pathInfoSegments.length>1) {
-            event = pathInfoSegments[1];
+            event = pathInfoSegments[1]; 
         }
 
         // Make sure that the event and dataset id detected from the path info
@@ -136,9 +139,14 @@ public class DatasetsServlet extends HttpServlet {
         if (event.equals("subscribe") || event.equals("checkout") || event.equals("newversion")) {
             wrappedRequest.addParameterValue("mode", "view");
             wrappedRequest.addParameterValue("action", event);
-        } else if (event.equals("edit")) {
+        } else if (event.equals("edit")) {            
             wrappedRequest.addParameterValue("mode", event);
-        } else {
+        }else if(event.equals("rdf")){ 
+            response.sendRedirect(request.getContextPath()+"/v2/dataset/rdf/"+datasetId);
+            return;
+        }
+        
+        else {
             // fall-back to view
             wrappedRequest.addParameterValue("mode", "view");
         }
