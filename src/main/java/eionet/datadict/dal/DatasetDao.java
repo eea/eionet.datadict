@@ -18,5 +18,7 @@ public interface DatasetDao {
 
     public void updateDataSetDispDownloadLinks(int id, String dispDownloadLinks);
     
-    public List<DataSet> getDatasetsByIdentifierAndWorkingCopyAndRegStatuses(String datasetIdentifier, boolean workingCopy,List<DatasetRegStatus> statuses);
+    
+    
+    public List<DataSet> getByIdentifierAndWorkingCopyAndRegStatusesOrderByIdentifierAscAndIdDesc(String datasetIdentifier, boolean workingCopy,List<DatasetRegStatus> statuses);
 }

@@ -31,8 +31,6 @@ import eionet.meta.dao.domain.DatasetRegStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -275,7 +273,7 @@ public class DataSetServiceImpl implements DataSetService {
         DataSet dataset = this.dataSetDataService.getDatasetWithoutRelations(datasetId);
         List<DatasetTable> dsTables = this.datasetTableDataService.getAllTablesByDatasetId(dataset.getId());
 
-        Model m2 = ModelFactory.createDefaultModel().setNsPrefix("dd", "http://dd.eionet.europa.eu/schema.rdf#")
+        Model model = ModelFactory.createDefaultModel().setNsPrefix("dd", "http://dd.eionet.europa.eu/schema.rdf#")
                 .setNsPrefix("owl", OWL.getURI())
                 .setNsPrefix("foaf", FOAF.getURI())
                 .setNsPrefix(SKOS.PREFIX, SKOS.NAMESPACE)
@@ -286,12 +284,12 @@ public class DataSetServiceImpl implements DataSetService {
         df.setTimeZone(tz);
         Date ourDate = new Date(dataset.getDate());
 
-        Resource resource = m2.createResource(DataDictXMLConstants.APP_CONTEXT.concat("/").concat(DataDictXMLConstants.DATASETS).concat("/").concat(dataset.getId().toString()).concat("/rdf"), RDFS.Class)
+        Resource resource = model.createResource(DataDictXMLConstants.APP_CONTEXT.concat("/").concat(DataDictXMLConstants.DATASETS).concat("/").concat(dataset.getId().toString()).concat("/rdf"), RDFS.Class)
                 .addProperty(RDFS.label, dataset.getShortName())
                 .addProperty(DCTerms.identifier, dataset.getIdentifier())
                 .addProperty(DCTerms.modified, df.format(ourDate))
-                .addProperty(FOAF.isPrimaryTopicOf, m2.createResource(DataDictXMLConstants.APP_CONTEXT.concat("/").concat(DataDictXMLConstants.DATASETS).concat("/").concat(dataset.getId().toString())))
-                .addProperty(RDFS.isDefinedBy, m2.createResource(DataDictXMLConstants.APP_CONTEXT.concat("/v2/").concat(DataDictXMLConstants.DATASET).concat("/rdf/").concat(dataset.getId().toString())));
+                .addProperty(FOAF.isPrimaryTopicOf, model.createResource(DataDictXMLConstants.APP_CONTEXT.concat("/").concat(DataDictXMLConstants.DATASETS).concat("/").concat(dataset.getId().toString())))
+                .addProperty(RDFS.isDefinedBy, model.createResource(DataDictXMLConstants.APP_CONTEXT.concat("/v2/").concat(DataDictXMLConstants.DATASET).concat("/rdf/").concat(dataset.getId().toString())));
         if (dataset.getRegStatus().equals(DatasetRegStatus.RELEASED)) {
             resource.addProperty(DCTerms.issued, df.format(ourDate));
         }
@@ -300,21 +298,21 @@ public class DataSetServiceImpl implements DataSetService {
         regStatuses.add(DatasetRegStatus.RELEASED);
 
         for (DatasetTable tbl : dsTables) {
-            resource.addProperty(p("#hasTable"), m2.createResource(DataDictXMLConstants.APP_CONTEXT.concat("/").concat(DataDictXMLConstants.TABLES).concat("/").concat(tbl.getId().toString())));
+            resource.addProperty(p("#hasTable"), model.createResource(DataDictXMLConstants.APP_CONTEXT.concat("/").concat(DataDictXMLConstants.TABLES).concat("/").concat(tbl.getId().toString())));
         }
 
-        List<DataSet> dataSetsPreviousVersions = datasetDao.getDatasetsByIdentifierAndWorkingCopyAndRegStatuses(dataset.getIdentifier(), false, regStatuses);
+        List<DataSet> dataSetsPreviousVersions = datasetDao.getByIdentifierAndWorkingCopyAndRegStatusesOrderByIdentifierAscAndIdDesc(dataset.getIdentifier(), false, regStatuses);
 
         if (dataSetsPreviousVersions != null && !dataSetsPreviousVersions.isEmpty()) {
             for (DataSet dataSetsPreviousVersion : dataSetsPreviousVersions) {
                 if (dataSetsPreviousVersion.getId() != dataset.getId()) {
-                    resource.addProperty(DCTerms.replaces, m2.createResource(DataDictXMLConstants.APP_CONTEXT.concat("/").concat(DataDictXMLConstants.DATASETS).concat("/").concat(dataSetsPreviousVersion.getId().toString())));
+                    resource.addProperty(DCTerms.replaces, model.createResource(DataDictXMLConstants.APP_CONTEXT.concat("/").concat(DataDictXMLConstants.DATASETS).concat("/").concat(dataSetsPreviousVersion.getId().toString())));
                 }
             }
 
         }
 
-        return m2;
+        return model;
     }
 
     private static Resource r(String localname) {

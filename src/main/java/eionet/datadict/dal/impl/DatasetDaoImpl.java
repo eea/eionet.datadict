@@ -95,7 +95,7 @@ public class DatasetDaoImpl extends JdbcDaoBase implements DatasetDao {
     }
 
     @Override
-    public List<DataSet> getDatasetsByIdentifierAndWorkingCopyAndRegStatuses(String datasetIdentifier, boolean workingCopy, List<DatasetRegStatus> statuses) {
+    public List<DataSet> getByIdentifierAndWorkingCopyAndRegStatusesOrderByIdentifierAscAndIdDesc(String datasetIdentifier, boolean workingCopy, List<DatasetRegStatus> statuses) {
          String sql = "select * "
                 + "FROM DATASET "
                 + "WHERE DATASET.DELETED is null and DATASET.IDENTIFIER= :identifier and DATASET.WORKING_COPY= :workingCopy andRegStatusIn order by DATASET.IDENTIFIER asc, DATASET.DATASET_ID desc";

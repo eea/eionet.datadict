@@ -57,7 +57,7 @@ public class DatasetControllerTestIT {
     @Test
     public void testFailToGetDatasetXMLSchemaBecauseOfNotFoundDatasetWithGivenId() throws Exception {
         MockHttpServletRequestBuilder request = get("/dataset/4242/schema-dst-4242.xsd");
-        
+
         request.contentType(MediaType.APPLICATION_JSON);
         mockMvc.perform(request).andExpect(status().is3xxRedirection());
         mockMvc.perform(request).andDo(print());
@@ -77,7 +77,7 @@ public class DatasetControllerTestIT {
         Diff diff = new Diff(expectedXMLResultString, xmlResult);
         assertTrue(diff.similar());
     }
-    
+
     @Test
     public void testFailToGetDatasetTableXMLSchemaBecauseOfNotFoundDatasetTableWithGivenId() throws Exception {
         MockHttpServletRequestBuilder request = get("/dataset/4242/schema-tbl-42222.xsd");
@@ -101,7 +101,7 @@ public class DatasetControllerTestIT {
         assertTrue(diff.similar());
     }
 
-   // @Test
+    // @Test
     public void testFailToGetDatasetXMLInstanceBecauseOfNotFoundDatasetWithGivenId() throws Exception {
         MockHttpServletRequestBuilder request = get("/dataset/4242/dataset-instance.xml");
         request.contentType(MediaType.APPLICATION_JSON);
@@ -109,7 +109,7 @@ public class DatasetControllerTestIT {
         mockMvc.perform(request).andDo(print());
     }
 
-  //  @Test
+    //  @Test
     public void testSuccessToGetDatasetXMLInstance() throws Exception {
         MockHttpServletRequestBuilder request = get("/dataset/2827/dataset-instance.xml");
         request.contentType(MediaType.APPLICATION_JSON);
@@ -124,7 +124,7 @@ public class DatasetControllerTestIT {
         assertTrue(diff.similar());
     }
 
-  //  @Test
+    //  @Test
     public void testFailToGetDatasetTableXMLInstanceBecauseOfNotFoundDatasetTableWithGivenId() throws Exception {
         MockHttpServletRequestBuilder request = get("/dataset/4242/table-42222-instance.xml");
         request.contentType(MediaType.APPLICATION_JSON);
@@ -147,14 +147,20 @@ public class DatasetControllerTestIT {
         assertTrue(diff.similar());
     }
 
-
+ 
     @Test
-    @Ignore
-    public void testSuccessToAllowMsAccessTemplateDownload() throws Exception{
-        MockHttpServletRequestBuilder request = get("/dataset/2827/allowMsAccessDownload/true");
+    public void testGetDatasetRDFExport() throws Exception {
+        MockHttpServletRequestBuilder request = get("/dataset/rdf/2827");
+        MediaType APPLICATION_XML = new MediaType("application", "xml", java.nio.charset.Charset.forName("ISO-8859-1"));
         mockMvc.perform(request).andExpect(status().isOk());
-        // We should just get a 200 ok here.
+        mockMvc.perform(request).andDo(print());
+        assertEquals(APPLICATION_XML.toString(), mockMvc.perform(request).andReturn().getResponse().getContentType());
+        String xmlResult = mockMvc.perform(request).andReturn().getResponse().getContentAsString();
+        ClassLoader classLoader = getClass().getClassLoader();
+        String expectedRDFResultString = IOUtils.toString(classLoader.getResourceAsStream("datasetRDFExportTestIT.xml"));
+        Diff diff = new Diff(expectedRDFResultString, xmlResult);
+
+        assertTrue(diff.similar());
     }
-    
-    
+
 }
