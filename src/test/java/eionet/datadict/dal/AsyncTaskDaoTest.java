@@ -26,7 +26,7 @@ import org.unitils.spring.annotation.SpringApplicationContext;
 import org.unitils.spring.annotation.SpringBeanByName;
 import org.unitils.spring.annotation.SpringBeanByType;
 
-@SpringApplicationContext("mock-spring-context.xml")
+@SpringApplicationContext("unit-tests-spring-context.xml")
 public class AsyncTaskDaoTest extends UnitilsJUnit4 {
     
     @SpringBeanByType

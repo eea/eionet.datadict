@@ -82,7 +82,7 @@ public class DBUnitHelper {
                         Props.getProperty(PropsIF.DBPSW));
         IDatabaseConnection con = new DatabaseConnection(jdbcConnection);
 
-        InputStream is = VocabularyServiceTest.class.getClassLoader().getResourceAsStream(xmlFileName);
+        InputStream is = VocabularyServiceTestIT.class.getClassLoader().getResourceAsStream(xmlFileName);
         IDataSet dataSet = new FlatXmlDataSetBuilder().build(is);
         DatabaseOperation.DELETE_ALL.execute(con, dataSet);
 

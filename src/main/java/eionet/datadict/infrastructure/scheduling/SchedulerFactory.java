@@ -7,8 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.stereotype.Component;
-
+import eionet.datadict.annotations.ExcludeFromUnitTests;
 @Component("jobScheduler")
+@ExcludeFromUnitTests
 public class SchedulerFactory extends SchedulerFactoryBean {
     
     private final DataSource nonTxDataSource;

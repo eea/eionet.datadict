@@ -120,7 +120,7 @@
                 <executions>
                     <execution>
                         <configuration>
-                            <!--skip>${maven.test.skip}</skip-->
+                            <skip>${maven.test.skip}</skip>
                         </configuration>
                         <id>start</id>
                         <phase>pre-integration-test</phase>

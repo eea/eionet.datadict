@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:util="http://www.springframework.org/schema/util"
+           xmlns:aop="http://www.springframework.org/schema/aop"
+
+    xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context-3.0.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx-3.0.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd">
+
+    <!-- Scans within the base package of the application for @Components
+        to configure as beans -->
+    <context:component-scan base-package="eionet.datadict, eionet.web, eionet.doc">
+    <context:exclude-filter type="aspectj" expression="eionet.datadict.aop.*" />  
+        <context:exclude-filter type="annotation" expression="eionet.datadict.annotations.ExcludeFromUnitTests"/>
+
+ </context:component-scan>
+    <context:spring-configured/>
+      <aop:aspectj-autoproxy>
+      </aop:aspectj-autoproxy>
+    <bean id="appConfigDefinitionProvider" class="eionet.propertyplaceholderresolver.ConfigurationDefinitionProviderImpl">
+        <constructor-arg index="0">
+            <array>
+                <value>datadict.properties</value>
+                <value>env.properties</value>
+                <value>acl.properties</value>
+                <value>doc.properties</value>
+                <value>rdfexport.properties</value>
+                <value>quartz.properties</value>
+                <value>logging.properties</value>
+                <value>languages.properties</value>
+                <value>testlanguagesbase.properties</value>
+                <value>eionetdir.properties</value>
+                <value>displaytag.properties</value>
+                <value>teXDBMsg.properties</value>
+                <value>StripesResources.properties</value>
+            </array>
+        </constructor-arg>
+    </bean>
+    
+    <bean id="configurationPropertyResolver" class="eionet.propertyplaceholderresolver.ConfigurationPropertyResolverImpl">
+        <constructor-arg ref="appConfigDefinitionProvider" />
+    </bean>
+        
+    <bean id="configurationPostProcessor" class="eionet.propertyplaceholderresolver.spring.EionetPlaceholderConfigurer">
+        <constructor-arg ref="configurationPropertyResolver" />
+    </bean>
+    
+     <!--bean id="aclProperties" class="eionet.acl.AclProperties">
+        <property name="ownerPermission" value="${owner.permission}" />
+        <property name="anonymousAccess" value="${anonymous.access}" />
+        <property name="authenticatedAccess" value="${authenticated.access}" />
+        <property name="defaultdocPermissions" value="${defaultdoc.permissions}" />
+        <property name="persistenceProvider" value="${persistence.provider}" />
+        <property name="initialAdmin" value="${initial.admin}" />
+        <property name="fileAclfolder" value="${file.aclfolder}" />
+        <property name="fileLocalusers" value="${file.localusers}" />
+        <property name="fileLocalgroups" value="${file.localgroups}" />
+        <property name="filePermissions" value="${file.permissions}" />
+        <property name="dbDriver" value="${test.db.driver}" />
+        <property name="dbUrl" value="${test.db.jdbcurl}" />
+        <property name="dbUser" value="${test.db.user}" />
+        <property name="dbPwd" value="${test.db.password}" />
+    </bean-->
+    
+    <!--bean id="accessController" class="eionet.acl.AccessController">
+        <constructor-arg index="0" ref="aclProperties" />
+    </bean-->
+    
+  
+   
+
+    <!-- enable the configuration of transactional behavior based on annotations -->
+    <!--tx:annotation-driven transaction-manager="txManager" /-->
+
+    <!--bean id="txManager"
+        class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource" />
+    </bean-->
+
+    <bean id="freemarkerConfiguration"
+        class="org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean">
+        <property name="templateLoaderPath" value="/WEB-INF/templates/" />
+    </bean>
+
+    <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+        <property name="host" value="${smtp.host}" />
+        <property name="username" value="${smtp.username}" />
+        <property name="password" value="${smtp.password}" />
+        <property name="javaMailProperties">
+            <props>
+                <prop key="mail.smtp.starttls.enable">${smtp.tls}</prop>
+            </props>
+        </property>
+    </bean>
+    
+    <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+        <property name="targetObject">
+            <!-- System.getProperties() -->
+            <bean class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+                <property name="targetClass" value="java.lang.System" />
+                <property name="targetMethod" value="getProperties" />
+            </bean>
+        </property>
+        <property name="targetMethod" value="putAll" />
+        <property name="arguments">
+            <!-- The new Properties -->
+            <util:properties>
+                <prop key="javax.xml.stream.XMLOutputFactory">com.sun.xml.internal.stream.XMLOutputFactoryImpl</prop>
+            </util:properties>
+        </property>
+    </bean>
+   
+
+    <!--util:properties id="quartzProperties" location="classpath:quartz.properties" /-->
+    
+</beans>
