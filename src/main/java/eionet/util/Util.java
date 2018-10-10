@@ -1040,7 +1040,7 @@ public final class Util {
     public static boolean skipAttributeByDatatype(String attrShortName, String datatype) {
 
         return (attrShortName == null || datatype == null) ? false : IrrelevantAttributes.getInstance().isIrrelevant(datatype,
-                attrShortName);
+                 attrShortName);
     }
 
     /*

@@ -281,7 +281,8 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                 }
                 dataElementSimpleType.appendChild(dataElementRestriction);
             }
-            if (Datatype.equalsIgnoreCase("Date")) {
+            if (Datatype.equalsIgnoreCase("Date")||Datatype.equalsIgnoreCase("dateTime") || Datatype.equalsIgnoreCase("gYearMonth") ||
+                    Datatype.equalsIgnoreCase("duration") || Datatype.equalsIgnoreCase("gYear") || Datatype.equalsIgnoreCase("time")) {
                 dataElementRestriction.setAttribute(DataDictXMLConstants.BASE, DataDictXMLConstants.XS_PREFIX + ":" + Datatype);
                 dataElementSimpleType.appendChild(dataElementRestriction);
             }

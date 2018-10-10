@@ -27,6 +27,7 @@ import eionet.datadict.services.data.AttributeValueDataService;
 import eionet.datadict.services.data.DataElementDataService;
 import eionet.datadict.services.data.DataSetDataService;
 import eionet.datadict.services.data.DatasetTableDataService;
+import eionet.datadict.util.DateUtils;
 import eionet.meta.dao.domain.DatasetRegStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
 import java.text.DateFormat;
@@ -272,26 +273,24 @@ public class DataSetServiceImpl implements DataSetService {
 
         DataSet dataset = this.dataSetDataService.getDatasetWithoutRelations(datasetId);
         List<DatasetTable> dsTables = this.datasetTableDataService.getAllTablesByDatasetId(dataset.getId());
-
+        String datasetDateInUTCSpecificFormat = DateUtils.formatDateInUTC(dataset.getDate(), "yyyy-MM-dd'T'HH:mm:ss");
+        
+        
         Model model = ModelFactory.createDefaultModel().setNsPrefix("dd", "http://dd.eionet.europa.eu/schema.rdf#")
                 .setNsPrefix("owl", OWL.getURI())
                 .setNsPrefix("foaf", FOAF.getURI())
                 .setNsPrefix(SKOS.PREFIX, SKOS.NAMESPACE)
                 .setNsPrefix("dct", DCTerms.getURI()).setNsPrefix("rdfs", "http://www.w3.org/2000/01/rdf-schema#");
 
-        TimeZone tz = TimeZone.getTimeZone("UTC");
-        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-        df.setTimeZone(tz);
-        Date ourDate = new Date(dataset.getDate());
-
+       
         Resource resource = model.createResource(DataDictXMLConstants.APP_CONTEXT.concat("/").concat(DataDictXMLConstants.DATASETS).concat("/").concat(dataset.getId().toString()).concat("/rdf"), RDFS.Class)
                 .addProperty(RDFS.label, dataset.getShortName())
                 .addProperty(DCTerms.identifier, dataset.getIdentifier())
-                .addProperty(DCTerms.modified, df.format(ourDate))
+                .addProperty(DCTerms.modified, datasetDateInUTCSpecificFormat)
                 .addProperty(FOAF.isPrimaryTopicOf, model.createResource(DataDictXMLConstants.APP_CONTEXT.concat("/").concat(DataDictXMLConstants.DATASETS).concat("/").concat(dataset.getId().toString())))
                 .addProperty(RDFS.isDefinedBy, model.createResource(DataDictXMLConstants.APP_CONTEXT.concat("/v2/").concat(DataDictXMLConstants.DATASET).concat("/rdf/").concat(dataset.getId().toString())));
         if (dataset.getRegStatus().equals(DatasetRegStatus.RELEASED)) {
-            resource.addProperty(DCTerms.issued, df.format(ourDate));
+            resource.addProperty(DCTerms.issued, datasetDateInUTCSpecificFormat);
         }
         List<DatasetRegStatus> regStatuses = new ArrayList<DatasetRegStatus>();
         regStatuses.add(DatasetRegStatus.RECORDED);

@@ -459,6 +459,77 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
             ]]>
         </sql>
     </changeSet>
-      
+      <changeSet author="skiadas" id="seed-7">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                <![CDATA[
+                    SELECT 
+                        count(*)
+                    FROM (
+                        SELECT 
+                            *
+                        FROM
+                            M_ATTRIBUTE
+                        WHERE
+                            M_ATTRIBUTE.`NAME` = 'Datatype'
+                    ) ma INNER JOIN FXV fxv 
+                        ON ma.M_ATTRIBUTE_ID = fxv.OWNER_ID AND fxv.OWNER_TYPE = 'attr'
+                    WHERE 
+                        fxv.`VALUE` IN ('dateTime', 'time', 'duration','gYearMonth','gYear')
+                    ;
+                ]]>
+            </sqlCheck>
+        </preConditions>
+        <comment>Additional Date Related Data Types</comment>
+        <sql>
+            <![CDATA[
+                INSERT INTO `FXV` (
+                    OWNER_ID, 
+                    OWNER_TYPE, 
+                    VALUE, 
+                    IS_DEFAULT, 
+                    DEFINITION, 
+                    SHORT_DESC
+                ) 
+                VALUES (
+                    (SELECT M_ATTRIBUTE_ID FROM M_ATTRIBUTE WHERE SHORT_NAME = 'Datatype') ,
+                    'attr',
+                    'dateTime',
+                    'N',
+                    'The dateTime data type is used to specify a date and a time.',
+                    ''
+                ), (
+                    (SELECT M_ATTRIBUTE_ID FROM M_ATTRIBUTE WHERE SHORT_NAME = 'Datatype'),
+                    'attr',
+                    'time',
+                    'N',
+                    'The time data type is used to specify a time.',
+                    ''
+                ), (
+                    (SELECT M_ATTRIBUTE_ID FROM M_ATTRIBUTE WHERE SHORT_NAME = 'Datatype'),
+                    'attr',
+                    'duration',
+                    'N',
+                    'The duration data type is used to specify a time interval.',
+                    ''
+                ), (
+                    (SELECT M_ATTRIBUTE_ID FROM M_ATTRIBUTE WHERE SHORT_NAME = 'Datatype'),
+                    'attr',
+                    'gYearMonth',
+                    'N',
+                    'Defines a part of a date - the year and month (YYYY-MM)',
+                    ''
+                ), (
+                    (SELECT M_ATTRIBUTE_ID FROM M_ATTRIBUTE WHERE SHORT_NAME = 'Datatype'),
+                    'attr',
+                    'gYear',
+                    'N',
+                    'Defines a part of a date - the year (YYYY)',
+                    ''
+                )
+;
+            ]]>
+        </sql>
+      </changeSet>
     </databaseChangeLog>
 

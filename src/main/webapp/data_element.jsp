@@ -2088,7 +2088,6 @@
                                                                 }
                                                                         // if non-view mode, display input
                                                                         else {
-
                                                                             // inherited value(s)
                                                                             if (inherit && inheritedValue != null) {
                                                                                 String sInhText = (((dispMultiple && multiValues != null) || (!dispMultiple && attrValue != null)) && attribute
@@ -2201,15 +2200,6 @@
                                          .getDefault() && !selectedByValue) ? "selected=\"selected\""
                                          : "";
 
-                                 if (attribute.getShortName()
-                                         .equalsIgnoreCase("Datatype")) {
-                                     if (type != null
-                                             && type.equals("CH2")
-                                             && fxValue.getValue()
-                                                     .equalsIgnoreCase(
-                                                             "boolean"))
-                                         continue;
-                                 }
 
                                  if (attrValue != null
                                          && attrValue.equals(fxValue
