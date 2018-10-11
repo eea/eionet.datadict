@@ -1,9 +1,15 @@
 package eionet;
 
 import eionet.meta.ActionBeanUtils;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.Properties;
+
+import junit.framework.TestResult;
 import org.dbunit.DatabaseTestCase;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
@@ -14,6 +20,7 @@ import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 
 import eionet.util.Props;
 import eionet.util.PropsIF;
+import org.junit.Ignore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,6 +32,39 @@ public abstract class DDDatabaseTestCase extends DatabaseTestCase {
 
     /** File name of seed to load with getDataSet() */
     private String seedFilename;
+
+
+    @Override
+    protected void runTest() throws Throwable {
+        String fName = super.getName();
+        assertNotNull("TestCase.fName cannot be null", fName); // Some VMs crash when calling getMethod(null,null);
+        Method runMethod = null;
+        try {
+            // use getMethod to get all public inherited
+            // methods. getDeclaredMethods returns all
+            // methods of this class but excludes the
+            // inherited ones.
+            runMethod = super.getClass().getMethod(fName, (Class[]) null);
+            if(isMethodMarkedToBeIgnored(runMethod)){
+                return;
+            }
+        } catch (NoSuchMethodException e) {
+            fail("Method \"" + fName + "\" not found");
+        }
+        if (!Modifier.isPublic(runMethod.getModifiers())) {
+            fail("Method \"" + fName + "\" should be public");
+        }
+
+        try {
+            runMethod.invoke(this);
+        } catch (InvocationTargetException e) {
+            e.fillInStackTrace();
+            throw e.getTargetException();
+        } catch (IllegalAccessException e) {
+            e.fillInStackTrace();
+            throw e;
+        }
+    }
 
     /**
      * Provide a connection to the database.
@@ -65,6 +105,10 @@ public abstract class DDDatabaseTestCase extends DatabaseTestCase {
 
     protected String getSeedFilename() {
         return seedFilename;
+    }
+
+    protected boolean isMethodMarkedToBeIgnored(Method method){
+       return method.getDeclaredAnnotation(Ignore.class)!=null ?true :false;
     }
 
 }
