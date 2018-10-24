@@ -64,7 +64,7 @@ public class DDSearchEngine {
     private String sessionID = "";
 
     // TODO: Check if the domain needs to be updated
-    private String rodObligUrl = "http://rod.eionet.eu.int/obligations/";
+    private String rodObligUrl = "https://rod.eionet.eu.int/obligations/";
     private String predIdentifier = "http://purl.org/dc/elements/1.1/identifier";
     private String predTitle = "http://purl.org/dc/elements/1.1/title";
 
