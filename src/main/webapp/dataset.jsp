@@ -949,7 +949,7 @@ else if (mode.equals("add"))
                                                     if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "u")) { %>
                                                         <li>
                                                             <a rel="nofollow" href="<%=request.getContextPath()%>/v2/dataset/<%=ds_id%>/schema-dst-<%=ds_id%>.xsd" class="xsd">
-                                                                Create an XML Schema for this dataset
+                                                                Create an XML Schema for this dataset (using the new schema structure)
                                                                 <% if(user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "u")){ %>
                                                                 <input type="checkbox" name="disp_create_links" value="XML_SCHEMA" <%=checkedXmlSchema%> id="XML_SCHEMA" onclick="setDatasetDisplayLinkVisibility(event,'<%=request.getContextPath()%>',<%=ds_id%>,this.id)" />
                                                                 <%}
@@ -963,7 +963,7 @@ else if (mode.equals("add"))
                                                     if ( dispXmlSchema ) { %>
                                                         <li>
                                                             <a rel="nofollow" href="<%=request.getContextPath()%>/v2/dataset/<%=ds_id%>/schema-dst-<%=ds_id%>.xsd" class="xsd">
-                                                                Create an XML Schema for this dataset
+                                                                Create an XML Schema for this dataset (using the new schema structure)
                                                             </a>
                                                         </li>
                                                     <%
@@ -974,7 +974,7 @@ else if (mode.equals("add"))
 
                                                     <li>
                                                         <a rel="nofollow" href="<%=request.getContextPath()%>/GetSchema?id=DST<%=ds_id%>" class="xsd">
-                                                            Create an XML Schema for this dataset(using the old schema structure)
+                                                            Create an XML Schema for this dataset
                                                         <% if(user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "u")){ %>
                                                             <input type="checkbox" name="disp_create_links" value="XML_SCHEMA_OLD_STRUCTURE" id="XML_SCHEMA_OLD_STRUCTURE" <%=checkedXmlSchemaOldStructure%>  onclick="setDatasetDisplayLinkVisibility(event,'<%=request.getContextPath()%>',<%=ds_id%>,this.id)" />
                                                             <%}
@@ -994,7 +994,7 @@ else if (mode.equals("add"))
 
                                                     <li>
                                                         <a rel="nofollow" href="<%=request.getContextPath()%>/GetSchema?id=DST<%=ds_id%>" class="xsd">
-                                                            Create an XML Schema for this dataset(using the old schema structure)
+                                                            Create an XML Schema for this dataset
                                                         </a>
                                                     </li>
 
@@ -1062,7 +1062,7 @@ else if (mode.equals("add"))
                                                     if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "u")) { %>
                                                         <li>
                                                             <a rel="nofollow" href="<%=request.getContextPath()%>/GetXls?obj_type=dst&amp;obj_id=<%=ds_id%>&amp;new_schema=false" class="excel" onclick="return warnDatasetStatus('<%=regStatus%>', 'download')">
-                                                                Create an MS Excel template for this dataset using the old schema
+                                                                Create an MS Excel template for this dataset
                                                                 <% if(user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "u")){ %>
                                                                 <input type="checkbox" name="disp_create_links" value="MS_EXCEL_OLD_STRUTURE" <%=checkedXLSOldStructure%> id="MS_EXCEL_OLD_STRUCTURE" onclick="return setDatasetDisplayLinkVisibility(event,'<%=request.getContextPath()%>',<%=ds_id%>,this.id)" />
                                                                 <%}
@@ -1077,7 +1077,7 @@ else if (mode.equals("add"))
                                                     if (dispXLSOldStructure)  { %>
                                                         <li>
                                                             <a rel="nofollow" href="<%=request.getContextPath()%>/GetXls?obj_type=dst&amp;obj_id=<%=ds_id%>&amp;new_schema=false" class="excel" onclick="return warnDatasetStatus('<%=regStatus%>', 'download')">
-                                                                Create an MS Excel template for this dataset using the old schema
+                                                                Create an MS Excel template for this dataset
                                                             </a>
                                                             <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=excel"></a>
                                                         </li>
