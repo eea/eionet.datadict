@@ -28,8 +28,8 @@ ServletContext ctx = getServletContext();
         %>
         <a id="printlink" title="Print this page" href="javascript:this.print();"><span>Print</span></a>
         <a id="fullscreenlink" href="javascript:toggleFullScreenMode()" title="Switch to/from full screen mode"><span>Switch to/from full screen mode</span></a>
-        <a id="acronymlink" target="_blank" href="http://www.eionet.europa.eu/acronyms" title="Look up acronyms"><span>Acronyms</span></a>
-        <form action="http://google.com/search" method="get">
+        <a id="acronymlink" target="_blank" href="https://www.eionet.europa.eu/acronyms" title="Look up acronyms"><span>Acronyms</span></a>
+        <form action="https://google.com/search" method="get">
           <div id="freesrchform">
             <label for="freesrchfld">Search</label>
             <input type="text" id="freesrchfld" name="q"
@@ -53,7 +53,7 @@ ServletContext ctx = getServletContext();
 </div>
 <div class="breadcrumbtrail">
     <div class="breadcrumbhead">You are here:</div>
-    <div class="breadcrumbitem eionetaccronym"><a href="http://www.eionet.europa.eu">Eionet</a></div>
+    <div class="breadcrumbitem eionetaccronym"><a href="https://www.eionet.europa.eu">Eionet</a></div>
     <%
     String contextName = request.getParameter("context_name");
     String contextPath = request.getParameter("context_path");

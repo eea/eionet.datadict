@@ -23,7 +23,7 @@ Total number of codes presently allocated for ${data.country}: ${data.totalNofAl
 Remaining number of available codes: ${data.nofAvailableCodes}
 
 </#if>
-Please find more information at http://dd.eionet.europa.eu/services/siteCodes
+Please find more information at https://dd.eionet.europa.eu/services/siteCodes
 
 -------
 List of the new allocated codes:

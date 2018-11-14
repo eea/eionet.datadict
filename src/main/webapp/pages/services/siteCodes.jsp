@@ -188,13 +188,13 @@
             </c:if>
             <p>
             Site code is a unique identifier of site records in the
-            <a href="http://dd.eionet.europa.eu/datasets/latest/CDDA">Common database of designated areas (CDDA)</a>
+            <a href="https://dd.eionet.europa.eu/datasets/latest/CDDA">Common database of designated areas (CDDA)</a>
             which is annually updated in one of the EEA's priority dataflows.
             </p>
 
             <p>
             CDDA is main European inventory of nationally designated protected areas and it provides data for
-            <a href="http://www.wdpa.org/">World Database on Protected Areas (WDPA)</a>.
+            <a href="https://www.wdpa.org/">World Database on Protected Areas (WDPA)</a>.
             In order to keep identification of the CDDA site records compatible with the WDPA,
             the EEA agreed to use the site identifier code list maintained by the WDPA.
             Whenever it is needed the WDPA provides free codes from the codelist to the EEA.
@@ -208,8 +208,8 @@
             </p>
 
             <p>
-            Appointed Reportnet users, which are all Eionet <a href="http://www.eionet.europa.eu/ldap-roles/?role_id=eionet-nfp">NFPs</a>
-            and <a href="http://www.eionet.europa.eu/ldap-roles/?role_id=eionet-nrc-biodivdata">NRCs for Biodiversity data and information</a>,
+            Appointed Reportnet users, which are all Eionet <a href="https://www.eionet.europa.eu/ldap-roles/?role_id=eionet-nfp">NFPs</a>
+            and <a href="https://www.eionet.europa.eu/ldap-roles/?role_id=eionet-nrc-biodivdata">NRCs for Biodiversity data and information</a>,
             can reserve a set of new site codes for their new sites after logging into the service. The process is called allocation of site codes.
             </p>
 

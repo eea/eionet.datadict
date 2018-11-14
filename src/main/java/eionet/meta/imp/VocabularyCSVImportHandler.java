@@ -59,11 +59,6 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(VocabularyCSVImportHandler.class);
 
     /**
-     * URI prefix to check related concept.
-     */
-    private static final String URI_PREFIX = "http://";
-
-    /**
      * CSV file reader.
      */
     private Reader content;
