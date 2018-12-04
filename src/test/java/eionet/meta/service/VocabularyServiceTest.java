@@ -22,7 +22,6 @@
 package eionet.meta.service;
 
 import eionet.meta.ActionBeanUtils;
-import eionet.meta.dao.IVocabularyFolderDAO;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.Folder;
 import eionet.meta.dao.domain.RdfNamespace;
@@ -982,9 +981,9 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
      */
     @Test
     public void testFolderCSVInfo() throws Exception {
-        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(1);
+        List<VocabularyConcept> concepts = vocabularyService.getAllConceptsWithAttributes(1);
         List<Triple<String, String, Integer>> attributeNames =
-                vocabularyService.getVocabularyBoundElementNamesByLanguage(vocabularyFolder);
+                vocabularyService.getVocabularyBoundElementNamesByLanguage(concepts);
 
         assertEquals(attributeNames.size(), 2);
         Triple<String, String, Integer> dev = attributeNames.get(0);
@@ -1003,9 +1002,9 @@ public class VocabularyServiceTest extends UnitilsJUnit4 {
      */
     @Test
     public void testFolderCSVInfo2() throws Exception {
-        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(4);
+        List<VocabularyConcept> concepts = vocabularyService.getAllConceptsWithAttributes(4);
         List<Triple<String, String, Integer>> attributeNames =
-                vocabularyService.getVocabularyBoundElementNamesByLanguage(vocabularyFolder);
+                vocabularyService.getVocabularyBoundElementNamesByLanguage(concepts);
 
         int numberOfElements = 9;
         assertEquals(attributeNames.size(), numberOfElements);

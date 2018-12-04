@@ -69,7 +69,6 @@ import eionet.util.Util;
 import eionet.web.action.ErrorActionBean;
 import java.io.IOException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Collection;
@@ -1394,37 +1393,44 @@ public class VocabularyServiceImpl implements IVocabularyService {
     }
 
     @Override
-    public List<Triple<String, String, Integer>> getVocabularyBoundElementNamesByLanguage(VocabularyFolder vocabularyFolder) {
-        int vocabularyFolderId = vocabularyFolder.getId();
-        List<Triple<String, String, Integer>> elementsMeta =
-                vocabularyFolderDAO.getVocabularyFolderBoundElementsMeta(vocabularyFolderId);
-        // because of empty language values list may contain irregular values, process it first and then return
+    public List<Triple<String, String, Integer>> getVocabularyBoundElementNamesByLanguage(List<VocabularyConcept> concepts) {
+        List<Triple<String, String, Integer>> boundElementNamesByLanguage = new ArrayList<Triple<String, String, Integer>>();
+        for (VocabularyConcept concept : concepts) {
+            Map<String, Integer> boundElementsWithLanguageToMaxValuesCount = new HashMap<String, Integer>();
+            for (Iterator<List<DataElement>> it = concept.getElementAttributes().iterator(); it.hasNext();) {
+                List<DataElement> elementAttributes = it.next();
+                for (DataElement elementAttribute : elementAttributes) {
+                    String key = elementAttribute.getIdentifier()+ "~" + StringUtils.trimToEmpty(elementAttribute.getAttributeLanguage()); // e.g. skos:prefLabel~el
+                    if (boundElementsWithLanguageToMaxValuesCount.containsKey(key)) {
+                        boundElementsWithLanguageToMaxValuesCount.put(key, boundElementsWithLanguageToMaxValuesCount.get(key) + 1);
+                    } else {
+                        boundElementsWithLanguageToMaxValuesCount.put(key, 1);
+                    }
+                }
+            }
 
-        if (elementsMeta != null && elementsMeta.size() > 1) {
-            List<Triple<String, String, Integer>> elementsMetaTemp = new ArrayList<Triple<String, String, Integer>>();
-            elementsMetaTemp.add(elementsMeta.get(0));
+            for (String boundElementsWithLanguageKey : boundElementsWithLanguageToMaxValuesCount.keySet()) {
+                boolean boundElementExists = false;
+                String identifier = boundElementsWithLanguageKey.split("~")[0];
+                String language = boundElementsWithLanguageKey.split("~").length > 1 ?  boundElementsWithLanguageKey.split("~")[1] : "";
+                Integer maxValuesCount =  boundElementsWithLanguageToMaxValuesCount.get(boundElementsWithLanguageKey);
 
-            int arraySize = elementsMeta.size();
-            for (int i = 1; i < arraySize; i++) {
-                Triple<String, String, Integer> row1 = elementsMeta.get(i);
-                boolean found = false;
-                for (int j = 0; j < elementsMetaTemp.size(); j++) {
-                    Triple<String, String, Integer> row2 = elementsMetaTemp.get(j);
-                    if (StringUtils.equals(row1.getLeft(), row2.getLeft())
-                            && StringUtils.equals(row1.getCentral(), row2.getCentral())) {
-                        row2.setRight(row2.getRight() + row1.getRight());
-                        found = true;
+                for (Triple<String, String, Integer> boundElementWithLanguage : boundElementNamesByLanguage) {
+                    if (StringUtils.equals(boundElementWithLanguage.getLeft(), identifier) && StringUtils.equals(boundElementWithLanguage.getCentral(), language)) {
+                        if (maxValuesCount > boundElementWithLanguage.getRight()) {
+                            boundElementWithLanguage.setRight(maxValuesCount);
+                        }
+                        boundElementExists = true;
                         break;
                     }
                 }
-                if (!found) {
-                    elementsMetaTemp.add(row1);
+                if (!boundElementExists) {
+                    boundElementNamesByLanguage.add(new Triple<String, String, Integer>(identifier, language, maxValuesCount));
                 }
             }
-            elementsMeta = elementsMetaTemp;
         }
-        return elementsMeta;
-    } // end of method getVocabularyBoundElementNamesByLanguage
+        return boundElementNamesByLanguage;
+    }
 
     @Override
     public VocabularyResult searchVocabularies(VocabularyFilter filter) throws ServiceException {

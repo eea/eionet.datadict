@@ -541,13 +541,12 @@ public interface IVocabularyService {
     boolean isReferenceElement(int id);
 
     /**
-     * Returns name list of bound elements. Each name is repeated as much times as is the max count of the element values in a
-     * concept in this folder.
+     * Returns name list of bound elements. Each name is repeated as much times as is the max count of the element values for the concepts.
      *
-     * @param vocabularyFolder vocabulary folder
+     * @param concepts oncepts of the vocabulary
      * @return slit of bound element names
      */
-    List<Triple<String, String, Integer>> getVocabularyBoundElementNamesByLanguage(VocabularyFolder vocabularyFolder);
+    List<Triple<String, String, Integer>> getVocabularyBoundElementNamesByLanguage(List<VocabularyConcept> concepts);
 
     /**
      * Searches vocabularies by the given filter.

@@ -1597,14 +1597,14 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
             final String folderContextRoot = VocabularyFolder.getBaseUri(vocabularyFolder);
             final List<VocabularyConcept> concepts = vocabularyService.getAllConceptsWithAttributes(vocabularyFolder.getId());
-            final List<Triple<String, String, Integer>> fieldNamesWithLanguage =
-                    vocabularyService.getVocabularyBoundElementNamesByLanguage(vocabularyFolder);
+            final List<Triple<String, String, Integer>> boundElementsWithLanguage =
+                    vocabularyService.getVocabularyBoundElementNamesByLanguage(concepts);
 
             StreamingResolution result = new StreamingResolution("text/csv") {
                 @Override
                 public void stream(HttpServletResponse response) throws Exception {
                     VocabularyCSVOutputHelper.writeCSV(response.getOutputStream(), getUriPrefix(), folderContextRoot, concepts,
-                            fieldNamesWithLanguage);
+                            boundElementsWithLanguage);
                 }
             };
             result.setFilename(vocabularyFolder.getIdentifier() + ".csv");
