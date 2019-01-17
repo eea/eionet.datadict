@@ -273,7 +273,7 @@ public class SiteCodesActionBean extends AbstractActionBean {
         }
 
         if (StringUtils.isEmpty(choice)) {
-            addGlobalValidationError("Number of site codes or site ames must be specified");
+            addGlobalValidationError("Number of site codes or site names must be specified");
         }
 
         if (CHOICE_AMOUNT.equals(choice)) {

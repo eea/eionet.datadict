@@ -141,7 +141,7 @@ public class SiteCodeServiceImpl implements ISiteCodeService {
             c.set(Calendar.MILLISECOND, 0);
             Date allocationTime = c.getTime();
 
-            if (freeSiteCodes.getList().size() != amount) {
+            if (freeSiteCodes.getList().size() < amount) {
                 throw new ServiceException("Did not find enough free site codes for allocating " + amount + " sites!");
             }
             siteCodeDao.allocateSiteCodes(freeSiteCodes.getList(), countryCode, userName, siteNames, allocationTime);

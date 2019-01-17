@@ -376,7 +376,7 @@
                             <tr>
                                 <td colspan="2">&nbsp;</td>
                                 <td>
-                                    <stripes:submit name="allocate" value="OK" id="allocateButton" />
+                                    <stripes:submit name="allocate" value="OK" id="allocateButton" class="siteCodeOkButton" />
                                     <button type="button" id="closeAllocateLink">Cancel</button>
                                 </td>
                             </tr>
@@ -439,7 +439,7 @@
                     <tr>
                         <td colspan="2">&nbsp;</td>
                         <td>
-                            <stripes:submit name="reserveNewSiteCodes" value="OK" />
+                            <stripes:submit name="reserveNewSiteCodes" value="OK" class="siteCodeOkButton"/>
                             <button type="button" onClick="closePopup('#reserveSiteCodesDialog')">Cancel</button>
                         </td>
                     </tr>

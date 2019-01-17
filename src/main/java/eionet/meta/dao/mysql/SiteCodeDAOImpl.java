@@ -207,7 +207,9 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
             } else {
                 params.put("siteName", "");
             }
-            batchValues[i] = params;
+            if(batchValues.length > i) {
+                batchValues[i] = params;
+            }
         }
         getNamedParameterJdbcTemplate().batchUpdate(sql.toString(), batchValues);
 
