@@ -132,7 +132,9 @@ public class SiteCodeServiceImpl implements ISiteCodeService {
         int amount = siteNames.length;
         SiteCodeFilter siteCodeFilter = new SiteCodeFilter();
         siteCodeFilter.setPageNumber(1);
-        siteCodeFilter.setPageSize(amount);
+       // siteCodeFilter.setPageSize(amount);
+        //We disable paging, in order not to set any limits to the query to retrieve all available sitecodes.
+        siteCodeFilter.setUsePaging(false);
         siteCodeFilter.setStatus(SiteCodeStatus.AVAILABLE);
         try {
             SiteCodeResult freeSiteCodes = siteCodeDao.searchSiteCodes(siteCodeFilter);
