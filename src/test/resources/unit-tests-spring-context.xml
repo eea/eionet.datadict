@@ -18,10 +18,10 @@
 
     <!-- Scans within the base package of the application for @Components
         to configure as beans -->
-    <context:component-scan base-package="eionet.datadict, eionet.web, eionet.doc">
+    <context:component-scan base-package="eionet.meta, eionet.datadict, eionet.web, eionet.doc">
     <context:exclude-filter type="aspectj" expression="eionet.datadict.aop.*" />  
         <context:exclude-filter type="annotation" expression="eionet.datadict.annotations.ExcludeFromUnitTests"/>
-
+        <context:exclude-filter type="regex" expression="eionet.meta.dao.mysql.FixedValueDAOImpl"/>
  </context:component-scan>
     <context:spring-configured/>
       <aop:aspectj-autoproxy>

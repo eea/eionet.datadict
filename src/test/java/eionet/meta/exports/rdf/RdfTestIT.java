@@ -11,12 +11,17 @@ import eionet.DDDatabaseTestCase;
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DsTable;
 import org.junit.Ignore;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 /**
  * Purpose to test the RDF output generated for by the {@link Rdf}.
  *
  * @author jaanus
  */
+@ContextConfiguration(locations = {"classpath:mock-spring-context.xml"})
+@RunWith(SpringJUnit4ClassRunner.class)
 public class RdfTestIT extends DDDatabaseTestCase {
 
     /**

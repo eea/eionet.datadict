@@ -11,7 +11,7 @@ import eionet.help.Helps;
  * As long as DD doesn't configure where to load the help module's configuration
  * this test shows that the fallback to properties file works.
  */
-public class HelpModuleTest extends DDDatabaseTestCase {
+public class HelpModuleTestIT extends DDDatabaseTestCase {
 
     @Override
     protected String getSeedFilename() {
