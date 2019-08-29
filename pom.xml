@@ -120,7 +120,7 @@
                 <executions>
                     <execution>
                         <configuration>
-                            <!--skip>${maven.test.skip}</skip-->
+                            <skip>${maven.test.skip}</skip>
                         </configuration>
                         <id>start</id>
                         <phase>pre-integration-test</phase>
@@ -178,13 +178,11 @@
                 <version>2.20.1</version>
                 <configuration>
                     <excludes>
-                        <exclude>**/*.java</exclude>
+                        <exclude>**/*IT.java</exclude>
                     </excludes>
                     <skipTests>${skipUTs}</skipTests>
                 </configuration>
-                <!--<configuration>
-                   <skipTests>${skipUTs}</skipTests>
-                </configuration>-->
+
             </plugin>
 
             <!-- Configure Failsafe plugin (for executing integration tests) -->
@@ -200,8 +198,8 @@
                         <mysql.port>${mysql.port}</mysql.port>
                     </systemPropertyVariables>
                     <includes>
-                        <!--<include>**/*IT.java</include>-->
-                        <include>**/*.java</include>
+                        <include>**/*IT.java</include>
+                        <!--include>**/*.java</include-->
                     </includes>
                     <skipTests>${skipITs}</skipTests>
                 </configuration>
@@ -314,7 +312,7 @@
                         </goals>
                         <configuration>
                             <tasks>
-                                <copy file="${basedir}/jenkins.properties"
+                                <copy file="${basedir}/unittest.properties"
                                       toFile="${project.build.directory}/test-classes/env.properties" />
                             </tasks>
                         </configuration>
