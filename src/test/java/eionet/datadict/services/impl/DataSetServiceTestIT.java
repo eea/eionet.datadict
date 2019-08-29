@@ -8,18 +8,9 @@ import eionet.config.ApplicationTestContext;
 import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.errors.XmlExportException;
 import eionet.datadict.services.DataSetService;
-import java.io.IOException;
-import java.io.StringWriter;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
+import eionet.datadict.util.StringUtils;
 import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.Diff;
-import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +21,18 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.io.IOException;
+import java.io.StringWriter;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  *
@@ -61,7 +64,7 @@ public class DataSetServiceTestIT {
         transformer.transform(source, actualXMLResult);
         ClassLoader classLoader = getClass().getClassLoader();
         String expectedXMLResultString = IOUtils.toString(classLoader.getResourceAsStream("datasetXMLSChemaTestIT.xsd"));
-        Diff diff = new Diff(expectedXMLResultString, actualXMLResult.getWriter().toString());
+        Diff diff = new Diff(StringUtils.trimWhiteSpacesFromStringifiedXml(expectedXMLResultString), StringUtils.trimWhiteSpacesFromStringifiedXml(actualXMLResult.getWriter().toString()));
         assertTrue(diff.similar());
     }
 
@@ -76,7 +79,7 @@ public class DataSetServiceTestIT {
         transformer.transform(source, actualXMLResult);
         ClassLoader classLoader = getClass().getClassLoader();
         String expectedXMLResultString = IOUtils.toString(classLoader.getResourceAsStream("datasetXMLInstanceTestIT.xml"));
-        Diff diff = new Diff(expectedXMLResultString, actualXMLResult.getWriter().toString());
+        Diff diff = new Diff(StringUtils.trimWhiteSpacesFromStringifiedXml(expectedXMLResultString), StringUtils.trimWhiteSpacesFromStringifiedXml(actualXMLResult.getWriter().toString()));
         assertTrue(diff.similar());
     }
 
