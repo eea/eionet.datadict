@@ -67,20 +67,21 @@
                         </c:if>
                         <a id="printlink" title="Print this page" href="javascript:this.print();"><span>Print</span></a>
                         <a id="fullscreenlink" href="javascript:toggleFullScreenMode()" title="Switch to/from full screen mode"><span>Switch to/from full screen mode</span></a>
-                        <a id="acronymlink" target="_blank" href="https://www.eionet.europa.eu/acronyms" title="Look up acronyms"><span>Acronyms</span></a>
-                        <form action="https://google.com/search" method="get">
-                            <div id="freesrchform">
-                                <label for="freesrchfld">Search</label>
-                                <input type="text" id="freesrchfld" name="q"
-                                       onfocus="if (this.value == 'Search the site')
-                                                   this.value = '';"
-                                       onblur="if (this.value == '')
-                                                   this.value = 'Search the site';"
-                                       value="Search the site"/>
-                                <input type="hidden" name="sitesearch" value="${actionBean.sitePrefix}" />
-                                <input id="freesrchbtn" type="image" src="<c:url value="/images/button_go.gif"/>" alt="Go"/>
-                            </div>
-                        </form>
+<%--                        <a id="acronymlink" target="_blank" href="https://www.eionet.europa.eu/acronyms" title="Look up acronyms"><span>Acronyms</span></a>--%>
+<%--                        <form action="https://google.com/search" method="get">--%>
+<%--                            <div id="freesrchform">--%>
+<%--                                <label for="freesrchfld">Search</label>--%>
+<%--                                <input type="text" id="freesrchfld" name="q"--%>
+<%--                                       onfocus="if (this.value == 'Search the site')--%>
+<%--                                                   this.value = '';"--%>
+<%--                                       onblur="if (this.value == '')--%>
+<%--                                                   this.value = 'Search the site';"--%>
+<%--                                       value="Search the site"/>--%>
+<%--                                <input type="hidden" name="sitesearch" value="${actionBean.sitePrefix}" />--%>
+<%--                                <input id="freesrchbtn" type="image" src="<c:url value="/images/button_go.gif"/>" alt="Go"/>--%>
+<%--                            </div>--%>
+<%--                        </form>--%>
+                        <a id="eionetlink" title="Go to Eionet portal" href="https://www.eionet.europa.eu/"><span>Eionet portal</span></a>
                     </div>
                 </div> <!-- toolribbon -->
 
@@ -92,7 +93,6 @@
                 </div> <!-- pagehead -->
 
                 <div id="menuribbon">
-                    <%@ include file="/pages/common/dropdownmenus.txt" %>
                 </div>
 
                 <div class="breadcrumbtrail">
@@ -195,7 +195,7 @@
                     <c:set var="feedbackMail" value="mailto:helpdesk@eionet.europa.eu?subject=Feedback from the ${ddfn:getProperty('app.displayName')} website"/>
                     <p><a href="mailto:cr@eionet.europa.eu">E-mail</a> | <a href="${ddfn:urlEncode(feedbackMail)}">Feedback</a></p>
                     <p><a href="https://www.eea.europa.eu/"><b>European Environment Agency</b></a>
-                        <br/>Kgs. Nytorv 6, DK-1050 Copenhagen K, Denmark - Phone: +45 3336 7100</p>
+                        <br/>Kgs. Nytorv 6, DK-1050 Copenhagen K, Denmark</p>
                 </div>
             </div>
         </body>
