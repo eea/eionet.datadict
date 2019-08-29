@@ -1009,14 +1009,19 @@ public class VocabularyServiceTestIT extends UnitilsJUnit4 {
         int numberOfElements = 9;
         assertEquals(attributeNames.size(), numberOfElements);
         ArrayList<Triple<String, String, Integer>> manualAttributeNames = new ArrayList<Triple<String, String, Integer>>();
-        manualAttributeNames.add(new Triple<String, String, Integer>("HCO2", null, 2));
-        manualAttributeNames.add(new Triple<String, String, Integer>("HCO3", null, 1));
-        manualAttributeNames.add(new Triple<String, String, Integer>("skos:definition", "de", 2));
-        manualAttributeNames.add(new Triple<String, String, Integer>("skos:definition", "en", 1));
-        manualAttributeNames.add(new Triple<String, String, Integer>("skos:definition", "pl", 1));
+
+        manualAttributeNames.add(new Triple<String, String, Integer>("skos:prefLabel", "et", 1));
         manualAttributeNames.add(new Triple<String, String, Integer>("skos:prefLabel", "bg", 2));
         manualAttributeNames.add(new Triple<String, String, Integer>("skos:prefLabel", "en", 1));
-        manualAttributeNames.add(new Triple<String, String, Integer>("skos:prefLabel", "et", 1));
+        manualAttributeNames.add(new Triple<String, String, Integer>("skos:definition", "de", 2));
+
+
+        manualAttributeNames.add(new Triple<String, String, Integer>("HCO2", "", 2));
+        manualAttributeNames.add(new Triple<String, String, Integer>("skos:definition", "pl", 1));
+        manualAttributeNames.add(new Triple<String, String, Integer>("skos:definition", "en", 1));
+
+        manualAttributeNames.add(new Triple<String, String, Integer>("HCO3", "", 1));
+
         manualAttributeNames.add(new Triple<String, String, Integer>("skos:prefLabel", "pl", 1));
 
         for (int i = 0; i < numberOfElements; i++) {

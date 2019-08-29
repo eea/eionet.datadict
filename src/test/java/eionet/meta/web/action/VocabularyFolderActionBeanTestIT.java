@@ -167,74 +167,66 @@ public class VocabularyFolderActionBeanTestIT extends DDDatabaseTestCase {
         concept3.add("");
 
         // 7. column
-        header.add("AnotherCode@lang");
-        concept1.add("");
-        concept2.add("");
-        concept3.add("HCO2_csv_test_concept_3");
-
-        // 8. column
-        header.add("AnotherCode@lang");
-        concept1.add("");
-        concept2.add("");
-        concept3.add("HCO2_2_csv_test_concept_3");
-
-        // 9. column
-        header.add("geo:lat@lang");
-        concept1.add("");
-        concept2.add("");
-        concept3.add("HCO3_csv_test_concept_3");
-
-        // 10. column
-        header.add("skos:definition@de");
-        concept1.add("");
-        concept2.add("de_csv_test_concept_2");
-        concept3.add("de_csv_test_concept_3");
-
-        // 11. column
-        header.add("skos:definition@de");
-        concept1.add("");
-        concept2.add("de2_csv_test_concept_2");
-        concept3.add("");
-
-        // 12. column
-        header.add("skos:definition@en");
-        concept1.add("");
-        concept2.add("");
-        concept3.add("en_csv_test_concept_3");
-
-        // 13. column
-        header.add("skos:definition@pl");
-        concept1.add("");
-        concept2.add("");
-        concept3.add("pl_csv_test_concept_3");
-
-        // 14. column
-        header.add("skos:prefLabel@bg");
-        concept1.add("bg_csv_test_concept_1");
-        concept2.add("");
-        concept3.add("bg_csv_test_concept_3");
-
-        // 15. column
-        header.add("skos:prefLabel@bg");
-        concept1.add("bg2_csv_test_concept_1");
-        concept2.add("");
-        concept3.add("");
-
-        // 16. column
-        header.add("skos:prefLabel@en");
-        concept1.add("en_csv_test_concept_1");
-        concept2.add("");
-        concept3.add("en_csv_test_concept_3");
-
-        // 17. column
         header.add("skos:prefLabel@et");
         concept1.add("et_csv_test_concept_1");
         concept2.add("");
         concept3.add("");
 
+        // 8. column
+        header.add("skos:prefLabel@bg");
+        concept1.add("bg_csv_test_concept_1");
+        concept2.add("");
+        concept3.add("bg_csv_test_concept_3");
+
+        // 9. column
+        header.add("skos:prefLabel@bg");
+        concept1.add("bg2_csv_test_concept_1");
+        concept2.add("");
+        concept3.add("");
+
+        // 10. column
+        header.add("skos:prefLabel@en");
+        concept1.add("en_csv_test_concept_1");
+        concept2.add("");
+        concept3.add("en_csv_test_concept_3");
+
+        // 11. column
+        header.add("skos:definition@de");
+        concept2.add("de_csv_test_concept_2");
+        concept3.add("de_csv_test_concept_3");
+
+        // 12. column
+        header.add("skos:definition@de");
+        concept2.add("de2_csv_test_concept_2");
+        concept3.add("");
+
+        // 13. column
+        header.add("AnotherCode@lang");
+        concept2.add("");
+        concept3.add("HCO2_csv_test_concept_3");
+
+        // 14. column
+        header.add("AnotherCode@lang");
+        concept2.add("");
+        concept3.add("HCO2_2_csv_test_concept_3");
+
+        // 15. column
+        header.add("skos:definition@pl");
+        concept2.add("");
+        concept3.add("pl_csv_test_concept_3");
+
+        // 16. column
+        header.add("skos:definition@en");
+        concept2.add("");
+        concept3.add("en_csv_test_concept_3");
+
+        // 17. column
+        header.add("geo:lat@lang");
+        concept2.add("");
+        concept3.add("HCO3_csv_test_concept_3");
+
         // 18. column
         header.add("skos:prefLabel@pl");
-        concept1.add("");
         concept2.add("");
         concept3.add("pl_csv_test_concept_3");
 
