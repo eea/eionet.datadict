@@ -19,7 +19,13 @@ ServletContext ctx = getServletContext();
             %>
             <a id="loginlink" href="<%=SecurityUtil.getLoginURL(request)%>" title="Login">Login</a><%
         }
-        %>
+
+<%--        String helpScreen = request.getParameter("helpscreen");--%>
+<%--        if (helpScreen!=null){--%>
+<%--            %>--%>
+<%--            <a id="pagehelplink" class="helpButton" title="Get help on this page" href="<%=request.getContextPath()%>/help.jsp?screen=<%=helpScreen%>&amp;area=pagehelp"><span>Page help</span></a><%--%>
+<%--        }--%>
+<%--        %>--%>
         <a id="printlink" title="Print this page" href="javascript:this.print();"><span>Print</span></a>
         <a id="fullscreenlink" href="javascript:toggleFullScreenMode()" title="Switch to/from full screen mode"><span>Switch to/from full screen mode</span></a>
 <%--        <a id="acronymlink" target="_blank" href="https://www.eionet.europa.eu/acronyms" title="Look up acronyms"><span>Acronyms</span></a>--%>
@@ -44,7 +50,7 @@ ServletContext ctx = getServletContext();
 
 
 <div id="menuribbon">
-<%--    <%@ include file="dropdownmenus.txt" %>--%>
+    <%@ include file="dropdownmenus.txt" %>
 </div>
 <div class="breadcrumbtrail">
     <div class="breadcrumbhead">You are here:</div>
