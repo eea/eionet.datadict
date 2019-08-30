@@ -62,9 +62,9 @@
                             </c:otherwise>
                         </c:choose>
 
-                        <c:if test="${not empty helpScreen}">
-                            <a id="pagehelplink" class="helpButton" title="Get help on this page" href="${pageContext.request.contextPath}/help.jsp?screen=${fn:escapeXml(helpScreen)}&amp;area=pagehelp"><span>Page help</span></a>
-                        </c:if>
+<%--                        <c:if test="${not empty helpScreen}">--%>
+<%--                            <a id="pagehelplink" class="helpButton" title="Get help on this page" href="${pageContext.request.contextPath}/help.jsp?screen=${fn:escapeXml(helpScreen)}&amp;area=pagehelp"><span>Page help</span></a>--%>
+<%--                        </c:if>--%>
                         <a id="printlink" title="Print this page" href="javascript:this.print();"><span>Print</span></a>
                         <a id="fullscreenlink" href="javascript:toggleFullScreenMode()" title="Switch to/from full screen mode"><span>Switch to/from full screen mode</span></a>
 <%--                        <a id="acronymlink" target="_blank" href="https://www.eionet.europa.eu/acronyms" title="Look up acronyms"><span>Acronyms</span></a>--%>
