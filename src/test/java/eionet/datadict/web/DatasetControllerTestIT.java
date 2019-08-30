@@ -5,10 +5,9 @@ import com.github.springtestdbunit.annotation.DatabaseOperation;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.github.springtestdbunit.annotation.DatabaseTearDown;
 import eionet.config.ApplicationTestContext;
+import eionet.datadict.util.StringUtils;
 import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.Diff;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,6 +22,9 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -73,7 +75,7 @@ public class DatasetControllerTestIT {
         String xmlResult = mockMvc.perform(request).andReturn().getResponse().getContentAsString();
         ClassLoader classLoader = getClass().getClassLoader();
         String expectedXMLResultString = IOUtils.toString(classLoader.getResourceAsStream("datasetXMLSChemaTestIT.xsd"));
-        Diff diff = new Diff(expectedXMLResultString, xmlResult);
+        Diff diff = new Diff(StringUtils.trimWhiteSpacesFromStringifiedXml(expectedXMLResultString), StringUtils.trimWhiteSpacesFromStringifiedXml(xmlResult));
         assertTrue(diff.similar());
     }
 
@@ -96,7 +98,7 @@ public class DatasetControllerTestIT {
         String actualXMLResult = mockMvc.perform(request).andReturn().getResponse().getContentAsString();
         ClassLoader classLoader = getClass().getClassLoader();
         String expectedXMLResultString = IOUtils.toString(classLoader.getResourceAsStream("datasetTableXMLSchemaTestIT.xsd"));
-        Diff diff = new Diff(expectedXMLResultString, actualXMLResult);
+        Diff diff = new Diff(StringUtils.trimWhiteSpacesFromStringifiedXml(expectedXMLResultString), StringUtils.trimWhiteSpacesFromStringifiedXml(actualXMLResult));
         assertTrue(diff.similar());
     }
 
