@@ -22,39 +22,23 @@
 package eionet.meta.dao.mysql;
 
 import eionet.meta.dao.IVocabularyConceptDAO;
-import eionet.meta.dao.domain.DataElement;
-import eionet.meta.dao.domain.StandardGenericStatus;
-import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.dao.domain.VocabularyFolder;
-import eionet.meta.dao.domain.VocabularySet;
+import eionet.meta.dao.domain.*;
 import eionet.meta.dao.mysql.concepts.util.ConceptsWithAttributesQueryBuilder;
 import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyConceptFilter.BoundElementFilterResult;
 import eionet.meta.service.data.VocabularyConceptResult;
 import eionet.util.sql.SQL;
-import java.sql.Connection;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.ParameterizedPreparedStatementSetter;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import org.springframework.jdbc.core.ParameterizedPreparedStatementSetter;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import java.sql.*;
+import java.util.*;
 
 /**
  * Vocabulary concept DAO.
@@ -451,7 +435,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
     public void insertEmptyConcepts(int vocabularyFolderId, int amount, int identifier, String label, String definition) {
         StringBuilder sql = new StringBuilder();
         sql.append("insert into VOCABULARY_CONCEPT (VOCABULARY_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION, STATUS, ");
-        sql.append("NOT_ACCEPTED_DATE, STATUS_MODIFIED) ");
+        sql.append("ACCEPTED_DATE, STATUS_MODIFIED) ");
         sql.append("values (:vocabularyFolderId, :identifier, :label, :definition, :notation, :status, ");
         sql.append(":notAcceptedDate, :statusModified)");
 
@@ -467,7 +451,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
             params.put("notation", Integer.toString(identifier));
             params.put("status", StandardGenericStatus.INVALID.getValue());
             Date now = new Date(System.currentTimeMillis());
-            params.put("notAcceptedDate", now);
+            params.put("acceptedDate", now);
             params.put("statusModified", now);
             identifier++;
             batchValues[i] = params;
