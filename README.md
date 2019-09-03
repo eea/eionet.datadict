@@ -72,6 +72,8 @@ GRANT ALL PRIVILEGES ON DataDict.* TO 'dduser-here'@'localhost';
 In the env_setup/local/catalina_opts.txt file you will find all the CATALINA_OPTS that need to be configured with 
 the specific values for your environment. Set these variables for your local tomcat installation.
 
+Alternatively you can copy the default.properties file and create a local.properties file for development purposes.
+
 ##### 3. Deploy on tomcat
 
 Place the resulting $CHECKOUT_HOME/target/datadict.war into Tomcat's webapps directory, and start Tomcat.
@@ -99,7 +101,7 @@ $mvn  clean verify  -Denv=unittest
 
 If you wish to skip unit tests and run only integration tests you may do so using the flag: -DskipUTs=true as shown below:
 ```sh
-$mvn clean verify -DskipUTs=true -Denv=unittest
+$mvn clean verify -DskipUTs=true
 ```
 
 ### Build for docker
