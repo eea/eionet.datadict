@@ -437,7 +437,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         sql.append("insert into VOCABULARY_CONCEPT (VOCABULARY_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION, STATUS, ");
         sql.append("ACCEPTED_DATE, STATUS_MODIFIED) ");
         sql.append("values (:vocabularyFolderId, :identifier, :label, :definition, :notation, :status, ");
-        sql.append(":notAcceptedDate, :statusModified)");
+        sql.append(":acceptedDate, :statusModified)");
 
         @SuppressWarnings("unchecked")
         Map<String, Object>[] batchValues = new HashMap[amount];
