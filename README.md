@@ -22,11 +22,11 @@ Please download all of these software and install them according to the instruct
 Java, Tomcat, Maven and GIT client.
 
 The necessary versions are as follows:
-* Java 1.6 or higher
-* Maven 3.0.2 or higher
-* Tomcat 6 or higher
-* GIT 1.8.4 or higher
-* MySql 5.1.71 or higher
+* Java 8
+* Maven 3.6.1 or higher
+* Tomcat 8.5.45 or higher
+* GIT 2.17.1 or higher
+* Mariadb 5.5.63  or higher
 * (Optional) Docker 1.6 or higher
 
 ### Download DD source code
@@ -43,7 +43,7 @@ NB! The resulting /var/local/build/eionet.datadict directory will be denoted  be
 
 ```sh
 $ cd $CHECKOUT_HOME
-$ mvn -Dmaven.test.skip=true clean install
+$ mvn -Denv=local -Dmaven.test.skip=true clean install
 ```
 
 ##### Custom headers and footers configuration (OPTIONAL):
@@ -71,6 +71,8 @@ GRANT ALL PRIVILEGES ON DataDict.* TO 'dduser-here'@'localhost';
 
 In the env_setup/local/catalina_opts.txt file you will find all the CATALINA_OPTS that need to be configured with 
 the specific values for your environment. Set these variables for your local tomcat installation.
+
+Alternatively you can copy the default.properties file and create a local.properties file for development purposes.
 
 ##### 3. Deploy on tomcat
 
