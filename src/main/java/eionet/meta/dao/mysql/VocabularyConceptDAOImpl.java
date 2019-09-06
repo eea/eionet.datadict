@@ -436,9 +436,9 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
     public void insertEmptyConcepts(int vocabularyFolderId, int amount, int identifier, String label, String definition) {
         StringBuilder sql = new StringBuilder();
         sql.append("insert into VOCABULARY_CONCEPT (VOCABULARY_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION, STATUS, ");
-        sql.append("NOT_ACCEPTED_DATE, STATUS_MODIFIED) ");
+        sql.append("ACCEPTED_DATE, STATUS_MODIFIED) ");
         sql.append("values (:vocabularyFolderId, :identifier, :label, :definition, :notation, :status, ");
-        sql.append(":notAcceptedDate, :statusModified)");
+        sql.append(":acceptedDate, :statusModified)");
 
         @SuppressWarnings("unchecked")
         Map<String, Object>[] batchValues = new HashMap[amount];
@@ -452,7 +452,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
             params.put("notation", Integer.toString(identifier));
             params.put("status", StandardGenericStatus.INVALID.getValue());
             Date now = new Date(System.currentTimeMillis());
-            params.put("notAcceptedDate", now);
+            params.put("acceptedDate", now);
             params.put("statusModified", now);
             identifier++;
             batchValues[i] = params;
