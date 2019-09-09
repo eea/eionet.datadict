@@ -309,7 +309,7 @@
         <c:if test="${actionBean.xmlConvData.numberOfQAScripts > 0 || actionBean.xmlConvData.numberOfConversions > 0}">
             <br />
             <stripes:link href="${actionBean.xmlConvData.xmlConvUrl}">
-                <stripes:param name="schemaId" value="${actionBean.schemaUrl}" />
+                <stripes:param name="schemaUrl" value="${actionBean.schemaUrl}" />
                 Link to the schema page on XMLCONV
             </stripes:link>
         </c:if>

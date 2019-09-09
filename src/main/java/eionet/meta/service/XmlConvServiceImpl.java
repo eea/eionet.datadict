@@ -75,7 +75,7 @@ public class XmlConvServiceImpl implements IXmlConvService {
             result.setNumberOfQAScripts(scriptsResult.size());
 
             // XML Conv schema page url
-            result.setXmlConvUrl(Props.getRequiredProperty(PropsIF.XML_CONV_URL) + "/do/viewSchemaForm");
+            result.setXmlConvUrl(Props.getRequiredProperty(PropsIF.XML_CONV_URL) + "/schemas/one");
 
             return result;
         } catch (Exception e) {
