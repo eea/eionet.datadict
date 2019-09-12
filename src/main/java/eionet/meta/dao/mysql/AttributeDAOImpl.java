@@ -176,7 +176,7 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
         }
         sql.append("ON (a.M_ATTRIBUTE_ID = m.M_ATTRIBUTE_ID and a.DATAELEM_ID = :vocabularyFolderId and a.PARENT_TYPE = :parentType) ");
         sql.append("WHERE FLOOR(m.DISP_WHEN / :attributeWeight) %2 != 0 ");
-        sql.append("order by m.DISP_ORDER, a.VALUE");
+        sql.append("order by m.DISP_ORDER");
 
         final List<List<SimpleAttribute>> result = new ArrayList<List<SimpleAttribute>>();
 
