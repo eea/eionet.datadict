@@ -28,14 +28,14 @@
                         <tbody>
                             <c:forEach items="${actionBean.viewModel.fixedValues}" var="fixedValue">
                                 <tr>
-                                    <td>${fixedValue.value}</td>
+                                    <td><c:out value="${fixedValue.value}" /></td>
                                     <c:if test="${actionBean.viewModel.defaultValueRequired}">
                                         <td>
                                             ${ddfn:checkmark(fixedValue.defaultValue)}
                                         </td>
                                     </c:if>
-                                    <td>${fixedValue.shortDescription}</td>
-                                    <td>${fixedValue.definition}</td>
+                                    <td><c:out value="${fixedValue.shortDescription}" /></td>
+                                    <td><c:out value="${fixedValue.definition}" /></td>
                                 </tr>
                             </c:forEach>
                         </tbody>
