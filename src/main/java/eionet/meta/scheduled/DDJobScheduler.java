@@ -124,6 +124,9 @@ public class DDJobScheduler {
         triggerBuilder.withIdentity(jobDetails.getKey().getName(), jobDetails.getKey().getGroup());
         triggerBuilder.withSchedule(CronScheduleBuilder.cronSchedule(cronExpression));
         triggerBuilder.forJob(jobDetails);
+        if (quartzScheduler.checkExists(jobDetails.getKey())) {
+            quartzScheduler.deleteJob(jobDetails.getKey());
+        }
         quartzScheduler.scheduleJob(jobDetails, triggerBuilder.build());
     } // end of function scheduleCronJob
 
