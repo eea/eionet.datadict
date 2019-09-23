@@ -1,7 +1,7 @@
 <%@page contentType="text/html;charset=UTF-8"%>
 
 <%@ include file="/pages/common/taglibs.jsp"%>
-
+<%@taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <stripes:layout-render name="/pages/common/template.jsp" pageTitle="Fixed Value Editor" currentSection="dataElements">
     <stripes:layout-component name="contents">
         <c:if test="${empty actionBean.context.validationErrors}">
@@ -26,7 +26,7 @@
                         <tr>
                             <th scope="row" class="scope-row">Code</th>
                             <td><img src="<stripes:url value="/images/mandatory.gif" />" alt="Mandatory" name="Mandatory"/></td>
-                            <td><stripes:text name="viewModel.fixedValue.value" /></td>
+                            <td><textarea rows="3" cols="50" name="viewModel.fixedValue.value" ><c:out value="${actionBean.viewModel.fixedValue.value}"/></textarea></td>
                         </tr>
                         <c:if test="${actionBean.viewModel.defaultValueRequired}">
                             <tr>
