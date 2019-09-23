@@ -85,7 +85,7 @@
                                         <stripes:link beanclass="${actionBean.viewModel.actionBeanName}" event="edit">
                                             <stripes:param name="ownerId" value="${actionBean.viewModel.owner.id}" />
                                             <stripes:param name="fixedValueId" value="${fixedValue.id}" />
-                                            ${fixedValue.value}
+                                            <c:out value="${fixedValue.value}" />
                                         </stripes:link>
                                     </td>
                                     <c:if test="${actionBean.viewModel.defaultValueRequired}">
@@ -93,8 +93,8 @@
                                             ${ddfn:checkmark(fixedValue.defaultValue)}
                                         </td>
                                     </c:if>
-                                    <td>${fixedValue.shortDescription}</td>
-                                    <td>${fixedValue.definition}</td>
+                                    <td><c:out value="${fixedValue.shortDescription}" /></td>
+                                    <td><c:out value="${fixedValue.definition}" /></td>
                                     <td>
                                         <stripes:form beanclass="${actionBean.viewModel.actionBeanName}" 
                                                       onclick="return confirm('Are you sure you want to delete this value?');" >
