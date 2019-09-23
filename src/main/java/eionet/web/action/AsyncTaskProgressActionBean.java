@@ -48,7 +48,7 @@ public class AsyncTaskProgressActionBean extends AbstractActionBean {
     
     private String feedbackText;
     private String feedbackUrl;
-
+    
     @HandlesEvent("await")
     public Resolution await() throws JsonProcessingException, ResourceNotFoundException, ReflectiveOperationException {
         AsyncTaskExecutionEntry entry = this.asyncTaskManager.getTaskEntry(taskId);

@@ -40,12 +40,12 @@
                         <tr>
                             <th scope="row" class="scope-row">Label</th>
                             <td><img src="<stripes:url value="/images/optional.gif" />" alt="Optional" name="Optional"/></td>
-                            <td><textarea rows="3" cols="50" name="viewModel.fixedValue.shortDescription" ><c:out value="${actionBean.viewModel.fixedValue.shortDescription}"/></textarea></td>
+                            <td><stripes:textarea class="small" rows="3" cols="50" name="viewModel.fixedValue.shortDescription" /></td>
                         </tr>
                         <tr>
                             <th scope="row" class="scope-row">Definition</th>
                             <td><img src="<stripes:url value="/images/optional.gif" />" alt="Optional" name="Optional"/></td>
-                            <td><textarea rows="3" cols="50" name="viewModel.fixedValue.definition" ><c:out value="${actionBean.viewModel.fixedValue.definition}"/></textarea></td>
+                            <td><stripes:textarea class="small" rows="3" cols="50" name="viewModel.fixedValue.definition" /></td>
                         </tr>
                         <tr>
                             <td></td>
