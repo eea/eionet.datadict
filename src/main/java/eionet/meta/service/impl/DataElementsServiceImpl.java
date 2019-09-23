@@ -38,7 +38,7 @@ public class DataElementsServiceImpl implements DataElementsService {
     }
     
     @Override
-    public DataElement getEditableDataElement(AppContextProvider contextProvider, int dataElementId) 
+    public DataElement getEditableDataElement(AppContextProvider contextProvider, int dataElementId)
             throws UserAuthenticationException, ResourceNotFoundException, ConflictException, UserAuthorizationException {
         if (!contextProvider.isUserAuthenticated()) {
             throw new UserAuthenticationException();
