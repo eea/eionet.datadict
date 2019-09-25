@@ -10,6 +10,10 @@
         <param-name>useCentralAuthenticationService</param-name>
         <param-value>${useCentralAuthenticationService}</param-value>
     </context-param>
+    
+    <listener>
+        <listener-class>net.sf.ehcache.constructs.web.ShutdownListener</listener-class>
+    </listener>
 
     <!-- Spring configuration -->
     <listener>
