@@ -49,6 +49,8 @@ import eionet.meta.service.data.SchemaSetFilter;
 import eionet.meta.service.data.SchemaSetsResult;
 import eionet.meta.service.data.SchemasResult;
 import eionet.util.SecurityUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.transaction.annotation.Isolation;
 
 /**
@@ -75,6 +77,11 @@ public class SchemaServiceImpl implements ISchemaService {
     /** Schema repository. */
     @Autowired
     private SchemaRepository schemaRepository;
+    
+    /**
+     * Logger.
+     */
+    protected static final Logger LOGGER = LoggerFactory.getLogger(SchemaServiceImpl.class);
 
     /**
      * {@inheritDoc}
@@ -291,6 +298,7 @@ public class SchemaServiceImpl implements ISchemaService {
         }
 
         try {
+            LOGGER.info(String.format("Checking in schema set #%d for user %s with comment: %s.", schemaSetId, username, comment));
             // Load schema set to check in.
             SchemaSet schemaSet = schemaSetDAO.getSchemaSet(schemaSetId);
 
@@ -340,7 +348,7 @@ public class SchemaServiceImpl implements ISchemaService {
             // Finally, do necessary check-in actions in the repository too.
             List<String> schemasInDatabase = schemaSetDAO.getSchemaFileNames(schemaSet.getIdentifier());
             schemaRepository.checkInSchemaSet(schemaSet.getIdentifier(), schemasInDatabase);
-
+            LOGGER.info(String.format("Schema set #%d has been checked in by user %s.", finalId, username));
             return finalId;
         } catch (Exception e) {
             throw new ServiceException("Schema set check-in failed: " + e.getMessage(), e);
@@ -356,6 +364,7 @@ public class SchemaServiceImpl implements ISchemaService {
         }
 
         try {
+            LOGGER.info(String.format("Checking in schema #%d for user %s with comment: %s.", schemaId, userName, comment));
             // Load the schema that is being checked in.
             Schema schema = schemaDAO.getSchema(schemaId);
 
@@ -396,7 +405,7 @@ public class SchemaServiceImpl implements ISchemaService {
 
             // Finally, do necessary check-in actions in the repository too.
             schemaRepository.checkInSchema(schema.getFileName());
-
+            LOGGER.info(String.format("Schema #%d has been checked in by user %s.", finalId, userName));
             return finalId;
         } catch (Exception e) {
             throw new ServiceException("Schema check-in failed: " + e.getMessage(), e);
@@ -468,6 +477,7 @@ public class SchemaServiceImpl implements ISchemaService {
         }
 
         try {
+            LOGGER.info(String.format("Checking out schema set #%d for user %s.", schemaSetId, userName));
             SchemaSet schemaSet = schemaSetDAO.getSchemaSet(schemaSetId);
             if (schemaSet.isWorkingCopy()) {
                 throw new ServiceException("Cannot check out a working copy!");
@@ -486,6 +496,7 @@ public class SchemaServiceImpl implements ISchemaService {
 
             // Get the schema set's schemas and copy them and their simple attributes too.
             List<Schema> schemas = schemaDAO.listForSchemaSet(schemaSetId);
+            LOGGER.info(String.format("Schemas for schema set #%d have been retrieved.",schemaSetId));
             for (Schema schema : schemas) {
                 int newSchemaId = schemaDAO.copyToSchemaSet(schema.getId(), newSchemaSetId, schema.getFileName(), userName);
                 attributeDAO.copySimpleAttributes(schema.getId(), DElemAttribute.ParentType.SCHEMA.toString(), newSchemaId);
@@ -493,6 +504,7 @@ public class SchemaServiceImpl implements ISchemaService {
 
             // Make a working copy in repository too.
             schemaRepository.checkOutSchemaSet(schemaSet.getIdentifier());
+            LOGGER.info(String.format("Schema set #%d has been checked out by user %s successfully.", schemaSet.getIdentifier(), userName));
 
             return newSchemaSetId;
         } catch (Exception e) {
@@ -505,6 +517,7 @@ public class SchemaServiceImpl implements ISchemaService {
     public int undoCheckOutSchemaSet(int schemaSetId, String username) throws ServiceException {
 
         try {
+            LOGGER.info(String.format("Undoing check out schema set #%d for user %s.", schemaSetId, username));
             int result = 0;
             SchemaSet schemaSet = schemaSetDAO.getSchemaSet(schemaSetId);
             if (schemaSet != null) {
@@ -523,7 +536,7 @@ public class SchemaServiceImpl implements ISchemaService {
             // Finally, do the necessary undo-checkout actions in repository too.
             List<String> schemasInDatabase = schemaSetDAO.getSchemaFileNames(schemaSet.getIdentifier());
             schemaRepository.undoCheckOutSchemaSet(schemaSet.getIdentifier(), schemasInDatabase);
-
+            LOGGER.info(String.format("Undoing checking out for schema set #%d by user %s has been completed successfully.", schemaSetId, username));
             return result;
         } catch (Exception e) {
             throw new ServiceException("Failed to undo check-out of schema set: " + e.getMessage(), e);
@@ -646,6 +659,7 @@ public class SchemaServiceImpl implements ISchemaService {
         }
 
         try {
+            LOGGER.info(String.format("Checking out schema #%d for user %s.", schemaId, userName));
             Schema schema = schemaDAO.getSchema(schemaId);
             if (schema.isWorkingCopy()) {
                 throw new ServiceException("Cannot check out a working copy!");
@@ -658,12 +672,14 @@ public class SchemaServiceImpl implements ISchemaService {
             // Do schema check-out, get the new schema's ID.
             schemaDAO.setWorkingUser(schemaId, userName);
             int newSchemaId = schemaDAO.copySchemaRow(schemaId, userName, null, schema.getRegStatus());
+            LOGGER.info(String.format("Schema #%d has new id: #%d.", schemaId, newSchemaId));
 
             // Copy the schema's simple attributes.
             attributeDAO.copySimpleAttributes(schemaId, DElemAttribute.ParentType.SCHEMA.toString(), newSchemaId);
 
             // Make a working copy in the repository too.
             schemaRepository.checkOutSchema(schema.getFileName());
+            LOGGER.info(String.format("Schema #%d has been checked out successfully by user %s.", newSchemaId, userName));
 
             return newSchemaId;
         } catch (Exception e) {
@@ -695,6 +711,7 @@ public class SchemaServiceImpl implements ISchemaService {
     public int undoCheckOutSchema(int schemaId, String userName) throws ServiceException {
 
         try {
+            LOGGER.info(String.format("Undoing check out schema #%d for user %s.", schemaId, userName));
             int result = 0;
             Schema schema = schemaDAO.getSchema(schemaId);
             if (schema != null) {
@@ -716,7 +733,8 @@ public class SchemaServiceImpl implements ISchemaService {
             // Finally, do the necessary undo-checkout actions in repository too.
             List<String> schemasInDatabase = schemaSetDAO.getSchemaFileNames(null);
             schemaRepository.undoCheckOutSchema(schema.getFileName(), schemasInDatabase);
-
+            LOGGER.info(String.format("Undoing check out schema #%d for user %s.", schemaId, userName));
+            
             return result;
         } catch (Exception e) {
             throw new ServiceException("Failed to undo check-out of schema: " + e.getMessage(), e);
