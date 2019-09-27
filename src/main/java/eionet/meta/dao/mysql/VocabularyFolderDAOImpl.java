@@ -44,6 +44,8 @@ import eionet.meta.service.data.VocabularyFilter;
 import eionet.meta.service.data.VocabularyResult;
 import eionet.util.Triple;
 import java.util.Collection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 /**
@@ -54,6 +56,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 @Repository
 public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabularyFolderDAO {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(VocabularyFolderDAOImpl.class);
+    
     @Override
     public List<VocabularyFolder> getReleasedVocabularyFolders(int folderId) {
         List<String> statuses = new ArrayList<String>();
@@ -334,6 +338,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
         parameters.put("enforceNotationToId", vocabularyFolder.isNotationsEqualIdentifiers());
 
         getNamedParameterJdbcTemplate().update(sql.toString(), parameters);
+        LOGGER.info(String.format("Vocabulary #%d was created with parameters: %s. ", getLastInsertId(), parameters.toString()));
         return getLastInsertId();
     }
 
@@ -430,6 +435,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
         parameters.put("ids", ids);
 
         getNamedParameterJdbcTemplate().update(sql.toString(), parameters);
+        LOGGER.info(String.format("Vocabularies with ids %s were deleted.", ids.toString()));
     }
 
     /**
