@@ -999,6 +999,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
         }
 
         try {
+            LOGGER.info(String.format("Undoing check out for vocabulary #%d for user %s.", vocabularyFolderId, userName));
             VocabularyFolder vocabularyFolder = vocabularyFolderDAO.getVocabularyFolder(vocabularyFolderId);
             if (!vocabularyFolder.isWorkingCopy()) {
                 throw new ServiceException("Vocabulary is not a working copy.");
@@ -1015,12 +1016,14 @@ public class VocabularyServiceImpl implements IVocabularyService {
             originalVocabularyFolder.setCheckedOutCopyId(0);
             originalVocabularyFolder.setWorkingUser(null);
             vocabularyFolderDAO.updateVocabularyFolder(originalVocabularyFolder);
+            LOGGER.info(String.format("Vocabulary %d was updated.", originalVocabularyFolder.getId()));
 
             // Delete checked out version
             vocabularyFolderDAO.deleteVocabularyFolders(Collections.singletonList(vocabularyFolderId), false);
             attributeDAO.deleteAttributes(Collections.singletonList(vocabularyFolderId),
                     DElemAttribute.ParentType.VOCABULARY_FOLDER.toString());
 
+            LOGGER.info(String.format("Undoing check out for vocabulary #%d for user %s.", vocabularyFolderId, userName));
             return originalVocabularyFolderId;
         } catch (Exception e) {
             throw new ServiceException("Failed to undo checkout for vocabulary folder: " + e.getMessage(), e);
