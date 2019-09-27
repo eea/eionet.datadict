@@ -601,12 +601,13 @@ public class VocabularyServiceImpl implements IVocabularyService {
      */
     @Override
     @Transactional(rollbackFor = ServiceException.class)
-    public int checkOutVocabularyFolder(int vocabularyFolderId, String userName) throws ServiceException {
+    public int checkOutVocabularyFolder(int vocabularyFolderId, String userName) throws ServiceException {      
         if (StringUtils.isBlank(userName)) {
             throw new IllegalArgumentException("User name must not be blank!");
         }
 
         try {
+            LOGGER.info(String.format("Checking out vocabulary #%d for user %s.", vocabularyFolderId, userName));
             StopWatch timer = new StopWatch();
             timer.start();
             VocabularyFolder vocabularyFolder = vocabularyFolderDAO.getVocabularyFolder(vocabularyFolderId);
@@ -627,6 +628,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
             vocabularyFolder.setCheckedOutCopyId(vocabularyFolderId);
             vocabularyFolder.setWorkingCopy(true);
             int newVocabularyFolderId = vocabularyFolderDAO.createVocabularyFolder(vocabularyFolder);
+            LOGGER.info(String.format("Vocabulary #%d has new id: #%d.", vocabularyFolderId, newVocabularyFolderId));
 
             // Copy simple attributes.
             attributeDAO.copySimpleAttributes(vocabularyFolderId, DElemAttribute.ParentType.VOCABULARY_FOLDER.toString(),
@@ -638,11 +640,13 @@ public class VocabularyServiceImpl implements IVocabularyService {
 
                 dataElementDAO.checkoutVocabularyConceptDataElementValues(newVocabularyFolderId);
                 // dataElementDAO.updateRelatedConceptIds(newVocabularyFolderId);
+                
+                LOGGER.info(String.format("Vocabulary concepts have been copied for vocabulary #%d", newVocabularyFolderId));
             }
 
             // Copy data element relations
             dataElementDAO.copyVocabularyDataElements(vocabularyFolderId, newVocabularyFolderId);
-
+            LOGGER.info(String.format("Vocabulary data elements have been copied for vocabulary #%d", newVocabularyFolderId));
             timer.stop();
             LOGGER.debug("Check-out lasted: " + timer.toString());
             return newVocabularyFolderId;
@@ -662,6 +666,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
         }
 
         try {
+            LOGGER.info(String.format("Checking in vocabulary #%d for user %s.", vocabularyFolderId, userName));
             StopWatch timer = new StopWatch();
             timer.start();
             VocabularyFolder vocabularyFolder = vocabularyFolderDAO.getVocabularyFolder(vocabularyFolderId);
@@ -680,21 +685,30 @@ public class VocabularyServiceImpl implements IVocabularyService {
                 List<VocabularyConcept> concepts = getAllConceptsWithAttributes(originalVocabularyFolderId);
 
                 Map<Integer, DataElement> conceptAttributes = vocabularyConceptDAO.getVocabularyConceptAttributes(originalVocabularyFolderId);
-
+                if(conceptAttributes != null){
+                    LOGGER.info(String.format("Concept attributes %s for vocabulary #%d have been retrieved.", conceptAttributes.toString(), originalVocabularyFolderId));
+                }
+                else{
+                    LOGGER.info(String.format("No concept attributes were found for vocabulary #%d.", originalVocabularyFolderId));
+                }
                 // delete relations for inverse attibute values
                 deleteInverseElementsRelations(conceptAttributes.values(), concepts);
 
                 // referenced attribute values in this vocabulary must get new id's
                 vocabularyConceptDAO.updateReferringReferenceConcepts(originalVocabularyFolderId);
+                LOGGER.info(String.format("Referring reference concepts for old vocabulary #%d has been updated.", originalVocabularyFolderId));
 
                 // remove old vocabulary concepts
                 vocabularyConceptDAO.deleteVocabularyConcepts(originalVocabularyFolderId);
+                LOGGER.info(String.format("Vocabulary concepts for old vocabulary #%d have been deleted.", originalVocabularyFolderId));
 
                 // remove old data element relations
                 dataElementDAO.deleteVocabularyDataElements(originalVocabularyFolderId);
+                LOGGER.info(String.format("Vocabulary data elements for old vocabulary #%d have been deleted.", originalVocabularyFolderId));
 
                 // update ch3 element reference
                 dataElementDAO.moveVocabularySources(originalVocabularyFolderId, vocabularyFolderId);
+                LOGGER.info(String.format("Vocabulary sources have been moved from vocabulary #%d to vocabulary #%d", originalVocabularyFolderId, vocabularyFolderId));
             }
 
             // update original vocabulary folder
@@ -706,17 +720,25 @@ public class VocabularyServiceImpl implements IVocabularyService {
             vocabularyFolder.setWorkingUser(null);
 
             vocabularyFolderDAO.updateVocabularyFolder(vocabularyFolder);
+            LOGGER.info(String.format("Vocabulary folder #%d was updated.", vocabularyFolder.getId()));
 
             if (!vocabularyFolder.isSiteCodeType()) {
                 // move new vocabulary concepts to folder
                 vocabularyConceptDAO.moveVocabularyConcepts(vocabularyFolderId, originalVocabularyFolderId);
+                LOGGER.info(String.format("Vocabulary concepts were moved from vocabulary #%d to vocabulary #%d.", vocabularyFolderId, originalVocabularyFolderId));
 
                 // move bound data elements to new vocabulary
                 dataElementDAO.moveVocabularyDataElements(vocabularyFolderId, originalVocabularyFolderId);
+                LOGGER.info(String.format("Vocabulary data elements were moved from vocabulary #%d to vocabulary #%d.", vocabularyFolderId, originalVocabularyFolderId));
                 
                 List<VocabularyConcept> concepts = getAllConceptsWithAttributes(originalVocabularyFolderId);
 
                 Map<Integer, DataElement> conceptAttributes = vocabularyConceptDAO.getVocabularyConceptAttributes(originalVocabularyFolderId);
+                if (conceptAttributes != null) {
+                    LOGGER.info(String.format("Concept attributes %s for vocabulary #%d have been retrieved.", conceptAttributes.toString(), originalVocabularyFolderId));
+                } else {
+                    LOGGER.info(String.format("No concept attributes were found for vocabulary #%d.", originalVocabularyFolderId));
+                }
 
                 // create relations for inverse attibute values
                 createInverseElementsRelations(conceptAttributes.values(), concepts);
@@ -728,6 +750,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
 
             attributeDAO.replaceParentId(vocabularyFolderId, originalVocabularyFolderId,
                     DElemAttribute.ParentType.VOCABULARY_FOLDER);
+            LOGGER.info(String.format("Parent id was replaced from vocabulary #%d to vocabulary #%d.", vocabularyFolderId, originalVocabularyFolderId));
 
             // delete checked out version
             vocabularyFolderDAO.deleteVocabularyFolders(Collections.singletonList(vocabularyFolderId), false);

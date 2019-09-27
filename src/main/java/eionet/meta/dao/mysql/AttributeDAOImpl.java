@@ -63,6 +63,7 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
         parameters.put("parentType", parentType);
 
         getNamedParameterJdbcTemplate().update(sql, parameters);
+        LOGGER.info(String.format("Attributes with parent ids %s were deleted.", parentIds.toString()));
     }
 
     private static final String REPLACE_SIMPLE_ATTR_PARENT_ID_SQL = "update ATTRIBUTE set DATAELEM_ID=:substituteId "
