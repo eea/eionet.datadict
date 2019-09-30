@@ -46,7 +46,7 @@ public class AsyncJob implements Job {
         
         Map<String, Object> taskParameters = dataMapAdapter.getParameters();
         AsyncTask task = this.asyncTaskBuilder.create(taskType, taskParameters);
-        LOGGER.info(String.format("Async job %s responds to class class %s.", jec.getJobDetail().getKey(), task.getClass().toString()));
+        LOGGER.info(String.format("Async job %s responds to %s.", jec.getJobDetail().getKey(), task.getClass().toString()));
         Object result = task.call();
         jec.setResult(result);
     }

@@ -362,6 +362,7 @@ public class VersionManager {
         String newID = null;
         String topNS = null;
         try {
+            LOGGER.info(String.format("Checking out element with id #%s.", elmID));
             INParameters inParams = new INParameters();
             // set the working user of the original
             SQLGenerator gen = new SQLGenerator();
@@ -374,6 +375,7 @@ public class VersionManager {
             stmt.executeUpdate();
 
             // copy the element
+            LOGGER.info(String.format("Copying the element with id #%s.", elmID));
             String strResetVersionAndStatus =
                     servlRequestParams == null ? null : servlRequestParams.getParameter("resetVersionAndStatus");
             CopyHandler copyHandler = new CopyHandler(conn, ctx, searchEngine);
@@ -388,6 +390,7 @@ public class VersionManager {
                 gen.setFieldExpr("CHECKEDOUT_COPY_ID", elmID);
                 conn.createStatement().executeUpdate(gen.updateStatement() + " where DATAELEM_ID=" + newID);
             }
+            LOGGER.info(String.format("Checking out for element with id #%s was completed successfully.", elmID));
         } catch (Exception e) {
             try {
                 cleanupCheckout(elmID, "DATAELEM", topNS, newID);
@@ -435,14 +438,14 @@ public class VersionManager {
             throw new Exception("Dataset ID missing!");
         }
 
-        LOGGER.debug("Checking out dataset with id " + dstID);
+        LOGGER.info(String.format("Checking out dataset with id #%s.", dstID));
 
         String newID = null;
         String topNS = null;
         try {
             // set the working user of the original
 
-            LOGGER.debug("Setting the working user of the original copy");
+            LOGGER.info("Setting the working user of the original copy");
 
             INParameters inParams = new INParameters();
             SQLGenerator gen = new SQLGenerator();
@@ -456,7 +459,7 @@ public class VersionManager {
 
             // set the WORKING_USER of top namespace
 
-            LOGGER.debug("Setting the working user of the top namespace");
+            LOGGER.info("Setting the working user of the top namespace");
 
             inParams = new INParameters();
             q = "select CORRESP_NS from DATASET where DATASET_ID=" + inParams.add(dstID, Types.INTEGER);
@@ -597,7 +600,6 @@ public class VersionManager {
      * @throws Exception
      */
     public boolean checkInElm(String elmID, String status) throws Exception {
-
         initDataService();
         DataElement elm = loadElm(elmID);
         if (!StringUtils.isBlank(elm.getCheckedoutCopyID())){
@@ -627,6 +629,7 @@ public class VersionManager {
      */
     private boolean checkInElm_(String elmID, String status) throws Exception {
 
+        LOGGER.info(String.format("Checking in for element #%s and status %s.", elmID, status));
         // load the element we need to check in
         DataElement elm = loadElm(elmID);
 
@@ -642,6 +645,7 @@ public class VersionManager {
             if (!versionUpdate) {
 
                 //backup vocabulary bindings before deleting the element to the new element
+                LOGGER.info(String.format("Backing up vocabulary bindings for element #%s.", elmID));
                 gen.clear();
                 gen.setTable("VOCABULARY2ELEM");
                 gen.setFieldExpr("DATAELEM_ID", elmID);
@@ -653,6 +657,7 @@ public class VersionManager {
                 stmt.executeUpdate(gen.updateStatement() + " where DATAELEM_ID=" + checkedoutCopyID);
 
                 // delete the previous copy
+                LOGGER.info(String.format("Deleting the previous copy for element #%s.", elmID));
                 Parameters params = new Parameters();
                 params.addParameterValue("mode", "delete");
                 params.addParameterValue("complete", "true");
@@ -676,6 +681,7 @@ public class VersionManager {
         }
 
         // update the checked-in copy's vital fields
+        LOGGER.info(String.format("Updating the the checked-in copy's vital fields for element #%s.", elmID));
         gen.clear();
         gen.setTable("DATAELEM");
         gen.setField("WORKING_COPY", "N");
@@ -686,6 +692,7 @@ public class VersionManager {
         stmt.executeUpdate(gen.updateStatement() + " where DATAELEM_ID=" + elmID);
 
         // make sure certain users are subscribed and send UNS notification
+        LOGGER.info(String.format("Making sure that certain users are subscribed and sending UNS notification."));
         try {
             String checkedoutCopyUser = null;
             if (checkedoutCopyID != null) {
@@ -706,8 +713,9 @@ public class VersionManager {
                         : Subscriber.NEW_COMMON_ELEMENT_EVENT;
 
         new UNSEventSender().definitionChanged(elm, eventType, user == null ? null : user.getUserName());
-
+        
         stmt.close();
+        LOGGER.info(String.format("Checking in for element #%s and status %s was completed successfully.", elmID, status));
         return true;
     }
 
@@ -738,7 +746,8 @@ public class VersionManager {
      * Check in the specified dataset.
      */
     private boolean checkInDst_(String dstID, String status) throws Exception {
-
+        
+        LOGGER.info(String.format("Checking in for dataset #%s and status %s.", dstID, status));
         // load the dataset we need to check in
         Dataset dst = loadDst(dstID);
         String correspNamespaceID = dst.getNamespaceID();
@@ -830,6 +839,7 @@ public class VersionManager {
         }
 
         // update the checked-in copy's vital fields
+        LOGGER.info(String.format("Updating the checked-in copy's vital fields for dataset #%s.", dstID));
         gen.clear();
         gen.setTable("DATASET");
         gen.setField("WORKING_COPY", "N");
@@ -840,6 +850,7 @@ public class VersionManager {
         stmt.executeUpdate(gen.updateStatement() + " where DATASET_ID=" + dstID);
 
         // unlock the corresponding namespace
+        LOGGER.info(String.format("Unlocking the corresponding namespace %s for dataset #%s.", correspNamespaceID, dstID));
         if (correspNamespaceID != null) {
             gen.clear();
             gen.setTable("NAMESPACE");
@@ -848,12 +859,13 @@ public class VersionManager {
         }
 
         // send UNS notification
+        LOGGER.info(String.format("Sending UNS notification for dataset #%s.", dstID));
         String eventType =
                 checkedoutCopyID != null && checkedoutCopyID.length() > 0 ? Subscriber.DATASET_CHANGED_EVENT
                         : Subscriber.NEW_DATASET_EVENT;
 
         new UNSEventSender().definitionChanged(dst, eventType, user == null ? null : user.getUserName());
-        
+        LOGGER.info(String.format("Checking in for dataset #%s was completed successfully.", dstID));
         return true;
     }
 
