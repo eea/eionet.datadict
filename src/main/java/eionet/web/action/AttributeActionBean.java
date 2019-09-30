@@ -20,6 +20,7 @@ import eionet.meta.dao.domain.FixedValue;
 import java.util.List;
 import java.util.Map;
 import net.sourceforge.stripes.action.Before;
+import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.RedirectResolution;
 import net.sourceforge.stripes.action.Resolution;
@@ -77,6 +78,7 @@ public class AttributeActionBean extends AbstractActionBean {
      * @throws ResourceNotFoundException
      * @throws BadRequestException 
      */
+    @DefaultHandler
     public Resolution view() throws UserAuthenticationException, UserAuthorizationException, ResourceNotFoundException, BadRequestException {
         DDUser user = this.getUser();
         if (user == null) {

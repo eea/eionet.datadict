@@ -66,6 +66,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import net.sourceforge.stripes.action.DefaultHandler;
 
 /**
  * Vocabulary folder API action bean.
@@ -225,6 +226,7 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
     
     //Method definitions
 
+    @DefaultHandler
     public Resolution createVocabulary() {
         DDUser user;
         
