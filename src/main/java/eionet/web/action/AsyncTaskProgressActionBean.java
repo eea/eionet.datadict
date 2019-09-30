@@ -13,6 +13,7 @@ import eionet.datadict.model.AsyncTaskExecutionStatus;
 import java.util.HashMap;
 import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
+import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.HandlesEvent;
 import net.sourceforge.stripes.action.RedirectResolution;
@@ -106,6 +107,7 @@ public class AsyncTaskProgressActionBean extends AbstractActionBean {
         };
     }
     
+    @DefaultHandler
     @HandlesEvent("result")
     public Resolution result() throws ReflectiveOperationException, ResourceNotFoundException {
         AsyncTaskExecutionEntry entry = this.asyncTaskManager.getTaskEntry(taskId);
