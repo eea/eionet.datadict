@@ -1023,7 +1023,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
             attributeDAO.deleteAttributes(Collections.singletonList(vocabularyFolderId),
                     DElemAttribute.ParentType.VOCABULARY_FOLDER.toString());
 
-            LOGGER.info(String.format("Undoing check out for vocabulary #%d for user %s.", vocabularyFolderId, userName));
+            LOGGER.info(String.format("Undoing check out for vocabulary #%d by user %s was completed successfully.", vocabularyFolderId, userName));
             return originalVocabularyFolderId;
         } catch (Exception e) {
             throw new ServiceException("Failed to undo checkout for vocabulary folder: " + e.getMessage(), e);

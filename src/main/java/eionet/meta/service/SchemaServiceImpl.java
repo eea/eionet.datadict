@@ -733,7 +733,7 @@ public class SchemaServiceImpl implements ISchemaService {
             // Finally, do the necessary undo-checkout actions in repository too.
             List<String> schemasInDatabase = schemaSetDAO.getSchemaFileNames(null);
             schemaRepository.undoCheckOutSchema(schema.getFileName(), schemasInDatabase);
-            LOGGER.info(String.format("Undoing check out schema #%d for user %s.", schemaId, userName));
+            LOGGER.info(String.format("Undoing check out schema #%d by user %s has been completed successfully.", schemaId, userName));
             
             return result;
         } catch (Exception e) {
