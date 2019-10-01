@@ -383,6 +383,7 @@ public class VersionManager {
 
             // copy TBL2ELEM relations too, because common elements have links to tables
             newID = copyHandler.copyElm(elmID, true, strResetVersionAndStatus == null, strResetVersionAndStatus != null);
+            LOGGER.info(String.format("Element with id #%s has new id #%s", elmID, newID));
 //TODO VOC_ELEM
             if (newID != null) {
                 gen.clear();
@@ -496,7 +497,8 @@ public class VersionManager {
                 stmt = SQL.preparedStatement(q, inParams, conn);
                 stmt.executeUpdate();
             }
-
+            LOGGER.info(String.format("Checking out dataset with id #%s was completed successfully.", dstID));
+            
         } catch (Exception e) {
 
             try {
@@ -670,6 +672,7 @@ public class VersionManager {
 
                 // the id of the new copy must be changed in all relations as well
                 DataElementHandler.replaceID(elmID, checkedoutCopyID, conn);
+                LOGGER.info(String.format("Element with id #%s will now have new id #%s.", elmID, checkedoutCopyID));
                 elmID = checkedoutCopyID;
             } else {
                 // unlock the checked-out copy

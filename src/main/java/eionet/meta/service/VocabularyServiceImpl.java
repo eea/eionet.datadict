@@ -648,7 +648,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
             dataElementDAO.copyVocabularyDataElements(vocabularyFolderId, newVocabularyFolderId);
             LOGGER.info(String.format("Vocabulary data elements have been copied for vocabulary #%d", newVocabularyFolderId));
             timer.stop();
-            LOGGER.debug("Check-out lasted: " + timer.toString());
+            LOGGER.info("Check-out lasted: " + timer.toString());
             return newVocabularyFolderId;
         } catch (Exception e) {
             throw new ServiceException("Failed to check-out vocabulary folder: " + e.getMessage(), e);
@@ -756,7 +756,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
             vocabularyFolderDAO.deleteVocabularyFolders(Collections.singletonList(vocabularyFolderId), false);
 
             timer.stop();
-            LOGGER.debug("Check-in lasted: " + timer.toString());
+            LOGGER.info("Check-in lasted: " + timer.toString());
             return originalVocabularyFolderId;
         } catch (Exception e) {
             throw new ServiceException("Failed to check-in vocabulary folder: " + e.getMessage(), e);
