@@ -504,7 +504,7 @@ public class SchemaServiceImpl implements ISchemaService {
 
             // Make a working copy in repository too.
             schemaRepository.checkOutSchemaSet(schemaSet.getIdentifier());
-            LOGGER.info(String.format("Schema set #%d has been checked out by user %s successfully.", schemaSet.getIdentifier(), userName));
+            LOGGER.info(String.format("Schema set #%d has been checked out by user %s successfully.", schemaSetId, userName));
 
             return newSchemaSetId;
         } catch (Exception e) {
