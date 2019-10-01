@@ -340,7 +340,7 @@ public class SchemaServiceImpl implements ISchemaService {
                     schemaSetDAO.setWorkingUser(checkedOutCopyId, null);
                 }
             }
-
+            LOGGER.info(String.format("Schema set #%d will have new id #%d.", schemaSetId, checkedOutCopyId));
             // Update the checked-in schema set.
             int finalId = isOverwrite ? checkedOutCopyId : schemaSetId;
             schemaSetDAO.checkIn(finalId, username, comment);
@@ -348,7 +348,7 @@ public class SchemaServiceImpl implements ISchemaService {
             // Finally, do necessary check-in actions in the repository too.
             List<String> schemasInDatabase = schemaSetDAO.getSchemaFileNames(schemaSet.getIdentifier());
             schemaRepository.checkInSchemaSet(schemaSet.getIdentifier(), schemasInDatabase);
-            LOGGER.info(String.format("Schema set #%d has been checked in by user %s.", finalId, username));
+            LOGGER.info(String.format("Schema set #%d has been checked in by user %s successfully.", schemaSetId, username));
             return finalId;
         } catch (Exception e) {
             throw new ServiceException("Schema set check-in failed: " + e.getMessage(), e);
@@ -398,14 +398,14 @@ public class SchemaServiceImpl implements ISchemaService {
                     schemaDAO.unlock(checkedOutCopyId);
                 }
             }
-
+            LOGGER.info(String.format("Schema #%d will have new id #%d.", schemaId, checkedOutCopyId));
             // Update the checked-in schema.
             int finalId = isOverwrite ? checkedOutCopyId : schemaId;
             schemaDAO.checkIn(finalId, userName, comment);
 
             // Finally, do necessary check-in actions in the repository too.
             schemaRepository.checkInSchema(schema.getFileName());
-            LOGGER.info(String.format("Schema #%d has been checked in by user %s.", finalId, userName));
+            LOGGER.info(String.format("Schema #%d has been checked in by user %s.", schemaId, userName));
             return finalId;
         } catch (Exception e) {
             throw new ServiceException("Schema check-in failed: " + e.getMessage(), e);
@@ -490,6 +490,7 @@ public class SchemaServiceImpl implements ISchemaService {
             // Do schema set check-out, get the new schema set's ID.
             schemaSetDAO.setWorkingUser(schemaSetId, userName);
             int newSchemaSetId = schemaSetDAO.copySchemaSetRow(schemaSetId, userName, null);
+            LOGGER.info(String.format("Schema set #%d has new id #%d.", schemaSetId, newSchemaSetId));
 
             // Copy the schema set's simple attributes.
             attributeDAO.copySimpleAttributes(schemaSetId, DElemAttribute.ParentType.SCHEMA_SET.toString(), newSchemaSetId);
@@ -679,7 +680,7 @@ public class SchemaServiceImpl implements ISchemaService {
 
             // Make a working copy in the repository too.
             schemaRepository.checkOutSchema(schema.getFileName());
-            LOGGER.info(String.format("Schema #%d has been checked out successfully by user %s.", newSchemaId, userName));
+            LOGGER.info(String.format("Schema #%d has been checked out successfully by user %s.", schemaId, userName));
 
             return newSchemaId;
         } catch (Exception e) {
