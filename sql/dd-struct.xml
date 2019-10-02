@@ -2795,4 +2795,9 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
         <dropColumn    columnName="ALLOW_EXCEL_DOWNLOAD"
                        tableName="DATASET"/>
     </changeSet>
+    <changeSet id="rev-205" author="anthaant">
+        <createIndex indexName="VOCABULARY_CONCEPT_ORIGINAL_ID" tableName="VOCABULARY_CONCEPT" >
+            <column name="ORIGINAL_CONCEPT_ID" />
+        </createIndex>
+    </changeSet>
 </databaseChangeLog>
