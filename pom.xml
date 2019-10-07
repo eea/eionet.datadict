@@ -120,7 +120,7 @@
                 <executions>
                     <execution>
                         <configuration>
-                            <!--skip>${maven.test.skip}</skip-->
+                            <skip>${maven.test.skip}</skip>
                         </configuration>
                         <id>start</id>
                         <phase>pre-integration-test</phase>
@@ -178,13 +178,11 @@
                 <version>2.20.1</version>
                 <configuration>
                     <excludes>
-                        <exclude>**/*.java</exclude>
+                        <exclude>**/*IT.java</exclude>
                     </excludes>
                     <skipTests>${skipUTs}</skipTests>
                 </configuration>
-                <!--<configuration>
-                   <skipTests>${skipUTs}</skipTests>
-                </configuration>-->
+
             </plugin>
 
             <!-- Configure Failsafe plugin (for executing integration tests) -->
@@ -200,8 +198,8 @@
                         <mysql.port>${mysql.port}</mysql.port>
                     </systemPropertyVariables>
                     <includes>
-                        <!--<include>**/*IT.java</include>-->
-                        <include>**/*.java</include>
+                        <include>**/*IT.java</include>
+                        <!--include>**/*.java</include-->
                     </includes>
                     <skipTests>${skipITs}</skipTests>
                 </configuration>
@@ -264,30 +262,30 @@
             </plugin>
 
             <!-- Update database tables -->
-<!--            <plugin>
-                <groupId>org.liquibase</groupId>
-                <artifactId>liquibase-maven-plugin</artifactId>
-                <version>2.0.5</version>
-                <executions>
-                    <execution>
-                        <id>drop-before-tests</id>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>dropAll</goal>
-                        </goals>
-                        <configuration>
-                            &lt;!&ndash;<driver>${test.db.driver}</driver>
-                            <url>${test.db.jdbcurl}</url>
-                            <username>${test.db.user}</username>
-                            <password>${test.db.password}</password>&ndash;&gt;
-                            <skip>${maven.test.skip}</skip>
-                            &lt;!&ndash;skip>${skipUTs}</skip&ndash;&gt;
-                            <propertyFile>target/test-classes/liquibase.properties</propertyFile>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>-->
-            
+            <!--            <plugin>
+                            <groupId>org.liquibase</groupId>
+                            <artifactId>liquibase-maven-plugin</artifactId>
+                            <version>2.0.5</version>
+                            <executions>
+                                <execution>
+                                    <id>drop-before-tests</id>
+                                    <phase>pre-integration-test</phase>
+                                    <goals>
+                                        <goal>dropAll</goal>
+                                    </goals>
+                                    <configuration>
+                                        &lt;!&ndash;<driver>${test.db.driver}</driver>
+                                        <url>${test.db.jdbcurl}</url>
+                                        <username>${test.db.user}</username>
+                                        <password>${test.db.password}</password>&ndash;&gt;
+                                        <skip>${maven.test.skip}</skip>
+                                        &lt;!&ndash;skip>${skipUTs}</skip&ndash;&gt;
+                                        <propertyFile>target/test-classes/liquibase.properties</propertyFile>
+                                    </configuration>
+                                </execution>
+                            </executions>
+                        </plugin>-->
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
@@ -300,10 +298,10 @@
                             <goal>run</goal>
                         </goals>
                         <configuration>
-                            <target>
+                            <tasks>
                                 <copy file="${basedir}/${env}.properties"
                                       toFile="${project.build.directory}/classes/env.properties" />
-                            </target>
+                            </tasks>
                         </configuration>
                     </execution>
                     <execution>
@@ -313,10 +311,10 @@
                             <goal>run</goal>
                         </goals>
                         <configuration>
-                            <target>
-                                <copy file="${basedir}/jenkins.properties"
+                            <tasks>
+                                <copy file="${basedir}/unittest.properties"
                                       toFile="${project.build.directory}/test-classes/env.properties" />
-                            </target>
+                            </tasks>
                         </configuration>
                     </execution>
                 </executions>
@@ -381,7 +379,7 @@
                 </configuration>
             </plugin>
         </plugins>
-        
+
         <!-- filters for src/main/resources and src/test/resources -->
         <filters>
             <filter>${env}.properties</filter>
@@ -525,7 +523,7 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-aop</artifactId>
             <version>${spring.version}</version>
-         </dependency>
+        </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-web</artifactId>
@@ -600,7 +598,7 @@
             <groupId>org.hibernate.javax.persistence</groupId>
             <artifactId>hibernate-jpa-2.0-api</artifactId>
             <version>1.0.1.Final</version>
-       </dependency>
+        </dependency>
         <dependency>
             <groupId>javax.activation</groupId>
             <artifactId>activation</artifactId>
@@ -766,7 +764,7 @@
             <artifactId>property-placeholder-resolver</artifactId>
             <version>1.0</version>
         </dependency>
-        
+
         <!--Used for output (PDF mostly)-->
         <dependency>
             <groupId>com.lowagie</groupId>
@@ -1037,7 +1035,7 @@
             <version>1.7.2</version>
             <scope>test</scope>
         </dependency>
-       
+
         <dependency>
             <groupId>nl.bitwalker</groupId>
             <artifactId>UserAgentUtils</artifactId>
@@ -1060,9 +1058,9 @@
             <version>${jackson-version}</version>
         </dependency>
         <dependency>
-           <groupId>org.codehaus.jackson</groupId>
-           <artifactId>jackson-core-asl</artifactId>
-           <version>1.9.13</version>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-core-asl</artifactId>
+            <version>1.9.13</version>
         </dependency>
         <dependency>
             <groupId>org.codehaus.woodstox</groupId>
@@ -1094,7 +1092,7 @@
             <version>1.2.1</version>
             <scope>test</scope>
         </dependency>
-            <dependency>
+        <dependency>
             <groupId>org.dbunit</groupId>
             <artifactId>dbunit</artifactId>
             <version>2.5.1</version>
@@ -1122,12 +1120,12 @@
             <artifactId>gson</artifactId>
             <version>2.8.0</version>
         </dependency>
-         <!--dependency>
-            <groupId>javax</groupId>
-            <artifactId>javaee-web-api</artifactId>
-            <version>6.0</version>
-            <scope>test</scope>
-        </dependency-->
+        <!--dependency>
+           <groupId>javax</groupId>
+           <artifactId>javaee-web-api</artifactId>
+           <version>6.0</version>
+           <scope>test</scope>
+       </dependency-->
     </dependencies>
 
     <reporting>
