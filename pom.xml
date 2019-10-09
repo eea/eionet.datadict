@@ -16,7 +16,7 @@
         <spring-security-version>4.2.0.RELEASE</spring-security-version>
         <checkstyle.config.location>${basedir}/doc/checkstyle.xml</checkstyle.config.location>
         <sesame.openrdf.version>2.7.10</sesame.openrdf.version>
-        <jackson-version>2.8.0</jackson-version>
+        <jackson-version>2.9.10</jackson-version>
     </properties>
 
     <version>1.0-SNAPSHOT</version>
