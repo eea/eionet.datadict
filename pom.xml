@@ -12,11 +12,11 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <env>default</env>
         <java_version>1.8</java_version>
-        <spring.version>4.3.5.RELEASE</spring.version>
+        <spring.version>4.3.18.RELEASE</spring.version>
         <spring-security-version>4.2.0.RELEASE</spring-security-version>
         <checkstyle.config.location>${basedir}/doc/checkstyle.xml</checkstyle.config.location>
         <sesame.openrdf.version>2.7.10</sesame.openrdf.version>
-        <jackson-version>2.8.0</jackson-version>
+        <jackson-version>2.9.10</jackson-version>
     </properties>
 
     <version>1.0-SNAPSHOT</version>
@@ -654,11 +654,6 @@
             <version>2.4</version>
         </dependency>
         <dependency>
-            <groupId>commons-fileupload</groupId>
-            <artifactId>commons-fileupload</artifactId>
-            <version>1.2.2</version>
-        </dependency>
-        <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
             <version>1.4</version>
@@ -1048,11 +1043,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.fasterxml.jackson.dataformat</groupId>
-            <artifactId>jackson-dataformat-xml</artifactId>
-            <version>${jackson-version}</version>
-        </dependency>
-        <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
             <version>${jackson-version}</version>
@@ -1120,12 +1110,22 @@
             <artifactId>gson</artifactId>
             <version>2.8.0</version>
         </dependency>
-        <!--dependency>
-           <groupId>javax</groupId>
-           <artifactId>javaee-web-api</artifactId>
-           <version>6.0</version>
-           <scope>test</scope>
-       </dependency-->
+         <!--dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-web-api</artifactId>
+            <version>6.0</version>
+            <scope>test</scope>
+        </dependency-->
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+            <version>1.4</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.dataformat</groupId>
+            <artifactId>jackson-dataformat-xml</artifactId>
+            <version>2.8.4</version>
+        </dependency>
     </dependencies>
 
     <reporting>
