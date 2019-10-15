@@ -1,6 +1,8 @@
-<Configuration>
+<Configuration status="warn" packages="org.apache.logging.log4j.core,io.sentry.log4j2">>
     <Appenders>
         <Console name="console">
+            <!-- Configure the Sentry appender, overriding the logging threshold to the WARN level -->
+            <Sentry name="Sentry" />
             <PatternLayout>
                 <Pattern>[%d] - [%p] [%c:%L] : %m%n</Pattern>
             </PatternLayout>
@@ -15,6 +17,7 @@
         <logger name="net.sourceforge.stripes" level="warn"/>
         <Root level="INFO">
             <AppenderRef ref="console" />
+            <AppenderRef ref="Sentry" level="WARN" />
         </Root>
     </Loggers>
 </Configuration>
