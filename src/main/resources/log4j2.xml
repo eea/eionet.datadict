@@ -1,12 +1,12 @@
-<Configuration status="warn" packages="org.apache.logging.log4j.core,io.sentry.log4j2">>
+<Configuration>
     <Appenders>
         <Console name="console">
-            <!-- Configure the Sentry appender, overriding the logging threshold to the WARN level -->
-            <Sentry name="Sentry" />
             <PatternLayout>
                 <Pattern>[%d] - [%p] [%c:%L] : %m%n</Pattern>
             </PatternLayout>
         </Console>
+        <!-- Configure the Sentry appender, overriding the logging threshold to the WARN level -->
+        <Sentry name="Sentry" />
     </Appenders>
     <Loggers>
         <logger name="eionet" level="debug"/>
@@ -17,7 +17,7 @@
         <logger name="net.sourceforge.stripes" level="warn"/>
         <Root level="INFO">
             <AppenderRef ref="console" />
-            <AppenderRef ref="Sentry" level="WARN" />
+            <AppenderRef ref="Sentry" level="warn" />
         </Root>
     </Loggers>
 </Configuration>
