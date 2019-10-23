@@ -93,7 +93,18 @@ public class FolderActionBean extends AbstractActionBean {
 
                     for (VocabularyFolder vocabularyFolder : vocabularyFolders) {
                         List<? extends VocabularyConcept> concepts = null;
-                        concepts = vocabularyService.getAllConceptsWithAttributes(vocabularyFolder.getId());
+                        if (vocabularyFolder.isSiteCodeType()) {
+                            String countryCode = getContext().getRequestParameter("countryCode");
+                            String identifier = getContext().getRequestParameter("identifier");
+                            SiteCodeFilter siteCodeFilter = new SiteCodeFilter();
+                            siteCodeFilter.setUsePaging(false);
+                            siteCodeFilter.setCountryCode(countryCode);
+                            siteCodeFilter.setIdentifier(identifier);
+                            concepts = siteCodeService.searchSiteCodes(siteCodeFilter).getList();
+                        } else {
+                            concepts =
+                                    vocabularyService.getAllConceptsWithAttributes(vocabularyFolder.getId());
+                        }
 
                         final List<? extends VocabularyConcept> finalConcepts = concepts;
 
