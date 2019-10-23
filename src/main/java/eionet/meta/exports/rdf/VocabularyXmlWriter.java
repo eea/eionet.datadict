@@ -279,12 +279,7 @@ public class VocabularyXmlWriter {
             writer.writeAttribute("rdf", VocabularyOutputHelper.LinkedDataNamespaces.RDF_NS, "resource",
                     StringEncoder.encodeToIRI(vocabularyContextRoot));
 
-            // Write site code data or bound elements as last block.
-            if (vocabularyFolder.isSiteCodeType()) {
-                writeSiteCodeData((SiteCode) vc);
-            } else {
-                writeBoundElements(vocabularyContextRoot, vc.getElementAttributes());
-            }
+            writeBoundElements(vocabularyContextRoot, vc.getElementAttributes());
 
             writer.writeCharacters("\n");
             writer.writeEndElement();

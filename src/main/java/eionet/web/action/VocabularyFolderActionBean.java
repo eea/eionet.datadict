@@ -1512,17 +1512,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             final List<RdfNamespace> nameSpaces = vocabularyService.getVocabularyNamespaces(vocabularyFolders);
 
             final List<? extends VocabularyConcept> concepts;
-            if (vocabularyFolder.isSiteCodeType()) {
-                String countryCode = getContext().getRequestParameter("countryCode");
-                String identifier = getContext().getRequestParameter("identifier");
-                SiteCodeFilter siteCodeFilter = new SiteCodeFilter();
-                siteCodeFilter.setUsePaging(false);
-                siteCodeFilter.setCountryCode(countryCode);
-                siteCodeFilter.setIdentifier(identifier);
-                concepts = siteCodeService.searchSiteCodes(siteCodeFilter).getList();
-            } else {
-                concepts = vocabularyService.getAllConceptsWithAttributes(vocabularyFolder.getId());
-            }
+            
+            concepts = vocabularyService.getAllConceptsWithAttributes(vocabularyFolder.getId());
 
             final String contextRoot = VocabularyFolder.getBaseUri(vocabularyFolder);
 
