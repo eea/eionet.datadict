@@ -717,7 +717,13 @@ public class VocabularyServiceImpl implements IVocabularyService {
 
             vocabularyFolderDAO.updateVocabularyFolder(vocabularyFolder);
             LOGGER.info(String.format("Vocabulary folder #%d was updated.", vocabularyFolder.getId()));
-
+            
+            //if the vocabulary is cdda, copy the new concepts to the T_SITE_CODE table
+     /*       if(vocabularyFolder.isSiteCodeType()){
+                siteCodeDAO.insertSiteCodesFromConcepts(vocabularyFolder.getConcepts(), userName);
+                LOGGER.info(String.format("Vocabulary concepts have been inserted in T_SITE_CODE table"));
+            }
+*/
             // move new vocabulary concepts to folder
             vocabularyConceptDAO.moveVocabularyConcepts(vocabularyFolderId, originalVocabularyFolderId);
             LOGGER.info(String.format("Vocabulary concepts were moved from vocabulary #%d to vocabulary #%d.", vocabularyFolderId, originalVocabularyFolderId));
