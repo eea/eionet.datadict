@@ -26,9 +26,7 @@ public class SentryInitServlet extends HttpServlet {
             dsn = "https://7f20b266a47b4307808d8f3da301ea0c@sentry.eea.europa.eu/43";
        // if (dsn != null && dsn.length() > 2) {
         SentryClient client =     Sentry.init(dsn);
-        client.setEnvironment("dd-eionet-europa-eu");
-        client.setServerName("local-vlf");
-        client.setRelease("44.5.56");
+        client.setRelease("2019-10-21T1827");
        // } else {
           //  Sentry.init();
        // }
