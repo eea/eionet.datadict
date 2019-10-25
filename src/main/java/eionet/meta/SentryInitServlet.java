@@ -2,6 +2,8 @@ package eionet.meta;
 
 import io.sentry.Sentry;
 import io.sentry.SentryClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -17,19 +19,17 @@ public class SentryInitServlet extends HttpServlet {
      */
     @Override
     public void init(ServletConfig config) throws ServletException {
+
+        final Logger LOGGER = LoggerFactory.getLogger(ServletConfig.class);
+
         super.init(config);
-        //ConfigurationPropertyResolver propertyResolver = SpringApplicationContext.getBean("configurationPropertyResolver");
 
-        String dsn = null;
+        SentryClient client;
 
-
-            dsn = "https://7f20b266a47b4307808d8f3da301ea0c@sentry.eea.europa.eu/43";
-       // if (dsn != null && dsn.length() > 2) {
-        SentryClient client =     Sentry.init(dsn);
-        client.setRelease("2019-10-21T1827");
-       // } else {
-          //  Sentry.init();
-       // }
-
+        try {
+            client =  Sentry.init();
+        } catch (Exception e) {
+            LOGGER.error("No sentry service available due to: " + e.getMessage());
+        }
     }
 }
