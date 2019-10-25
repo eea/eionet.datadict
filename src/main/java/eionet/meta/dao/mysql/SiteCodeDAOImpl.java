@@ -306,5 +306,17 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
 
         return getNamedParameterJdbcTemplate().queryForObject(sql.toString(), params,Integer.class) > 0;
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void updateVocabularyConceptId() {
 
+        StringBuilder sql = new StringBuilder();
+        sql.append("UPDATE T_SITE_CODE, VOCABULARY_CONCEPT set T_SITE_CODE.VOCABULARY_CONCEPT_ID = VOCABULARY_CONCEPT.VOCABULARY_CONCEPT_ID \n" +
+                "  where VOCABULARY_CONCEPT.ORIGINAL_CONCEPT_ID = T_SITE_CODE.VOCABULARY_CONCEPT_ID ");
+        
+        getJdbcTemplate().update(sql.toString());
+    }
 }

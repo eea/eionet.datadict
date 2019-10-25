@@ -105,4 +105,11 @@ public interface ISiteCodeDAO {
      * @return
      */
     boolean siteCodeFolderExists();
+    
+    /**
+     * Updates the VOCABULARY_CONCEPT_ID column of T_SITE_CODE table
+     *
+     * @return
+     */
+    void updateVocabularyConceptId();
 }
