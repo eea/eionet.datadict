@@ -21,6 +21,7 @@
 
 package eionet.meta.service;
 
+import eionet.datadict.dal.SiteCodeDao;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -111,6 +112,12 @@ public class VocabularyServiceImpl implements IVocabularyService {
      */
     @Autowired
     private ISiteCodeDAO siteCodeDAO;
+    
+    /**
+     * New Site Code DAO class.
+     */
+    @Autowired
+    private SiteCodeDao newSiteCodeDAO;
 
     /**
      * Attribute DAO.
@@ -678,7 +685,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
             }
 
             if(vocabularyFolder.isSiteCodeType()){
-                siteCodeDAO.updateVocabularyConceptId();
+                newSiteCodeDAO.updateVocabularyConceptId();
                 LOGGER.info(String.format("Vocabulary concepts ids have been updated in T_SITE_CODE table"));
             }
             
