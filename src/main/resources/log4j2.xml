@@ -15,9 +15,9 @@
         <logger name="org.springframework" level="warn"/>
         <logger name="org.displaytag" level="warn"/>
         <logger name="net.sourceforge.stripes" level="warn"/>
-        <Root level="TRACE">
+        <Root level="info">
             <AppenderRef ref="console" />
-            <AppenderRef ref="Sentry" level="TRACE" />
+            <AppenderRef ref="Sentry" level="warn" />
         </Root>
     </Loggers>
 </Configuration>
