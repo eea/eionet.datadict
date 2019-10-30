@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<dataset>
+    <VOCABULARY_SET ID="1" IDENTIFIER="common" LABEL="Common" /> 
+    <VOCABULARY VOCABULARY_ID="1" CONTINUITY_ID="1" BASE_URI="http://dd.eionet.europa.eu/vocabulary/cdda/cddasites/" IDENTIFIER="siteCodes" LABEL="site codes" REG_STATUS="Draft" WORKING_COPY="0" WORKING_USER="[NULL]" CHECKEDOUT_COPY_ID="[NULL]" FOLDER_ID="1" />   
+</dataset>

@@ -1,6 +1,5 @@
 package eionet.datadict.model;
 
-import java.util.Date;
 import javax.persistence.Id;
 
 /**
@@ -33,13 +32,13 @@ public class SiteCode {
     private String parentIso;
     
     /* The date the site code was created */
-    private Date dateCreated;
+    private String dateCreated;
     
     /* The username of the user who created  the site code */
     private String userCreated;
     
     /* The date the site code was allocated */
-    private Date dateAllocated;
+    private String dateAllocated;
     
     /* The username of the user who allocated  the site code */
     private String userAllocated;
@@ -53,8 +52,32 @@ public class SiteCode {
     private Integer yearsDisappeared;
     
     /* The date the site code was deleted */
-    private Date dateDeleted;
+    private String dateDeleted;
 
+    public SiteCode() {
+    }
+    
+    public SiteCode(String vocabularyConceptId, String siteCode, String initialSiteName, String siteCodeNat,
+            String status, String ccIso2, String parentIso, String dateCreated, String userCreated,
+            String dateAllocated, String userAllocated, Integer yearsDeleted, Integer yearsDisappeared, String dateDeleted) {
+        this.vocabularyConceptId = vocabularyConceptId;
+        this.siteCode = siteCode;
+        this.initialSiteName = initialSiteName;
+        this.siteCodeNat = siteCodeNat;
+        this.status = status;
+        this.ccIso2 = ccIso2;
+        this.parentIso = parentIso;
+        this.dateCreated = dateCreated;
+        this.userCreated = userCreated;
+        this.dateAllocated = dateAllocated;
+        this.userAllocated = userAllocated;
+        this.yearsDeleted = yearsDeleted;
+        this.yearsDisappeared = yearsDisappeared;
+        this.dateDeleted = dateDeleted;
+    }
+
+    
+    
     public String getVocabularyConceptId() {
         return vocabularyConceptId;
     }
@@ -111,11 +134,11 @@ public class SiteCode {
         this.parentIso = parentIso;
     }
 
-    public Date getDateCreated() {
+    public String getDateCreated() {
         return dateCreated;
     }
 
-    public void setDateCreated(Date dateCreated) {
+    public void setDateCreated(String dateCreated) {
         this.dateCreated = dateCreated;
     }
 
@@ -127,11 +150,11 @@ public class SiteCode {
         this.userCreated = userCreated;
     }
 
-    public Date getDateAllocated() {
+    public String getDateAllocated() {
         return dateAllocated;
     }
 
-    public void setDateAllocated(Date dateAllocated) {
+    public void setDateAllocated(String dateAllocated) {
         this.dateAllocated = dateAllocated;
     }
 
@@ -159,11 +182,11 @@ public class SiteCode {
         this.yearsDisappeared = yearsDisappeared;
     }
 
-    public Date getDateDeleted() {
+    public String getDateDeleted() {
         return dateDeleted;
     }
 
-    public void setDateDeleted(Date dateDeleted) {
+    public void setDateDeleted(String dateDeleted) {
         this.dateDeleted = dateDeleted;
     }
     

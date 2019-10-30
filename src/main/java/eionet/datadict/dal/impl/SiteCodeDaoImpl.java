@@ -9,11 +9,13 @@ import java.util.List;
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
 
 /**
  *
  * @author nta@eworx.gr
  */
+@Repository
 public class SiteCodeDaoImpl extends JdbcDaoBase implements SiteCodeDao {
    
     @Autowired
@@ -47,8 +49,20 @@ public class SiteCodeDaoImpl extends JdbcDaoBase implements SiteCodeDao {
             public SiteCode mapRow(ResultSet rs, int rowNum) throws SQLException {
                 SiteCode sc = new SiteCode();
                 sc.setVocabularyConceptId(rs.getString("VOCABULARY_CONCEPT_ID"));
+                sc.setSiteCode(rs.getString("SITE_CODE"));
+                sc.setInitialSiteName(rs.getString("INITIAL_SITE_NAME"));
+                sc.setSiteCodeNat(rs.getString("SITE_CODE_NAT"));
+                sc.setStatus(rs.getString("STATUS"));
+                sc.setCcIso2(rs.getString("CC_ISO2"));
+                sc.setParentIso(rs.getString("PARENT_ISO"));
+                sc.setDateCreated(rs.getString("DATE_CREATED"));
+                sc.setUserCreated(rs.getString("USER_CREATED"));
+                sc.setDateAllocated(rs.getString("DATE_ALLOCATED"));
+                sc.setUserAllocated(rs.getString("USER_ALLOCATED"));
+                sc.setYearsDeleted(rs.getInt("YEARS_DELETED"));
+                sc.setYearsDisappeared(rs.getInt("YEARS_DISAPPEARED"));
+                sc.setDateDeleted(rs.getString("DATE_DELETED"));
                 
-                //TODO set all variables
                 return sc;
             }
 
