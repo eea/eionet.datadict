@@ -67,6 +67,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import net.sourceforge.stripes.action.DefaultHandler;
+import org.apache.commons.io.ByteOrderMark;
+import org.apache.commons.io.input.BOMInputStream;
 
 /**
  * Vocabulary folder API action bean.
@@ -417,8 +419,15 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
             LOGGER.info("uploadRdf API - Starting RDF import operation");
 
             //Reader rdfFileReader = new InputStreamReader(this.sourceFile.getInputStream(), CharEncoding.UTF_8); //KL 151216: input stream reading from request
-            Reader rdfFileReader = new InputStreamReader(request.getInputStream(), CharEncoding.UTF_8);
+            BOMInputStream bomIn = new BOMInputStream(request.getInputStream(), ByteOrderMark.UTF_8, ByteOrderMark.UTF_16LE, ByteOrderMark.UTF_16BE,
+                    ByteOrderMark.UTF_32LE, ByteOrderMark.UTF_32BE
+            );
+            if (bomIn.hasBOM()) {
+                LOGGER.info("uploadRdf API - Detected BOM");
+            }
 
+            Reader rdfFileReader = new InputStreamReader(bomIn, CharEncoding.UTF_8);
+            
             final List<String> systemMessages = this.vocabularyRdfImportService.importRdfIntoVocabulary(rdfFileReader,
                     vocabularyFolder, uploadActionBefore, uploadAction, missingConceptsAction);
             for (String systemMessage : systemMessages) {
