@@ -717,13 +717,10 @@ public class VocabularyServiceImpl implements IVocabularyService {
 
             vocabularyFolderDAO.updateVocabularyFolder(vocabularyFolder);
             LOGGER.info(String.format("Vocabulary folder #%d was updated.", vocabularyFolder.getId()));
-            
-            //if the vocabulary is cdda, copy the new concepts to the T_SITE_CODE table
-     /*       if(vocabularyFolder.isSiteCodeType()){
-                siteCodeDAO.insertSiteCodesFromConcepts(vocabularyFolder.getConcepts(), userName);
-                LOGGER.info(String.format("Vocabulary concepts have been inserted in T_SITE_CODE table"));
-            }
-*/
+
+            /*TODO
+                insert bound elements values ? sitecodes_CC_ISO2, sitecodes_DATE_CREATED
+             */
             // move new vocabulary concepts to folder
             vocabularyConceptDAO.moveVocabularyConcepts(vocabularyFolderId, originalVocabularyFolderId);
             LOGGER.info(String.format("Vocabulary concepts were moved from vocabulary #%d to vocabulary #%d.", vocabularyFolderId, originalVocabularyFolderId));
@@ -735,6 +732,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
             concepts = getAllConceptsWithAttributes(originalVocabularyFolderId);
 
             conceptAttributes = vocabularyConceptDAO.getVocabularyConceptAttributes(originalVocabularyFolderId);
+
             if (conceptAttributes != null) {
                 LOGGER.info(String.format("Concept attributes %s for vocabulary #%d have been retrieved.", conceptAttributes.toString(), originalVocabularyFolderId));
             } else {
@@ -1113,7 +1111,10 @@ public class VocabularyServiceImpl implements IVocabularyService {
             VocabularyConceptResult newConceptsResult = vocabularyConceptDAO.searchVocabularyConcepts(filter);
 
             // Insert Site code records
-            siteCodeDAO.insertSiteCodesFromConcepts(newConceptsResult.getList(), userName);
+            //siteCodeDAO.insertSiteCodesFromConcepts(newConceptsResult.getList(), userName);
+            /* TODO
+                insert value of bound elements:  sitecodes_CC_ISO2, sitecodes_DATE_CREATED
+            */
 
             LOGGER.info(userName + " created " + amount + " new site codes.");
 

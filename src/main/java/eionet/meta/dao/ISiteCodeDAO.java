@@ -48,7 +48,7 @@ public interface ISiteCodeDAO {
      * @param vocabularyConcepts
      * @param userName
      */
-    void insertSiteCodesFromConcepts(List<VocabularyConcept> vocabularyConcepts, String userName);
+   // void insertSiteCodesFromConcepts(List<VocabularyConcept> vocabularyConcepts, String userName);
 
     /**
      * Allocates the given site codes for country. If Site names are provided, then this information is stored as for information.
@@ -65,8 +65,8 @@ public interface ISiteCodeDAO {
      * @param allocationTime
      *            allocation time
      */
-    void allocateSiteCodes(List<SiteCode> freeSiteCodes, String countryCode, String userName, String[] siteNames,
-            Date allocationTime);
+   // void allocateSiteCodes(List<SiteCode> freeSiteCodes, String countryCode, String userName, String[] siteNames,
+   //         Date allocationTime);
 
     /**
      * Returns the first vocabulary folder Id where type is SITE_CODE.
@@ -80,7 +80,7 @@ public interface ISiteCodeDAO {
      *
      * @return
      */
-    int getFeeSiteCodeAmount();
+    //int getFeeSiteCodeAmount();
 
     /**
      * Returns number of site codes in status: allocated.
@@ -89,7 +89,7 @@ public interface ISiteCodeDAO {
      * @param withoutInitialName
      * @return
      */
-    int getCountryUnusedAllocations(String countryCode, boolean withoutInitialName);
+   // int getCountryUnusedAllocations(String countryCode, boolean withoutInitialName);
 
     /**
      * Returns number of site codes in status: assigned, deleted, disapared.
@@ -97,7 +97,7 @@ public interface ISiteCodeDAO {
      * @param countryCode
      * @return
      */
-    int getCountryUsedAllocations(String countryCode);
+   // int getCountryUsedAllocations(String countryCode);
 
     /**
      * True, if there already is existing vocabulary folder with type SITE_CODE;

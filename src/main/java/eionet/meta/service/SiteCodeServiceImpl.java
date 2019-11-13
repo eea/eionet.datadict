@@ -146,7 +146,10 @@ public class SiteCodeServiceImpl implements ISiteCodeService {
             if (freeSiteCodes.getList().size() < amount) {
                 throw new ServiceException("Did not find enough free site codes for allocating " + amount + " sites!");
             }
-            siteCodeDao.allocateSiteCodes(freeSiteCodes.getList(), countryCode, userName, siteNames, allocationTime);
+            //siteCodeDao.allocateSiteCodes(freeSiteCodes.getList(), countryCode, userName, siteNames, allocationTime);
+            /* TODO
+                insert value of bound elements:  sitecodes_USER_CREATED, sitecodes_INITIAL_SITE_NAME, sitecodes_STATUS, sitecodes_DATE_ALLOCATED, sitecodes_USER_ALLOCATED
+            */
 
             AllocationResult result = new AllocationResult();
             result.setAmount(amount);
@@ -191,7 +194,11 @@ public class SiteCodeServiceImpl implements ISiteCodeService {
     @Override
     public int getFeeSiteCodeAmount() throws ServiceException {
         try {
-            return siteCodeDao.getFeeSiteCodeAmount();
+            //return siteCodeDao.getFeeSiteCodeAmount();
+            /* TODO
+                get number of vocabulary concepts which have  sitecodes_STATUS    AVAILABLE
+            */
+            return 0;
         } catch (Exception e) {
             throw new ServiceException("Failed to get unallocated site coudes amount: " + e.getMessage(), e);
         }
@@ -206,9 +213,21 @@ public class SiteCodeServiceImpl implements ISiteCodeService {
             List<CountryAllocations> result = new ArrayList<CountryAllocations>();
             for (FixedValue fv : countries) {
                 CountryAllocations ca = new CountryAllocations();
-                int usedCodes = siteCodeDao.getCountryUsedAllocations(fv.getValue());
-                int unusedCodes = siteCodeDao.getCountryUnusedAllocations(fv.getValue(), false);
-                int unusedCodesWithoutNames = siteCodeDao.getCountryUnusedAllocations(fv.getValue(), true);
+                int usedCodes = 0;
+                //int usedCodes = siteCodeDao.getCountryUsedAllocations(fv.getValue());
+                /* TODO
+                    search for number of vocabulary concepts where sitecodes_STATUS is in statuses and sitecodes_CC_ISO2 is the countryCode
+                */
+                int unusedCodes = 0;
+               // int unusedCodes = siteCodeDao.getCountryUnusedAllocations(fv.getValue(), false);
+                /* TODO
+                    search for number of vocabulary concepts where sitecodes_STATUS is in statuses and sitecodes_CC_ISO2 is the countryCode
+                */
+                int unusedCodesWithoutNames = 0;
+                //int unusedCodesWithoutNames = siteCodeDao.getCountryUnusedAllocations(fv.getValue(), true);
+                /* TODO
+                    search for number of vocabulary concepts where sitecodes_STATUS is in statuses and sitecodes_CC_ISO2 is the countryCode
+                */
                 ca.setCountry(fv);
                 ca.setUsedCodes(usedCodes);
                 ca.setUnusedCodes(unusedCodes);

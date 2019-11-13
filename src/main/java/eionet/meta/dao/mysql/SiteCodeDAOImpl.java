@@ -59,6 +59,8 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         Map<String, Object> params = new HashMap<String, Object>();
         String sql = getSiteCodesSql(filter, params);
 
+        //TODO change sc to bound elements
+
         List<SiteCode> resultList = getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<SiteCode>() {
             @Override
             public SiteCode mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -97,6 +99,8 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
      * @return
      */
     private String getSiteCodesSql(SiteCodeFilter filter, Map<String, Object> params) {
+
+        //TODO instead of T_SITE_CODE use the bound elements
         StringBuilder sql = new StringBuilder();
         sql.append("select SQL_CALC_FOUND_ROWS sc.VOCABULARY_CONCEPT_ID, sc.STATUS, sc.CC_ISO2, "
                 + "sc.DATE_CREATED, sc.USER_CREATED, vc.VOCABULARY_CONCEPT_ID, vc.IDENTIFIER, vc.LABEL, "
@@ -157,7 +161,7 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
     /**
      * {@inheritDoc}
      */
-    @Override
+   /* @Override
     public void insertSiteCodesFromConcepts(List<VocabularyConcept> vocabularyConcepts, String userName) {
 
         StringBuilder sql = new StringBuilder();
@@ -178,12 +182,12 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
 
         getNamedParameterJdbcTemplate().batchUpdate(sql.toString(), batchValues);
 
-    }
+    }*/
 
     /**
      * {@inheritDoc}
      */
-    @Override
+  /*  @Override
     public void allocateSiteCodes(List<SiteCode> freeSiteCodes, String countryCode, String userName, String[] siteNames,
             Date allocationTime) {
 
@@ -226,8 +230,9 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         parameters.put("userAllocated", userName);
         parameters.put("label", "<" + SiteCodeStatus.ALLOCATED.name().toLowerCase() + ">");
         getNamedParameterJdbcTemplate().update(sqlForConcepts.toString(), parameters);
-    }
+    }*/
 
+    //TODO The following method will be kept as it is.
     /**
      * {@inheritDoc}
      */
@@ -246,7 +251,7 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
     /**
      * {@inheritDoc}
      */
-    @Override
+   /* @Override
     public int getFeeSiteCodeAmount() {
         StringBuilder sql = new StringBuilder();
         sql.append("select count(VOCABULARY_CONCEPT_ID) from T_SITE_CODE where STATUS = :status");
@@ -255,12 +260,12 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         params.put("status", SiteCodeStatus.AVAILABLE.name());
 
         return getNamedParameterJdbcTemplate().queryForObject(sql.toString(), params,Integer.class);
-    }
+    }*/
 
     /**
      * {@inheritDoc}
      */
-    @Override
+  /*  @Override
     public int getCountryUnusedAllocations(String countryCode, boolean withoutInitialName) {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("countryCode", countryCode);
@@ -274,12 +279,12 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         }
 
         return getNamedParameterJdbcTemplate().queryForObject(sql.toString(), params,Integer.class);
-    }
+    }*/
 
     /**
      * {@inheritDoc}
      */
-    @Override
+ /*   @Override
     public int getCountryUsedAllocations(String countryCode) {
 
         Map<String, Object> params = new HashMap<String, Object>();
@@ -292,7 +297,9 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
 
         return getNamedParameterJdbcTemplate().queryForObject(sql.toString(), params,Integer.class);
     }
+*/
 
+    //TODO The following method will be kept as it is.
     /**
      * {@inheritDoc}
      */
