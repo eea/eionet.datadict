@@ -161,10 +161,13 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
     /**
      * {@inheritDoc}
      */
-   /* @Override
+    @Override
     public void insertSiteCodesFromConcepts(List<VocabularyConcept> vocabularyConcepts, String userName) {
-
-        StringBuilder sql = new StringBuilder();
+/*  TODO
+            MUST INSERT INTO VOCABULARY_CONCEPT_ELEMENT ROWS FOR  USER_CREATED AND DATE_CREATED
+*
+* */
+      /*  StringBuilder sql = new StringBuilder();
         sql.append("insert into T_SITE_CODE (VOCABULARY_CONCEPT_ID, USER_CREATED, DATE_CREATED) ");
         sql.append("values (:vocabularyConceptId, :userName, :dateCreated)");
 
@@ -182,7 +185,69 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
 
         getNamedParameterJdbcTemplate().batchUpdate(sql.toString(), batchValues);
 
-    }*/
+
+
+        INSERT INTO table_name (column_list)
+        VALUES
+            (value_list_1),
+            (value_list_2),
+            ...
+            (value_list_n);
+*/
+        StringBuilder sql = new StringBuilder();
+        sql.append("insert into VOCABULARY_CONCEPT_ELEMENT (VOCABULARY_CONCEPT_ID, DATAELEM_ID, ELEMENT_VALUE) ");
+        sql.append("values (:vocabularyConceptId, :dataElemId, :elementValue)");
+
+        Date dateCreated = new Date();
+        @SuppressWarnings("unchecked")
+        Map<String, Object>[] batchValues = new HashMap[vocabularyConcepts.size()];
+
+        //dateCreated
+        for (int i = 0; i < vocabularyConcepts.size(); i++) {
+            int vocabularyId = vocabularyConcepts.get(i).getVocabularyId();
+
+            //TODO move the following in order to be done 1 time
+            StringBuilder sqlGetDataElement = new StringBuilder();
+            sqlGetDataElement.append("SELECT DATAELEM.DATAELEM_ID FROM VOCABULARY2ELEM INNER JOIN DATAELEM ON VOCABULARY2ELEM.DATAELEM_ID = DATAELEM.DATAELEM_ID ");
+            //TODO change sitecodes_DATE_CREATED from hardcoded to sth else
+            sqlGetDataElement.append("WHERE VOCABULARY2ELEM.VOCABULARY_ID = (:vocabularyId) AND DATAELEM.IDENTIFIER = 'sitecodes_DATE_CREATED' LIMIT 1");
+
+            Map<String, Object> paramsForDataElement = new HashMap<String, Object>();
+            paramsForDataElement.put("vocabularyId", vocabularyConcepts.get(i).getVocabularyId());
+            List<String> dataelemIdList = getNamedParameterJdbcTemplate().query(sqlGetDataElement.toString(), paramsForDataElement, new RowMapper<String>() {
+                @Override
+                public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    return rs.getString("DATAELEM_ID");
+                }
+            });
+            Map<String, Object> params = new HashMap<String, Object>();
+            params.put("dataElemId", dataelemIdList.get(0));
+            params.put("elementValue", dateCreated);
+            batchValues[i] = params;
+        }
+        //userCreated
+        for (int i = 0; i < vocabularyConcepts.size(); i++) {
+            int vocabularyId = vocabularyConcepts.get(i).getVocabularyId();
+            StringBuilder sqlGetDataElement = new StringBuilder();
+            sqlGetDataElement.append("SELECT DATAELEM.DATAELEM_ID FROM VOCABULARY2ELEM INNER JOIN DATAELEM ON VOCABULARY2ELEM.DATAELEM_ID = DATAELEM.DATAELEM_ID ");
+            //TODO change sitecodes_USER_CREATED from hardcoded to sth else
+            sqlGetDataElement.append("WHERE VOCABULARY2ELEM.VOCABULARY_ID = (:vocabularyId) AND DATAELEM.IDENTIFIER = 'sitecodes_USER_CREATED' LIMIT 1");
+
+            Map<String, Object> paramsForDataElement = new HashMap<String, Object>();
+            paramsForDataElement.put("vocabularyId", vocabularyConcepts.get(i).getVocabularyId());
+            List<Integer> dataelemIdList = getNamedParameterJdbcTemplate().query(sqlGetDataElement.toString(), paramsForDataElement, new RowMapper<Integer>() {
+                @Override
+                public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    return rs.getInt("DATAELEM_ID");
+                }
+            });
+            Map<String, Object> params = new HashMap<String, Object>();
+            params.put("dataElemId", dataelemIdList.get(0));
+            params.put("elementValue", userName);
+            batchValues[i] = params;
+        }
+        getNamedParameterJdbcTemplate().batchUpdate(sql.toString(), batchValues);
+    }
 
     /**
      * {@inheritDoc}

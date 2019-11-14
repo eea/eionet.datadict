@@ -1111,8 +1111,9 @@ public class VocabularyServiceImpl implements IVocabularyService {
             VocabularyConceptResult newConceptsResult = vocabularyConceptDAO.searchVocabularyConcepts(filter);
 
             // Insert Site code records
-            //siteCodeDAO.insertSiteCodesFromConcepts(newConceptsResult.getList(), userName);
+            siteCodeDAO.insertSiteCodesFromConcepts(newConceptsResult.getList(), userName);
             /* TODO
+
                 insert value of bound elements:  sitecodes_CC_ISO2, sitecodes_DATE_CREATED
             */
 

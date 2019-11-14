@@ -48,7 +48,7 @@ public interface ISiteCodeDAO {
      * @param vocabularyConcepts
      * @param userName
      */
-   // void insertSiteCodesFromConcepts(List<VocabularyConcept> vocabularyConcepts, String userName);
+    void insertSiteCodesFromConcepts(List<VocabularyConcept> vocabularyConcepts, String userName);
 
     /**
      * Allocates the given site codes for country. If Site names are provided, then this information is stored as for information.
