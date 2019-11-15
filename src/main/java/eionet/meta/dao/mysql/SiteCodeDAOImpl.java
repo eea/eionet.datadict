@@ -23,11 +23,7 @@ package eionet.meta.dao.mysql;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import eionet.meta.dao.IDataElementDAO;
 import org.apache.commons.lang.StringUtils;
@@ -212,42 +208,85 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
     /**
      * {@inheritDoc}
      */
-  /*  @Override
+    @Override
     public void allocateSiteCodes(List<SiteCode> freeSiteCodes, String countryCode, String userName, String[] siteNames,
             Date allocationTime) {
+
+            /* TODO
+                insert value of bound elements:  sitecodes_CC_ISO2, sitecodes_INITIAL_SITE_NAME, sitecodes_STATUS, sitecodes_DATE_ALLOCATED, sitecodes_USER_ALLOCATED
+            */
 
         StringBuilder sql = new StringBuilder();
         sql.append("update T_SITE_CODE set CC_ISO2 = :country, INITIAL_SITE_NAME = :siteName, STATUS = :status, "
                 + "DATE_ALLOCATED = :dateAllocated, USER_ALLOCATED = :userAllocated ");
         sql.append("where VOCABULARY_CONCEPT_ID = :vocabularyConceptId");
 
+
+        StringBuilder sqlForBoundElements = new StringBuilder();
+        sqlForBoundElements.append("insert into VOCABULARY_CONCEPT_ELEMENT (VOCABULARY_CONCEPT_ID, DATAELEM_ID, ELEMENT_VALUE) ");
+        sqlForBoundElements.append("values (:vocabularyConceptId, :dataElemId, :elementValue)");
+
+        //TODO change it so it isn't hard coded
+        List<String> elementIdentifiers = new ArrayList<String>();
+        elementIdentifiers.add("sitecodes_CC_ISO2");
+        elementIdentifiers.add("sitecodes_INITIAL_SITE_NAME");
+        elementIdentifiers.add("sitecodes_STATUS");
+        elementIdentifiers.add("sitecodes_DATE_ALLOCATED");
+        elementIdentifiers.add("sitecodes_USER_ALLOCATED");
+
+        List<Integer> elementIds = dataElementDao.getMultipleCommonDataElementIds(elementIdentifiers);
+
+
+
         @SuppressWarnings("unchecked")
         Map<String, Object>[] batchValues = new HashMap[siteNames.length];
 
-        for (int i = 0; i < freeSiteCodes.size(); i++) {
-            Map<String, Object> params = new HashMap<String, Object>();
-            params.put("vocabularyConceptId", freeSiteCodes.get(i).getId());
-            params.put("country", countryCode);
-            params.put("status", SiteCodeStatus.ALLOCATED.name());
-            params.put("dateAllocated", allocationTime);
-            params.put("userAllocated", userName);
-            if (siteNames.length > i && siteNames[i] != null) {
-                params.put("siteName", siteNames[i]);
-            } else {
-                params.put("siteName", "");
-            }
-            if(batchValues.length > i) {
-                batchValues[i] = params;
+        for (int j = 0; j < elementIds.size(); j++) {
+            for (int i = 0; i < freeSiteCodes.size(); i++) {
+                Map<String, Object> paramsForBoundElements = new HashMap<String, Object>();
+                paramsForBoundElements.put("vocabularyConceptId", freeSiteCodes.get(i).getId());
+                paramsForBoundElements.put("dataElemId", elementIds.get(j));
+                if(j==0){
+                    paramsForBoundElements.put("elementValue", countryCode);
+                }
+                else if(j==1){
+                    if (siteNames.length > i && siteNames[i] != null) {
+                        paramsForBoundElements.put("elementValue",  siteNames[i]);
+                    } else {
+                        paramsForBoundElements.put("elementValue", "");
+                    }
+                }
+                else if(j==2){
+                    paramsForBoundElements.put("elementValue", SiteCodeStatus.ALLOCATED.name());
+                }
+                else if(j==3){
+                    paramsForBoundElements.put("elementValue", allocationTime);
+                }
+                else if(j==4){
+                    paramsForBoundElements.put("elementValue", userName);
+                }
+                if(batchValues.length > i) {
+                    batchValues[i] = paramsForBoundElements;
+                }
             }
         }
         getNamedParameterJdbcTemplate().batchUpdate(sql.toString(), batchValues);
+
+
+
+
+
 
         //TODO query below can be updated to use vocabulary_concept_id ?
         // update place-holder value in concept label to <allocated>
         StringBuilder sqlForConcepts = new StringBuilder();
         sqlForConcepts.append("update VOCABULARY_CONCEPT set LABEL = :label where VOCABULARY_CONCEPT_ID IN "
-                + " (select VOCABULARY_CONCEPT_ID from T_SITE_CODE where STATUS = :status AND "
-                + "DATE_ALLOCATED = :dateAllocated AND USER_ALLOCATED = :userAllocated )");
+                + " (select VOCABULARY_CONCEPT_ELEMENT.VOCABULARY_CONCEPT_ID from VOCABULARY_CONCEPT_ELEMENT "
+                + "INNER JOIN DATAELEM on VOCABULARY_CONCEPT_ELEMENT.DATAELEM_ID = DATAELEM.DATAELEM_ID "
+                + "WHERE VOCABULARY_CONCEPT_ELEMENT.DATAELEM_ID IN "
+                + "(SELECT VOCABULARY_CONCEPT_ELEMENT.DATAELEM_ID FROM DATAELEM INNER JOIN VOCABULARY_CONCEPT_ELEMENT on VOCABULARY_CONCEPT_ELEMENT.DATAELEM_ID = DATAELEM.DATAELEM_ID "
+                + "WHERE (IDENTIFIER='sitecodes_STATUS' AND ELEMENT_VALUE = :status) OR (IDENTIFIER='sitecodes_DATE_ALLOCATED' AND ELEMENT_VALUE = dateAllocated) "
+                + "OR (IDENTIFIER='sitecodes_USER_ALLOCATED' AND ELEMENT_VALUE = userAllocated)))");
 
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("status", SiteCodeStatus.ALLOCATED.name());
@@ -255,7 +294,7 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         parameters.put("userAllocated", userName);
         parameters.put("label", "<" + SiteCodeStatus.ALLOCATED.name().toLowerCase() + ">");
         getNamedParameterJdbcTemplate().update(sqlForConcepts.toString(), parameters);
-    }*/
+    }
 
     //TODO The following method will be kept as it is.
     /**

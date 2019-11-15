@@ -21,9 +21,11 @@
 
 package eionet.meta.dao;
 
+import java.util.Date;
 import java.util.List;
 
 import eionet.meta.dao.domain.VocabularyConcept;
+import eionet.meta.service.data.SiteCode;
 import eionet.meta.service.data.SiteCodeFilter;
 import eionet.meta.service.data.SiteCodeResult;
 
@@ -58,13 +60,13 @@ public interface ISiteCodeDAO {
      * @param userName
      *            User who started the allocation.
      * @param siteNames
-     *            Optinoal list of site names.
+     *            Optional list of site names.
      *
      * @param allocationTime
      *            allocation time
      */
-   // void allocateSiteCodes(List<SiteCode> freeSiteCodes, String countryCode, String userName, String[] siteNames,
-   //         Date allocationTime);
+    void allocateSiteCodes(List<SiteCode> freeSiteCodes, String countryCode, String userName, String[] siteNames,
+                           Date allocationTime);
 
     /**
      * Returns the first vocabulary folder Id where type is SITE_CODE.
@@ -90,7 +92,7 @@ public interface ISiteCodeDAO {
    // int getCountryUnusedAllocations(String countryCode, boolean withoutInitialName);
 
     /**
-     * Returns number of site codes in status: assigned, deleted, disapared.
+     * Returns number of site codes in status: assigned, deleted, disappeared.
      *
      * @param countryCode
      * @return

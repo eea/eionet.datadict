@@ -137,6 +137,7 @@ public class SiteCodeServiceImpl implements ISiteCodeService {
         siteCodeFilter.setUsePaging(false);
         siteCodeFilter.setStatus(SiteCodeStatus.AVAILABLE);
         try {
+            //TODO change the following method
             SiteCodeResult freeSiteCodes = siteCodeDao.searchSiteCodes(siteCodeFilter);
 
             Calendar c = Calendar.getInstance();
@@ -146,10 +147,7 @@ public class SiteCodeServiceImpl implements ISiteCodeService {
             if (freeSiteCodes.getList().size() < amount) {
                 throw new ServiceException("Did not find enough free site codes for allocating " + amount + " sites!");
             }
-            //siteCodeDao.allocateSiteCodes(freeSiteCodes.getList(), countryCode, userName, siteNames, allocationTime);
-            /* TODO
-                insert value of bound elements:  sitecodes_USER_CREATED, sitecodes_INITIAL_SITE_NAME, sitecodes_STATUS, sitecodes_DATE_ALLOCATED, sitecodes_USER_ALLOCATED
-            */
+            siteCodeDao.allocateSiteCodes(freeSiteCodes.getList(), countryCode, userName, siteNames, allocationTime);
 
             AllocationResult result = new AllocationResult();
             result.setAmount(amount);

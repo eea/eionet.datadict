@@ -1482,4 +1482,13 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         return inverseElementId != null ? inverseElementId : 0;
     }
 
+    @Override
+    public List<Integer> getMultipleCommonDataElementIds(List<String> identifiers) {
+        List<Integer> elementIds = new ArrayList<Integer>();
+        for (String identifier: identifiers){
+            elementIds.add(this.getCommonDataElementId(identifier));
+        }
+        return elementIds;
+    }
+
 }

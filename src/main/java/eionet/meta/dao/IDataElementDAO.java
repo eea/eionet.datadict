@@ -462,4 +462,6 @@ public interface IDataElementDAO {
 
     int[][] batchCreateInverseRelations(List<Triple<Integer, Integer, Integer>> relatedReferenceElements, int batchSize);
 
+    List<Integer> getMultipleCommonDataElementIds(List<String> identifiers);
+
 }
