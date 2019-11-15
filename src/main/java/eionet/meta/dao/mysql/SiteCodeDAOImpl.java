@@ -29,8 +29,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import eionet.meta.dao.IDataElementDAO;
 import org.apache.commons.lang.StringUtils;
 import org.displaytag.properties.SortOrderEnum;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
@@ -53,6 +55,10 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
     /**
      * {@inheritDoc}
      */
+    /** Data element DAO. */
+    @Autowired
+    private IDataElementDAO dataElementDao;
+
     @Override
     public SiteCodeResult searchSiteCodes(SiteCodeFilter filter) {
 
@@ -162,38 +168,7 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
      * {@inheritDoc}
      */
     @Override
-    public void insertSiteCodesFromConcepts(List<VocabularyConcept> vocabularyConcepts, String userName) {
-/*  TODO
-            MUST INSERT INTO VOCABULARY_CONCEPT_ELEMENT ROWS FOR  USER_CREATED AND DATE_CREATED
-*
-* */
-      /*  StringBuilder sql = new StringBuilder();
-        sql.append("insert into T_SITE_CODE (VOCABULARY_CONCEPT_ID, USER_CREATED, DATE_CREATED) ");
-        sql.append("values (:vocabularyConceptId, :userName, :dateCreated)");
-
-        Date dateCreated = new Date();
-        @SuppressWarnings("unchecked")
-        Map<String, Object>[] batchValues = new HashMap[vocabularyConcepts.size()];
-
-        for (int i = 0; i < vocabularyConcepts.size(); i++) {
-            Map<String, Object> params = new HashMap<String, Object>();
-            params.put("vocabularyConceptId", vocabularyConcepts.get(i).getId());
-            params.put("userName", userName);
-            params.put("dateCreated", dateCreated);
-            batchValues[i] = params;
-        }
-
-        getNamedParameterJdbcTemplate().batchUpdate(sql.toString(), batchValues);
-
-
-
-        INSERT INTO table_name (column_list)
-        VALUES
-            (value_list_1),
-            (value_list_2),
-            ...
-            (value_list_n);
-*/
+    public void insertUserAndDateCreatedForSiteCodes(List<VocabularyConcept> vocabularyConcepts, String userName) {
         StringBuilder sql = new StringBuilder();
         sql.append("insert into VOCABULARY_CONCEPT_ELEMENT (VOCABULARY_CONCEPT_ID, DATAELEM_ID, ELEMENT_VALUE) ");
         sql.append("values (:vocabularyConceptId, :dataElemId, :elementValue)");
@@ -202,49 +177,34 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         @SuppressWarnings("unchecked")
         Map<String, Object>[] batchValues = new HashMap[vocabularyConcepts.size()];
 
-        //dateCreated
-        for (int i = 0; i < vocabularyConcepts.size(); i++) {
-            int vocabularyId = vocabularyConcepts.get(i).getVocabularyId();
+        //retrieve data element id for identifier sitecodes_DATE_CREATED and sitecodes_USER_CREATED
+        //TODO fix variables below so they aren't hard coded
+        String dateCreatedIdentifier = "sitecodes_DATE_CREATED";
+        String userCreatedIdentifier = "sitecodes_USER_CREATED";
+        int dateCreatedElementId = 0;
+        int userCreatedElementId = 0;
 
-            //TODO move the following in order to be done 1 time
-            StringBuilder sqlGetDataElement = new StringBuilder();
-            sqlGetDataElement.append("SELECT DATAELEM.DATAELEM_ID FROM VOCABULARY2ELEM INNER JOIN DATAELEM ON VOCABULARY2ELEM.DATAELEM_ID = DATAELEM.DATAELEM_ID ");
-            //TODO change sitecodes_DATE_CREATED from hardcoded to sth else
-            sqlGetDataElement.append("WHERE VOCABULARY2ELEM.VOCABULARY_ID = (:vocabularyId) AND DATAELEM.IDENTIFIER = 'sitecodes_DATE_CREATED' LIMIT 1");
+        dateCreatedElementId = dataElementDao.getCommonDataElementId(dateCreatedIdentifier);
+        userCreatedElementId = dataElementDao.getCommonDataElementId(userCreatedIdentifier);
 
-            Map<String, Object> paramsForDataElement = new HashMap<String, Object>();
-            paramsForDataElement.put("vocabularyId", vocabularyConcepts.get(i).getVocabularyId());
-            List<String> dataelemIdList = getNamedParameterJdbcTemplate().query(sqlGetDataElement.toString(), paramsForDataElement, new RowMapper<String>() {
-                @Override
-                public String mapRow(ResultSet rs, int rowNum) throws SQLException {
-                    return rs.getString("DATAELEM_ID");
+        LOGGER.info(String.format("Data element id for identifier '%s' is #%s", dateCreatedIdentifier, dateCreatedElementId));
+        LOGGER.info(String.format("Data element id for identifier '%s' is #%s", userCreatedIdentifier, userCreatedElementId));
+
+        /*A loop is performed in order to insert the username that reserved the site codes and the date*/
+        for(int j=0; j < 2; j++) {
+            for (int i = 0; i < vocabularyConcepts.size(); i++) {
+                Map<String, Object> params = new HashMap<String, Object>();
+                params.put("vocabularyConceptId", vocabularyConcepts.get(i).getId());
+
+                if (j == 0) {
+                    params.put("dataElemId", dateCreatedElementId);
+                    params.put("elementValue", dateCreated);
+                } else {
+                    params.put("dataElemId", userCreatedElementId);
+                    params.put("elementValue", userName);
                 }
-            });
-            Map<String, Object> params = new HashMap<String, Object>();
-            params.put("dataElemId", dataelemIdList.get(0));
-            params.put("elementValue", dateCreated);
-            batchValues[i] = params;
-        }
-        //userCreated
-        for (int i = 0; i < vocabularyConcepts.size(); i++) {
-            int vocabularyId = vocabularyConcepts.get(i).getVocabularyId();
-            StringBuilder sqlGetDataElement = new StringBuilder();
-            sqlGetDataElement.append("SELECT DATAELEM.DATAELEM_ID FROM VOCABULARY2ELEM INNER JOIN DATAELEM ON VOCABULARY2ELEM.DATAELEM_ID = DATAELEM.DATAELEM_ID ");
-            //TODO change sitecodes_USER_CREATED from hardcoded to sth else
-            sqlGetDataElement.append("WHERE VOCABULARY2ELEM.VOCABULARY_ID = (:vocabularyId) AND DATAELEM.IDENTIFIER = 'sitecodes_USER_CREATED' LIMIT 1");
-
-            Map<String, Object> paramsForDataElement = new HashMap<String, Object>();
-            paramsForDataElement.put("vocabularyId", vocabularyConcepts.get(i).getVocabularyId());
-            List<Integer> dataelemIdList = getNamedParameterJdbcTemplate().query(sqlGetDataElement.toString(), paramsForDataElement, new RowMapper<Integer>() {
-                @Override
-                public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
-                    return rs.getInt("DATAELEM_ID");
-                }
-            });
-            Map<String, Object> params = new HashMap<String, Object>();
-            params.put("dataElemId", dataelemIdList.get(0));
-            params.put("elementValue", userName);
-            batchValues[i] = params;
+                batchValues[i] = params;
+            }
         }
         getNamedParameterJdbcTemplate().batchUpdate(sql.toString(), batchValues);
     }

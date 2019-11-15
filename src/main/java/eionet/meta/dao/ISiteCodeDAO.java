@@ -21,11 +21,9 @@
 
 package eionet.meta.dao;
 
-import java.util.Date;
 import java.util.List;
 
 import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.service.data.SiteCode;
 import eionet.meta.service.data.SiteCodeFilter;
 import eionet.meta.service.data.SiteCodeResult;
 
@@ -48,7 +46,7 @@ public interface ISiteCodeDAO {
      * @param vocabularyConcepts
      * @param userName
      */
-    void insertSiteCodesFromConcepts(List<VocabularyConcept> vocabularyConcepts, String userName);
+    void insertUserAndDateCreatedForSiteCodes(List<VocabularyConcept> vocabularyConcepts, String userName);
 
     /**
      * Allocates the given site codes for country. If Site names are provided, then this information is stored as for information.
