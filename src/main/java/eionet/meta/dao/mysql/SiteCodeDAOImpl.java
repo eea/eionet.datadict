@@ -26,6 +26,7 @@ import java.sql.SQLException;
 import java.util.*;
 
 import eionet.meta.dao.IDataElementDAO;
+import eionet.util.Util;
 import org.apache.commons.lang.StringUtils;
 import org.displaytag.properties.SortOrderEnum;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +59,7 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
     @Override
     public SiteCodeResult searchSiteCodes(SiteCodeFilter filter) {
 
-        Map<String, Object> params = new HashMap<String, Object>();
+        /*Map<String, Object> params = new HashMap<String, Object>();
         String sql = getSiteCodesSql(filter, params);
 
         //TODO change sc to bound elements
@@ -89,6 +90,92 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         int totalItems = getJdbcTemplate().queryForObject(totalSql,Integer.class);
 
         SiteCodeResult result = new SiteCodeResult(resultList, totalItems, filter);
+
+        return result;*/
+
+        List<String> elementIdentifiers = new ArrayList<String>();
+        elementIdentifiers.add("sitecodes_CC_ISO2");
+        elementIdentifiers.add("sitecodes_INITIAL_SITE_NAME");
+        elementIdentifiers.add("sitecodes_STATUS");
+        elementIdentifiers.add("sitecodes_DATE_ALLOCATED");
+        elementIdentifiers.add("sitecodes_USER_ALLOCATED");
+        elementIdentifiers.add("sitecodes_USER_CREATED");
+        elementIdentifiers.add("sitecodes_DATE_CREATED");
+        elementIdentifiers.add("sitecodes_YEARS_DELETED");
+        elementIdentifiers.add("sitecodes_YEARS_DISSAPEARED");
+
+        Map<String, Integer> elementMap = dataElementDao.getMultipleCommonDataElementIds(elementIdentifiers);
+        StringBuilder sqlForConceptIds = new StringBuilder();
+        sqlForConceptIds.append("select distinct VOCABULARY_CONCEPT_ID from VOCABULARY_CONCEPT_ELEMENT where DATAELEM_ID in (:dataElemIds)");
+
+        Map<String, Object> paramsForElementIds = new HashMap<String, Object>();
+        paramsForElementIds.put("dataElemIds", elementMap.values());
+
+        List<Integer> vocabularyConceptIds = getNamedParameterJdbcTemplate().query(sqlForConceptIds.toString(), paramsForElementIds, new RowMapper<Integer>() {
+            @Override
+            public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
+                return Integer.parseInt( rs.getString("VOCABULARY_CONCEPT_ID") );
+            }
+        });
+
+        StringBuilder sqlForSiteCodeInfo = new StringBuilder();
+        sqlForSiteCodeInfo.append("select vce.*, vc.* from VOCABULARY_CONCEPT_ELEMENT vce inner join VOCABULARY_CONCEPT vc on " +
+                " vce.VOCABULARY_CONCEPT_ID = vc.VOCABULARY_CONCEPT_ID where vce.DATAELEM_ID in (:dataElemIds) and vce.VOCABULARY_CONCEPT_ID in (:vocabularyConceptIds)");
+        Map<String, Object> paramsForSiteCodeInfo = new HashMap<String, Object>();
+        paramsForSiteCodeInfo.put("dataElemIds", elementMap.values());
+        paramsForSiteCodeInfo.put("vocabularyConceptIds", vocabularyConceptIds);
+
+        List<SiteCode> siteCodeList = getNamedParameterJdbcTemplate().query(sqlForSiteCodeInfo.toString(), paramsForSiteCodeInfo, new RowMapper<SiteCode>() {
+            @Override
+            public SiteCode mapRow(ResultSet rs, int rowNum) throws SQLException {
+                SiteCode sc = new SiteCode();
+                //TODO fix below
+                sc.setId(rs.getInt("vc.VOCABULARY_CONCEPT_ID"));
+                sc.setIdentifier(rs.getString("vc.IDENTIFIER"));
+                sc.setLabel(rs.getString("vc.LABEL"));
+                sc.setDefinition(rs.getString("vc.DEFINITION"));
+                sc.setNotation(rs.getString("vc.NOTATION"));
+
+                Integer dataElemId = rs.getInt("vce.DATAELEM_ID");
+
+                for ( Map.Entry<String, Integer> entry : elementMap.entrySet()) {
+                    Set <String> elementIdentifierSet = Util.getKeysByValue(elementMap, entry.getValue());
+                    if(elementIdentifierSet.iterator().next().equals("sitecodes_CC_ISO2")){
+                        sc.setCountryCode(rs.getString("vce.ELEMENT_VALUE"));
+                    }
+                    else if(elementIdentifierSet.iterator().next().equals("sitecodes_INITIAL_SITE_NAME")){
+                        sc.setInitialSiteName(rs.getString("vce.ELEMENT_VALUE"));
+                    }
+                    else if(elementIdentifierSet.iterator().next().equals("sitecodes_STATUS")){
+                        sc.setSiteCodeStatus(SiteCodeStatus.valueOf(rs.getString("vce.ELEMENT_VALUE")));
+                    }
+                    else if(elementIdentifierSet.iterator().next().equals("sitecodes_DATE_ALLOCATED")){
+                        sc.setDateAllocated(rs.getTimestamp("vce.ELEMENT_VALUE"));
+                    }
+                    else if(elementIdentifierSet.iterator().next().equals("sitecodes_USER_ALLOCATED")){
+                        sc.setUserAllocated(rs.getString("vce.ELEMENT_VALUE"));
+                    }
+                    else if(elementIdentifierSet.iterator().next().equals("sitecodes_USER_CREATED")){
+                        sc.setUserCreated(rs.getString("vce.ELEMENT_VALUE"));
+                    }
+                    else if(elementIdentifierSet.iterator().next().equals("sitecodes_DATE_CREATED")){
+                        sc.setDateCreated(rs.getTimestamp("vce.ELEMENT_VALUE"));
+                    }
+                    else if(elementIdentifierSet.iterator().next().equals("sitecodes_YEARS_DELETED")){
+                        sc.setYearsDeleted(rs.getString("vce.ELEMENT_VALUE"));
+                    }
+                    else if(elementIdentifierSet.iterator().next().equals("sitecodes_YEARS_DISSAPEARED")){
+                        sc.setYearsDisappeared(rs.getString("vce.ELEMENT_VALUE"));
+                    }
+                }
+                return sc;
+            }
+        });
+
+        String totalSql = "SELECT FOUND_ROWS()";
+        int totalItems = getJdbcTemplate().queryForObject(totalSql,Integer.class);
+
+        SiteCodeResult result = new SiteCodeResult(siteCodeList, totalItems, filter);
 
         return result;
     }
@@ -171,7 +258,8 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
 
         Date dateCreated = new Date();
         @SuppressWarnings("unchecked")
-        Map<String, Object>[] batchValues = new HashMap[vocabularyConcepts.size()];
+        /*The size of the map will be the concepts' size * 2 because of the two bound elements*/
+        Map<String, Object>[] batchValues = new HashMap[vocabularyConcepts.size()*2];
 
         //retrieve data element id for identifier sitecodes_DATE_CREATED and sitecodes_USER_CREATED
         //TODO fix variables below so they aren't hard coded
@@ -186,8 +274,10 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         LOGGER.info(String.format("Data element id for identifier '%s' is #%s", dateCreatedIdentifier, dateCreatedElementId));
         LOGGER.info(String.format("Data element id for identifier '%s' is #%s", userCreatedIdentifier, userCreatedElementId));
 
+        int batchValuesCounter = 0;
         /*A loop is performed in order to insert the username that reserved the site codes and the date*/
         for(int j=0; j < 2; j++) {
+
             for (int i = 0; i < vocabularyConcepts.size(); i++) {
                 Map<String, Object> params = new HashMap<String, Object>();
                 params.put("vocabularyConceptId", vocabularyConcepts.get(i).getId());
@@ -199,7 +289,8 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
                     params.put("dataElemId", userCreatedElementId);
                     params.put("elementValue", userName);
                 }
-                batchValues[i] = params;
+                batchValues[batchValuesCounter] = params;
+                batchValuesCounter++;
             }
         }
         getNamedParameterJdbcTemplate().batchUpdate(sql.toString(), batchValues);
@@ -234,43 +325,47 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         elementIdentifiers.add("sitecodes_DATE_ALLOCATED");
         elementIdentifiers.add("sitecodes_USER_ALLOCATED");
 
-        List<Integer> elementIds = dataElementDao.getMultipleCommonDataElementIds(elementIdentifiers);
+        Map<String, Integer> elementMap = dataElementDao.getMultipleCommonDataElementIds(elementIdentifiers);
 
 
 
         @SuppressWarnings("unchecked")
         Map<String, Object>[] batchValues = new HashMap[siteNames.length];
+        int batchValuesCounter = 0;
 
-        for (int j = 0; j < elementIds.size(); j++) {
+        for ( Map.Entry<String, Integer> entry : elementMap.entrySet()) {
             for (int i = 0; i < freeSiteCodes.size(); i++) {
                 Map<String, Object> paramsForBoundElements = new HashMap<String, Object>();
                 paramsForBoundElements.put("vocabularyConceptId", freeSiteCodes.get(i).getId());
-                paramsForBoundElements.put("dataElemId", elementIds.get(j));
-                if(j==0){
+                paramsForBoundElements.put("dataElemId", entry.getValue());
+                if(entry.getKey().equals("sitecodes_CC_ISO2")){
                     paramsForBoundElements.put("elementValue", countryCode);
                 }
-                else if(j==1){
+                else if(entry.getKey().equals("sitecodes_INITIAL_SITE_NAME")){
                     if (siteNames.length > i && siteNames[i] != null) {
                         paramsForBoundElements.put("elementValue",  siteNames[i]);
                     } else {
                         paramsForBoundElements.put("elementValue", "");
                     }
                 }
-                else if(j==2){
+                else if(entry.getKey().equals("sitecodes_STATUS")){
                     paramsForBoundElements.put("elementValue", SiteCodeStatus.ALLOCATED.name());
                 }
-                else if(j==3){
+                else if(entry.getKey().equals("sitecodes_DATE_ALLOCATED")){
                     paramsForBoundElements.put("elementValue", allocationTime);
                 }
-                else if(j==4){
+                else if(entry.getKey().equals("sitecodes_USER_ALLOCATED")){
                     paramsForBoundElements.put("elementValue", userName);
                 }
                 if(batchValues.length > i) {
-                    batchValues[i] = paramsForBoundElements;
+                    batchValues[batchValuesCounter] = paramsForBoundElements;
+                    batchValuesCounter++;
                 }
             }
         }
         getNamedParameterJdbcTemplate().batchUpdate(sql.toString(), batchValues);
+
+
 
 
 

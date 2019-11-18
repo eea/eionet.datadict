@@ -1483,12 +1483,12 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     }
 
     @Override
-    public List<Integer> getMultipleCommonDataElementIds(List<String> identifiers) {
-        List<Integer> elementIds = new ArrayList<Integer>();
+    public Map<String, Integer> getMultipleCommonDataElementIds(List<String> identifiers) {
+        Map<String, Integer> elementMap = new HashMap<String, Integer>();
         for (String identifier: identifiers){
-            elementIds.add(this.getCommonDataElementId(identifier));
+            elementMap.put(identifier, this.getCommonDataElementId(identifier))
         }
-        return elementIds;
+        return elementMap;
     }
 
 }
