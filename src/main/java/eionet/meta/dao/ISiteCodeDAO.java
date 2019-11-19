@@ -21,6 +21,7 @@
 
 package eionet.meta.dao;
 
+import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 
@@ -42,7 +43,7 @@ public interface ISiteCodeDAO {
      * @param filter
      * @return SiteCodeResult object with found rows.
      */
-    SiteCodeResult searchSiteCodes(SiteCodeFilter filter);
+    SiteCodeResult searchSiteCodes(SiteCodeFilter filter) throws ParseException;
 
     /**
      * @param vocabularyConcepts

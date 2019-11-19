@@ -1486,7 +1486,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     public Map<String, Integer> getMultipleCommonDataElementIds(List<String> identifiers) {
         Map<String, Integer> elementMap = new HashMap<String, Integer>();
         for (String identifier: identifiers){
-            elementMap.put(identifier, this.getCommonDataElementId(identifier))
+            elementMap.put(identifier, this.getCommonDataElementId(identifier));
         }
         return elementMap;
     }
