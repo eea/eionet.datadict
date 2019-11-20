@@ -27,7 +27,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import eionet.datadict.model.enums.Enumerations;
+import eionet.datadict.model.enums.Enumerations.SiteCodeBoundElementIdentifiers;
 import eionet.meta.dao.IDataElementDAO;
 import eionet.meta.dao.IVocabularyConceptDAO;
 import eionet.meta.dao.domain.DataElement;
@@ -69,34 +73,33 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
     @Override
     public SiteCodeResult searchSiteCodes(SiteCodeFilter filter) throws ParseException {
 
-        //TODO remove hard coded
-        List<String> elementIdentifiers = new ArrayList<String>();
-        elementIdentifiers.add("sitecodes_CC_ISO2");
-        elementIdentifiers.add("sitecodes_INITIAL_SITE_NAME");
-        elementIdentifiers.add("sitecodes_STATUS");
-        elementIdentifiers.add("sitecodes_DATE_ALLOCATED");
-        elementIdentifiers.add("sitecodes_USER_ALLOCATED");
-        elementIdentifiers.add("sitecodes_USER_CREATED");
-        elementIdentifiers.add("sitecodes_DATE_CREATED");
-        elementIdentifiers.add("sitecodes_YEARS_DELETED");
-        elementIdentifiers.add("sitecodes_YEARS_DISAPPEARED");
+        List<String> elementIdentifiers = Enumerations.SiteCodeBoundElementIdentifiers.getEnumValuesAsList();
 
+        /* Create a hashmap with key being the identifier and value being the id of the element*/
         Map<String, Integer> elementMap = dataElementDAO.getMultipleCommonDataElementIds(elementIdentifiers);
 
-        StringBuilder sqlForConceptIds = new StringBuilder();
-        sqlForConceptIds.append("select distinct VOCABULARY_CONCEPT_ID from VOCABULARY_CONCEPT_ELEMENT where DATAELEM_ID in (:dataElemIds)");
-        Map<String, Object> paramsForElementIds = new HashMap<>();
-        paramsForElementIds.put("dataElemIds", elementMap.values());
-        List<Integer> vocabularyConceptIds = getNamedParameterJdbcTemplate().query(sqlForConceptIds.toString(), paramsForElementIds, new RowMapper<Integer>() {
-            @Override
-            public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
-                return Integer.parseInt( rs.getString("VOCABULARY_CONCEPT_ID") );
-            }
-        });
+        /* Retrieve site codes as vocabulary concepts*/
+        int vocabularyFolderSCId = this.getSiteCodeVocabularyFolderId();
+        List<VocabularyConcept> vocabularyConcepts = vocabularyConceptDAO.getVocabularyConcepts(vocabularyFolderSCId);
 
-        List<VocabularyConcept> vocabularyConcepts = vocabularyConceptDAO.getVocabularyConcepts(vocabularyConceptIds);
+        /*Create a list of site codes */
+        List<SiteCode> scList = getSiteCodeList(vocabularyConcepts, elementMap);
+        SiteCodeResult result = new SiteCodeResult(scList, vocabularyConcepts.size(), filter);
+        return result;
+    }
+
+    /**
+     * Returns a list of SiteCode objects which contains information for the codes.
+     *
+     * @param vocabularyConcepts the site codes
+     * @param elementMap a hashmap that contains the data element' s identifier and id.
+     * @return a list of site codes
+     */
+    protected List<SiteCode> getSiteCodeList(List<VocabularyConcept> vocabularyConcepts, Map<String, Integer> elementMap) throws ParseException {
+
         List<SiteCode> scList= new ArrayList<>();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-DD HH:mm:ss");
+
         for (VocabularyConcept vc: vocabularyConcepts){
             SiteCode sc = new SiteCode();
             sc.setId(vc.getId());
@@ -105,60 +108,40 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
             sc.setDefinition(vc.getDefinition());
             sc.setNotation(vc.getNotation());
 
-            StringBuilder sqlForElementValue = new StringBuilder();
-            sqlForElementValue.append("select vce.DATAELEM_ID, vce.ELEMENT_VALUE from VOCABULARY_CONCEPT_ELEMENT vce inner join VOCABULARY_CONCEPT vc on " +
-                    " vce.VOCABULARY_CONCEPT_ID = vc.VOCABULARY_CONCEPT_ID where vce.DATAELEM_ID in (:dataElemIds) and vce.VOCABULARY_CONCEPT_ID = :vocabularyConceptId ");
-            Map<String, Object> paramsForElementValue = new HashMap<String, Object>();
-            paramsForElementValue.put("dataElemIds", elementMap.values());
-            paramsForElementValue.put("vocabularyConceptId", vc.getId());
+            /* Retrieve a hashmap that contains the data element's id (key) and the element's value (value)*/
+            Map<Integer, String> elementInfo = getBoundElementIdAndValue(vc, elementMap);
 
-
-            /* Retrieve all bound elements for site codes based on vocabulary concept id */
-            List<Map<Integer, String>> elementInfoMapList = getNamedParameterJdbcTemplate().query(sqlForElementValue.toString(), paramsForElementValue, new RowMapper<Map<Integer, String> >() {
-                @Override
-                public Map<Integer, String>  mapRow(ResultSet rs, int rowNum) throws SQLException {
-                    Map<Integer, String> result = new HashMap<>();
-                    result.put(rs.getInt("vce.DATAELEM_ID"), rs.getString(("vce.ELEMENT_VALUE")));
-                    return result;
-                }
-            });
-
-            /* Convert list to map */
-            Map<Integer, String> elementInfo = new HashMap();
-            for ( Map<Integer, String> singleLineMap : elementInfoMapList) {
-                for (Integer key : singleLineMap.keySet()) {
-                    elementInfo.put(key, singleLineMap.get(key));
-                }
-            }
-
+            /*Iterate through the hashmap and fill the SiteCode object*/
             for ( Map.Entry<Integer, String> entry : elementInfo.entrySet()) {
                 /* Get element idntifier based on element id*/
                 Set <String> elementIdentifierSet = Util.getKeysByValue(elementMap, entry.getKey());
+
+                /*map the identifier to the field that the data should be stored in*/
                 String identifier = elementIdentifierSet.iterator().next();
-                if(identifier.equals("sitecodes_CC_ISO2")){
+                if(identifier.equals(SiteCodeBoundElementIdentifiers.COUNTRY_CODE)){
                     sc.setCountryCode(entry.getValue());
                 }
-                else if(identifier.equals("sitecodes_INITIAL_SITE_NAME")){
+                else if(identifier.equals(SiteCodeBoundElementIdentifiers.INITIAL_SITE_NAME)){
                     sc.setInitialSiteName(entry.getValue());
                 }
-                else if(identifier.equals("sitecodes_STATUS")){
+                else if(identifier.equals(SiteCodeBoundElementIdentifiers.STATUS)){
                     sc.setSiteCodeStatus(SiteCodeStatus.valueOf(entry.getValue()));
                 }
-                else if(identifier.equals("sitecodes_DATE_ALLOCATED")){
+                else if(identifier.equals(SiteCodeBoundElementIdentifiers.DATE_ALLOCATED)){
                     try {
                         sc.setDateAllocated(formatter.parse(entry.getValue()));
                     } catch (ParseException e) {
-                       LOGGER.error("Error while parsing allocated date for site code with element id: #%d", entry.getKey());
-                       throw e;
+                        LOGGER.error("Error while parsing allocated date for site code with element id: #%d", entry.getKey());
+                        throw e;
                     }
                 }
-                else if(identifier.equals("sitecodes_USER_ALLOCATED")){
+                else if(identifier.equals(SiteCodeBoundElementIdentifiers.USER_ALLOCATED)){
                     sc.setUserAllocated(entry.getValue());
                 }
-                else if(identifier.equals("sitecodes_USER_CREATED")){
+                else if(identifier.equals(SiteCodeBoundElementIdentifiers.USER_CREATED)){
                     sc.setUserCreated(entry.getValue());
                 }
-                else if(identifier.equals("sitecodes_DATE_CREATED")){
+                else if(identifier.equals(SiteCodeBoundElementIdentifiers.DATE_CREATED)){
                     try {
                         sc.setDateCreated(formatter.parse(entry.getValue()));
                     } catch (ParseException e) {
@@ -166,17 +149,51 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
                         throw e;
                     }
                 }
-                else if(identifier.equals("sitecodes_YEARS_DELETED")){
+                else if(identifier.equals(SiteCodeBoundElementIdentifiers.YEARS_DELETED)){
                     sc.setYearsDeleted(entry.getValue());
                 }
-                else if(identifier.equals("sitecodes_YEARS_DISAPPEARED")){
+                else if(identifier.equals(SiteCodeBoundElementIdentifiers.YEARS_DISAPPEARED)){
                     sc.setYearsDisappeared(entry.getValue());
                 }
             }
             scList.add(sc);
         }
-        SiteCodeResult result = new SiteCodeResult(scList, vocabularyConcepts.size(), filter);
-        return result;
+        return scList;
+    }
+
+    /**
+     * Returns a list of SiteCode objects which contains information for the codes.
+     *
+     * @param vc the site code
+     * @param elementMap a hashmap that contains the data element' s identifier and id.
+     * @return a hashmap with key the element's id and value, the element's value
+     */
+    protected Map<Integer, String> getBoundElementIdAndValue(VocabularyConcept vc, Map<String, Integer> elementMap) {
+        StringBuilder sqlForElementValue = new StringBuilder();
+        sqlForElementValue.append("select vce.DATAELEM_ID, vce.ELEMENT_VALUE from VOCABULARY_CONCEPT_ELEMENT vce inner join VOCABULARY_CONCEPT vc on " +
+                " vce.VOCABULARY_CONCEPT_ID = vc.VOCABULARY_CONCEPT_ID where vce.DATAELEM_ID in (:dataElemIds) and vce.VOCABULARY_CONCEPT_ID = :vocabularyConceptId ");
+        Map<String, Object> paramsForElementValue = new HashMap<String, Object>();
+        paramsForElementValue.put("dataElemIds", elementMap.values());
+        paramsForElementValue.put("vocabularyConceptId", vc.getId());
+
+        /* Retrieve all bound elements for site codes based on vocabulary concept id */
+        List<Map<Integer, String>> elementInfoMapList = getNamedParameterJdbcTemplate().query(sqlForElementValue.toString(), paramsForElementValue, new RowMapper<Map<Integer, String> >() {
+            @Override
+            public Map<Integer, String>  mapRow(ResultSet rs, int rowNum) throws SQLException {
+                Map<Integer, String> result = new HashMap<>();
+                result.put(rs.getInt("vce.DATAELEM_ID"), rs.getString(("vce.ELEMENT_VALUE")));
+                return result;
+            }
+        });
+
+        /* Convert list to map */
+        Map<Integer, String> elementInfo = new HashMap();
+        for ( Map<Integer, String> singleLineMap : elementInfoMapList) {
+            for (Integer key : singleLineMap.keySet()) {
+                elementInfo.put(key, singleLineMap.get(key));
+            }
+        }
+        return elementInfo;
     }
 
     /**
@@ -317,12 +334,7 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         sqlForBoundElements.append("values (:vocabularyConceptId, :dataElemId, :elementValue)");
 
         //TODO change it so it isn't hard coded
-        List<String> elementIdentifiers = new ArrayList<String>();
-        elementIdentifiers.add("sitecodes_CC_ISO2");
-        elementIdentifiers.add("sitecodes_INITIAL_SITE_NAME");
-        elementIdentifiers.add("sitecodes_STATUS");
-        elementIdentifiers.add("sitecodes_DATE_ALLOCATED");
-        elementIdentifiers.add("sitecodes_USER_ALLOCATED");
+        List<String> elementIdentifiers = Enumerations.SiteCodeBoundElementIdentifiers.getEnumValuesAsList();
 
         Map<String, Integer> elementMap = dataElementDAO.getMultipleCommonDataElementIds(elementIdentifiers);
 
