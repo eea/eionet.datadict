@@ -25,21 +25,17 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
 
 import eionet.datadict.model.enums.Enumerations;
 import eionet.datadict.model.enums.Enumerations.SiteCodeBoundElementIdentifiers;
 import eionet.meta.dao.IDataElementDAO;
 import eionet.meta.dao.IVocabularyConceptDAO;
-import eionet.meta.dao.domain.DataElement;
 import eionet.util.Util;
 import org.apache.commons.lang.StringUtils;
 import org.displaytag.properties.SortOrderEnum;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
@@ -73,6 +69,7 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
     @Override
     public SiteCodeResult searchSiteCodes(SiteCodeFilter filter) throws ParseException {
 
+        /* Retrieve the elements' identifiers from the enumeration*/
         List<String> elementIdentifiers = Enumerations.SiteCodeBoundElementIdentifiers.getEnumValuesAsList();
 
         /* Create a hashmap with key being the identifier and value being the id of the element*/
@@ -82,7 +79,7 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         int vocabularyFolderSCId = this.getSiteCodeVocabularyFolderId();
         List<VocabularyConcept> vocabularyConcepts = vocabularyConceptDAO.getVocabularyConcepts(vocabularyFolderSCId);
 
-        /*Create a list of site codes */
+        /* Create a list of site codes */
         List<SiteCode> scList = getSiteCodeList(vocabularyConcepts, elementMap);
         SiteCodeResult result = new SiteCodeResult(scList, vocabularyConcepts.size(), filter);
         return result;
@@ -279,8 +276,8 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
 
         //retrieve data element id for identifier sitecodes_DATE_CREATED and sitecodes_USER_CREATED
         //TODO fix variables below so they aren't hard coded
-        String dateCreatedIdentifier = "sitecodes_DATE_CREATED";
-        String userCreatedIdentifier = "sitecodes_USER_CREATED";
+        String dateCreatedIdentifier = SiteCodeBoundElementIdentifiers.DATE_CREATED.getIdentifier();
+        String userCreatedIdentifier = SiteCodeBoundElementIdentifiers.USER_CREATED.getIdentifier();
         int dateCreatedElementId = 0;
         int userCreatedElementId = 0;
 
@@ -454,22 +451,32 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
     /**
      * {@inheritDoc}
      */
- /*   @Override
+    @Override
     public int getCountryUsedAllocations(String countryCode) {
+        StringBuilder sql = new StringBuilder();
+        /*sql.append("select count(vc.VOCABULARY_CONCEPT_ID) from VOCABULARY v inner join VOCABULARY_CONCEPT vc on v.VOCABULARY_ID=vc.VOCABULARY_ID ");
+        sql.append("inner join VOCABULARY_CONCEPT_ELEMENT vce on vc.VOCABULARY_CONCEPT_ID=vce.VOCABULARY_CONCEPT_ID ");
+        sql.append("inner join DATAELEM d on vce.DATAELEM_ID=d.DATAELEM_ID ");
+        sql.append("where v.VOCABULARY_TYPE = (:type) and ((d.IDENTIFIER=:sitecodeStatus and vce.ELEMENT_VALUE in (:statuses)) or (d.IDENTIFIER=:sitecodeCountryCode and vce.ELEMENT_VALUE = :countryCode)) ");*/
+
+        sql.append("select count(vc.VOCABULARY_CONCEPT_ID) from VOCABULARY v inner join VOCABULARY_CONCEPT vc on v.VOCABULARY_ID=vc.VOCABULARY_ID ");
+        sql.append("where v.VOCABULARY_TYPE = (':siteCodeType') and vc.VOCABULARY_CONCEPT_ID in ");
+        sql.append("(select vce1.VOCABULARY_CONCEPT_ID ");
+        sql.append("from VOCABULARY_CONCEPT_ELEMENT vce1 inner join VOCABULARY_CONCEPT_ELEMENT vce2 on vce1.VOCABULARY_CONCEPT_ID=vce2.VOCABULARY_CONCEPT_ID inner join DATAELEM d on vce1.DATAELEM_ID=d.DATAELEM_ID ");
+        sql.append("where vc.VOCABULARY_CONCEPT_ID=vce1.VOCABULARY_CONCEPT_ID and ");
+        sql.append("((d.IDENTIFIER=':status' and vce2.ELEMENT_VALUE in (':statuses')) and (d.IDENTIFIER=':country' and vce1.ELEMENT_VALUE = ':countryCode')))");
+        //TODO check if it works with vce1 before vce2
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("countryCode", countryCode);
         params.put("statuses", Arrays.asList(SiteCodeFilter.ALLOCATED_USED_STATUSES));
-
-        StringBuilder sql = new StringBuilder();
-        sql.append("select count(VOCABULARY_CONCEPT_ID) from T_SITE_CODE where STATUS in (:statuses) ");
-        sql.append("and CC_ISO2 = :countryCode");
+        params.put("type", VocabularyType.SITE_CODE.name());
+        params.put("sitecodeStatus", SiteCodeBoundElementIdentifiers.STATUS.getIdentifier());
+        params.put("sitecodeCountryCode", SiteCodeBoundElementIdentifiers.COUNTRY_CODE.getIdentifier());
 
         return getNamedParameterJdbcTemplate().queryForObject(sql.toString(), params,Integer.class);
     }
-*/
 
-    //TODO The following method will be kept as it is.
     /**
      * {@inheritDoc}
      */

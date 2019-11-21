@@ -98,7 +98,7 @@ public interface ISiteCodeDAO {
      * @param countryCode
      * @return
      */
-   // int getCountryUsedAllocations(String countryCode);
+    int getCountryUsedAllocations(String countryCode);
 
     /**
      * True, if there already is existing vocabulary folder with type SITE_CODE;
