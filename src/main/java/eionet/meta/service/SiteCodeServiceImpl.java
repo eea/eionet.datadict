@@ -211,11 +211,7 @@ public class SiteCodeServiceImpl implements ISiteCodeService {
             List<CountryAllocations> result = new ArrayList<CountryAllocations>();
             for (FixedValue fv : countries) {
                 CountryAllocations ca = new CountryAllocations();
-                int usedCodes = 0;
-                //int usedCodes = siteCodeDao.getCountryUsedAllocations(fv.getValue());
-                /* TODO
-                    search for number of vocabulary concepts where sitecodes_STATUS is in statuses and sitecodes_CC_ISO2 is the countryCode
-                */
+                int usedCodes = siteCodeDao.getCountryUsedAllocations(fv.getValue());
                 int unusedCodes = 0;
                // int unusedCodes = siteCodeDao.getCountryUnusedAllocations(fv.getValue(), false);
                 /* TODO

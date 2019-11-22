@@ -33,30 +33,71 @@ public class SiteCodeDAOTestIT extends UnitilsJUnit4 {
     @Test
     public void testGetCountryUsedAllocationsNoneAllocated() throws Exception {
         DBUnitHelper.loadData("seed-sitecode-none-allocated-countryCode-exists.xml");
-        Assert.assertThat(0, is(siteCodeDAO.getCountryUsedAllocations("testCountryCode")));
+        Assert.assertThat(siteCodeDAO.getCountryUsedAllocations("testCountryCode"), is(0));
     }
 
     /* Test case: There are no records for a specific country */
     @Test
     public void testGetCountryUsedAllocationsCountryNotExists() throws Exception {
-        DBUnitHelper.loadData("seed-sitecode-folder-not-exists.xml");
-       // Assert.assertThat(0, is(siteCodeDAO.getCountryUsedAllocations("testCountryCode")));
+        DBUnitHelper.loadData("seed-sitecode-countryCode-not-exists.xml");
+        Assert.assertThat(siteCodeDAO.getCountryUsedAllocations("testCountryCode"), is(0));
     }
 
     /* Test case: There are allocated site codes for a specific country */
     @Test
     public void testGetCountryUsedAllocationsCountryNoSiteCodeFolder() throws Exception {
         DBUnitHelper.loadData("seed-sitecode-folder-not-exists.xml");
-        Assert.assertThat(0, is(siteCodeDAO.getCountryUsedAllocations("testCountryCode")));
+        Assert.assertThat(siteCodeDAO.getCountryUsedAllocations("testCountryCode"), is(0));
     }
 
     /* Test case: There are allocated site codes for a specific country */
     @Test
     public void testGetCountryUsedAllocationsCountryRecordsExist() throws Exception {
-        DBUnitHelper.loadData("seed-sitecode-folder-not-exists.xml");
-       // Assert.assertThat(0, is(siteCodeDAO.getCountryUsedAllocations("testCountryCode")));
+        DBUnitHelper.loadData("seed-sitecode-records-exist.xml");
+        Assert.assertThat(siteCodeDAO.getCountryUsedAllocations("testCountryCode"), is(2));
     }
 
+    /* Test case: There are no allocations for a specific country */
+    @Test
+    public void testGetCountryUnusedAllocationsNoneAllocated() throws Exception {
+        DBUnitHelper.loadData("seed-sitecode-none-allocated-countryCode-exists.xml");
+        Assert.assertThat(siteCodeDAO.getCountryUnusedAllocations("testCountryCode", false), is(0));
+    }
+
+    /* Test case: There are no records for a specific country */
+    @Test
+    public void testGetCountryUnusedAllocationsCountryNotExists() throws Exception {
+        DBUnitHelper.loadData("seed-sitecode-countryCode-not-exists.xml");
+        Assert.assertThat(siteCodeDAO.getCountryUnusedAllocations("testCountryCode", false), is(0));
+    }
+
+    /* Test case: There are allocated site codes for a specific country */
+    @Test
+    public void testGetCountryUnusedAllocationsCountryNoSiteCodeFolder() throws Exception {
+        DBUnitHelper.loadData("seed-sitecode-folder-not-exists.xml");
+        Assert.assertThat(siteCodeDAO.getCountryUnusedAllocations("testCountryCode", false), is(0));
+    }
+
+    /* Test case: There are allocated site codes for a specific country */
+    @Test
+    public void testGetCountryUnusedAllocationsCountryRecordsNotExistWithoutInitialName() throws Exception {
+        // DBUnitHelper.loadData("seed-sitecode-records-exist-without-initial-name.xml");
+        // Assert.assertThat(siteCodeDAO.getCountryUsedAllocations("testCountryCode"), is(2));
+    }
+
+    /* Test case: There are allocated site codes for a specific country */
+    @Test
+    public void testGetCountryUnusedAllocationsCountryRecordsExistWithoutInitialName() throws Exception {
+       // DBUnitHelper.loadData("seed-sitecode-records-exist-without-initial-name.xml");
+       // Assert.assertThat(siteCodeDAO.getCountryUsedAllocations("testCountryCode"), is(2));
+    }
+
+    /* Test case: There are allocated site codes for a specific country */
+    @Test
+    public void testGetCountryUnusedAllocationsCountryRecordsExistWithInitialName() throws Exception {
+       // DBUnitHelper.loadData("seed-sitecode-records-exist-without-initial-name.xml");
+       // Assert.assertThat(siteCodeDAO.getCountryUsedAllocations("testCountryCode"), is(2));
+    }
 
 }
 

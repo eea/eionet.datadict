@@ -275,14 +275,11 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         Map<String, Object>[] batchValues = new HashMap[vocabularyConcepts.size()*2];
 
         //retrieve data element id for identifier sitecodes_DATE_CREATED and sitecodes_USER_CREATED
-        //TODO fix variables below so they aren't hard coded
         String dateCreatedIdentifier = SiteCodeBoundElementIdentifiers.DATE_CREATED.getIdentifier();
         String userCreatedIdentifier = SiteCodeBoundElementIdentifiers.USER_CREATED.getIdentifier();
-        int dateCreatedElementId = 0;
-        int userCreatedElementId = 0;
 
-        dateCreatedElementId = dataElementDAO.getCommonDataElementId(dateCreatedIdentifier);
-        userCreatedElementId = dataElementDAO.getCommonDataElementId(userCreatedIdentifier);
+        int dateCreatedElementId = dataElementDAO.getCommonDataElementId(dateCreatedIdentifier);
+        int userCreatedElementId = dataElementDAO.getCommonDataElementId(userCreatedIdentifier);
 
         LOGGER.info(String.format("Data element id for identifier '%s' is #%s", dateCreatedIdentifier, dateCreatedElementId));
         LOGGER.info(String.format("Data element id for identifier '%s' is #%s", userCreatedIdentifier, userCreatedElementId));
@@ -432,9 +429,9 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
     /**
      * {@inheritDoc}
      */
-  /*  @Override
+    @Override
     public int getCountryUnusedAllocations(String countryCode, boolean withoutInitialName) {
-        Map<String, Object> params = new HashMap<String, Object>();
+       /* Map<String, Object> params = new HashMap<String, Object>();
         params.put("countryCode", countryCode);
         params.put("status", SiteCodeStatus.ALLOCATED.name());
 
@@ -446,33 +443,73 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         }
 
         return getNamedParameterJdbcTemplate().queryForObject(sql.toString(), params,Integer.class);
-    }*/
+*/
+
+        String statusIdentifier = SiteCodeBoundElementIdentifiers.STATUS.getIdentifier();
+        String countryCodeIdentifier = SiteCodeBoundElementIdentifiers.COUNTRY_CODE.getIdentifier();
+
+        int statusElementId = dataElementDAO.getCommonDataElementId(statusIdentifier);
+        int countryCodeElementId = dataElementDAO.getCommonDataElementId(countryCodeIdentifier);
+
+        StringBuilder sql = new StringBuilder();
+        sql.append("select count(distinct vc.VOCABULARY_CONCEPT_ID) ");
+        sql.append("from VOCABULARY v inner join VOCABULARY_CONCEPT vc on v.VOCABULARY_ID=vc.VOCABULARY_ID ");
+        sql.append("inner join VOCABULARY_CONCEPT_ELEMENT vce1 on vc.VOCABULARY_CONCEPT_ID=vce1.VOCABULARY_CONCEPT_ID ");
+        sql.append("inner join VOCABULARY_CONCEPT_ELEMENT vce2 on vce1.VOCABULARY_CONCEPT_ID=vce2.VOCABULARY_CONCEPT_ID ");
+        if(withoutInitialName){
+            sql.append("inner join VOCABULARY_CONCEPT_ELEMENT vce3 on vce1.VOCABULARY_CONCEPT_ID=vce3.VOCABULARY_CONCEPT_ID ");
+        }
+        sql.append("where v.VOCABULARY_TYPE = :siteCodeType and vce1.ID != vce2.ID " );
+        if(withoutInitialName){
+            sql.append("and vce1.ID != vce3.ID ");
+        }
+        sql.append("and vce1.DATAELEM_ID = :statusElementId and vce1.ELEMENT_VALUE in (:statuses) ");
+        sql.append("and vce2.DATAELEM_ID = :countryCodeElementId and vce2.ELEMENT_VALUE = :countryCode");
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("countryCode", countryCode);
+        params.put("statuses", SiteCodeStatus.ALLOCATED.name());
+        params.put("siteCodeType", VocabularyType.SITE_CODE.name());
+        params.put("statusElementId", statusElementId);
+        params.put("countryCodeElementId", countryCodeElementId);
+
+        if (withoutInitialName){
+            String initialNameIdentifier = SiteCodeBoundElementIdentifiers.INITIAL_SITE_NAME.getIdentifier();
+            int initialNameElementId = dataElementDAO.getCommonDataElementId(initialNameIdentifier);
+            sql.append("and vce2.DATAELEM_ID = :initialNameElementId and (vce2.ELEMENT_VALUE is null or vce2.ELEMENT_VALUE='')");
+            params.put("initialNameElementId", initialNameElementId);
+        }
+
+        return getNamedParameterJdbcTemplate().queryForObject(sql.toString(), params,Integer.class);
+    }
 
     /**
      * {@inheritDoc}
      */
     @Override
     public int getCountryUsedAllocations(String countryCode) {
-        StringBuilder sql = new StringBuilder();
-        /*sql.append("select count(vc.VOCABULARY_CONCEPT_ID) from VOCABULARY v inner join VOCABULARY_CONCEPT vc on v.VOCABULARY_ID=vc.VOCABULARY_ID ");
-        sql.append("inner join VOCABULARY_CONCEPT_ELEMENT vce on vc.VOCABULARY_CONCEPT_ID=vce.VOCABULARY_CONCEPT_ID ");
-        sql.append("inner join DATAELEM d on vce.DATAELEM_ID=d.DATAELEM_ID ");
-        sql.append("where v.VOCABULARY_TYPE = (:type) and ((d.IDENTIFIER=:sitecodeStatus and vce.ELEMENT_VALUE in (:statuses)) or (d.IDENTIFIER=:sitecodeCountryCode and vce.ELEMENT_VALUE = :countryCode)) ");*/
 
-        sql.append("select count(vc.VOCABULARY_CONCEPT_ID) from VOCABULARY v inner join VOCABULARY_CONCEPT vc on v.VOCABULARY_ID=vc.VOCABULARY_ID ");
-        sql.append("where v.VOCABULARY_TYPE = (':siteCodeType') and vc.VOCABULARY_CONCEPT_ID in ");
-        sql.append("(select vce1.VOCABULARY_CONCEPT_ID ");
-        sql.append("from VOCABULARY_CONCEPT_ELEMENT vce1 inner join VOCABULARY_CONCEPT_ELEMENT vce2 on vce1.VOCABULARY_CONCEPT_ID=vce2.VOCABULARY_CONCEPT_ID inner join DATAELEM d on vce1.DATAELEM_ID=d.DATAELEM_ID ");
-        sql.append("where vc.VOCABULARY_CONCEPT_ID=vce1.VOCABULARY_CONCEPT_ID and ");
-        sql.append("((d.IDENTIFIER=':status' and vce2.ELEMENT_VALUE in (':statuses')) and (d.IDENTIFIER=':country' and vce1.ELEMENT_VALUE = ':countryCode')))");
-        //TODO check if it works with vce1 before vce2
+        String statusIdentifier = SiteCodeBoundElementIdentifiers.STATUS.getIdentifier();
+        String countryCodeIdentifier = SiteCodeBoundElementIdentifiers.COUNTRY_CODE.getIdentifier();
+
+        int statusElementId = dataElementDAO.getCommonDataElementId(statusIdentifier);
+        int countryCodeElementId = dataElementDAO.getCommonDataElementId(countryCodeIdentifier);
+
+        StringBuilder sql = new StringBuilder();
+        sql.append("select count(distinct vc.VOCABULARY_CONCEPT_ID) ");
+        sql.append("from VOCABULARY v inner join VOCABULARY_CONCEPT vc on v.VOCABULARY_ID=vc.VOCABULARY_ID ");
+        sql.append("inner join VOCABULARY_CONCEPT_ELEMENT vce1 on vc.VOCABULARY_CONCEPT_ID=vce1.VOCABULARY_CONCEPT_ID ");
+        sql.append("inner join VOCABULARY_CONCEPT_ELEMENT vce2 on vce1.VOCABULARY_CONCEPT_ID=vce2.VOCABULARY_CONCEPT_ID ");
+        sql.append("where v.VOCABULARY_TYPE = :siteCodeType and vce1.ID != vce2.ID " );
+        sql.append("and vce1.DATAELEM_ID = :statusElementId and vce1.ELEMENT_VALUE in (:statuses) ");
+        sql.append("and vce2.DATAELEM_ID = :countryCodeElementId and vce2.ELEMENT_VALUE = :countryCode");
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("countryCode", countryCode);
         params.put("statuses", Arrays.asList(SiteCodeFilter.ALLOCATED_USED_STATUSES));
-        params.put("type", VocabularyType.SITE_CODE.name());
-        params.put("sitecodeStatus", SiteCodeBoundElementIdentifiers.STATUS.getIdentifier());
-        params.put("sitecodeCountryCode", SiteCodeBoundElementIdentifiers.COUNTRY_CODE.getIdentifier());
+        params.put("siteCodeType", VocabularyType.SITE_CODE.name());
+        params.put("statusElementId", statusElementId);
+        params.put("countryCodeElementId", countryCodeElementId);
 
         return getNamedParameterJdbcTemplate().queryForObject(sql.toString(), params,Integer.class);
     }
