@@ -102,16 +102,8 @@ public class EmailServiceImpl implements IEmailService {
             notification.setAllocationTime(allocationResult.getAllocationTime().toString());
             notification.setUsername(allocationResult.getUserName());
             notification.setCountry(country);
-            notification.setNofAvailableCodes("0");
-            //notification.setNofAvailableCodes(Integer.toString(siteCodeDao.getFeeSiteCodeAmount()));
-            /* TODO
-                get number of vocabulary concepts which have  sitecodes_STATUS    AVAILABLE
-            */
-            notification.setTotalNofAllocatedCodes("0");
-            //notification.setTotalNofAllocatedCodes(Integer.toString(siteCodeDao.getCountryUnusedAllocations(country, false)));
-            /* TODO
-                get number of vocabulary concepts which have  sitecodes_STATUS    ALLOCATED
-            */
+            notification.setNofAvailableCodes(Integer.toString(siteCodeDao.getFeeSiteCodeAmount()));
+            notification.setTotalNofAllocatedCodes(Integer.toString(siteCodeDao.getCountryUnusedAllocations(country, false)));
             notification.setNofCodesAllocatedByEvent(Integer.toString(allocationResult.getAmount()));
 
             SiteCodeFilter filter = new SiteCodeFilter();
@@ -166,11 +158,7 @@ public class EmailServiceImpl implements IEmailService {
             notification.setNewCodesStartIdentifier(Integer.toString(startIdentifier));
             notification.setNofAddedCodes(Integer.toString(reserveAmount));
             notification.setNewCodesEndIdentifier(Integer.toString(startIdentifier + reserveAmount - 1));
-            notification.setTotalNumberOfAvailableCodes("0");
-            //notification.setTotalNumberOfAvailableCodes(Integer.toString(siteCodeDao.getFeeSiteCodeAmount()));
-            /* TODO
-                get number of vocabulary concepts which have  sitecodes_STATUS    AVAILABLE
-            */
+            notification.setTotalNumberOfAvailableCodes(Integer.toString(siteCodeDao.getFeeSiteCodeAmount()));
 
             final String[] to;
             // if test e-mail is provided, then do not send notification to actual receivers

@@ -1,13 +1,18 @@
 package eionet.util;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import java.util.*;
 
 /**
  *
@@ -158,6 +163,57 @@ public class UtilTestIT {
         assertEquals("&amp;#", Util.escapeXML("&#"));
         assertEquals("&apos;X&apos;", Util.escapeXML("'X'"));
         //assertEquals("&apos;#88;", Util.escapeXML("'#88;"));
+    }
+
+
+    /*Test Case: the input map has no elements */
+    @Test
+    public void testGetKeysByValueEmptyMap() {
+        Map<Integer, String> testMap = new HashMap<>();
+        Set<Integer> actual = Util.getKeysByValue(testMap, "a");
+        Set<Integer> expected = Collections.EMPTY_SET;
+        Assert.assertThat(actual, is(expected));
+    }
+
+    /*Test Case: the input map has elements but the input value doesn't exist */
+    @Test
+    public void testGetKeysByValueMapHasElementsValueDoesntExist() {
+        Map<Integer, String> testMap = new HashMap<>();
+        testMap.put(1,"a");
+        testMap.put(2,"b");
+        testMap.put(3,"c");
+        Set<Integer> actual = Util.getKeysByValue(testMap, "d");
+        Set<Integer> expected = Collections.EMPTY_SET;
+        Assert.assertThat(actual, is(expected));
+    }
+
+    /*Test Case: the input map has elements and the input value exists one time */
+    @Test
+    public void testGetKeysByValueMapHasElementsValueExistsOneTime() {
+        Map<Integer, String> testMap = new HashMap<>();
+        testMap.put(1,"a");
+        testMap.put(2,"b");
+        testMap.put(3,"c");
+        Set<Integer> result = Util.getKeysByValue(testMap, "b");
+        Assert.assertThat(result.size(), is(1));
+        Assert.assertThat(result.iterator().next(), is(2));
+    }
+
+    /*Test Case: the input map has elements and the input value exists multiple times*/
+    @Test
+    public void testGetKeysByValueMapHasElementsValueExistsMultipleTimes() {
+        Map<Integer, String> testMap = new HashMap<>();
+        testMap.put(1,"a");
+        testMap.put(2,"b");
+        testMap.put(3,"c");
+        testMap.put(4,"b");
+        Set<Integer> result = Util.getKeysByValue(testMap, "b");
+        Assert.assertThat(result.size(), is(2));
+        Iterator<Integer> itr = result.iterator();
+        Integer first = itr.next();
+        Integer second = itr.next();
+        Assert.assertThat(first, is(2));
+        Assert.assertThat(second, is(4));
     }
 
 }

@@ -24,6 +24,7 @@ package eionet.meta.dao;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.service.data.SiteCode;
@@ -81,7 +82,7 @@ public interface ISiteCodeDAO {
      *
      * @return
      */
-    //int getFeeSiteCodeAmount();
+    int getFeeSiteCodeAmount();
 
     /**
      * Returns number of site codes in status: allocated.
@@ -106,4 +107,13 @@ public interface ISiteCodeDAO {
      * @return
      */
     boolean siteCodeFolderExists();
+
+    /**
+     * Returns a list of SiteCode objects which contains information for the codes.
+     *
+     * @param vcId the site code id
+     * @param dataElementIds
+     * @return a hashmap with key the element's id and value, the element's value
+     */
+    Map<Integer, String> getBoundElementIdAndValue(Integer vcId,List<Integer> dataElementIds);
 }

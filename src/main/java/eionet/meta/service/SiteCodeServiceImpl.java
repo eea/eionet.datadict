@@ -192,11 +192,7 @@ public class SiteCodeServiceImpl implements ISiteCodeService {
     @Override
     public int getFeeSiteCodeAmount() throws ServiceException {
         try {
-            //return siteCodeDao.getFeeSiteCodeAmount();
-            /* TODO
-                get number of vocabulary concepts which have  sitecodes_STATUS    AVAILABLE
-            */
-            return 0;
+            return siteCodeDao.getFeeSiteCodeAmount();
         } catch (Exception e) {
             throw new ServiceException("Failed to get unallocated site coudes amount: " + e.getMessage(), e);
         }
@@ -212,16 +208,8 @@ public class SiteCodeServiceImpl implements ISiteCodeService {
             for (FixedValue fv : countries) {
                 CountryAllocations ca = new CountryAllocations();
                 int usedCodes = siteCodeDao.getCountryUsedAllocations(fv.getValue());
-                int unusedCodes = 0;
-               // int unusedCodes = siteCodeDao.getCountryUnusedAllocations(fv.getValue(), false);
-                /* TODO
-                    search for number of vocabulary concepts where sitecodes_STATUS is in statuses and sitecodes_CC_ISO2 is the countryCode
-                */
-                int unusedCodesWithoutNames = 0;
-                //int unusedCodesWithoutNames = siteCodeDao.getCountryUnusedAllocations(fv.getValue(), true);
-                /* TODO
-                    search for number of vocabulary concepts where sitecodes_STATUS is in statuses and sitecodes_CC_ISO2 is the countryCode
-                */
+                int unusedCodes = siteCodeDao.getCountryUnusedAllocations(fv.getValue(), false);
+                int unusedCodesWithoutNames = siteCodeDao.getCountryUnusedAllocations(fv.getValue(), true);
                 ca.setCountry(fv);
                 ca.setUsedCodes(usedCodes);
                 ca.setUnusedCodes(unusedCodes);

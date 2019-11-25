@@ -95,7 +95,7 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
     protected List<SiteCode> getSiteCodeList(List<VocabularyConcept> vocabularyConcepts, Map<String, Integer> elementMap) throws ParseException {
 
         List<SiteCode> scList= new ArrayList<>();
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-DD HH:mm:ss");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         for (VocabularyConcept vc: vocabularyConcepts){
             SiteCode sc = new SiteCode();
@@ -106,7 +106,7 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
             sc.setNotation(vc.getNotation());
 
             /* Retrieve a hashmap that contains the data element's id (key) and the element's value (value)*/
-            Map<Integer, String> elementInfo = getBoundElementIdAndValue(vc, elementMap);
+            Map<Integer, String> elementInfo = getBoundElementIdAndValue(vc.getId(), new ArrayList<>(elementMap.values()));
 
             /*Iterate through the hashmap and fill the SiteCode object*/
             for ( Map.Entry<Integer, String> entry : elementInfo.entrySet()) {
@@ -161,17 +161,18 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
     /**
      * Returns a list of SiteCode objects which contains information for the codes.
      *
-     * @param vc the site code
-     * @param elementMap a hashmap that contains the data element' s identifier and id.
+     * @param vcId the site code
+     * @param dataElementIds
      * @return a hashmap with key the element's id and value, the element's value
      */
-    protected Map<Integer, String> getBoundElementIdAndValue(VocabularyConcept vc, Map<String, Integer> elementMap) {
+    @Override
+    public Map<Integer, String> getBoundElementIdAndValue(Integer vcId, List<Integer> dataElementIds) {
         StringBuilder sqlForElementValue = new StringBuilder();
         sqlForElementValue.append("select vce.DATAELEM_ID, vce.ELEMENT_VALUE from VOCABULARY_CONCEPT_ELEMENT vce inner join VOCABULARY_CONCEPT vc on " +
                 " vce.VOCABULARY_CONCEPT_ID = vc.VOCABULARY_CONCEPT_ID where vce.DATAELEM_ID in (:dataElemIds) and vce.VOCABULARY_CONCEPT_ID = :vocabularyConceptId ");
         Map<String, Object> paramsForElementValue = new HashMap<String, Object>();
-        paramsForElementValue.put("dataElemIds", elementMap.values());
-        paramsForElementValue.put("vocabularyConceptId", vc.getId());
+        paramsForElementValue.put("dataElemIds", dataElementIds);
+        paramsForElementValue.put("vocabularyConceptId", vcId);
 
         /* Retrieve all bound elements for site codes based on vocabulary concept id */
         List<Map<Integer, String>> elementInfoMapList = getNamedParameterJdbcTemplate().query(sqlForElementValue.toString(), paramsForElementValue, new RowMapper<Map<Integer, String> >() {
@@ -327,7 +328,6 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         sqlForBoundElements.append("insert into VOCABULARY_CONCEPT_ELEMENT (VOCABULARY_CONCEPT_ID, DATAELEM_ID, ELEMENT_VALUE) ");
         sqlForBoundElements.append("values (:vocabularyConceptId, :dataElemId, :elementValue)");
 
-        //TODO change it so it isn't hard coded
         List<String> elementIdentifiers = Enumerations.SiteCodeBoundElementIdentifiers.getEnumValuesAsList();
 
         Map<String, Integer> elementMap = dataElementDAO.getMultipleCommonDataElementIds(elementIdentifiers);
@@ -396,7 +396,6 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         getNamedParameterJdbcTemplate().update(sqlForConcepts.toString(), parameters);
     }
 
-    //TODO The following method will be kept as it is.
     /**
      * {@inheritDoc}
      */
@@ -415,36 +414,31 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
     /**
      * {@inheritDoc}
      */
-   /* @Override
+    @Override
     public int getFeeSiteCodeAmount() {
+        String statusIdentifier = SiteCodeBoundElementIdentifiers.STATUS.getIdentifier();
+        int statusElementId = dataElementDAO.getCommonDataElementId(statusIdentifier);
+
         StringBuilder sql = new StringBuilder();
-        sql.append("select count(VOCABULARY_CONCEPT_ID) from T_SITE_CODE where STATUS = :status");
+        sql.append("select count(distinct vc.VOCABULARY_CONCEPT_ID) ");
+        sql.append("from VOCABULARY v inner join VOCABULARY_CONCEPT vc on v.VOCABULARY_ID=vc.VOCABULARY_ID ");
+        sql.append("inner join VOCABULARY_CONCEPT_ELEMENT vce on vc.VOCABULARY_CONCEPT_ID=vce.VOCABULARY_CONCEPT_ID ");
+        sql.append("where v.VOCABULARY_TYPE = :siteCodeType " );
+        sql.append("and vce.DATAELEM_ID = :statusElementId and vce.ELEMENT_VALUE = :status ");
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("status", SiteCodeStatus.AVAILABLE.name());
+        params.put("siteCodeType", VocabularyType.SITE_CODE.name());
+        params.put("statusElementId", statusElementId);
 
         return getNamedParameterJdbcTemplate().queryForObject(sql.toString(), params,Integer.class);
-    }*/
+    }
 
     /**
      * {@inheritDoc}
      */
     @Override
     public int getCountryUnusedAllocations(String countryCode, boolean withoutInitialName) {
-       /* Map<String, Object> params = new HashMap<String, Object>();
-        params.put("countryCode", countryCode);
-        params.put("status", SiteCodeStatus.ALLOCATED.name());
-
-        StringBuilder sql = new StringBuilder();
-        sql.append("select count(VOCABULARY_CONCEPT_ID) from T_SITE_CODE where STATUS = :status ");
-        sql.append("and CC_ISO2 = :countryCode ");
-        if (withoutInitialName) {
-            sql.append("and (INITIAL_SITE_NAME is null or INITIAL_SITE_NAME = '') ");
-        }
-
-        return getNamedParameterJdbcTemplate().queryForObject(sql.toString(), params,Integer.class);
-*/
-
         String statusIdentifier = SiteCodeBoundElementIdentifiers.STATUS.getIdentifier();
         String countryCodeIdentifier = SiteCodeBoundElementIdentifiers.COUNTRY_CODE.getIdentifier();
 
@@ -456,15 +450,14 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         sql.append("from VOCABULARY v inner join VOCABULARY_CONCEPT vc on v.VOCABULARY_ID=vc.VOCABULARY_ID ");
         sql.append("inner join VOCABULARY_CONCEPT_ELEMENT vce1 on vc.VOCABULARY_CONCEPT_ID=vce1.VOCABULARY_CONCEPT_ID ");
         sql.append("inner join VOCABULARY_CONCEPT_ELEMENT vce2 on vce1.VOCABULARY_CONCEPT_ID=vce2.VOCABULARY_CONCEPT_ID ");
-        if(withoutInitialName){
-            sql.append("inner join VOCABULARY_CONCEPT_ELEMENT vce3 on vce1.VOCABULARY_CONCEPT_ID=vce3.VOCABULARY_CONCEPT_ID ");
-        }
         sql.append("where v.VOCABULARY_TYPE = :siteCodeType and vce1.ID != vce2.ID " );
-        if(withoutInitialName){
-            sql.append("and vce1.ID != vce3.ID ");
-        }
         sql.append("and vce1.DATAELEM_ID = :statusElementId and vce1.ELEMENT_VALUE in (:statuses) ");
-        sql.append("and vce2.DATAELEM_ID = :countryCodeElementId and vce2.ELEMENT_VALUE = :countryCode");
+        sql.append("and vce2.DATAELEM_ID = :countryCodeElementId and vce2.ELEMENT_VALUE = :countryCode ");
+
+        if(withoutInitialName) {
+            sql.append("and vc.VOCABULARY_CONCEPT_ID not in (select vce3.VOCABULARY_CONCEPT_ID from VOCABULARY_CONCEPT_ELEMENT vce3 ");
+            sql.append("where vce3.DATAELEM_ID = :initialNameElementId and vce3.ELEMENT_VALUE is not null and vce3.ELEMENT_VALUE != '') ");
+        }
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("countryCode", countryCode);
@@ -476,7 +469,6 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         if (withoutInitialName){
             String initialNameIdentifier = SiteCodeBoundElementIdentifiers.INITIAL_SITE_NAME.getIdentifier();
             int initialNameElementId = dataElementDAO.getCommonDataElementId(initialNameIdentifier);
-            sql.append("and vce2.DATAELEM_ID = :initialNameElementId and (vce2.ELEMENT_VALUE is null or vce2.ELEMENT_VALUE='')");
             params.put("initialNameElementId", initialNameElementId);
         }
 
