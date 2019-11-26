@@ -116,4 +116,13 @@ public interface ISiteCodeDAO {
      * @return a hashmap with key the element's id and value, the element's value
      */
     Map<Integer, String> getBoundElementIdAndValue(Integer vcId,List<Integer> dataElementIds);
+
+    /**
+     * Returns a list of SiteCode objects which contains information for the codes.
+     *
+     * @param vocabularyConcepts the site codes
+     * @param elementMap a hashmap that contains the data element' s identifier and id.
+     * @return a list of site codes
+     */
+    List<SiteCode> getSiteCodeList(List<VocabularyConcept> vocabularyConcepts, Map<String, Integer> elementMap) throws ParseException;
 }

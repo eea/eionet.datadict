@@ -1,12 +1,16 @@
 package eionet.meta.dao;
 
+import eionet.meta.dao.domain.SiteCodeStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.service.DBUnitHelper;
+import eionet.meta.service.data.SiteCode;
 import org.junit.Assert;
 import org.junit.Test;
 import org.unitils.UnitilsJUnit4;
 import org.unitils.spring.annotation.SpringApplicationContext;
 import org.unitils.spring.annotation.SpringBeanByType;
+import eionet.datadict.model.enums.Enumerations;
+import eionet.datadict.model.enums.Enumerations.SiteCodeBoundElementIdentifiers;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -226,6 +230,238 @@ public class SiteCodeDAOTestIT extends UnitilsJUnit4 {
         boundElementIds.add(7);
         Map<Integer, String> elementMap = siteCodeDAO.getBoundElementIdAndValue(1, boundElementIds);
         Assert.assertThat(elementMap.size(), is(0));
+    }
+
+    /* Test case: The vocabulary concept list is null or empty */
+    @Test
+    public void testGetSiteCodeListNullOrEmptyConcepts() throws Exception {
+        DBUnitHelper.loadData("seed-sitecode-records-exist.xml");
+        Map<String, Integer> boundElementsMap = new HashMap<>();
+        boundElementsMap.put(SiteCodeBoundElementIdentifiers.COUNTRY_CODE.getIdentifier(), 1);
+        boundElementsMap.put(SiteCodeBoundElementIdentifiers.STATUS.getIdentifier(), 2);
+        boundElementsMap.put(SiteCodeBoundElementIdentifiers.DATE_CREATED.getIdentifier(), 4);
+        boundElementsMap.put(SiteCodeBoundElementIdentifiers.INITIAL_SITE_NAME.getIdentifier(), 3);
+        List<SiteCode> scListVcNull =  siteCodeDAO.getSiteCodeList(null, boundElementsMap);
+        Assert.assertThat(scListVcNull.size(), is(0));
+
+        List<VocabularyConcept> vcList = new ArrayList<>();
+        List<SiteCode> scListVcEmpty =  siteCodeDAO.getSiteCodeList(vcList, boundElementsMap);
+        Assert.assertThat(scListVcEmpty.size(), is(0));
+    }
+
+    /* Test case: The element map is null or empty */
+    @Test
+    public void testGetSiteCodeListNullOrEmptyElementMap() throws Exception {
+        DBUnitHelper.loadData("seed-sitecode-records-exist.xml");
+        List<VocabularyConcept> vcList = new ArrayList<>();
+        VocabularyConcept vc1 = new VocabularyConcept();
+        vc1.setId(1);
+        vc1.setIdentifier("identifier1");
+        vc1.setLabel("label1");
+        vc1.setDefinition("definition1");
+        vc1.setNotation("notation1");
+        VocabularyConcept vc2 = new VocabularyConcept();
+        vc2.setId(2);
+        vc2.setIdentifier("identifier2");
+        vc2.setLabel("label2");
+        vc2.setDefinition("definition2");
+        vc2.setNotation("notation2");
+        VocabularyConcept vc3 = new VocabularyConcept();
+        vc3.setId(3);
+        vc3.setIdentifier("identifier3");
+        vc3.setLabel("label3");
+        vc3.setDefinition("definition3");
+        vc3.setNotation("notation3");
+        vcList.add(vc1);
+        vcList.add(vc2);
+        vcList.add(vc3);
+
+        List<SiteCode> scListElemNull =  siteCodeDAO.getSiteCodeList(vcList, null);
+        Assert.assertThat(scListElemNull.size(), is(3));
+        Assert.assertThat(scListElemNull.get(0).getId(), is(1));
+        Assert.assertThat(scListElemNull.get(0).getIdentifier(), is("identifier1"));
+        Assert.assertThat(scListElemNull.get(0).getLabel(), is("label1"));
+        Assert.assertThat(scListElemNull.get(0).getDefinition(), is("definition1"));
+        Assert.assertThat(scListElemNull.get(0).getNotation(), is("notation1"));
+        Assert.assertThat(scListElemNull.get(0).getCountryCode(), is(nullValue()));
+        Assert.assertThat(scListElemNull.get(0).getInitialSiteName(), is(nullValue()));
+        Assert.assertThat(scListElemNull.get(0).getSiteCodeStatus(), is(SiteCodeStatus.AVAILABLE));
+        Assert.assertThat(scListElemNull.get(0).getDateAllocated(), is(nullValue()));
+        Assert.assertThat(scListElemNull.get(0).getDateCreated(), is(nullValue()));
+        Assert.assertThat(scListElemNull.get(0).getUserAllocated(), is(nullValue()));
+        Assert.assertThat(scListElemNull.get(0).getUserCreated(), is(nullValue()));
+        Assert.assertThat(scListElemNull.get(0).getYearsDeleted(), is(nullValue()));
+        Assert.assertThat(scListElemNull.get(0).getYearsDisappeared(), is(nullValue()));
+        Assert.assertThat(scListElemNull.get(0).getStatus(), is(nullValue()));
+
+        Assert.assertThat(scListElemNull.get(1).getId(), is(2));
+        Assert.assertThat(scListElemNull.get(1).getIdentifier(), is("identifier2"));
+        Assert.assertThat(scListElemNull.get(1).getLabel(), is("label2"));
+        Assert.assertThat(scListElemNull.get(1).getDefinition(), is("definition2"));
+        Assert.assertThat(scListElemNull.get(1).getNotation(), is("notation2"));
+        Assert.assertThat(scListElemNull.get(1).getCountryCode(), is(nullValue()));
+        Assert.assertThat(scListElemNull.get(1).getInitialSiteName(), is(nullValue()));
+        Assert.assertThat(scListElemNull.get(1).getSiteCodeStatus(), is(SiteCodeStatus.AVAILABLE));
+        Assert.assertThat(scListElemNull.get(1).getDateAllocated(), is(nullValue()));
+        Assert.assertThat(scListElemNull.get(1).getDateCreated(), is(nullValue()));
+        Assert.assertThat(scListElemNull.get(1).getUserAllocated(), is(nullValue()));
+        Assert.assertThat(scListElemNull.get(1).getUserCreated(), is(nullValue()));
+        Assert.assertThat(scListElemNull.get(1).getYearsDeleted(), is(nullValue()));
+        Assert.assertThat(scListElemNull.get(1).getYearsDisappeared(), is(nullValue()));
+        Assert.assertThat(scListElemNull.get(1).getStatus(), is(nullValue()));
+
+        Assert.assertThat(scListElemNull.get(2).getId(), is(3));
+        Assert.assertThat(scListElemNull.get(2).getIdentifier(), is("identifier3"));
+        Assert.assertThat(scListElemNull.get(2).getLabel(), is("label3"));
+        Assert.assertThat(scListElemNull.get(2).getDefinition(), is("definition3"));
+        Assert.assertThat(scListElemNull.get(2).getNotation(), is("notation3"));
+        Assert.assertThat(scListElemNull.get(2).getCountryCode(), is(nullValue()));
+        Assert.assertThat(scListElemNull.get(2).getInitialSiteName(), is(nullValue()));
+        Assert.assertThat(scListElemNull.get(2).getSiteCodeStatus(), is(SiteCodeStatus.AVAILABLE));
+        Assert.assertThat(scListElemNull.get(2).getDateAllocated(), is(nullValue()));
+        Assert.assertThat(scListElemNull.get(2).getDateCreated(), is(nullValue()));
+        Assert.assertThat(scListElemNull.get(2).getUserAllocated(), is(nullValue()));
+        Assert.assertThat(scListElemNull.get(2).getUserCreated(), is(nullValue()));
+        Assert.assertThat(scListElemNull.get(2).getYearsDeleted(), is(nullValue()));
+        Assert.assertThat(scListElemNull.get(2).getYearsDisappeared(), is(nullValue()));
+        Assert.assertThat(scListElemNull.get(2).getStatus(), is(nullValue()));
+
+
+        Map<String, Integer> boundElementsMap = new HashMap<>();
+        List<SiteCode> scListElemEmpty =  siteCodeDAO.getSiteCodeList(vcList, boundElementsMap);
+        Assert.assertThat(scListElemEmpty.size(), is(3));
+        Assert.assertThat(scListElemEmpty.get(0).getId(), is(1));
+        Assert.assertThat(scListElemEmpty.get(0).getIdentifier(), is("identifier1"));
+        Assert.assertThat(scListElemEmpty.get(0).getLabel(), is("label1"));
+        Assert.assertThat(scListElemEmpty.get(0).getDefinition(), is("definition1"));
+        Assert.assertThat(scListElemEmpty.get(0).getNotation(), is("notation1"));
+        Assert.assertThat(scListElemEmpty.get(0).getCountryCode(), is(nullValue()));
+        Assert.assertThat(scListElemEmpty.get(0).getInitialSiteName(), is(nullValue()));
+        Assert.assertThat(scListElemEmpty.get(0).getSiteCodeStatus(), is(SiteCodeStatus.AVAILABLE));
+        Assert.assertThat(scListElemEmpty.get(0).getDateAllocated(), is(nullValue()));
+        Assert.assertThat(scListElemEmpty.get(0).getDateCreated(), is(nullValue()));
+        Assert.assertThat(scListElemEmpty.get(0).getUserAllocated(), is(nullValue()));
+        Assert.assertThat(scListElemEmpty.get(0).getUserCreated(), is(nullValue()));
+        Assert.assertThat(scListElemEmpty.get(0).getYearsDeleted(), is(nullValue()));
+        Assert.assertThat(scListElemEmpty.get(0).getYearsDisappeared(), is(nullValue()));
+        Assert.assertThat(scListElemEmpty.get(0).getStatus(), is(nullValue()));
+
+        Assert.assertThat(scListElemEmpty.get(1).getId(), is(2));
+        Assert.assertThat(scListElemEmpty.get(1).getIdentifier(), is("identifier2"));
+        Assert.assertThat(scListElemEmpty.get(1).getLabel(), is("label2"));
+        Assert.assertThat(scListElemEmpty.get(1).getDefinition(), is("definition2"));
+        Assert.assertThat(scListElemEmpty.get(1).getNotation(), is("notation2"));
+        Assert.assertThat(scListElemEmpty.get(1).getCountryCode(), is(nullValue()));
+        Assert.assertThat(scListElemEmpty.get(1).getInitialSiteName(), is(nullValue()));
+        Assert.assertThat(scListElemEmpty.get(1).getSiteCodeStatus(), is(SiteCodeStatus.AVAILABLE));
+        Assert.assertThat(scListElemEmpty.get(1).getDateAllocated(), is(nullValue()));
+        Assert.assertThat(scListElemEmpty.get(1).getDateCreated(), is(nullValue()));
+        Assert.assertThat(scListElemEmpty.get(1).getUserAllocated(), is(nullValue()));
+        Assert.assertThat(scListElemEmpty.get(1).getUserCreated(), is(nullValue()));
+        Assert.assertThat(scListElemEmpty.get(1).getYearsDeleted(), is(nullValue()));
+        Assert.assertThat(scListElemEmpty.get(1).getYearsDisappeared(), is(nullValue()));
+        Assert.assertThat(scListElemEmpty.get(1).getStatus(), is(nullValue()));
+
+        Assert.assertThat(scListElemEmpty.get(2).getId(), is(3));
+        Assert.assertThat(scListElemEmpty.get(2).getIdentifier(), is("identifier3"));
+        Assert.assertThat(scListElemEmpty.get(2).getLabel(), is("label3"));
+        Assert.assertThat(scListElemEmpty.get(2).getDefinition(), is("definition3"));
+        Assert.assertThat(scListElemEmpty.get(2).getNotation(), is("notation3"));
+        Assert.assertThat(scListElemEmpty.get(2).getCountryCode(), is(nullValue()));
+        Assert.assertThat(scListElemEmpty.get(2).getInitialSiteName(), is(nullValue()));
+        Assert.assertThat(scListElemEmpty.get(2).getSiteCodeStatus(), is(SiteCodeStatus.AVAILABLE));
+        Assert.assertThat(scListElemEmpty.get(2).getDateAllocated(), is(nullValue()));
+        Assert.assertThat(scListElemEmpty.get(2).getDateCreated(), is(nullValue()));
+        Assert.assertThat(scListElemEmpty.get(2).getUserAllocated(), is(nullValue()));
+        Assert.assertThat(scListElemEmpty.get(2).getUserCreated(), is(nullValue()));
+        Assert.assertThat(scListElemEmpty.get(2).getYearsDeleted(), is(nullValue()));
+        Assert.assertThat(scListElemEmpty.get(2).getYearsDisappeared(), is(nullValue()));
+        Assert.assertThat(scListElemEmpty.get(2).getStatus(), is(nullValue()));
+    }
+
+    /* Test case: There are concepts and elements in the map */
+    @Test
+    public void testGetSiteCodeListConceptsAndElementsExist() throws Exception {
+        DBUnitHelper.loadData("seed-sitecode-records-exist.xml");
+        List<VocabularyConcept> vcList = new ArrayList<>();
+        VocabularyConcept vc1 = new VocabularyConcept();
+        vc1.setId(1);
+        vc1.setIdentifier("identifier1");
+        vc1.setLabel("label1");
+        vc1.setDefinition("definition1");
+        vc1.setNotation("notation1");
+        VocabularyConcept vc2 = new VocabularyConcept();
+        vc2.setId(2);
+        vc2.setIdentifier("identifier2");
+        vc2.setLabel("label2");
+        vc2.setDefinition("definition2");
+        vc2.setNotation("notation2");
+        VocabularyConcept vc3 = new VocabularyConcept();
+        vc3.setId(3);
+        vc3.setIdentifier("identifier3");
+        vc3.setLabel("label3");
+        vc3.setDefinition("definition3");
+        vc3.setNotation("notation3");
+        vcList.add(vc1);
+        vcList.add(vc2);
+        vcList.add(vc3);
+
+        Map<String, Integer> boundElementsMap = new HashMap<>();
+        boundElementsMap.put(SiteCodeBoundElementIdentifiers.COUNTRY_CODE.getIdentifier(), 1);
+        boundElementsMap.put(SiteCodeBoundElementIdentifiers.STATUS.getIdentifier(), 2);
+        boundElementsMap.put(SiteCodeBoundElementIdentifiers.DATE_CREATED.getIdentifier(), 4);
+        boundElementsMap.put(SiteCodeBoundElementIdentifiers.INITIAL_SITE_NAME.getIdentifier(), 3);
+
+        List<SiteCode> scList =  siteCodeDAO.getSiteCodeList(vcList, boundElementsMap);
+        Assert.assertThat(scList.size(), is(3));
+        Assert.assertThat(scList.get(0).getId(), is(1));
+        Assert.assertThat(scList.get(0).getIdentifier(), is("identifier1"));
+        Assert.assertThat(scList.get(0).getLabel(), is("label1"));
+        Assert.assertThat(scList.get(0).getDefinition(), is("definition1"));
+        Assert.assertThat(scList.get(0).getNotation(), is("notation1"));
+        Assert.assertThat(scList.get(0).getCountryCode(), is("testCountryCode"));
+        Assert.assertThat(scList.get(0).getInitialSiteName(), is(nullValue()));
+        Assert.assertThat(scList.get(0).getSiteCodeStatus(), is(SiteCodeStatus.ALLOCATED));
+        Assert.assertThat(scList.get(0).getDateAllocated(), is(nullValue()));
+        Assert.assertThat(scList.get(0).getDateCreated(), is(nullValue()));
+        Assert.assertThat(scList.get(0).getUserAllocated(), is(nullValue()));
+        Assert.assertThat(scList.get(0).getUserCreated(), is(nullValue()));
+        Assert.assertThat(scList.get(0).getYearsDeleted(), is(nullValue()));
+        Assert.assertThat(scList.get(0).getYearsDisappeared(), is(nullValue()));
+        Assert.assertThat(scList.get(0).getStatus(), is(nullValue()));
+
+        Assert.assertThat(scList.get(1).getId(), is(2));
+        Assert.assertThat(scList.get(1).getIdentifier(), is("identifier2"));
+        Assert.assertThat(scList.get(1).getLabel(), is("label2"));
+        Assert.assertThat(scList.get(1).getDefinition(), is("definition2"));
+        Assert.assertThat(scList.get(1).getNotation(), is("notation2"));
+        Assert.assertThat(scList.get(1).getCountryCode(), is("testCountryCode"));
+        Assert.assertThat(scList.get(1).getInitialSiteName(), is("site name"));
+        Assert.assertThat(scList.get(1).getSiteCodeStatus(), is(SiteCodeStatus.ALLOCATED));
+        Assert.assertThat(scList.get(1).getDateAllocated(), is(nullValue()));
+        Assert.assertThat(scList.get(1).getDateCreated(), is(nullValue()));
+        Assert.assertThat(scList.get(1).getUserAllocated(), is(nullValue()));
+        Assert.assertThat(scList.get(1).getUserCreated(), is(nullValue()));
+        Assert.assertThat(scList.get(1).getYearsDeleted(), is(nullValue()));
+        Assert.assertThat(scList.get(1).getYearsDisappeared(), is(nullValue()));
+        Assert.assertThat(scList.get(1).getStatus(), is(nullValue()));
+
+        Assert.assertThat(scList.get(2).getId(), is(3));
+        Assert.assertThat(scList.get(2).getIdentifier(), is("identifier3"));
+        Assert.assertThat(scList.get(2).getLabel(), is("label3"));
+        Assert.assertThat(scList.get(2).getDefinition(), is("definition3"));
+        Assert.assertThat(scList.get(2).getNotation(), is("notation3"));
+        Assert.assertThat(scList.get(2).getCountryCode(), is("testCountryCode"));
+        Assert.assertThat(scList.get(2).getInitialSiteName(), is(nullValue()));
+        Assert.assertThat(scList.get(2).getSiteCodeStatus(), is(SiteCodeStatus.ASSIGNED));
+        Assert.assertThat(scList.get(2).getDateAllocated(), is(nullValue()));
+        Assert.assertThat(scList.get(2).getDateCreated(), is(nullValue()));
+        Assert.assertThat(scList.get(2).getUserAllocated(), is(nullValue()));
+        Assert.assertThat(scList.get(2).getUserCreated(), is(nullValue()));
+        Assert.assertThat(scList.get(2).getYearsDeleted(), is(nullValue()));
+        Assert.assertThat(scList.get(2).getYearsDisappeared(), is(nullValue()));
+        Assert.assertThat(scList.get(2).getStatus(), is(nullValue()));
+
     }
 
 }

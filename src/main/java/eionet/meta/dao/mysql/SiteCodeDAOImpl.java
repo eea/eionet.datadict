@@ -92,11 +92,14 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
      * @param elementMap a hashmap that contains the data element' s identifier and id.
      * @return a list of site codes
      */
-    protected List<SiteCode> getSiteCodeList(List<VocabularyConcept> vocabularyConcepts, Map<String, Integer> elementMap) throws ParseException {
+    public List<SiteCode> getSiteCodeList(List<VocabularyConcept> vocabularyConcepts, Map<String, Integer> elementMap) throws ParseException {
 
         List<SiteCode> scList= new ArrayList<>();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
+        if(vocabularyConcepts == null){
+            return scList;
+        }
         for (VocabularyConcept vc: vocabularyConcepts){
             SiteCode sc = new SiteCode();
             sc.setId(vc.getId());
@@ -105,52 +108,47 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
             sc.setDefinition(vc.getDefinition());
             sc.setNotation(vc.getNotation());
 
-            /* Retrieve a hashmap that contains the data element's id (key) and the element's value (value)*/
-            Map<Integer, String> elementInfo = getBoundElementIdAndValue(vc.getId(), new ArrayList<>(elementMap.values()));
+            if(elementMap != null && elementMap.size() != 0) {
 
-            /*Iterate through the hashmap and fill the SiteCode object*/
-            for ( Map.Entry<Integer, String> entry : elementInfo.entrySet()) {
-                /* Get element idntifier based on element id*/
-                Set <String> elementIdentifierSet = Util.getKeysByValue(elementMap, entry.getKey());
+                /* Retrieve a hashmap that contains the data element's id (key) and the element's value (value)*/
+                Map<Integer, String> elementInfo = getBoundElementIdAndValue(vc.getId(), new ArrayList<>(elementMap.values()));
 
-                /*map the identifier to the field that the data should be stored in*/
-                String identifier = elementIdentifierSet.iterator().next();
-                if(identifier.equals(SiteCodeBoundElementIdentifiers.COUNTRY_CODE)){
-                    sc.setCountryCode(entry.getValue());
-                }
-                else if(identifier.equals(SiteCodeBoundElementIdentifiers.INITIAL_SITE_NAME)){
-                    sc.setInitialSiteName(entry.getValue());
-                }
-                else if(identifier.equals(SiteCodeBoundElementIdentifiers.STATUS)){
-                    sc.setSiteCodeStatus(SiteCodeStatus.valueOf(entry.getValue()));
-                }
-                else if(identifier.equals(SiteCodeBoundElementIdentifiers.DATE_ALLOCATED)){
-                    try {
-                        sc.setDateAllocated(formatter.parse(entry.getValue()));
-                    } catch (ParseException e) {
-                        LOGGER.error("Error while parsing allocated date for site code with element id: #%d", entry.getKey());
-                        throw e;
+                /*Iterate through the hashmap and fill the SiteCode object*/
+                for (Map.Entry<Integer, String> entry : elementInfo.entrySet()) {
+                    /* Get element idntifier based on element id*/
+                    Set<String> elementIdentifierSet = Util.getKeysByValue(elementMap, entry.getKey());
+
+                    /*map the identifier to the field that the data should be stored in*/
+                    String identifier = elementIdentifierSet.iterator().next();
+                    if (identifier.equals(SiteCodeBoundElementIdentifiers.COUNTRY_CODE.getIdentifier())) {
+                        sc.setCountryCode(entry.getValue());
+                    } else if (identifier.equals(SiteCodeBoundElementIdentifiers.INITIAL_SITE_NAME.getIdentifier())) {
+                        sc.setInitialSiteName(entry.getValue());
+                    } else if (identifier.equals(SiteCodeBoundElementIdentifiers.STATUS.getIdentifier())) {
+                        sc.setSiteCodeStatus(SiteCodeStatus.valueOf(entry.getValue()));
+                    } else if (identifier.equals(SiteCodeBoundElementIdentifiers.DATE_ALLOCATED.getIdentifier())) {
+                        try {
+                            sc.setDateAllocated(formatter.parse(entry.getValue()));
+                        } catch (ParseException e) {
+                            LOGGER.error("Error while parsing allocated date for site code with element id: #%d", entry.getKey());
+                            throw e;
+                        }
+                    } else if (identifier.equals(SiteCodeBoundElementIdentifiers.USER_ALLOCATED.getIdentifier())) {
+                        sc.setUserAllocated(entry.getValue());
+                    } else if (identifier.equals(SiteCodeBoundElementIdentifiers.USER_CREATED.getIdentifier())) {
+                        sc.setUserCreated(entry.getValue());
+                    } else if (identifier.equals(SiteCodeBoundElementIdentifiers.DATE_CREATED.getIdentifier())) {
+                        try {
+                            sc.setDateCreated(formatter.parse(entry.getValue()));
+                        } catch (ParseException e) {
+                            LOGGER.error("Error while parsing allocated date for site code with element id: #" + entry.getKey());
+                            throw e;
+                        }
+                    } else if (identifier.equals(SiteCodeBoundElementIdentifiers.YEARS_DELETED.getIdentifier())) {
+                        sc.setYearsDeleted(entry.getValue());
+                    } else if (identifier.equals(SiteCodeBoundElementIdentifiers.YEARS_DISAPPEARED.getIdentifier())) {
+                        sc.setYearsDisappeared(entry.getValue());
                     }
-                }
-                else if(identifier.equals(SiteCodeBoundElementIdentifiers.USER_ALLOCATED)){
-                    sc.setUserAllocated(entry.getValue());
-                }
-                else if(identifier.equals(SiteCodeBoundElementIdentifiers.USER_CREATED)){
-                    sc.setUserCreated(entry.getValue());
-                }
-                else if(identifier.equals(SiteCodeBoundElementIdentifiers.DATE_CREATED)){
-                    try {
-                        sc.setDateCreated(formatter.parse(entry.getValue()));
-                    } catch (ParseException e) {
-                        LOGGER.error("Error while parsing allocated date for site code with element id: #" + entry.getKey());
-                        throw e;
-                    }
-                }
-                else if(identifier.equals(SiteCodeBoundElementIdentifiers.YEARS_DELETED)){
-                    sc.setYearsDeleted(entry.getValue());
-                }
-                else if(identifier.equals(SiteCodeBoundElementIdentifiers.YEARS_DISAPPEARED)){
-                    sc.setYearsDisappeared(entry.getValue());
                 }
             }
             scList.add(sc);
@@ -169,10 +167,13 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
     public Map<Integer, String> getBoundElementIdAndValue(Integer vcId, List<Integer> dataElementIds) {
         StringBuilder sqlForElementValue = new StringBuilder();
         sqlForElementValue.append("select vce.DATAELEM_ID, vce.ELEMENT_VALUE from VOCABULARY_CONCEPT_ELEMENT vce inner join VOCABULARY_CONCEPT vc on " +
-                " vce.VOCABULARY_CONCEPT_ID = vc.VOCABULARY_CONCEPT_ID where vce.DATAELEM_ID in (:dataElemIds) and vce.VOCABULARY_CONCEPT_ID = :vocabularyConceptId ");
+                " vce.VOCABULARY_CONCEPT_ID = vc.VOCABULARY_CONCEPT_ID inner join VOCABULARY v on v.VOCABULARY_ID = vc.VOCABULARY_ID " +
+                "where vce.DATAELEM_ID in (:dataElemIds) and vce.VOCABULARY_CONCEPT_ID = :vocabularyConceptId " +
+                "and v.VOCABULARY_TYPE = :siteCodeType ");
         Map<String, Object> paramsForElementValue = new HashMap<String, Object>();
         paramsForElementValue.put("dataElemIds", dataElementIds);
         paramsForElementValue.put("vocabularyConceptId", vcId);
+        paramsForElementValue.put("siteCodeType", VocabularyType.SITE_CODE.name());
 
         /* Retrieve all bound elements for site codes based on vocabulary concept id */
         List<Map<Integer, String>> elementInfoMapList = getNamedParameterJdbcTemplate().query(sqlForElementValue.toString(), paramsForElementValue, new RowMapper<Map<Integer, String> >() {
