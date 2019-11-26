@@ -103,7 +103,7 @@ public interface IDataElementDAO {
      *            common element identifier
      * @return ID in DATAELEM table
      */
-    int getCommonDataElementId(String identifier);
+    Integer getCommonDataElementId(String identifier);
 
     /**
      * Returns the parent dataset of the non-common element with the given id.

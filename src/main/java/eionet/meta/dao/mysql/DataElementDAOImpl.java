@@ -422,7 +422,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
      * {@inheritDoc}
      */
     @Override
-    public int getCommonDataElementId(String identifier) {
+    public Integer getCommonDataElementId(String identifier) {
         String sql
                 = "select max(de.DATAELEM_ID) from DATAELEM de where de.IDENTIFIER = :identifier and de.REG_STATUS = :regStatus "
                 + "and PARENT_NS IS NULL ";
@@ -1486,7 +1486,10 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
     public Map<String, Integer> getMultipleCommonDataElementIds(List<String> identifiers) {
         Map<String, Integer> elementMap = new HashMap<String, Integer>();
         for (String identifier: identifiers){
-            elementMap.put(identifier, this.getCommonDataElementId(identifier));
+            Integer elementID = this.getCommonDataElementId(identifier);
+            if(elementID != null) {
+                elementMap.put(identifier, elementID);
+            }
         }
         return elementMap;
     }

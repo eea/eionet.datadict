@@ -27,14 +27,14 @@ public class SiteCodeDAOTestIT extends UnitilsJUnit4 {
     @Test
     public void testSiteCodeFolderExistsTrue() throws Exception {
         DBUnitHelper.loadData("seed-sitecode-folder-exists.xml");
-        Assert.assertThat(true, is(siteCodeDAO.siteCodeFolderExists()));
+        Assert.assertThat(siteCodeDAO.siteCodeFolderExists(), is(true));
     }
 
     /* Test case: The site code vocabulary does not exist */
     @Test
     public void testSiteCodeFolderExistsFalse() throws Exception {
         DBUnitHelper.loadData("seed-sitecode-folder-not-exists.xml");
-        Assert.assertThat(false, is(siteCodeDAO.siteCodeFolderExists()));
+        Assert.assertThat(siteCodeDAO.siteCodeFolderExists(), is(false));
     }
 
     /* Test case: There are no allocations for a specific country */
