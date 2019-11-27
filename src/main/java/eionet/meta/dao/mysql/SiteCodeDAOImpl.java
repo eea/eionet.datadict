@@ -75,85 +75,159 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         /* Create a hashmap with key being the identifier and value being the id of the element*/
         Map<String, Integer> elementMap = dataElementDAO.getMultipleCommonDataElementIds(elementIdentifiers);
 
-        /* Retrieve site codes as vocabulary concepts*/
-        int vocabularyFolderSCId = this.getSiteCodeVocabularyFolderId();
-        List<VocabularyConcept> vocabularyConcepts = vocabularyConceptDAO.getVocabularyConcepts(vocabularyFolderSCId);
-
         /* Create a list of site codes */
-        List<SiteCode> scList = getSiteCodeList(vocabularyConcepts, elementMap);
-        SiteCodeResult result = new SiteCodeResult(scList, vocabularyConcepts.size(), filter);
+        List<SiteCode> scList = createQueryAndRetrieveSiteCodes(filter, elementMap);
+        SiteCodeResult result = new SiteCodeResult(scList, scList.size(), filter);
         return result;
     }
 
     /**
-     * Returns a list of SiteCode objects which contains information for the codes.
+     * Creates the query and retrieves site codes
      *
-     * @param vocabularyConcepts the site codes
-     * @param elementMap a hashmap that contains the data element' s identifier and id.
+     * @param filter filtering
+     * @param elementMap map for elements' identifier and id
      * @return a list of site codes
      */
-    public List<SiteCode> getSiteCodeList(List<VocabularyConcept> vocabularyConcepts, Map<String, Integer> elementMap) throws ParseException {
+    public List<SiteCode> createQueryAndRetrieveSiteCodes(SiteCodeFilter filter, Map<String, Integer> elementMap) {
 
-        List<SiteCode> scList= new ArrayList<>();
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Map<String, Object> params = new HashMap<>();
+        StringBuilder sql = new StringBuilder();
+        sql.append("select vc.* ");
+        sql.append("from VOCABULARY v inner join VOCABULARY_CONCEPT vc on v.VOCABULARY_ID=vc.VOCABULARY_ID ");
 
-        if(vocabularyConcepts == null){
-            return scList;
+        StringBuilder sqlWhereClause = new StringBuilder();
+        sqlWhereClause.append("where v.VOCABULARY_TYPE = :siteCodeType  ");
+        params.put("siteCodeType", VocabularyType.SITE_CODE.name());
+
+        if (StringUtils.isNotEmpty(filter.getSiteName())) {
+            sqlWhereClause.append("and vc.LABEL like :text ");
+            params.put("text", "%" + filter.getSiteName() + "%");
         }
-        for (VocabularyConcept vc: vocabularyConcepts){
-            SiteCode sc = new SiteCode();
-            sc.setId(vc.getId());
-            sc.setIdentifier(vc.getIdentifier());
-            sc.setLabel(vc.getLabel());
-            sc.setDefinition(vc.getDefinition());
-            sc.setNotation(vc.getNotation());
+        if (StringUtils.isNotEmpty(filter.getIdentifier())) {
+            sql.append("and vc.IDENTIFIER like :identifier ");
+            params.put("identifier", filter.getIdentifier());
+        }
+        if (StringUtils.isNotEmpty(filter.getUserAllocated())) {
+            sql.append("inner join VOCABULARY_CONCEPT_ELEMENT vce1 on vc.VOCABULARY_CONCEPT_ID=vce1.VOCABULARY_CONCEPT_ID ");
+            sqlWhereClause.append("and vce1.DATAELEM_ID = :userAllocatedElemId and vce1.ELEMENT_VALUE like :userAllocated ");
+            params.put("userAllocatedElemId", elementMap.get(SiteCodeBoundElementIdentifiers.USER_ALLOCATED.getIdentifier()));
+            params.put("userAllocated", filter.getUserAllocated());
+        }
+        if (filter.getDateAllocated() != null) {
+            sql.append("inner join VOCABULARY_CONCEPT_ELEMENT vce2 on vc.VOCABULARY_CONCEPT_ID=vce2.VOCABULARY_CONCEPT_ID ");
+            sqlWhereClause.append("and vce2.DATAELEM_ID = :dateAllocatedElemId and vce2.ELEMENT_VALUE = :dateAllocated ");
+            params.put("dateAllocatedElemId", elementMap.get(SiteCodeBoundElementIdentifiers.DATE_ALLOCATED.getIdentifier()));
+            params.put("dateAllocated", filter.getDateAllocated());
+        }
+        if (filter.getStatus() != null) {
+            sql.append("inner join VOCABULARY_CONCEPT_ELEMENT vce3 on vc.VOCABULARY_CONCEPT_ID=vce3.VOCABULARY_CONCEPT_ID ");
+            sqlWhereClause.append("and vce3.DATAELEM_ID = :statusElemId and vce3.ELEMENT_VALUE = :status ");
+            params.put("statusElemId", elementMap.get(SiteCodeBoundElementIdentifiers.STATUS.getIdentifier()));
+            params.put("status", filter.getStatus().toString());
+        } else if (filter.isAllocatedUsedStatuses()) {
+            sql.append("inner join VOCABULARY_CONCEPT_ELEMENT vce3 on vc.VOCABULARY_CONCEPT_ID=vce3.VOCABULARY_CONCEPT_ID ");
+            sqlWhereClause.append("and vce3.DATAELEM_ID = :statusElemId and vce3.ELEMENT_VALUE in (:statuses) ");
+            params.put("statusElemId", elementMap.get(SiteCodeBoundElementIdentifiers.STATUS.getIdentifier()));
+            params.put("statuses", Arrays.asList(SiteCodeFilter.ALLOCATED_USED_STATUSES));
+        }
+        if (filter.getCountryCode() != null) {
+            sql.append("inner join VOCABULARY_CONCEPT_ELEMENT vce4 on vc.VOCABULARY_CONCEPT_ID=vce4.VOCABULARY_CONCEPT_ID ");
+            sqlWhereClause.append("and vce4.DATAELEM_ID = :countryCodeElemId and vce4.ELEMENT_VALUE = :countryCode ");
+            params.put("countryCodeElemId", elementMap.get(SiteCodeBoundElementIdentifiers.COUNTRY_CODE.getIdentifier()));
+            params.put("countryCode", filter.getCountryCode());
+        }
 
-            if(elementMap != null && elementMap.size() != 0) {
+        sql.append(sqlWhereClause);
 
-                /* Retrieve a hashmap that contains the data element's id (key) and the element's value (value)*/
-                Map<Integer, String> elementInfo = getBoundElementIdAndValue(vc.getId(), new ArrayList<>(elementMap.values()));
+        // sorting
+        if (StringUtils.isNotEmpty(filter.getSortProperty())) {
+            if (filter.getSortProperty().equals("identifier")) {
+                sql.append("order by IDENTIFIER + 0");
+            } else {
+                sql.append("order by " + filter.getSortProperty());
+            }
+            if (SortOrderEnum.ASCENDING.equals(filter.getSortOrder())) {
+                sql.append(" ASC ");
+            } else {
+                sql.append(" DESC ");
+            }
+        } else {
+            sql.append("order by IDENTIFIER + 0 ");
+        }
+        if (filter.isUsePaging()) {
+            sql.append("LIMIT ").append(filter.getOffset()).append(",").append(filter.getPageSize());
+        }
 
-                /*Iterate through the hashmap and fill the SiteCode object*/
-                for (Map.Entry<Integer, String> entry : elementInfo.entrySet()) {
-                    /* Get element idntifier based on element id*/
-                    Set<String> elementIdentifierSet = Util.getKeysByValue(elementMap, entry.getKey());
+        List<SiteCode> scList = getSiteCodeList(sql.toString(), params, elementMap);
+        return scList;
+    }
 
-                    /*map the identifier to the field that the data should be stored in*/
-                    String identifier = elementIdentifierSet.iterator().next();
-                    if (identifier.equals(SiteCodeBoundElementIdentifiers.COUNTRY_CODE.getIdentifier())) {
-                        sc.setCountryCode(entry.getValue());
-                    } else if (identifier.equals(SiteCodeBoundElementIdentifiers.INITIAL_SITE_NAME.getIdentifier())) {
-                        sc.setInitialSiteName(entry.getValue());
-                    } else if (identifier.equals(SiteCodeBoundElementIdentifiers.STATUS.getIdentifier())) {
-                        sc.setSiteCodeStatus(SiteCodeStatus.valueOf(entry.getValue()));
-                    } else if (identifier.equals(SiteCodeBoundElementIdentifiers.DATE_ALLOCATED.getIdentifier())) {
-                        try {
-                            sc.setDateAllocated(formatter.parse(entry.getValue()));
-                        } catch (ParseException e) {
-                            LOGGER.error("Error while parsing allocated date for site code with element id: #%d", entry.getKey());
-                            throw e;
+    /**
+     * Executes a query and returns a site code list
+     *
+     * @param query the sql query
+     * @param params the parameters for the query
+     * @param elementMap map for elements' identifier and id
+     * @return a list of site codes
+     */
+    public List<SiteCode> getSiteCodeList(String query, Map<String, Object> params, Map<String, Integer> elementMap) {
+
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        List<SiteCode> resultList = getNamedParameterJdbcTemplate().query(query, params, new RowMapper<SiteCode>() {
+            @Override
+            public SiteCode mapRow(ResultSet rs, int rowNum) throws SQLException {
+                SiteCode sc = new SiteCode();
+                sc.setId(rs.getInt("vc.VOCABULARY_CONCEPT_ID"));
+                sc.setIdentifier(rs.getString("vc.IDENTIFIER"));
+                sc.setLabel(rs.getString("vc.LABEL"));
+                sc.setDefinition(rs.getString("vc.DEFINITION"));
+                sc.setNotation(rs.getString("vc.NOTATION"));
+
+                if(elementMap != null && elementMap.size() != 0) {
+
+                    /* Retrieve a hashmap that contains the data element's id (key) and the element's value (value)*/
+                    Map<Integer, String> elementInfo = getBoundElementIdAndValue(sc.getId(), new ArrayList<>(elementMap.values()));
+
+                    /*Iterate through the hashmap and fill the SiteCode object*/
+                    for (Map.Entry<Integer, String> entry : elementInfo.entrySet()) {
+                        /* Get element idntifier based on element id*/
+                        Set<String> elementIdentifierSet = Util.getKeysByValue(elementMap, entry.getKey());
+
+                        /*map the identifier to the field that the data should be stored in*/
+                        String identifier = elementIdentifierSet.iterator().next();
+                        if (identifier.equals(SiteCodeBoundElementIdentifiers.COUNTRY_CODE.getIdentifier())) {
+                            sc.setCountryCode(entry.getValue());
+                        } else if (identifier.equals(SiteCodeBoundElementIdentifiers.INITIAL_SITE_NAME.getIdentifier())) {
+                            sc.setInitialSiteName(entry.getValue());
+                        } else if (identifier.equals(SiteCodeBoundElementIdentifiers.STATUS.getIdentifier())) {
+                            sc.setSiteCodeStatus(SiteCodeStatus.valueOf(entry.getValue()));
+                        } else if (identifier.equals(SiteCodeBoundElementIdentifiers.DATE_ALLOCATED.getIdentifier())) {
+                            try {
+                                sc.setDateAllocated(formatter.parse(entry.getValue()));
+                            } catch (ParseException e) {
+                                LOGGER.error("Error while parsing allocated date for site code with element id: #%d", entry.getKey());
+                            }
+                        } else if (identifier.equals(SiteCodeBoundElementIdentifiers.USER_ALLOCATED.getIdentifier())) {
+                            sc.setUserAllocated(entry.getValue());
+                        } else if (identifier.equals(SiteCodeBoundElementIdentifiers.USER_CREATED.getIdentifier())) {
+                            sc.setUserCreated(entry.getValue());
+                        } else if (identifier.equals(SiteCodeBoundElementIdentifiers.DATE_CREATED.getIdentifier())) {
+                            try {
+                                sc.setDateCreated(formatter.parse(entry.getValue()));
+                            } catch (ParseException e) {
+                                LOGGER.error("Error while parsing allocated date for site code with element id: #" + entry.getKey());
+                            }
+                        } else if (identifier.equals(SiteCodeBoundElementIdentifiers.YEARS_DELETED.getIdentifier())) {
+                            sc.setYearsDeleted(entry.getValue());
+                        } else if (identifier.equals(SiteCodeBoundElementIdentifiers.YEARS_DISAPPEARED.getIdentifier())) {
+                            sc.setYearsDisappeared(entry.getValue());
                         }
-                    } else if (identifier.equals(SiteCodeBoundElementIdentifiers.USER_ALLOCATED.getIdentifier())) {
-                        sc.setUserAllocated(entry.getValue());
-                    } else if (identifier.equals(SiteCodeBoundElementIdentifiers.USER_CREATED.getIdentifier())) {
-                        sc.setUserCreated(entry.getValue());
-                    } else if (identifier.equals(SiteCodeBoundElementIdentifiers.DATE_CREATED.getIdentifier())) {
-                        try {
-                            sc.setDateCreated(formatter.parse(entry.getValue()));
-                        } catch (ParseException e) {
-                            LOGGER.error("Error while parsing allocated date for site code with element id: #" + entry.getKey());
-                            throw e;
-                        }
-                    } else if (identifier.equals(SiteCodeBoundElementIdentifiers.YEARS_DELETED.getIdentifier())) {
-                        sc.setYearsDeleted(entry.getValue());
-                    } else if (identifier.equals(SiteCodeBoundElementIdentifiers.YEARS_DISAPPEARED.getIdentifier())) {
-                        sc.setYearsDisappeared(entry.getValue());
                     }
                 }
+                return sc;
             }
-            scList.add(sc);
-        }
-        return scList;
+        });
+        return resultList;
     }
 
     /**
@@ -193,73 +267,6 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
             }
         }
         return elementInfo;
-    }
-
-    /**
-     * Returns SiteCode search SQL and also populates the parameters map.
-     *
-     * @param filter filtering
-     * @param params params map
-     * @return
-     */
-    private String getSiteCodesSql(SiteCodeFilter filter, Map<String, Object> params) {
-
-        //TODO instead of T_SITE_CODE use the bound elements
-        StringBuilder sql = new StringBuilder();
-        sql.append("select SQL_CALC_FOUND_ROWS sc.VOCABULARY_CONCEPT_ID, sc.STATUS, sc.CC_ISO2, "
-                + "sc.DATE_CREATED, sc.USER_CREATED, vc.VOCABULARY_CONCEPT_ID, vc.IDENTIFIER, vc.LABEL, "
-                + "vc.DEFINITION, vc.NOTATION, sc.DATE_ALLOCATED, sc.USER_ALLOCATED, sc.INITIAL_SITE_NAME, "
-                + "sc.YEARS_DELETED, sc.YEARS_DISAPPEARED ");
-        sql.append("from T_SITE_CODE sc, VOCABULARY_CONCEPT vc where sc.VOCABULARY_CONCEPT_ID=vc.VOCABULARY_CONCEPT_ID ");
-
-        if (StringUtils.isNotEmpty(filter.getSiteName())) {
-            params.put("text", "%" + filter.getSiteName() + "%");
-            sql.append("and vc.LABEL like :text ");
-        }
-        if (StringUtils.isNotEmpty(filter.getIdentifier())) {
-            params.put("identifier", filter.getIdentifier());
-            sql.append("and vc.IDENTIFIER like :identifier ");
-        }
-        if (StringUtils.isNotEmpty(filter.getUserAllocated())) {
-            params.put("userAllocated", filter.getUserAllocated());
-            sql.append("and sc.USER_ALLOCATED like :userAllocated ");
-        }
-        if (filter.getDateAllocated() != null) {
-            params.put("dateAllocated", filter.getDateAllocated());
-            sql.append("and sc.DATE_ALLOCATED = :dateAllocated ");
-        }
-        if (filter.getStatus() != null) {
-            params.put("status", filter.getStatus().toString());
-            sql.append("and sc.STATUS = :status ");
-        } else if (filter.isAllocatedUsedStatuses()) {
-            params.put("statuses", Arrays.asList(SiteCodeFilter.ALLOCATED_USED_STATUSES));
-            sql.append("and sc.STATUS IN (:statuses) ");
-        }
-        if (filter.getCountryCode() != null) {
-            params.put("countryCode", filter.getCountryCode());
-            sql.append("and sc.CC_ISO2 = :countryCode ");
-        }
-
-        // sorting
-        if (StringUtils.isNotEmpty(filter.getSortProperty())) {
-            if (filter.getSortProperty().equals("identifier")) {
-                sql.append("order by IDENTIFIER + 0");
-            } else {
-                sql.append("order by " + filter.getSortProperty());
-            }
-            if (SortOrderEnum.ASCENDING.equals(filter.getSortOrder())) {
-                sql.append(" ASC ");
-            } else {
-                sql.append(" DESC ");
-            }
-        } else {
-            sql.append("order by IDENTIFIER + 0 ");
-        }
-        if (filter.isUsePaging()) {
-            sql.append("LIMIT ").append(filter.getOffset()).append(",").append(filter.getPageSize());
-        }
-
-        return sql.toString();
     }
 
     /**

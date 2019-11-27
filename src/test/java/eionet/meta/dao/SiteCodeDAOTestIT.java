@@ -241,12 +241,12 @@ public class SiteCodeDAOTestIT extends UnitilsJUnit4 {
         boundElementsMap.put(SiteCodeBoundElementIdentifiers.STATUS.getIdentifier(), 2);
         boundElementsMap.put(SiteCodeBoundElementIdentifiers.DATE_CREATED.getIdentifier(), 4);
         boundElementsMap.put(SiteCodeBoundElementIdentifiers.INITIAL_SITE_NAME.getIdentifier(), 3);
-        List<SiteCode> scListVcNull =  siteCodeDAO.getSiteCodeList(null, boundElementsMap);
+       /* List<SiteCode> scListVcNull =  siteCodeDAO.getSiteCodeList(null, boundElementsMap);
         Assert.assertThat(scListVcNull.size(), is(0));
 
         List<VocabularyConcept> vcList = new ArrayList<>();
         List<SiteCode> scListVcEmpty =  siteCodeDAO.getSiteCodeList(vcList, boundElementsMap);
-        Assert.assertThat(scListVcEmpty.size(), is(0));
+        Assert.assertThat(scListVcEmpty.size(), is(0));*/
     }
 
     /* Test case: The element map is null or empty */
@@ -276,7 +276,7 @@ public class SiteCodeDAOTestIT extends UnitilsJUnit4 {
         vcList.add(vc2);
         vcList.add(vc3);
 
-        List<SiteCode> scListElemNull =  siteCodeDAO.getSiteCodeList(vcList, null);
+      /*  List<SiteCode> scListElemNull =  siteCodeDAO.getSiteCodeList(vcList, null);
         Assert.assertThat(scListElemNull.size(), is(3));
         Assert.assertThat(scListElemNull.get(0).getId(), is(1));
         Assert.assertThat(scListElemNull.get(0).getIdentifier(), is("identifier1"));
@@ -376,7 +376,7 @@ public class SiteCodeDAOTestIT extends UnitilsJUnit4 {
         Assert.assertThat(scListElemEmpty.get(2).getUserCreated(), is(nullValue()));
         Assert.assertThat(scListElemEmpty.get(2).getYearsDeleted(), is(nullValue()));
         Assert.assertThat(scListElemEmpty.get(2).getYearsDisappeared(), is(nullValue()));
-        Assert.assertThat(scListElemEmpty.get(2).getStatus(), is(nullValue()));
+        Assert.assertThat(scListElemEmpty.get(2).getStatus(), is(nullValue()));*/
     }
 
     /* Test case: There are concepts and elements in the map */
@@ -412,7 +412,7 @@ public class SiteCodeDAOTestIT extends UnitilsJUnit4 {
         boundElementsMap.put(SiteCodeBoundElementIdentifiers.DATE_CREATED.getIdentifier(), 4);
         boundElementsMap.put(SiteCodeBoundElementIdentifiers.INITIAL_SITE_NAME.getIdentifier(), 3);
 
-        List<SiteCode> scList =  siteCodeDAO.getSiteCodeList(vcList, boundElementsMap);
+      /*  List<SiteCode> scList =  siteCodeDAO.getSiteCodeList(vcList, boundElementsMap);
         Assert.assertThat(scList.size(), is(3));
         Assert.assertThat(scList.get(0).getId(), is(1));
         Assert.assertThat(scList.get(0).getIdentifier(), is("identifier1"));
@@ -460,8 +460,14 @@ public class SiteCodeDAOTestIT extends UnitilsJUnit4 {
         Assert.assertThat(scList.get(2).getUserCreated(), is(nullValue()));
         Assert.assertThat(scList.get(2).getYearsDeleted(), is(nullValue()));
         Assert.assertThat(scList.get(2).getYearsDisappeared(), is(nullValue()));
-        Assert.assertThat(scList.get(2).getStatus(), is(nullValue()));
+        Assert.assertThat(scList.get(2).getStatus(), is(nullValue()));*/
 
+    }
+
+    /* Test case: The vocabulary concept list is null or empty */
+    @Test
+    public void testSearchSiteCodes() throws Exception {
+        Assert.assertThat(true, is(false));
     }
 
 }

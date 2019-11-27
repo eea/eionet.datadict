@@ -118,11 +118,21 @@ public interface ISiteCodeDAO {
     Map<Integer, String> getBoundElementIdAndValue(Integer vcId,List<Integer> dataElementIds);
 
     /**
-     * Returns a list of SiteCode objects which contains information for the codes.
+     * Creates the query for site codes and retrieves the site code list
      *
-     * @param vocabularyConcepts the site codes
-     * @param elementMap a hashmap that contains the data element' s identifier and id.
+     * @param filter filtering
+     * @param elementMap map for elements' identifier and id
      * @return a list of site codes
      */
-    List<SiteCode> getSiteCodeList(List<VocabularyConcept> vocabularyConcepts, Map<String, Integer> elementMap) throws ParseException;
+    List<SiteCode> createQueryAndRetrieveSiteCodes(SiteCodeFilter filter, Map<String, Integer> elementMap);
+
+    /**
+     * Executes a query and returns a site code list
+     *
+     * @param query the sql query
+     * @param params the parameters for the query
+     * @param elementMap map for elements' identifier and id
+     * @return a list of site codes
+     */
+    List<SiteCode> getSiteCodeList(String query, Map<String, Object> params, Map<String, Integer> elementMap);
 }
