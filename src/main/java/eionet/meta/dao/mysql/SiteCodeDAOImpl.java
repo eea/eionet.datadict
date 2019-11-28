@@ -142,7 +142,7 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         // sorting
         if (StringUtils.isNotEmpty(filter.getSortProperty())) {
             if (filter.getSortProperty().equals("identifier")) {
-                sql.append("order by IDENTIFIER + 0");
+                sql.append("order by vc.IDENTIFIER + 0");
             } else {
                 sql.append("order by " + filter.getSortProperty());
             }
@@ -152,7 +152,7 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
                 sql.append(" DESC ");
             }
         } else {
-            sql.append("order by IDENTIFIER + 0 ");
+            sql.append("order by vc.IDENTIFIER + 0 ");
         }
         if (filter.isUsePaging()) {
             sql.append("LIMIT ").append(filter.getOffset()).append(",").append(filter.getPageSize());
