@@ -171,7 +171,6 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
      * @return a list of site codes
      */
     public List<SiteCode> getSiteCodeList(String query, Map<String, Object> params, Map<String, Integer> elementMap) {
-
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         List<SiteCode> resultList = getNamedParameterJdbcTemplate().query(query, params, new RowMapper<SiteCode>() {
             @Override
@@ -184,12 +183,12 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
                 sc.setNotation(rs.getString("vc.NOTATION"));
 
                 if(elementMap != null && elementMap.size() != 0) {
-
                     /* Retrieve a hashmap that contains the data element's id (key) and the element's value (value)*/
                     Map<Integer, String> elementInfo = getBoundElementIdAndValue(sc.getId(), new ArrayList<>(elementMap.values()));
 
                     /*Iterate through the hashmap and fill the SiteCode object*/
                     for (Map.Entry<Integer, String> entry : elementInfo.entrySet()) {
+
                         /* Get element idntifier based on element id*/
                         Set<String> elementIdentifierSet = Util.getKeysByValue(elementMap, entry.getKey());
 
@@ -273,7 +272,7 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
      * {@inheritDoc}
      */
     @Override
-    public void insertUserAndDateCreatedForSiteCodes(List<VocabularyConcept> vocabularyConcepts, String userName) {
+    public void insertUserAndDateCreatedForSiteCodes(List<VocabularyConcept> vocabularyConcepts, String userName) throws Exception {
         StringBuilder sql = new StringBuilder();
         sql.append("insert into VOCABULARY_CONCEPT_ELEMENT (VOCABULARY_CONCEPT_ID, DATAELEM_ID, ELEMENT_VALUE) ");
         sql.append("values (:vocabularyConceptId, :dataElemId, :elementValue)");
@@ -291,28 +290,39 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         /* Create a hashmap with key being the identifier and value being the id of the element*/
         Map<String, Integer> elementMap = dataElementDAO.getMultipleCommonDataElementIds(elementIdentifiers);
 
-        LOGGER.info(String.format("Data element id for identifier '%s' is #%s", SiteCodeBoundElementIdentifiers.DATE_CREATED.getIdentifier(), elementMap.get(SiteCodeBoundElementIdentifiers.DATE_CREATED.getIdentifier())));
-        LOGGER.info(String.format("Data element id for identifier '%s' is #%s", SiteCodeBoundElementIdentifiers.USER_CREATED.getIdentifier(), elementMap.get(SiteCodeBoundElementIdentifiers.USER_CREATED.getIdentifier())));
+        if (elementMap.containsKey(SiteCodeBoundElementIdentifiers.DATE_CREATED.getIdentifier())) {
+            LOGGER.info(String.format("Data element id for identifier '%s' is #%s", SiteCodeBoundElementIdentifiers.DATE_CREATED.getIdentifier(), elementMap.get(SiteCodeBoundElementIdentifiers.DATE_CREATED.getIdentifier())));
+        }
+        else{
+            String exMsg = String.format("Data element with identifier '%s' doesn't exist", SiteCodeBoundElementIdentifiers.DATE_CREATED.getIdentifier());
+            throw new Exception(exMsg);
+        }
+        if (elementMap.containsKey(SiteCodeBoundElementIdentifiers.USER_CREATED.getIdentifier())) {
+            LOGGER.info(String.format("Data element id for identifier '%s' is #%s", SiteCodeBoundElementIdentifiers.USER_CREATED.getIdentifier(), elementMap.get(SiteCodeBoundElementIdentifiers.USER_CREATED.getIdentifier())));
+        }
+        else{
+            String exMsg = String.format("Data element with identifier '%s' doesn't exist", SiteCodeBoundElementIdentifiers.USER_CREATED.getIdentifier());
+            throw new Exception(exMsg);
+        }
 
         int batchValuesCounter = 0;
-        for (int i = 0; i < vocabularyConcepts.size(); i++) {
+        for (VocabularyConcept vocabularyConcept : vocabularyConcepts) {
             //insert date created information
             Map<String, Object> params = new HashMap<String, Object>();
-            params.put("vocabularyConceptId", vocabularyConcepts.get(i).getId());
+            params.put("vocabularyConceptId", vocabularyConcept.getId());
             params.put("dataElemId", elementMap.get(SiteCodeBoundElementIdentifiers.DATE_CREATED.getIdentifier()));
             params.put("elementValue", dateCreated);
             batchValues[batchValuesCounter] = params;
             batchValuesCounter++;
 
             //insert user created information
-            params.clear();
-            params.put("vocabularyConceptId", vocabularyConcepts.get(i).getId());
-            params.put("dataElemId", elementMap.get(SiteCodeBoundElementIdentifiers.USER_CREATED.getIdentifier()));
-            params.put("elementValue", userName);
-            batchValues[batchValuesCounter] = params;
+            Map<String, Object> params2 = new HashMap<String, Object>();
+            params2.put("vocabularyConceptId", vocabularyConcept.getId());
+            params2.put("dataElemId", elementMap.get(SiteCodeBoundElementIdentifiers.USER_CREATED.getIdentifier()));
+            params2.put("elementValue", userName);
+            batchValues[batchValuesCounter] = params2;
             batchValuesCounter++;
         }
-
         getNamedParameterJdbcTemplate().batchUpdate(sql.toString(), batchValues);
     }
 
@@ -361,39 +371,39 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
             batchValuesCounter++;
 
             //insert initial site name information
-            params.clear();
-            params.put("vocabularyConceptId", freeSiteCodes.get(i).getId());
-            params.put("dataElemId", elementMap.get(SiteCodeBoundElementIdentifiers.INITIAL_SITE_NAME.getIdentifier()));
+            Map<String, Object> params1 = new HashMap<String, Object>();
+            params1.put("vocabularyConceptId", freeSiteCodes.get(i).getId());
+            params1.put("dataElemId", elementMap.get(SiteCodeBoundElementIdentifiers.INITIAL_SITE_NAME.getIdentifier()));
             if (siteNames.length > i && siteNames[i] != null) {
-                params.put("elementValue", siteNames[i]);
+                params1.put("elementValue", siteNames[i]);
             } else {
-                params.put("elementValue", "");
+                params1.put("elementValue", "");
             }
-            batchValues[batchValuesCounter] = params;
+            batchValues[batchValuesCounter] = params1;
             batchValuesCounter++;
 
             //insert status information
-            params.clear();
-            params.put("vocabularyConceptId", freeSiteCodes.get(i).getId());
-            params.put("dataElemId", elementMap.get(SiteCodeBoundElementIdentifiers.STATUS.getIdentifier()));
-            params.put("elementValue", SiteCodeStatus.ALLOCATED.name());
-            batchValues[batchValuesCounter] = params;
+            Map<String, Object> params2 = new HashMap<String, Object>();
+            params2.put("vocabularyConceptId", freeSiteCodes.get(i).getId());
+            params2.put("dataElemId", elementMap.get(SiteCodeBoundElementIdentifiers.STATUS.getIdentifier()));
+            params2.put("elementValue", SiteCodeStatus.ALLOCATED.name());
+            batchValues[batchValuesCounter] = params2;
             batchValuesCounter++;
 
             //insert date allocated information
-            params.clear();
-            params.put("vocabularyConceptId", freeSiteCodes.get(i).getId());
-            params.put("dataElemId", elementMap.get(SiteCodeBoundElementIdentifiers.DATE_ALLOCATED.getIdentifier()));
-            params.put("elementValue", allocationTime);
-            batchValues[batchValuesCounter] = params;
+            Map<String, Object> params3 = new HashMap<String, Object>();
+            params3.put("vocabularyConceptId", freeSiteCodes.get(i).getId());
+            params3.put("dataElemId", elementMap.get(SiteCodeBoundElementIdentifiers.DATE_ALLOCATED.getIdentifier()));
+            params3.put("elementValue", allocationTime);
+            batchValues[batchValuesCounter] = params3;
             batchValuesCounter++;
 
             //insert user allocated information
-            params.clear();
-            params.put("vocabularyConceptId", freeSiteCodes.get(i).getId());
-            params.put("dataElemId", elementMap.get(SiteCodeBoundElementIdentifiers.USER_ALLOCATED.getIdentifier()));
-            params.put("elementValue", userName);
-            batchValues[batchValuesCounter] = params;
+            Map<String, Object> params4 = new HashMap<String, Object>();
+            params4.put("vocabularyConceptId", freeSiteCodes.get(i).getId());
+            params4.put("dataElemId", elementMap.get(SiteCodeBoundElementIdentifiers.USER_ALLOCATED.getIdentifier()));
+            params4.put("elementValue", userName);
+            batchValues[batchValuesCounter] = params4;
             batchValuesCounter++;
         }
 
