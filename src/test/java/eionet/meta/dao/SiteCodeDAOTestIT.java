@@ -5,8 +5,12 @@ import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyType;
 import eionet.meta.service.DBUnitHelper;
 import eionet.meta.service.data.SiteCode;
+import eionet.meta.service.data.SiteCodeFilter;
+import eionet.meta.service.data.SiteCodeResult;
+import org.displaytag.properties.SortOrderEnum;
 import org.junit.Assert;
 import org.junit.Test;
+import org.quartz.SimpleTrigger;
 import org.unitils.UnitilsJUnit4;
 import org.unitils.spring.annotation.SpringApplicationContext;
 import org.unitils.spring.annotation.SpringBeanByType;
@@ -420,10 +424,315 @@ public class SiteCodeDAOTestIT extends UnitilsJUnit4 {
 
     }
 
-    /* Test case: The vocabulary concept list is null or empty */
+    /* Test case: the site code list is null */
+    @Test(expected = Exception.class)
+    public void testAllocateSiteCodesSiteCodesDontExist() throws Exception {
+        String username = "test_user";
+        String countryCode = "testCountryCode";
+        String[] siteNames = new String[3];
+        siteNames[0] = "a";
+        siteNames[1] = "b";
+        siteNames[2] = "c";
+        Date allocationTime = new Date();
+        siteCodeDAO.allocateSiteCodes(null, countryCode, username, siteNames, allocationTime);
+    }
+
+    /* Test case: the site code list is empty*/
+    @Test(expected = Exception.class)
+    public void testAllocateSiteCodesEmptySiteCodes() throws Exception {
+        String username = "test_user";
+        String countryCode = "testCountryCode";
+        String[] siteNames = new String[3];
+        siteNames[0] = "a";
+        siteNames[1] = "b";
+        siteNames[2] = "c";
+        Date allocationTime = new Date();
+        List<SiteCode> scList = new ArrayList<>();
+        siteCodeDAO.allocateSiteCodes(scList, countryCode, username, siteNames, allocationTime);
+    }
+
+    /* Test case: Data elements don't exist*/
+    @Test(expected = Exception.class)
+    public void testAllocateSiteCodesDataElementDoesntExist() throws Exception {
+        DBUnitHelper.loadData("seed-sitecode-countryCode-not-exists.xml");
+        String username = "test_user";
+        String countryCode = "testCountryCode";
+        String[] siteNames = new String[3];
+        siteNames[0] = "a";
+        siteNames[1] = "b";
+        siteNames[2] = "c";
+        Date allocationTime = new Date();
+        siteCodeDAO.allocateSiteCodes(null, countryCode, username, siteNames, allocationTime);
+    }
+
+
+    /* Test case: successful allocation */
     @Test
-    public void testSearchSiteCodes() throws Exception {
-     //   Assert.assertThat(true, is(false));
+    public void testAllocateSiteCodesSiteCodesesAndElementsExist() throws Exception {
+        DBUnitHelper.loadData("seed-sitecode-allocate.xml");
+        String username = "test_user";
+        String countryCode = "testCountryCode";
+        String[] siteNames = new String[3];
+        siteNames[0] = "a";
+        siteNames[1] = "b";
+        siteNames[2] = "c";
+        Date allocationTime = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String expectedTime = formatter.format(allocationTime);
+
+        List<SiteCode> scList = new ArrayList<>();
+        SiteCode sc1 = new SiteCode();
+        sc1.setId(1);
+        SiteCode sc2 = new SiteCode();
+        sc2.setId(2);
+        SiteCode sc3 = new SiteCode();
+        sc3.setId(5);
+        scList.add(sc1);
+        scList.add(sc2);
+        scList.add(sc3);
+        siteCodeDAO.allocateSiteCodes(scList, countryCode, username, siteNames, allocationTime);
+
+        List<Integer> boundElementIds = new ArrayList<>();
+        boundElementIds.add(1);
+        boundElementIds.add(2);
+        boundElementIds.add(3);
+        boundElementIds.add(4);
+        boundElementIds.add(5);
+        boundElementIds.add(6);
+        boundElementIds.add(7);
+
+        Map<Integer, String> elementMap1 = siteCodeDAO.getBoundElementIdAndValue(1, boundElementIds);
+        Assert.assertThat(elementMap1.size(), is(5));
+        Assert.assertThat(elementMap1.get(1), is(countryCode));
+        Assert.assertThat(elementMap1.get(2), is(SiteCodeStatus.ALLOCATED.name()));
+        Assert.assertThat(elementMap1.get(3), is("a"));
+        Assert.assertThat(elementMap1.get(6), is(expectedTime));
+        Assert.assertThat(elementMap1.get(7), is(username));
+
+        Map<Integer, String> elementMap2 = siteCodeDAO.getBoundElementIdAndValue(2, boundElementIds);
+        Assert.assertThat(elementMap2.size(), is(5));
+        Assert.assertThat(elementMap2.get(1), is(countryCode));
+        Assert.assertThat(elementMap2.get(2), is(SiteCodeStatus.ALLOCATED.name()));
+        Assert.assertThat(elementMap2.get(3), is("b"));
+        Assert.assertThat(elementMap2.get(6), is(expectedTime));
+        Assert.assertThat(elementMap2.get(7), is(username));
+
+        Map<Integer, String> elementMap3 = siteCodeDAO.getBoundElementIdAndValue(5, boundElementIds);
+        Assert.assertThat(elementMap3.size(), is(5));
+        Assert.assertThat(elementMap3.get(1), is(countryCode));
+        Assert.assertThat(elementMap3.get(2), is(SiteCodeStatus.ALLOCATED.name()));
+        Assert.assertThat(elementMap3.get(3), is("c"));
+        Assert.assertThat(elementMap3.get(6), is(expectedTime));
+        Assert.assertThat(elementMap3.get(7), is(username));
+
+    }
+
+    /* Test case: successful allocation but with only one site name*/
+    @Test
+    public void testAllocateSiteCodesOneSiteName() throws Exception {
+        DBUnitHelper.loadData("seed-sitecode-allocate.xml");
+        String username = "test_user";
+        String countryCode = "testCountryCode";
+        String[] siteNames = new String[1];
+        siteNames[0] = "a";
+        Date allocationTime = new Date();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String expectedTime = formatter.format(allocationTime);
+
+        List<SiteCode> scList = new ArrayList<>();
+        SiteCode sc1 = new SiteCode();
+        sc1.setId(1);
+        SiteCode sc2 = new SiteCode();
+        sc2.setId(2);
+        SiteCode sc3 = new SiteCode();
+        sc3.setId(5);
+        scList.add(sc1);
+        scList.add(sc2);
+        scList.add(sc3);
+        siteCodeDAO.allocateSiteCodes(scList, countryCode, username, siteNames, allocationTime);
+
+        List<Integer> boundElementIds = new ArrayList<>();
+        boundElementIds.add(1);
+        boundElementIds.add(2);
+        boundElementIds.add(3);
+        boundElementIds.add(4);
+        boundElementIds.add(5);
+        boundElementIds.add(6);
+        boundElementIds.add(7);
+
+        Map<Integer, String> elementMap1 = siteCodeDAO.getBoundElementIdAndValue(1, boundElementIds);
+        Assert.assertThat(elementMap1.size(), is(5));
+        Assert.assertThat(elementMap1.get(1), is(countryCode));
+        Assert.assertThat(elementMap1.get(2), is(SiteCodeStatus.ALLOCATED.name()));
+        Assert.assertThat(elementMap1.get(3), is("a"));
+        Assert.assertThat(elementMap1.get(6), is(expectedTime));
+        Assert.assertThat(elementMap1.get(7), is(username));
+
+        Map<Integer, String> elementMap2 = siteCodeDAO.getBoundElementIdAndValue(2, boundElementIds);
+        Assert.assertThat(elementMap2.size(), is(5));
+        Assert.assertThat(elementMap2.get(1), is(countryCode));
+        Assert.assertThat(elementMap2.get(2), is(SiteCodeStatus.ALLOCATED.name()));
+        Assert.assertThat(elementMap2.get(3), is(""));
+        Assert.assertThat(elementMap2.get(6), is(expectedTime));
+        Assert.assertThat(elementMap2.get(7), is(username));
+
+        Map<Integer, String> elementMap3 = siteCodeDAO.getBoundElementIdAndValue(5, boundElementIds);
+        Assert.assertThat(elementMap3.size(), is(5));
+        Assert.assertThat(elementMap3.get(1), is(countryCode));
+        Assert.assertThat(elementMap3.get(2), is(SiteCodeStatus.ALLOCATED.name()));
+        Assert.assertThat(elementMap3.get(3), is(""));
+        Assert.assertThat(elementMap3.get(6), is(expectedTime));
+        Assert.assertThat(elementMap3.get(7), is(username));
+
+    }
+
+    /* Test case: the filter is null*/
+    @Test(expected = Exception.class)
+    public void testSearchSiteCodesNullFilter() throws Exception {
+        siteCodeDAO.searchSiteCodes(null);
+    }
+
+    /* Test case: search for available site codes*/
+    @Test
+    public void testSearchSiteCodesForAllocation() throws Exception {
+        DBUnitHelper.loadData("seed-sitecode-search.xml");
+        SiteCodeFilter siteCodeFilter = new SiteCodeFilter();
+        siteCodeFilter.setPageNumber(1);
+        siteCodeFilter.setUsePaging(false);
+        siteCodeFilter.setStatus(SiteCodeStatus.AVAILABLE);
+        siteCodeFilter.setSortOrder(SortOrderEnum.ASCENDING);
+        siteCodeFilter.setSortProperty("VOCABULARY_CONCEPT_ID");
+
+        SiteCodeResult result = siteCodeDAO.searchSiteCodes(siteCodeFilter);
+        Assert.assertThat(result.getTotalItems(), is(3));
+        Assert.assertThat(result.getList().size(), is(3));
+
+        Assert.assertThat(result.getList().get(0).getId(), is(2));
+        Assert.assertThat(result.getList().get(0).getIdentifier(), is("L"));
+        Assert.assertThat(result.getList().get(0).getLabel(), is("test2"));
+        Assert.assertThat(result.getList().get(0).getDefinition(), is("test2"));
+        Assert.assertThat(result.getList().get(0).getNotation(), is("test2"));
+        Assert.assertThat(result.getList().get(0).getCountryCode(), is("testCountryCode"));
+        Assert.assertThat(result.getList().get(0).getInitialSiteName(), is("site name"));
+        Assert.assertThat(result.getList().get(0).getSiteCodeStatus(), is(SiteCodeStatus.AVAILABLE));
+        Assert.assertThat(result.getList().get(0).getDateAllocated(), is(nullValue()));
+        Assert.assertThat(result.getList().get(0).getDateCreated(), is(nullValue()));
+        Assert.assertThat(result.getList().get(0).getUserAllocated(), is(nullValue()));
+        Assert.assertThat(result.getList().get(0).getUserCreated(), is(nullValue()));
+        Assert.assertThat(result.getList().get(0).getYearsDeleted(), is(nullValue()));
+        Assert.assertThat(result.getList().get(0).getYearsDisappeared(), is(nullValue()));
+        Assert.assertThat(result.getList().get(0).getStatus(), is(nullValue()));
+
+        Assert.assertThat(result.getList().get(1).getId(), is(6));
+        Assert.assertThat(result.getList().get(1).getIdentifier(), is("Q"));
+        Assert.assertThat(result.getList().get(1).getLabel(), is("test6"));
+        Assert.assertThat(result.getList().get(1).getDefinition(), is("test6"));
+        Assert.assertThat(result.getList().get(1).getNotation(), is("test6"));
+        Assert.assertThat(result.getList().get(1).getCountryCode(), is("testCountryCode"));
+        Assert.assertThat(result.getList().get(1).getInitialSiteName(), is(nullValue()));
+        Assert.assertThat(result.getList().get(1).getSiteCodeStatus(), is(SiteCodeStatus.AVAILABLE));
+        Assert.assertThat(result.getList().get(1).getDateAllocated(), is(nullValue()));
+        Assert.assertThat(result.getList().get(1).getDateCreated(), is(nullValue()));
+        Assert.assertThat(result.getList().get(1).getUserAllocated(), is(nullValue()));
+        Assert.assertThat(result.getList().get(1).getUserCreated(), is(nullValue()));
+        Assert.assertThat(result.getList().get(1).getYearsDeleted(), is(nullValue()));
+        Assert.assertThat(result.getList().get(1).getYearsDisappeared(), is(nullValue()));
+        Assert.assertThat(result.getList().get(1).getStatus(), is(nullValue()));
+
+        Assert.assertThat(result.getList().get(2).getId(), is(7));
+        Assert.assertThat(result.getList().get(2).getIdentifier(), is("K"));
+        Assert.assertThat(result.getList().get(2).getLabel(), is("test7"));
+        Assert.assertThat(result.getList().get(2).getDefinition(), is("test7"));
+        Assert.assertThat(result.getList().get(2).getNotation(), is("test7"));
+        Assert.assertThat(result.getList().get(2).getCountryCode(), is(nullValue()));
+        Assert.assertThat(result.getList().get(2).getInitialSiteName(), is(nullValue()));
+        Assert.assertThat(result.getList().get(2).getSiteCodeStatus(), is(SiteCodeStatus.AVAILABLE));
+        Assert.assertThat(result.getList().get(2).getDateAllocated(), is(nullValue()));
+        Assert.assertThat(result.getList().get(2).getDateCreated(), is(nullValue()));
+        Assert.assertThat(result.getList().get(2).getUserAllocated(), is(nullValue()));
+        Assert.assertThat(result.getList().get(2).getUserCreated(), is(nullValue()));
+        Assert.assertThat(result.getList().get(2).getYearsDeleted(), is(nullValue()));
+        Assert.assertThat(result.getList().get(2).getYearsDisappeared(), is(nullValue()));
+        Assert.assertThat(result.getList().get(2).getStatus(), is(nullValue()));
+
+    }
+
+    /* Test case: retrieve all site codes*/
+    @Test
+    public void testSearchSiteCodesGetAll() throws Exception {
+        DBUnitHelper.loadData("seed-sitecode-countryCode-not-exists.xml");
+        SiteCodeFilter siteCodeFilter = new SiteCodeFilter();
+        siteCodeFilter.setSortOrder(SortOrderEnum.ASCENDING);
+        siteCodeFilter.setSortProperty("VOCABULARY_CONCEPT_ID");
+
+        SiteCodeResult result = siteCodeDAO.searchSiteCodes(siteCodeFilter);
+        Assert.assertThat(result.getTotalItems(), is(4));
+        Assert.assertThat(result.getList().size(), is(4));
+
+        Assert.assertThat(result.getList().get(0).getId(), is(1));
+        Assert.assertThat(result.getList().get(0).getIdentifier(), is("C"));
+        Assert.assertThat(result.getList().get(0).getLabel(), is("test"));
+        Assert.assertThat(result.getList().get(0).getDefinition(), is("test"));
+        Assert.assertThat(result.getList().get(0).getNotation(), is("test"));
+        Assert.assertThat(result.getList().get(0).getCountryCode(), is(nullValue()));
+        Assert.assertThat(result.getList().get(0).getInitialSiteName(), is(nullValue()));
+        Assert.assertThat(result.getList().get(0).getSiteCodeStatus(), is(SiteCodeStatus.AVAILABLE));
+        Assert.assertThat(result.getList().get(0).getDateAllocated(), is(nullValue()));
+        Assert.assertThat(result.getList().get(0).getDateCreated(), is(nullValue()));
+        Assert.assertThat(result.getList().get(0).getUserAllocated(), is(nullValue()));
+        Assert.assertThat(result.getList().get(0).getUserCreated(), is(nullValue()));
+        Assert.assertThat(result.getList().get(0).getYearsDeleted(), is(nullValue()));
+        Assert.assertThat(result.getList().get(0).getYearsDisappeared(), is(nullValue()));
+        Assert.assertThat(result.getList().get(0).getStatus(), is(nullValue()));
+
+        Assert.assertThat(result.getList().get(1).getId(), is(2));
+        Assert.assertThat(result.getList().get(1).getIdentifier(), is("L"));
+        Assert.assertThat(result.getList().get(1).getLabel(), is("test"));
+        Assert.assertThat(result.getList().get(1).getDefinition(), is("test"));
+        Assert.assertThat(result.getList().get(1).getNotation(), is("test"));
+        Assert.assertThat(result.getList().get(1).getCountryCode(), is("country1"));
+        Assert.assertThat(result.getList().get(1).getInitialSiteName(), is(nullValue()));
+        Assert.assertThat(result.getList().get(1).getSiteCodeStatus(), is(nullValue()));
+        Assert.assertThat(result.getList().get(1).getDateAllocated(), is(nullValue()));
+        Assert.assertThat(result.getList().get(1).getDateCreated(), is(nullValue()));
+        Assert.assertThat(result.getList().get(1).getUserAllocated(), is(nullValue()));
+        Assert.assertThat(result.getList().get(1).getUserCreated(), is(nullValue()));
+        Assert.assertThat(result.getList().get(1).getYearsDeleted(), is(nullValue()));
+        Assert.assertThat(result.getList().get(1).getYearsDisappeared(), is(nullValue()));
+        Assert.assertThat(result.getList().get(1).getStatus(), is(nullValue()));
+
+        Assert.assertThat(result.getList().get(2).getId(), is(3));
+        Assert.assertThat(result.getList().get(2).getIdentifier(), is("R"));
+        Assert.assertThat(result.getList().get(2).getLabel(), is("test"));
+        Assert.assertThat(result.getList().get(2).getDefinition(), is("test"));
+        Assert.assertThat(result.getList().get(2).getNotation(), is("test"));
+        Assert.assertThat(result.getList().get(2).getCountryCode(), is("country2"));
+        Assert.assertThat(result.getList().get(2).getInitialSiteName(), is(nullValue()));
+        Assert.assertThat(result.getList().get(2).getSiteCodeStatus(), is(SiteCodeStatus.ASSIGNED));
+        Assert.assertThat(result.getList().get(2).getDateAllocated(), is(nullValue()));
+        Assert.assertThat(result.getList().get(2).getDateCreated(), is(nullValue()));
+        Assert.assertThat(result.getList().get(2).getUserAllocated(), is(nullValue()));
+        Assert.assertThat(result.getList().get(2).getUserCreated(), is(nullValue()));
+        Assert.assertThat(result.getList().get(2).getYearsDeleted(), is(nullValue()));
+        Assert.assertThat(result.getList().get(2).getYearsDisappeared(), is(nullValue()));
+        Assert.assertThat(result.getList().get(2).getStatus(), is(nullValue()));
+
+        Assert.assertThat(result.getList().get(3).getId(), is(4));
+        Assert.assertThat(result.getList().get(3).getIdentifier(), is("T"));
+        Assert.assertThat(result.getList().get(3).getLabel(), is("test"));
+        Assert.assertThat(result.getList().get(3).getDefinition(), is("test"));
+        Assert.assertThat(result.getList().get(3).getNotation(), is("test"));
+        Assert.assertThat(result.getList().get(3).getCountryCode(), is("country3"));
+        Assert.assertThat(result.getList().get(3).getInitialSiteName(), is(nullValue()));
+        Assert.assertThat(result.getList().get(3).getSiteCodeStatus(), is(SiteCodeStatus.AVAILABLE));
+        Assert.assertThat(result.getList().get(3).getDateAllocated(), is(nullValue()));
+        Assert.assertThat(result.getList().get(3).getDateCreated(), is(nullValue()));
+        Assert.assertThat(result.getList().get(3).getUserAllocated(), is(nullValue()));
+        Assert.assertThat(result.getList().get(3).getUserCreated(), is(nullValue()));
+        Assert.assertThat(result.getList().get(3).getYearsDeleted(), is(nullValue()));
+        Assert.assertThat(result.getList().get(3).getYearsDisappeared(), is(nullValue()));
+        Assert.assertThat(result.getList().get(3).getStatus(), is(nullValue()));
+
     }
 
 }

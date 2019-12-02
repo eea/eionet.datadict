@@ -68,7 +68,7 @@ public interface ISiteCodeDAO {
      *            allocation time
      */
     void allocateSiteCodes(List<SiteCode> freeSiteCodes, String countryCode, String userName, String[] siteNames,
-                           Date allocationTime);
+                           Date allocationTime) throws Exception;
 
     /**
      * Returns the first vocabulary folder Id where type is SITE_CODE.

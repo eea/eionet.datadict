@@ -137,7 +137,6 @@ public class SiteCodeServiceImpl implements ISiteCodeService {
         siteCodeFilter.setUsePaging(false);
         siteCodeFilter.setStatus(SiteCodeStatus.AVAILABLE);
         try {
-            //TODO change the following method
             SiteCodeResult freeSiteCodes = siteCodeDao.searchSiteCodes(siteCodeFilter);
 
             Calendar c = Calendar.getInstance();

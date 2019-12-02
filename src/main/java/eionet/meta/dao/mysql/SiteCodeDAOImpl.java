@@ -34,6 +34,7 @@ import eionet.meta.dao.IDataElementDAO;
 import eionet.meta.dao.IVocabularyConceptDAO;
 import eionet.util.Util;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.EnumUtils;
 import org.displaytag.properties.SortOrderEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
@@ -199,7 +200,12 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
                         } else if (identifier.equals(SiteCodeBoundElementIdentifiers.INITIAL_SITE_NAME.getIdentifier())) {
                             sc.setInitialSiteName(entry.getValue());
                         } else if (identifier.equals(SiteCodeBoundElementIdentifiers.STATUS.getIdentifier())) {
-                            sc.setSiteCodeStatus(SiteCodeStatus.valueOf(entry.getValue()));
+                            if(EnumUtils.isValidEnum(SiteCodeStatus.class, entry.getValue())){
+                                sc.setSiteCodeStatus(SiteCodeStatus.valueOf(entry.getValue()));
+                            }
+                            else{
+                                sc.setSiteCodeStatus(null);
+                            }
                         } else if (identifier.equals(SiteCodeBoundElementIdentifiers.DATE_ALLOCATED.getIdentifier())) {
                             try {
                                 sc.setDateAllocated(formatter.parse(entry.getValue()));
@@ -331,7 +337,11 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
      */
     @Override
     public void allocateSiteCodes(List<SiteCode> freeSiteCodes, String countryCode, String userName, String[] siteNames,
-            Date allocationTime) {
+            Date allocationTime) throws Exception {
+
+        if(freeSiteCodes == null || freeSiteCodes.size() == 0){
+            throw new Exception("No site codes were allocated");
+        }
 
         StringBuilder sql = new StringBuilder();
         sql.append("insert into VOCABULARY_CONCEPT_ELEMENT (VOCABULARY_CONCEPT_ID, DATAELEM_ID, ELEMENT_VALUE) ");
