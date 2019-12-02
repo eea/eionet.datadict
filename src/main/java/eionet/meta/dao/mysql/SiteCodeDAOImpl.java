@@ -204,7 +204,7 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
                             try {
                                 sc.setDateAllocated(formatter.parse(entry.getValue()));
                             } catch (ParseException e) {
-                                LOGGER.error("Error while parsing allocated date for site code with element id: #%d", entry.getKey());
+                                LOGGER.error("Error while parsing allocated date for site code with element id: #" +entry.getKey());
                             }
                         } else if (identifier.equals(SiteCodeBoundElementIdentifiers.USER_ALLOCATED.getIdentifier())) {
                             sc.setUserAllocated(entry.getValue());
