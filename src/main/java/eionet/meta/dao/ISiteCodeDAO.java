@@ -44,13 +44,13 @@ public interface ISiteCodeDAO {
      * @param filter
      * @return SiteCodeResult object with found rows.
      */
-    SiteCodeResult searchSiteCodes(SiteCodeFilter filter) throws ParseException;
+    SiteCodeResult searchSiteCodes(SiteCodeFilter filter) throws Exception;
 
     /**
      * @param vocabularyConcepts
      * @param userName
      */
-    void insertUserAndDateCreatedForSiteCodes(List<VocabularyConcept> vocabularyConcepts, String userName) throws Exception;
+    void insertAvailableSiteCodes(List<VocabularyConcept> vocabularyConcepts, String userName) throws Exception;
 
     /**
      * Allocates the given site codes for country. If Site names are provided, then this information is stored as for information.
@@ -124,7 +124,7 @@ public interface ISiteCodeDAO {
      * @param elementMap map for elements' identifier and id
      * @return a list of site codes
      */
-    List<SiteCode> createQueryAndRetrieveSiteCodes(SiteCodeFilter filter, Map<String, Integer> elementMap);
+    List<SiteCode> createQueryAndRetrieveSiteCodes(SiteCodeFilter filter, Map<String, Integer> elementMap) throws Exception;
 
     /**
      * Executes a query and returns a site code list
@@ -135,4 +135,14 @@ public interface ISiteCodeDAO {
      * @return a list of site codes
      */
     List<SiteCode> getSiteCodeList(String query, Map<String, Object> params, Map<String, Integer> elementMap);
+
+    /**
+     * Updates the status of the site code
+     *
+     * @param vcIds the list of vocabulary Concept ids that the status will be updated for
+     * @param statusId the element's id
+     * @param status the status
+     * @return
+     */
+    void updateSiteCodeStatus(List<Integer> vcIds, Integer statusId, String status) throws Exception;
 }

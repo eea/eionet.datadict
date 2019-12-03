@@ -1111,7 +1111,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
             VocabularyConceptResult newConceptsResult = vocabularyConceptDAO.searchVocabularyConcepts(filter);
 
             // Insert values for bound elements user and date created for Site code records
-            siteCodeDAO.insertUserAndDateCreatedForSiteCodes(newConceptsResult.getList(), userName);
+            siteCodeDAO.insertAvailableSiteCodes(newConceptsResult.getList(), userName);
             LOGGER.info(userName + " created " + amount + " new site codes.");
 
         } catch (Exception e) {
