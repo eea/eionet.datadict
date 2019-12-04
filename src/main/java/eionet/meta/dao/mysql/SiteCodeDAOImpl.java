@@ -76,9 +76,11 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
 
         /* Create a hashmap with key being the identifier and value being the id of the element*/
         Map<String, Integer> elementMap = dataElementDAO.getMultipleCommonDataElementIds(elementIdentifiers);
+        LOGGER.info(String.format("Retrieved ids for site code bound elements"));
 
         /* Create a list of site codes */
         List<SiteCode> scList = createQueryAndRetrieveSiteCodes(filter, elementMap);
+        LOGGER.info(String.format("Retrieved site code list"));
         SiteCodeResult result = new SiteCodeResult(scList, scList.size(), filter);
         return result;
     }
@@ -179,7 +181,12 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         if (filter.isUsePaging()) {
             sql.append("LIMIT ").append(filter.getOffset()).append(",").append(filter.getPageSize());
         }
-
+        LOGGER.debug(String.format("Query is: '%s'", sql.toString()));
+        String parameterStr = "";
+        for (Map.Entry<String, Object> entry : params.entrySet()) {
+            parameterStr += entry.getKey() + ":" + entry.getValue().toString() + " ";
+        }
+        LOGGER.debug(String.format("Parameters are: '%s'", parameterStr));
         List<SiteCode> scList = getSiteCodeList(sql.toString(), params, elementMap);
         return scList;
     }
