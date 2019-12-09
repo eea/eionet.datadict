@@ -1513,19 +1513,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             final List<RdfNamespace> nameSpaces = vocabularyService.getVocabularyNamespaces(vocabularyFolders);
             LOGGER.info(String.format("Retrieved namespaces for vocabulary #%d", vocabularyFolder.getId()));
 
-            final List<? extends VocabularyConcept> concepts;
-            if (vocabularyFolder.isSiteCodeType()) {
-                LOGGER.info(String.format("Vocabulary #%d is of 'Site Code' type", vocabularyFolder.getId()));
-                String countryCode = getContext().getRequestParameter("countryCode");
-                String identifier = getContext().getRequestParameter("identifier");
-                SiteCodeFilter siteCodeFilter = new SiteCodeFilter();
-                siteCodeFilter.setUsePaging(false);
-                siteCodeFilter.setCountryCode(countryCode);
-                siteCodeFilter.setIdentifier(identifier);
-                concepts = siteCodeService.searchSiteCodes(siteCodeFilter).getList();
-            } else {
-                concepts = vocabularyService.getAllConceptsWithAttributes(vocabularyFolder.getId());
-            }
+            final List<? extends VocabularyConcept> concepts = vocabularyService.getAllConceptsWithAttributes(vocabularyFolder.getId());
             LOGGER.info(String.format("Retrieved concepts for vocabulary #%d", vocabularyFolder.getId()));
             final String contextRoot = VocabularyFolder.getBaseUri(vocabularyFolder);
 
@@ -1542,7 +1530,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                 }
             };
             result.setFilename(vocabularyFolder.getIdentifier() + ".rdf");
-            LOGGER.info(String.format("Finished exporting rdf for vocabulary #%d", vocabularyFolder.getId()));
+            LOGGER.info(String.format("Finishing exporting rdf for vocabulary #%d", vocabularyFolder.getId()));
             return result;
         } catch (Exception e) {
             LOGGER.error("Failed to output vocabulary RDF data", e);
