@@ -1,8 +1,12 @@
 package eionet.meta.dao;
 
+import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.dao.domain.VocabularySet;
 import eionet.meta.service.DBUnitHelper;
 import eionet.util.Triple;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
@@ -11,6 +15,8 @@ import org.junit.Test;
 import org.unitils.UnitilsJUnit4;
 import org.unitils.spring.annotation.SpringApplicationContext;
 import org.unitils.spring.annotation.SpringBeanByType;
+
+import static org.hamcrest.CoreMatchers.nullValue;
 
 /**
  * 
@@ -55,5 +61,36 @@ public class VocabularyFolderDAOTestIT extends UnitilsJUnit4 {
         
         Assert.assertThat("1st concept is with ID 8",  concepts.get(0), CoreMatchers.is(8) );
         Assert.assertThat("2nd concept is with ID 10", concepts.get(1), CoreMatchers.is(10) );
+    }
+
+    @Test
+    public void testUpdateDateAndUserModifiedNullUsername(){
+        Date testDate = new Date();
+        Integer vocabularyId = 1;
+        vocabularyFolderDAO.updateDateAndUserModified(testDate, null, vocabularyId);
+
+        VocabularyFolder vf = vocabularyFolderDAO.getVocabularyFolder(vocabularyId);
+
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String expectedTime = formatter.format(testDate);
+        String actualTime = formatter.format(vf.getDateModified());
+        Assert.assertThat(actualTime, CoreMatchers.is(expectedTime) );
+        Assert.assertThat(vf.getUserModified(), CoreMatchers.is("initialUser") );
+    }
+
+    @Test
+    public void testUpdateDateAndUserModified(){
+        Date testDate = new Date();
+        String username = "test_user";
+        Integer vocabularyId = 1;
+        vocabularyFolderDAO.updateDateAndUserModified(testDate, username, vocabularyId);
+
+        VocabularyFolder vf = vocabularyFolderDAO.getVocabularyFolder(vocabularyId);
+
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String expectedTime = formatter.format(testDate);
+        String actualTime = formatter.format(vf.getDateModified());
+        Assert.assertThat(actualTime, CoreMatchers.is(expectedTime) );
+        Assert.assertThat(vf.getUserModified(), CoreMatchers.is(username) );
     }
 }

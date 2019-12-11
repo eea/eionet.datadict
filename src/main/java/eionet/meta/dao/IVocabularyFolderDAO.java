@@ -21,6 +21,7 @@
 
 package eionet.meta.dao;
 
+import java.util.Date;
 import java.util.List;
 
 import eionet.meta.dao.domain.DataElement;
@@ -284,5 +285,15 @@ public interface IVocabularyFolderDAO {
     Collection<Integer> getVocabularyIds(Collection<Integer> vocabularyConceptIds);
 
     Collection<Integer> getWorkingCopyIds(Collection<Integer> vocabularyIds);
+
+    /**
+     * Updates the date and user modified columns of Vocabulary
+     *
+     * @param dateModified
+     * @param username
+     * @param vocabularyId
+     */
+    void updateDateAndUserModified(Date dateModified, String username, Integer vocabularyId);
+
 
 }
