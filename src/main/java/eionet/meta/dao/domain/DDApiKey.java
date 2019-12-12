@@ -41,10 +41,7 @@ public class DDApiKey {
      * KEY_VALUE column for API key.
      */
     private String keyValue;
-    /**
-     * REMOTE_ADDR column for API key.
-     */
-    private String remoteAddr;
+
     /**
      * EXPIRES column for API key.
      */
@@ -78,13 +75,6 @@ public class DDApiKey {
         this.keyValue = key;
     }
 
-    public String getRemoteAddr() {
-        return remoteAddr;
-    }
-
-    public void setRemoteAddr(String remoteAddr) {
-        this.remoteAddr = remoteAddr;
-    }
 
     public Date getExpires() {
         return expires;
