@@ -299,4 +299,148 @@ public final class VocabularyJSONOutputHelper {
         generator.close();
         osw.close();
     } // end of static method writeJSON
+
+    /**
+     * Writes complete JSON to output stream.
+     * <p>
+     * NOTE: For readability purposes, nested blocks are used in this method while generating json contents.
+     * </p>
+     *
+     * @param out
+     *            output stream
+     * @param vocabulary
+     *            vocabulary base uri
+     * @param concepts
+     *            list of vocabulary concepts
+     * @param language
+     *            language for the preferred label
+     * @throws java.io.IOException
+     *             if error in I/O
+     */
+    public static void writeCompleteJSON(OutputStream out, VocabularyFolder vocabulary, List<VocabularyConcept> concepts, String language)
+            throws IOException {
+
+        //TODO add more vocabulary data
+        OutputStreamWriter osw = new OutputStreamWriter(out, "UTF-8");
+
+        JsonFactory f = new JsonFactory();
+        JsonGenerator generator = f.createGenerator(out);
+        generator.useDefaultPrettyPrinter();
+
+        language = StringUtils.trimToNull(language);
+        boolean checkLanguage = StringUtils.isNotBlank(language);
+
+        List<String> relationalDataElemIdentifiers = new ArrayList<String>();
+        relationalDataElemIdentifiers.add(BROADER);
+        relationalDataElemIdentifiers.add(NARROWER);
+
+        // start json object
+        generator.writeStartObject();
+        // add context
+        generator.writeObjectFieldStart(JSON_LD_CONTEXT);
+        {
+            generator.writeStringField(JSON_LD_BASE, VocabularyFolder.getBaseUri(vocabulary));
+            generator.writeStringField(VocabularyOutputHelper.LinkedDataNamespaces.SKOS,
+                    VocabularyOutputHelper.LinkedDataNamespaces.SKOS_NS);
+            generator.writeStringField(JSON_LD_CONCEPTS, SKOS_CONCEPT);
+            generator.writeStringField(PREF_LABEL, SKOS_PREF_LABEL);
+            for (String dataElemShortIdentifier : relationalDataElemIdentifiers) {
+                generator.writeStringField(dataElemShortIdentifier, DATA_ELEM_MAP.get(dataElemShortIdentifier));
+            }
+            generator.writeStringField(JSON_LD_LANGUAGE, StringUtils.isNotBlank(language) ? language : DEFAULT_LANGUAGE);
+        }
+        generator.writeEndObject();
+        // start writing concepts...
+        generator.writeArrayFieldStart(JSON_LD_CONCEPTS);
+        // iterate on concepts
+        for (VocabularyConcept concept : concepts) {
+            generator.writeStartObject();
+            {
+                generator.writeStringField(JSON_LD_ID, concept.getIdentifier());
+                generator.writeStringField(JSON_LD_TYPE, SKOS_CONCEPT);
+                // start writing prefLabels
+                generator.writeArrayFieldStart(PREF_LABEL);
+                {
+                    String label;
+                    String labelLang;
+                    if (checkLanguage) {
+                        List<DataElement> dataElementValuesByNameAndLang =
+                                VocabularyOutputHelper.getDataElementValuesByNameAndLang(SKOS_PREF_LABEL, language,
+                                        concept.getElementAttributes());
+                        if (dataElementValuesByNameAndLang != null && dataElementValuesByNameAndLang.size() > 0) {
+                            label = dataElementValuesByNameAndLang.get(0).getAttributeValue();
+                            labelLang = language;
+                        } else {
+                            dataElementValuesByNameAndLang =
+                                    VocabularyOutputHelper.getDataElementValuesByNameAndLang(SKOS_PREF_LABEL, DEFAULT_LANGUAGE,
+                                            concept.getElementAttributes());
+                            if (dataElementValuesByNameAndLang != null && dataElementValuesByNameAndLang.size() > 0) {
+                                label = dataElementValuesByNameAndLang.get(0).getAttributeValue();
+                            } else {
+                                label = concept.getLabel();
+                            }
+                            labelLang = DEFAULT_LANGUAGE;
+                        }
+                        generator.writeStartObject();
+                        {
+                            generator.writeStringField(JSON_LD_VALUE, label);
+                            generator.writeStringField(JSON_LD_LANGUAGE, labelLang);
+                        }
+                        generator.writeEndObject();
+                    } else {
+                        generator.writeStartObject();
+                        {
+                            generator.writeStringField(JSON_LD_VALUE, concept.getLabel());
+                            generator.writeStringField(JSON_LD_LANGUAGE, DEFAULT_LANGUAGE);
+                        }
+                        generator.writeEndObject();
+                        List<DataElement> dataElementValuesByName =
+                                VocabularyOutputHelper.getDataElementValuesByName(SKOS_PREF_LABEL, concept.getElementAttributes());
+                        if (dataElementValuesByName != null && dataElementValuesByName.size() > 0) {
+                            for (DataElement elem : dataElementValuesByName) {
+                                generator.writeStartObject();
+                                {
+                                    generator.writeStringField(JSON_LD_VALUE, elem.getAttributeValue());
+                                    generator.writeStringField(JSON_LD_LANGUAGE, elem.getAttributeLanguage());
+                                }
+                                generator.writeEndObject();
+                            }
+                        }
+                    }
+                }
+                // end writing prefLabels
+                generator.writeEndArray();
+                // write data elements
+                for (String shortDataElemIdentifier : relationalDataElemIdentifiers) {
+                    // check if it has this element
+                    List<DataElement> dataElementValuesByName =
+                            VocabularyOutputHelper.getDataElementValuesByName(DATA_ELEM_MAP.get(shortDataElemIdentifier),
+                                    concept.getElementAttributes());
+                    if (dataElementValuesByName != null && dataElementValuesByName.size() > 0) {
+                        // start writing element values
+                        generator.writeArrayFieldStart(shortDataElemIdentifier);
+                        for (DataElement elem : dataElementValuesByName) {
+                            generator.writeStartObject();
+                            {
+                                generator.writeStringField(JSON_LD_ID, elem.getRelatedConceptIdentifier());
+                            }
+                            generator.writeEndObject();
+                        }
+                        // end writing element values
+                        generator.writeEndArray();
+                    }
+                }
+            }
+            // end writing concept
+            generator.writeEndObject();
+        } // end of iteration on concepts
+        generator.writeEndArray();
+        // end of vocabulary name
+        generator.writeEndObject();
+
+        // close writer and stream
+        generator.close();
+        osw.close();
+    } // end of static method writeCompleteJSON
+
 } // end of class VocabularyJSONOutputHelper

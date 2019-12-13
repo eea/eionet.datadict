@@ -108,6 +108,8 @@ import eionet.util.VocabularyCSVOutputHelper;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
+
+import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.validator.routines.EmailValidator;
 
 /**
@@ -1805,7 +1807,13 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             StreamingResolution result = new StreamingResolution(format) {
                 @Override
                 public void stream(HttpServletResponse response) throws Exception {
-                    VocabularyJSONOutputHelper.writeJSON(response.getOutputStream(), vocabularyFolder, concepts, lang);
+                    if(Enumerations.CompleteJsonExportVocabularyIdentifiers.containsIdentifier(vocabularyFolder.getIdentifier())){
+                        VocabularyJSONOutputHelper.writeCompleteJSON(response.getOutputStream(), vocabularyFolder, concepts, lang);
+                    }
+                    else{
+                        VocabularyJSONOutputHelper.writeJSON(response.getOutputStream(), vocabularyFolder, concepts, lang);
+                    }
+
                 }
             };
 

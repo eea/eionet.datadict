@@ -263,4 +263,31 @@ public class Enumerations {
 
     }
 
+    public enum CompleteJsonExportVocabularyIdentifiers {
+        BATAELValuet1("BATAELValue1"),
+        BATAELValuet2("BATAELValue2"),
+        BATAELValue("BATAELValue"),
+        BATAELValuet3("BATAELValue3");
+
+        private final String identifier;
+
+        CompleteJsonExportVocabularyIdentifiers(String identifier) {
+            this.identifier = identifier;
+        }
+
+        public String getIdentifier() {
+            return this.identifier;
+        }
+
+        public static Boolean containsIdentifier(String str) {
+            for (CompleteJsonExportVocabularyIdentifiers value: CompleteJsonExportVocabularyIdentifiers.values()){
+                if(value.getIdentifier().equals(str)){
+                    return true;
+                }
+            }
+            return false;
+        }
+
+    }
+
 }
