@@ -264,10 +264,7 @@ public class Enumerations {
     }
 
     public enum CompleteJsonExportVocabularyIdentifiers {
-        BATAELValuet1("BATAELValue1"),
-        BATAELValuet2("BATAELValue2"),
-        BATAELValue("BATAELValue"),
-        BATAELValuet3("BATAELValue3");
+        BATAELValue("BATAELValue");
 
         private final String identifier;
 
