@@ -83,3 +83,60 @@ function toggleSelectAllForField(formId, fieldName) {
         formobj.selectAll.value = "Select all";
     }
 }
+
+/**
+ * For searching tables, schemas and data elements,
+ * the following method replaces bad characters in the URL with the escaped ones
+ */
+(function($) {
+    $(document).ready(function() {
+
+        jQuery('a[href*="searchtables"]').click(function(e) {
+            e.preventDefault();
+            window.location.href = replaceURICharacters(this.href).toString();
+        });
+
+        jQuery('a[href*="schemasets"]').click(function(e) {
+            e.preventDefault();
+            window.location.href = replaceURICharacters(this.href).toString();
+        });
+
+        jQuery('a[href*="/schema/search/"]').click(function(e) {
+            e.preventDefault();
+            window.location.href = replaceURICharacters(this.href).toString();
+        });
+
+        jQuery('a[href*="searchelements"]').click(function(e) {
+            e.preventDefault();
+            window.location.href = replaceURICharacters(this.href).toString();
+        });
+    });
+})(jQuery);
+
+/**
+ * Escape characters for URL.
+ *
+ * @param s
+ *            - The string to escape.
+ * @return escaped string.
+ */
+function replaceURICharacters(s) {
+    let escapedStr = replaceAll(s, '\\[', "%5B");
+    escapedStr = replaceAll(escapedStr, '\]', "%5D");
+    return escapedStr;
+}
+
+/**
+ * Replaces all occurences of a character in a string
+ *
+ * @param str
+ *            - The string.
+ * @param find
+ *            - The character that will be replaced.
+ * @param replace
+ *            - The replacement.
+ * @return escaped string.
+ */
+function replaceAll(str, find, replace) {
+    return str.replace(new RegExp(find, 'g'), replace);
+}
