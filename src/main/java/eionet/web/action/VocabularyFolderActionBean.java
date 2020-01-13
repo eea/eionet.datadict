@@ -1649,6 +1649,9 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                 }
 
                 File tmpCsvFile = File.createTempFile(fileName, ".tmp");
+                /* The temp file will be deleted, because due to the upgrade of apache commons-fileupload lib from 1.2.2 to 1.4,
+                 the importFileBean.save(tmpCsvFile) command will recreate the tmp file and an exception will be thrown since the file is existing.*/
+                tmpCsvFile.delete();
                 importFileBean.save(tmpCsvFile);
 
                 String taskId = this.asyncTaskManager.executeAsync(VocabularyCsvImportTask.class, 
@@ -1711,6 +1714,9 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                 }
 
                 File tmpRdfFile = File.createTempFile(fileName, ".tmp");
+                /* The temp file will be deleted, because due to the upgrade of apache commons-fileupload lib from 1.2.2 to 1.4,
+                 the importFileBean.save(tmpRdfFile) command will recreate the tmp file and an exception will be thrown since the file is existing.*/
+                tmpRdfFile.delete();
                 importFileBean.save(tmpRdfFile);
 
                 String taskId = this.asyncTaskManager.executeAsync(VocabularyRdfImportTask.class, 
