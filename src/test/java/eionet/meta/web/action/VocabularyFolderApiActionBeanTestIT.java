@@ -524,26 +524,7 @@ public class VocabularyFolderApiActionBeanTestIT extends UnitilsJUnit4 {
         Assert.assertEquals("Error message", "Cannot authorize: Expired key", response.getErrorMessage());
     } // end of test step testExpiredApiKey
 
-    /**
-     * Call api with a remote address restriction.
-     *
-     * @throws Exception if test fails
-     */
-    @Test
-    public void testApiKeyForSomeEndPoints() throws Exception {
-        MockServletContext ctx = ActionBeanUtils.getServletContext();
-        MockRoundtrip trip = new MockRoundtrip(ctx, VocabularyFolderApiActionBean.class);
-        trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
 
-        Map<String, String> jwtPayload = new HashMap<String, String>();
-        jwtPayload.put(API_KEY_IDENTIFIER_IN_JSON, "ThisKeyCanBeCalledFromSomeCertainDomains");
-
-        trip.getRequest().addHeader(JWT_API_KEY_HEADER, jwtService.sign(VALID_JWT_SECRET_KEY, VALID_JWT_AUDIENCE, jwtPayload, VALID_JWT_EXPIRATION_IN_MINUTES, VALID_JWT_SIGNING_ALGORITHM));
-        trip.execute("uploadRdf");
-        MockHttpServletResponse response = trip.getResponse();
-        Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
-        Assert.assertEquals("Error message", "Cannot authorize: Invalid remote end point", response.getErrorMessage());
-    } // end of test step testApiKeyForSomeEndPoints
 
     /**
      * Call api with a valid API key and working copy folder.

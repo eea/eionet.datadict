@@ -329,13 +329,6 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
                         }
                     }
 
-                    String remoteAddr = ddApiKey.getRemoteAddr();
-                    if (StringUtils.isNotBlank(remoteAddr)) {
-                        if (!StringUtils.equals(remoteAddr, request.getRemoteAddr()) && !StringUtils.equals(remoteAddr, request.getRemoteHost())) {
-                            LOGGER.error("uploadRdf API - Invalid remote end point");
-                            return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "Cannot authorize: Invalid remote end point", ErrorActionBean.RETURN_ERROR_EVENT);
-                        }
-                    }
 
                 } catch (Exception e) {
                     LOGGER.error("uploadRdf API - Cannot verify key", e);

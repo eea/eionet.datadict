@@ -78,8 +78,6 @@ public class WebApiAuthServiceImpl implements WebApiAuthService {
                 }
             }
 
-            this.validateRemoteHost(ddApiKey, contextInfo);
-            
             tokenUser = this.getTokenUser(jsonObject);
 
             if (StringUtils.isEmpty(tokenUser)) {
@@ -117,19 +115,7 @@ public class WebApiAuthServiceImpl implements WebApiAuthService {
         
         return jwtVerifyResult.getString(API_KEY_IDENTIFIER_IN_JSON);
     }
-    
-    protected void validateRemoteHost(DDApiKey ddApiKey, WebApiAuthInfo contextInfo) throws UserAuthenticationException {
-        String remoteAddr = ddApiKey.getRemoteAddr();
 
-        if (StringUtils.isBlank(remoteAddr)) {
-            return;
-        }
-        
-        if (!StringUtils.equals(remoteAddr, contextInfo.getRemoteAddress()) && !StringUtils.equals(remoteAddr, contextInfo.getRemoteHost())) {
-            throw new UserAuthenticationException("Invalid remote end point");
-        }
-    }
-    
     protected String getTokenUser(JSONObject jwtVerifyResult) {
         if (!jwtVerifyResult.containsKey(JWT_ISSUER)) {
             return null;
