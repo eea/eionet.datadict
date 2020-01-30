@@ -156,9 +156,12 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
                 throw new Exception(exMsg);
             }
             sql.append("inner join VOCABULARY_CONCEPT_ELEMENT vce4 on vc.VOCABULARY_CONCEPT_ID=vce4.VOCABULARY_CONCEPT_ID ");
-            sqlWhereClause.append("and vce4.DATAELEM_ID = :countryCodeElemId and vce4.ELEMENT_VALUE = :countryCode ");
+            sqlWhereClause.append("and vce4.DATAELEM_ID = :countryCodeElemId and vce4.ELEMENT_VALUE like :countryCode ");
             params.put("countryCodeElemId", elementMap.get(SiteCodeBoundElementIdentifiers.COUNTRY_CODE.getIdentifier()));
-            params.put("countryCode", filter.getCountryCode());
+            /* The symbol '%' is inserted in the beggining of the country code in order to retrieve all country codes without taking into consideration the url (rdf resource)*/
+            StringBuilder countryCode = new StringBuilder(filter.getCountryCode());
+            countryCode.insert(0, '%');
+            params.put("countryCode", countryCode.toString());
         }
 
         sql.append(sqlWhereClause);
