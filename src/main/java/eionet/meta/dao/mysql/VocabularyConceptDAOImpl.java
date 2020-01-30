@@ -450,7 +450,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
             params.put("label", label);
             params.put("definition", definition);
             params.put("notation", Integer.toString(identifier));
-            params.put("status", StandardGenericStatus.INVALID.getValue());
+            params.put("status", StandardGenericStatus.SUBMITTED.getValue());
             Date now = new Date(System.currentTimeMillis());
             params.put("acceptedDate", now);
             params.put("statusModified", now);
