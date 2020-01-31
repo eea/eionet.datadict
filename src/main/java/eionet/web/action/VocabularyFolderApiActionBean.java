@@ -435,7 +435,7 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
             }
 
             Date dateModified = new Date();
-            String userModified = Props.getRequiredProperty(PropsIF.API_USER_MODIFIED_IDENTIFIER);
+            String userModified = PropsIF.API_USER_MODIFIED_IDENTIFIER;
             vocabularyFolderDAO.updateDateAndUserModified(dateModified, userModified, vocabularyFolder.getId());
             LOGGER.info("uploadRdf API - DATE_MODIFIED was updated");
 
