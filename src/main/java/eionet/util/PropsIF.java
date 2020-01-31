@@ -226,4 +226,6 @@ public interface PropsIF {
     String DD_OWN_STATUS_VOCABULARY_IDENTIFIER = "dd.ownStatusVocabularyIdentifier";
 
     String NOTIFICATION_EMAIL_FROM="notification.email.from";
+
+    String API_USER_MODIFIED_IDENTIFIER= "external_api_request";
 }
