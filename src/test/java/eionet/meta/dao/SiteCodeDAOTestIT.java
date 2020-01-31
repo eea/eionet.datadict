@@ -472,6 +472,7 @@ public class SiteCodeDAOTestIT extends UnitilsJUnit4 {
         DBUnitHelper.loadData("seed-sitecode-allocate.xml");
         String username = "test_user";
         String countryCode = "testCountryCode";
+        String countryBaseUrl = "http://dd.eionet.europa.eu/vocabulary/common/countries/";
         String[] siteNames = new String[3];
         siteNames[0] = "a";
         siteNames[1] = "b";
@@ -503,7 +504,7 @@ public class SiteCodeDAOTestIT extends UnitilsJUnit4 {
 
         Map<Integer, String> elementMap1 = siteCodeDAO.getBoundElementIdAndValue(1, boundElementIds);
         Assert.assertThat(elementMap1.size(), is(5));
-        Assert.assertThat(elementMap1.get(1), is(countryCode));
+        Assert.assertThat(elementMap1.get(1), is(countryBaseUrl + countryCode));
         Assert.assertThat(elementMap1.get(2), is(SiteCodeStatus.ALLOCATED.name()));
         Assert.assertThat(elementMap1.get(3), is("a"));
         Assert.assertThat(elementMap1.get(6), is(expectedTime));
@@ -511,14 +512,14 @@ public class SiteCodeDAOTestIT extends UnitilsJUnit4 {
 
         Map<Integer, String> elementMap2 = siteCodeDAO.getBoundElementIdAndValue(2, boundElementIds);
         Assert.assertThat(elementMap2.size(), is(4));
-        Assert.assertThat(elementMap2.get(1), is(countryCode));
+        Assert.assertThat(elementMap2.get(1), is(countryBaseUrl + countryCode));
         Assert.assertThat(elementMap2.get(3), is("b"));
         Assert.assertThat(elementMap2.get(6), is(expectedTime));
         Assert.assertThat(elementMap2.get(7), is(username));
 
         Map<Integer, String> elementMap3 = siteCodeDAO.getBoundElementIdAndValue(5, boundElementIds);
         Assert.assertThat(elementMap3.size(), is(4));
-        Assert.assertThat(elementMap3.get(1), is(countryCode));
+        Assert.assertThat(elementMap3.get(1), is(countryBaseUrl + countryCode));
         Assert.assertThat(elementMap3.get(3), is("c"));
         Assert.assertThat(elementMap3.get(6), is(expectedTime));
         Assert.assertThat(elementMap3.get(7), is(username));
@@ -531,6 +532,7 @@ public class SiteCodeDAOTestIT extends UnitilsJUnit4 {
         DBUnitHelper.loadData("seed-sitecode-allocate.xml");
         String username = "test_user";
         String countryCode = "testCountryCode";
+        String countryBaseUrl = "http://dd.eionet.europa.eu/vocabulary/common/countries/";
         String[] siteNames = new String[1];
         siteNames[0] = "a";
         Date allocationTime = new Date();
@@ -560,7 +562,7 @@ public class SiteCodeDAOTestIT extends UnitilsJUnit4 {
 
         Map<Integer, String> elementMap1 = siteCodeDAO.getBoundElementIdAndValue(1, boundElementIds);
         Assert.assertThat(elementMap1.size(), is(5));
-        Assert.assertThat(elementMap1.get(1), is(countryCode));
+        Assert.assertThat(elementMap1.get(1), is(countryBaseUrl + countryCode));
         Assert.assertThat(elementMap1.get(2), is(SiteCodeStatus.ALLOCATED.name()));
         Assert.assertThat(elementMap1.get(3), is("a"));
         Assert.assertThat(elementMap1.get(6), is(expectedTime));
@@ -568,14 +570,14 @@ public class SiteCodeDAOTestIT extends UnitilsJUnit4 {
 
         Map<Integer, String> elementMap2 = siteCodeDAO.getBoundElementIdAndValue(2, boundElementIds);
         Assert.assertThat(elementMap2.size(), is(4));
-        Assert.assertThat(elementMap2.get(1), is(countryCode));
+        Assert.assertThat(elementMap2.get(1), is(countryBaseUrl + countryCode));
         Assert.assertThat(elementMap2.get(3), is(""));
         Assert.assertThat(elementMap2.get(6), is(expectedTime));
         Assert.assertThat(elementMap2.get(7), is(username));
 
         Map<Integer, String> elementMap3 = siteCodeDAO.getBoundElementIdAndValue(5, boundElementIds);
         Assert.assertThat(elementMap3.size(), is(4));
-        Assert.assertThat(elementMap3.get(1), is(countryCode));
+        Assert.assertThat(elementMap3.get(1), is(countryBaseUrl + countryCode));
         Assert.assertThat(elementMap3.get(3), is(""));
         Assert.assertThat(elementMap3.get(6), is(expectedTime));
         Assert.assertThat(elementMap3.get(7), is(username));
