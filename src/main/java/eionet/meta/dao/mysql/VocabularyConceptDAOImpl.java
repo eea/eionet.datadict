@@ -1045,4 +1045,24 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         return checkedOutToOriginalMappings;
     }
 
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void updateVocabularyConceptLabelStatusModifiedDate(List<Integer> vocabularyConceptIds, String label, Integer status) {
+        StringBuilder sql = new StringBuilder();
+        sql.append("update VOCABULARY_CONCEPT set LABEL = :label, STATUS = :status, STATUS_MODIFIED = :statusModified ");
+        sql.append("where VOCABULARY_CONCEPT_ID in (:vocabularyConceptIds)");
+
+        java.util.Date today = new java.util.Date();
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("label", label);
+        parameters.put("status", status);
+        parameters.put("statusModified", today);
+        parameters.put("vocabularyConceptIds", vocabularyConceptIds);
+
+        getNamedParameterJdbcTemplate().update(sql.toString(), parameters);
+    }
+
 }

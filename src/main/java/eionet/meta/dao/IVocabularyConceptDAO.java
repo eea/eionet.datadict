@@ -283,4 +283,6 @@ public interface IVocabularyConceptDAO {
 
     Map<Integer, Integer> getCheckedOutToOriginalMappings(Collection<Integer> conceptIds);
 
+    void updateVocabularyConceptLabelStatusModifiedDate(List<Integer> vocabularyConceptIds, String label, Integer status);
+
 }

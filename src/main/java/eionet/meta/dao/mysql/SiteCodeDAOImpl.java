@@ -33,6 +33,8 @@ import eionet.datadict.model.enums.Enumerations;
 import eionet.datadict.model.enums.Enumerations.SiteCodeBoundElementIdentifiers;
 import eionet.meta.dao.IDataElementDAO;
 import eionet.meta.dao.IVocabularyConceptDAO;
+import eionet.util.Props;
+import eionet.util.PropsIF;
 import eionet.util.Util;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.EnumUtils;
@@ -184,6 +186,12 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         if (filter.isUsePaging()) {
             sql.append("LIMIT ").append(filter.getOffset()).append(",").append(filter.getPageSize());
         }
+        else{
+            if (filter.getNumberOfElements() != null) {
+                sql.append("LIMIT ").append(filter.getNumberOfElements());
+            }
+        }
+
         LOGGER.debug(String.format("Query is: '%s'", sql.toString()));
         String parameterStr = "";
         for (Map.Entry<String, Object> entry : params.entrySet()) {
@@ -425,10 +433,14 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         for (int i = 0; i < freeSiteCodes.size(); i++) {
 
             //insert country code information
+            StringBuilder countryCodeSb = new StringBuilder();
+            countryCodeSb.append(Props.getRequiredProperty(PropsIF.DD_URL));
+            countryCodeSb.append("/vocabulary/common/countries/");
+            countryCodeSb.append(countryCode);
             Map<String, Object> params = new HashMap<String, Object>();
             params.put("vocabularyConceptId", freeSiteCodes.get(i).getId());
             params.put("dataElemId", elementMap.get(SiteCodeBoundElementIdentifiers.COUNTRY_CODE.getIdentifier()));
-            params.put("elementValue", countryCode);
+            params.put("elementValue", countryCodeSb.toString());
             batchValues[batchValuesCounter] = params;
             batchValuesCounter++;
 
