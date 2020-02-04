@@ -30,6 +30,7 @@ import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.service.data.SiteCode;
 import eionet.meta.service.data.SiteCodeFilter;
 import eionet.meta.service.data.SiteCodeResult;
+import eionet.util.Pair;
 
 /**
  * Site code DAO interface.
@@ -122,9 +123,9 @@ public interface ISiteCodeDAO {
      *
      * @param filter filtering
      * @param elementMap map for elements' identifier and id
-     * @return a list of site codes
+     * @return a pair where left is the total number of site codes and right is the site code list
      */
-    List<SiteCode> createQueryAndRetrieveSiteCodes(SiteCodeFilter filter, Map<String, Integer> elementMap) throws Exception;
+    Pair<Integer, List<SiteCode>> createQueryAndRetrieveSiteCodes(SiteCodeFilter filter, Map<String, Integer> elementMap) throws Exception;
 
     /**
      * Executes a query and returns a site code list

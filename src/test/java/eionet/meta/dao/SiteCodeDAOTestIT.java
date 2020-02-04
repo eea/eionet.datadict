@@ -7,14 +7,13 @@ import eionet.meta.service.DBUnitHelper;
 import eionet.meta.service.data.SiteCode;
 import eionet.meta.service.data.SiteCodeFilter;
 import eionet.meta.service.data.SiteCodeResult;
+import eionet.util.Pair;
 import org.displaytag.properties.SortOrderEnum;
 import org.junit.Assert;
 import org.junit.Test;
-import org.quartz.SimpleTrigger;
 import org.unitils.UnitilsJUnit4;
 import org.unitils.spring.annotation.SpringApplicationContext;
 import org.unitils.spring.annotation.SpringBeanByType;
-import eionet.datadict.model.enums.Enumerations;
 import eionet.datadict.model.enums.Enumerations.SiteCodeBoundElementIdentifiers;
 
 import java.text.SimpleDateFormat;
@@ -599,7 +598,7 @@ public class SiteCodeDAOTestIT extends UnitilsJUnit4 {
         siteCodeFilter.setUsePaging(false);
         siteCodeFilter.setStatus(SiteCodeStatus.AVAILABLE);
         siteCodeFilter.setSortOrder(SortOrderEnum.ASCENDING);
-        siteCodeFilter.setSortProperty("VOCABULARY_CONCEPT_ID");
+        siteCodeFilter.setSortProperty("vc.VOCABULARY_CONCEPT_ID");
 
         SiteCodeResult result = siteCodeDAO.searchSiteCodes(siteCodeFilter);
         Assert.assertThat(result.getTotalItems(), is(3));
@@ -661,7 +660,7 @@ public class SiteCodeDAOTestIT extends UnitilsJUnit4 {
         DBUnitHelper.loadData("seed-sitecode-countryCode-not-exists.xml");
         SiteCodeFilter siteCodeFilter = new SiteCodeFilter();
         siteCodeFilter.setSortOrder(SortOrderEnum.ASCENDING);
-        siteCodeFilter.setSortProperty("VOCABULARY_CONCEPT_ID");
+        siteCodeFilter.setSortProperty("vc.VOCABULARY_CONCEPT_ID");
 
         SiteCodeResult result = siteCodeDAO.searchSiteCodes(siteCodeFilter);
         Assert.assertThat(result.getTotalItems(), is(4));
@@ -751,10 +750,13 @@ public class SiteCodeDAOTestIT extends UnitilsJUnit4 {
         DBUnitHelper.loadData("seed-sitecode-countryCode-not-exists.xml");
         SiteCodeFilter siteCodeFilter = new SiteCodeFilter();
         siteCodeFilter.setSortOrder(SortOrderEnum.ASCENDING);
-        siteCodeFilter.setSortProperty("VOCABULARY_CONCEPT_ID");
-        List<SiteCode> result = siteCodeDAO.createQueryAndRetrieveSiteCodes(siteCodeFilter, null);
+        siteCodeFilter.setSortProperty("vc.VOCABULARY_CONCEPT_ID");
+        Pair<Integer, List<SiteCode>> scPair = siteCodeDAO.createQueryAndRetrieveSiteCodes(siteCodeFilter, null);
+
+        List<SiteCode> result = scPair.getRight();
 
         Assert.assertThat(result.size(), is(4));
+        Assert.assertThat(scPair.getLeft(), is(4));
 
         Assert.assertThat(result.get(0).getId(), is(1));
         Assert.assertThat(result.get(0).getIdentifier(), is("C"));
@@ -828,10 +830,13 @@ public class SiteCodeDAOTestIT extends UnitilsJUnit4 {
         Map<String, Integer> elementMap = new HashMap<>();
         SiteCodeFilter siteCodeFilter = new SiteCodeFilter();
         siteCodeFilter.setSortOrder(SortOrderEnum.ASCENDING);
-        siteCodeFilter.setSortProperty("VOCABULARY_CONCEPT_ID");
-        List<SiteCode> result = siteCodeDAO.createQueryAndRetrieveSiteCodes(siteCodeFilter, elementMap);
+        siteCodeFilter.setSortProperty("vc.VOCABULARY_CONCEPT_ID");
+        Pair<Integer, List<SiteCode>> scPair = siteCodeDAO.createQueryAndRetrieveSiteCodes(siteCodeFilter, elementMap);
+
+        List<SiteCode> result = scPair.getRight();
 
         Assert.assertThat(result.size(), is(4));
+        Assert.assertThat(scPair.getLeft(), is(4));
 
         Assert.assertThat(result.get(0).getId(), is(1));
         Assert.assertThat(result.get(0).getIdentifier(), is("C"));
@@ -905,7 +910,7 @@ public class SiteCodeDAOTestIT extends UnitilsJUnit4 {
         Map<String, Integer> elementMap = new HashMap<>();
         SiteCodeFilter siteCodeFilter = new SiteCodeFilter();
         siteCodeFilter.setSortOrder(SortOrderEnum.ASCENDING);
-        siteCodeFilter.setSortProperty("VOCABULARY_CONCEPT_ID");
+        siteCodeFilter.setSortProperty("vc.VOCABULARY_CONCEPT_ID");
         siteCodeFilter.setUserAllocated("test_user");
         siteCodeDAO.createQueryAndRetrieveSiteCodes(siteCodeFilter, elementMap);
 
@@ -920,7 +925,7 @@ public class SiteCodeDAOTestIT extends UnitilsJUnit4 {
         siteCodeFilter.setUsePaging(false);
         siteCodeFilter.setStatus(SiteCodeStatus.AVAILABLE);
         siteCodeFilter.setSortOrder(SortOrderEnum.ASCENDING);
-        siteCodeFilter.setSortProperty("VOCABULARY_CONCEPT_ID");
+        siteCodeFilter.setSortProperty("vc.VOCABULARY_CONCEPT_ID");
 
         Map<String, Integer> elementMap = new HashMap<>();
         elementMap.put("sitecodes_CC_ISO2", 1);
@@ -929,8 +934,11 @@ public class SiteCodeDAOTestIT extends UnitilsJUnit4 {
         elementMap.put("sitecodes_DATE_CREATED", 4);
         elementMap.put("sitecodes_USER_CREATED", 5);
 
-        List<SiteCode> result = siteCodeDAO.createQueryAndRetrieveSiteCodes(siteCodeFilter, elementMap);
+        Pair<Integer, List<SiteCode>> scPair = siteCodeDAO.createQueryAndRetrieveSiteCodes(siteCodeFilter, elementMap);
+        List<SiteCode> result = scPair.getRight();
+
         Assert.assertThat(result.size(), is(3));
+        Assert.assertThat(scPair.getLeft(), is(3));
 
         Assert.assertThat(result.get(0).getId(), is(2));
         Assert.assertThat(result.get(0).getIdentifier(), is("L"));
@@ -988,7 +996,7 @@ public class SiteCodeDAOTestIT extends UnitilsJUnit4 {
         DBUnitHelper.loadData("seed-sitecode-countryCode-not-exists.xml");
         SiteCodeFilter siteCodeFilter = new SiteCodeFilter();
         siteCodeFilter.setSortOrder(SortOrderEnum.ASCENDING);
-        siteCodeFilter.setSortProperty("VOCABULARY_CONCEPT_ID");
+        siteCodeFilter.setSortProperty("vc.VOCABULARY_CONCEPT_ID");
 
         Map<String, Integer> elementMap = new HashMap<>();
         elementMap.put("sitecodes_CC_ISO2", 1);
@@ -997,8 +1005,11 @@ public class SiteCodeDAOTestIT extends UnitilsJUnit4 {
         elementMap.put("sitecodes_DATE_CREATED", 4);
         elementMap.put("sitecodes_USER_CREATED", 5);
 
-        List<SiteCode> result = siteCodeDAO.createQueryAndRetrieveSiteCodes(siteCodeFilter, elementMap);
+        Pair<Integer, List<SiteCode>> scPair = siteCodeDAO.createQueryAndRetrieveSiteCodes(siteCodeFilter, elementMap);
+        List<SiteCode> result = scPair.getRight();
+
         Assert.assertThat(result.size(), is(4));
+        Assert.assertThat(scPair.getLeft(), is(4));
 
         Assert.assertThat(result.get(0).getId(), is(1));
         Assert.assertThat(result.get(0).getIdentifier(), is("C"));

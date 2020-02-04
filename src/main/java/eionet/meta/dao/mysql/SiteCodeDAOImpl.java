@@ -33,6 +33,7 @@ import eionet.datadict.model.enums.Enumerations;
 import eionet.datadict.model.enums.Enumerations.SiteCodeBoundElementIdentifiers;
 import eionet.meta.dao.IDataElementDAO;
 import eionet.meta.dao.IVocabularyConceptDAO;
+import eionet.util.Pair;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.Util;
@@ -81,9 +82,9 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         LOGGER.info(String.format("Retrieved ids for site code bound elements"));
 
         /* Create a list of site codes */
-        List<SiteCode> scList = createQueryAndRetrieveSiteCodes(filter, elementMap);
+        Pair<Integer, List<SiteCode>> siteCodesPair = createQueryAndRetrieveSiteCodes(filter, elementMap);
         LOGGER.info(String.format("Retrieved site code list"));
-        SiteCodeResult result = new SiteCodeResult(scList, scList.size(), filter);
+        SiteCodeResult result = new SiteCodeResult(siteCodesPair.getRight(), siteCodesPair.getLeft(), filter);
         return result;
     }
 
@@ -92,13 +93,14 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
      *
      * @param filter filtering
      * @param elementMap map for elements' identifier and id
-     * @return a list of site codes
+     * @return a pair where left is the total number of site codes and right is the site code list
      */
-    public List<SiteCode> createQueryAndRetrieveSiteCodes(SiteCodeFilter filter, Map<String, Integer> elementMap) throws Exception {
+    public Pair<Integer, List<SiteCode>> createQueryAndRetrieveSiteCodes(SiteCodeFilter filter, Map<String, Integer> elementMap) throws Exception {
 
         Map<String, Object> params = new HashMap<>();
+        StringBuilder sqlBeggining = new StringBuilder();
         StringBuilder sql = new StringBuilder();
-        sql.append("select vc.* ");
+        sqlBeggining.append("select vc.* ");
         sql.append("from VOCABULARY v inner join VOCABULARY_CONCEPT vc on v.VOCABULARY_ID=vc.VOCABULARY_ID ");
 
         StringBuilder sqlWhereClause = new StringBuilder();
@@ -183,6 +185,11 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         } else {
             sql.append("order by vc.IDENTIFIER + 0 ");
         }
+
+        StringBuilder sqlWithoutLimit = new StringBuilder();
+        sqlWithoutLimit.append("select count(*) ");
+        sqlWithoutLimit.append(sql.toString());
+
         if (filter.isUsePaging()) {
             sql.append("LIMIT ").append(filter.getOffset()).append(",").append(filter.getPageSize());
         }
@@ -192,14 +199,23 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
             }
         }
 
-        LOGGER.debug(String.format("Query is: '%s'", sql.toString()));
+        StringBuilder finalSqlWithLimit = new StringBuilder();
+        finalSqlWithLimit.append(sqlBeggining.toString());
+        finalSqlWithLimit.append(sql.toString());
+
+        LOGGER.debug(String.format("Query is: '%s'", finalSqlWithLimit.toString()));
         String parameterStr = "";
         for (Map.Entry<String, Object> entry : params.entrySet()) {
             parameterStr += entry.getKey() + ":" + entry.getValue().toString() + " ";
         }
         LOGGER.debug(String.format("Parameters are: '%s'", parameterStr));
-        List<SiteCode> scList = getSiteCodeList(sql.toString(), params, elementMap);
-        return scList;
+        List<SiteCode> scList = getSiteCodeList(finalSqlWithLimit.toString(), params, elementMap);
+
+        Integer totalItems = getNamedParameterJdbcTemplate().queryForObject(sqlWithoutLimit.toString(), params, Integer.class);
+        LOGGER.info(String.format("The total number of results is: %d", totalItems));
+
+        Pair<Integer, List<SiteCode>> scPair= new Pair<>(totalItems, scList);
+        return scPair;
     }
 
     /**
