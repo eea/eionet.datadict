@@ -12,4 +12,14 @@ public interface JWTService {
      * @throws ServiceException if any error occurs.
      */
     String generateJWTToken(String apiKey) throws ServiceException;
+
+    String getJwtAudience();
+
+    String getJwtSignatureAlgorithm();
+
+    String getJwtSubject();
+
+    String getJwtIssuer();
+
+    String getJwtApiKey();
 }

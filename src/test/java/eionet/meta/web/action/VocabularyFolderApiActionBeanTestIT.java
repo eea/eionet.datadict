@@ -76,7 +76,7 @@ public class VocabularyFolderApiActionBeanTestIT extends UnitilsJUnit4 {
     public static final String API_KEY_IDENTIFIER_IN_JSON = "API_KEY";
 
     /**
-     * JWT Key. i.e. ddTestAp1KeyF4VocUpload_87923!@Q
+     * JWT Key. i.e. ?C?YTwNa>jaRskCitrWw5RwsL>H<VLzxr4c5xB9Xy4Ec?pL<qdQgL=ZGMc6SaWD+>hq5U6qypL4Kgs>PvaMZTKKsVrAS>2ApnUcMuwnnzuu3xsV8HCAE>ujs
      */
     private static final String VALID_JWT_SECRET_KEY = Props.getProperty(PropsIF.DD_VOCABULARY_API_JWT_KEY);
 
