@@ -71,7 +71,10 @@ public class JWTServiceImpl implements JWTService {
         headerParams.put("iss", this.getJwtIssuer());
         headerParams.put("sub", this.getJwtSubject());
         headerParams.put("aud", this.getJwtAudience());
-        headerParams.put("API_KEY", dbApiKeyValue);
+        //headerParams.put("API_KEY", dbApiKeyValue);
+
+        Map<String, Object> claims= new HashMap<>();
+        claims.put("API_KEY", dbApiKeyValue);
 
         //The JWT parameters are set
         JwtBuilder builder = Jwts.builder()
@@ -81,6 +84,7 @@ public class JWTServiceImpl implements JWTService {
                 .setIssuer(this.getJwtIssuer())
                 .setAudience(this.getJwtAudience())
                 .setHeaderParams(headerParams)
+                .setClaims(claims)
                 .signWith(signingKey);
 
         //Builds the JWT and serializes it to a compact, URL-safe string
