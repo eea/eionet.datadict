@@ -30,7 +30,7 @@ public class JWTApiActionBeanTestIT extends UnitilsJUnit4 {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         when(jwtApiActionBean.getJwtService()).thenReturn(jwtService);
-        when(jwtApiActionBean.getJwtService().generateJWTToken("1")).thenReturn(expectedToken);
+        when(jwtApiActionBean.getJwtService().generateJWTToken()).thenReturn(expectedToken);
         when(jwtApiActionBean.generateJWTToken()).thenCallRealMethod();
         DBUnitHelper.loadData("seed-apiKey.xml");
     }

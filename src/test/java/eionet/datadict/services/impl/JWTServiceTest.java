@@ -24,13 +24,13 @@ public class JWTServiceTest {
         when(jwtService.getJwtIssuer()).thenReturn("eea");
         when(jwtService.getJwtSignatureAlgorithm()).thenReturn("HS512");
         when(jwtService.getJwtApiKey()).thenReturn("?C?YTwNa>jaRskCitrWw5RwsL>H<VLzxr4c5xB9Xy4Ec?pL<qdQgL=ZGMc6SaWD+>hq5U6qypL4Kgs>PvaMZTKKsVrAS>2ApnUcMuwnnzuu3xsV8HCAE>ujs");
-        when(jwtService.generateJWTToken("1")).thenCallRealMethod();
+        when(jwtService.generateJWTToken()).thenCallRealMethod();
     }
 
     /* Test case:  */
     @Test
     public void testGenerateJWTToken() throws Exception {
-        String result = jwtService.generateJWTToken("1");
+        String result = jwtService.generateJWTToken();
         System.out.println("__________________________token is: " + result);
         Assert.assertThat(result, is(nullValue()));
     }

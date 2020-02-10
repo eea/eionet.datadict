@@ -27,7 +27,7 @@ public class JWTApiActionBeanTest {
     public void setUp() throws ServiceException {
         MockitoAnnotations.initMocks(this);
         when(jwtApiActionBean.getJwtService()).thenReturn(jwtService);
-        when(jwtApiActionBean.getJwtService().generateJWTToken("1")).thenReturn(expectedToken);
+        when(jwtApiActionBean.getJwtService().generateJWTToken()).thenReturn(expectedToken);
         when(jwtApiActionBean.generateJWTToken()).thenCallRealMethod();
     }
 

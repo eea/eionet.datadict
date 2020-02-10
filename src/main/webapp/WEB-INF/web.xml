@@ -619,6 +619,10 @@
         <servlet-name>StripesDispatcher</servlet-name>
         <url-pattern>/void.rdf</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>StripesDispatcher</servlet-name>
+        <url-pattern>/generateJWTToken</url-pattern>
+    </servlet-mapping>
 
     <welcome-file-list>
         <welcome-file>index</welcome-file>
