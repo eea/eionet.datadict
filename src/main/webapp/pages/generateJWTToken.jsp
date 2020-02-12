@@ -21,15 +21,10 @@
             <p class="actions"><stripes:submit name="generateToken" value="Generate Token" /></p>
         </stripes:form>
 
-
-
-        <stripes:link beanclass="${actionBean['class'].name}" >
-            <stripes:param name="token" value="${actionBean.token}" />
-            <c:if test="${actionBean.token != null}" >
-                <p class="actions">The generated JWT token is:</p>
-                <c:out value="${actionBean.token}" />
-            </c:if>
-        </stripes:link>
+        <c:if test="${not empty param.generated_token}" >
+            <p>The generated JWT token is:</p>
+            <p style="word-wrap:break-word;"><b><c:out value="${param.generated_token}" /></b></p>
+        </c:if>
 
     </stripes:layout-component>
 

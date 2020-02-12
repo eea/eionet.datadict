@@ -25,7 +25,7 @@ public class JWTActionBean extends AbstractActionBean{
 
     @DefaultHandler
     public Resolution view() {
-        this.setToken(null);
+        //this.setToken(null);
         return new ForwardResolution(GENERATE_TOKEN_PAGE);
     }
 
@@ -41,9 +41,8 @@ public class JWTActionBean extends AbstractActionBean{
         LOGGER.info("generateJWTToken - Began process for jwt token generation.");
         String generatedToken = this.getJwtService().generateJWTToken();
         timer.stop();
-        this.setToken(generatedToken);
         LOGGER.info("generateJWTToken - Generation of token was completed, total time of execution: " + timer.toString());
-        return new ForwardResolution(GENERATE_TOKEN_PAGE);
+        return new ForwardResolution(GENERATE_TOKEN_PAGE).addParameter("generated_token", generatedToken);
     }
 
     public JWTService getJwtService() {
