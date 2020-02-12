@@ -25,7 +25,6 @@ public class JWTActionBean extends AbstractActionBean{
 
     @DefaultHandler
     public Resolution view() {
-        //this.setToken(null);
         return new ForwardResolution(GENERATE_TOKEN_PAGE);
     }
 
@@ -36,9 +35,9 @@ public class JWTActionBean extends AbstractActionBean{
      */
 
     public Resolution generateToken() throws ServiceException {
+        LOGGER.info("generateJWTToken - Began process for jwt token generation.");
         StopWatch timer = new StopWatch();
         timer.start();
-        LOGGER.info("generateJWTToken - Began process for jwt token generation.");
         String generatedToken = this.getJwtService().generateJWTToken();
         timer.stop();
         LOGGER.info("generateJWTToken - Generation of token was completed, total time of execution: " + timer.toString());

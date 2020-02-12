@@ -35,13 +35,13 @@ public class JWTServiceImpl implements JWTService {
     /**
      * JWT subject.
      */
-    //TODO check if this is taken from db
+    //TODO check if this is taken from db or place it in properties
     private String JWT_SUBJECT = "eea";
 
     /**
      * JWT issuer.
      */
-    //TODO check if this is taken from db
+    //TODO check if this is taken from db or place it in properties
     private String JWT_ISSUER = "eea";
 
     /**
