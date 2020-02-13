@@ -22,12 +22,12 @@ public class SentryInitServlet extends HttpServlet {
 
         final Logger LOGGER = LoggerFactory.getLogger(ServletConfig.class);
 
-      //  super.init(config);
+        super.init(config);
 
         SentryClient client;
 
         try {
-          //  client =  Sentry.init();
+            client =  Sentry.init();
         } catch (Exception e) {
             LOGGER.error("No sentry service available due to: " + e.getMessage());
         }
