@@ -1,4 +1,4 @@
-package eionet.meta.web.action;
+package eionet.web.action;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import eionet.datadict.services.JWTService;
