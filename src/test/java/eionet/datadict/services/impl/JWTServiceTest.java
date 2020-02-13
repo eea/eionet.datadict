@@ -23,7 +23,7 @@ public class JWTServiceTest {
         when(jwtService.getJwtSubject()).thenReturn("eea");
         when(jwtService.getJwtIssuer()).thenReturn("eea");
         when(jwtService.getJwtSignatureAlgorithm()).thenReturn("HS512");
-        when(jwtService.getJwtApiKey()).thenReturn("11BA6CE73F3AD9F98A75A2F8F5A287E993563B0A1A8F02B25210C208872A734C");
+        when(jwtService.getJwtApiKey()).thenReturn("oSx01e+/ohnemTVHs2r5QqT/m8/Q0f41nVJFXHORoOcLXSVsyE37NJO5/BVM+fCXdaC9F8d0X9obFscv0lGaK6/yS5vrNoqIK+FXViDWTcYlD6sOUDdfR4lUpJaKD0lrnMtmP42X49E+qnQrQD9DY/au9peSkndWquta37JVUleg1501ShYJF4X0adxjYhHssA/S9QRHTl1eUb134abOKMJ/7Dj1V6/++4rg3A==");
         when(jwtService.generateJWTToken()).thenCallRealMethod();
     }
 

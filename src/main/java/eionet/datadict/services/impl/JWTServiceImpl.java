@@ -35,13 +35,11 @@ public class JWTServiceImpl implements JWTService {
     /**
      * JWT subject.
      */
-    //TODO check if this is taken from db or place it in properties
     private String JWT_SUBJECT = "eea";
 
     /**
      * JWT issuer.
      */
-    //TODO check if this is taken from db or place it in properties
     private String JWT_ISSUER = "eea";
 
     /**
@@ -65,24 +63,16 @@ public class JWTServiceImpl implements JWTService {
         Key signingKey = new SecretKeySpec(apiKeySecretBytes, SignatureAlgorithm.HS512.getJcaName());
 
         Date now = new Date();
-        Calendar cal=Calendar.getInstance();
-        cal.setTime(now);
-        cal.add(Calendar.YEAR,1);
 
-        Map<String, Object> headerParams= new HashMap<>();
-        headerParams.put("iat", now.getTime());
-        headerParams.put("exp", cal.getTime().getTime());
-        headerParams.put("iss", this.getJwtIssuer());
-        headerParams.put("sub", this.getJwtSubject());
-        headerParams.put("aud", this.getJwtAudience());
+        Map<String, Object> claims= new HashMap<>();
+        claims.put("iat", now.getTime());
+        claims.put("iss", this.getJwtIssuer());
+        claims.put("sub", this.getJwtSubject());
+        claims.put("aud", this.getJwtAudience());
 
         //The JWT parameters are set
         JwtBuilder builder = Jwts.builder()
-                .setIssuedAt(now)
-                .setSubject(this.getJwtSubject())
-                .setIssuer(this.getJwtIssuer())
-                .setAudience(this.getJwtAudience())
-                .setHeaderParams(headerParams)
+                .setClaims(claims)
                 .signWith(signingKey);
 
         //Builds the JWT and serializes it to a compact, URL-safe string
