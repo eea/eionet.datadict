@@ -27,11 +27,10 @@ public class JWTServiceTest {
         when(jwtService.generateJWTToken()).thenCallRealMethod();
     }
 
-    /* Test case:  */
+    /* Test case: successful creation of not null token */
     @Test
     public void testGenerateJWTToken() throws Exception {
         String result = jwtService.generateJWTToken();
-        System.out.println("__________________________token is: " + result);
-        Assert.assertThat(result, is(nullValue()));
+        Assert.assertThat(result, is(notNullValue()));
     }
 }
