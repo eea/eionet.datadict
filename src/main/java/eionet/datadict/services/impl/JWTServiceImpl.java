@@ -57,7 +57,7 @@ public class JWTServiceImpl implements JWTService {
     public String generateJWTToken() throws ServiceException{
 
         //The JWT will be signed with secret
-        byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(this.getJwtApiKey());
+        byte[] apiKeySecretBytes = this.getJwtApiKey().getBytes();
 
         //TODO use JWT_SIGNATURE_ALGORITHM
         Key signingKey = new SecretKeySpec(apiKeySecretBytes, SignatureAlgorithm.HS512.getJcaName());
