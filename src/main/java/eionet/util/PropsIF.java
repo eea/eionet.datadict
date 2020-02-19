@@ -226,4 +226,9 @@ public interface PropsIF {
     String DD_OWN_STATUS_VOCABULARY_IDENTIFIER = "dd.ownStatusVocabularyIdentifier";
 
     String NOTIFICATION_EMAIL_FROM="notification.email.from";
+
+    /**
+     * The property that withholds the friendly URI template for DD namespaces.
+     */
+    String SSO_LOGIN_PAGE_URI = "edu.yale.its.tp.cas.client.filter.loginUrl";
 }
