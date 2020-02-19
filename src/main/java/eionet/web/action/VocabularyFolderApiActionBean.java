@@ -406,26 +406,6 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
     } // end of method uploadRDF
 
     /**
-     * TODO: TEMP METHOD for testing, will be removed.
-     */
- /*   private Resolution testUploadRdf() throws ServiceException {
-        PostMethod post = new PostMethod(Props.getRequiredProperty(PropsIF.DD_URL) + "/api/vocabulary/test/geography/uploadRdf");
-        post.setRequestHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
-
-        Map<String, String> jwtPayload = new HashMap<String, String>();
-        jwtPayload.put(API_KEY_IDENTIFIER_IN_JSON, "TestingAPIKey");
-
-        post.setRequestHeader(JWT_API_KEY_HEADER, jwtService.sign(JWT_KEY, JWT_AUDIENCE, jwtPayload, JWT_EXPIRATION_IN_MINUTES, JWT_SIGNING_ALGORITHM));
-        HttpClient httpClient = new HttpClient();
-        try {
-            httpClient.executeMethod(post);
-        } catch (IOException e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-        return null;
-    } // end of method testUploadRdf*/
-
-    /**
      * Validator and enum value converter for upload action before parameter.
      *
      * @param supportedUploadActionBefore supported action before list for this upload operation.

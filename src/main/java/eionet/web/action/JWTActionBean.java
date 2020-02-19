@@ -1,7 +1,6 @@
 package eionet.web.action;
 
 import eionet.datadict.services.JWTService;
-import eionet.meta.service.ServiceException;
 import net.sourceforge.stripes.action.*;
 import net.sourceforge.stripes.integration.spring.SpringBean;
 import org.apache.commons.lang.time.StopWatch;
@@ -34,7 +33,7 @@ public class JWTActionBean extends AbstractActionBean{
      * @return
      */
 
-    public Resolution generateToken() throws ServiceException {
+    public Resolution generateToken() {
         LOGGER.info("generateJWTToken - Began process for jwt token generation.");
         StopWatch timer = new StopWatch();
         timer.start();

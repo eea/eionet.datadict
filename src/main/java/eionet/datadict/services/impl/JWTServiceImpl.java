@@ -54,7 +54,7 @@ public class JWTServiceImpl implements JWTService {
      * @throws ServiceException if any error occurs.
      */
     @Override
-    public String generateJWTToken() throws ServiceException{
+    public String generateJWTToken() {
 
         //The JWT will be signed with secret
         byte[] apiKeySecretBytes = this.getJwtApiKey().getBytes();
