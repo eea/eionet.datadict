@@ -59,7 +59,6 @@ public class JWTServiceImpl implements JWTService {
         //The JWT will be signed with secret
         byte[] apiKeySecretBytes = this.getJwtApiKey().getBytes();
 
-        //TODO use JWT_SIGNATURE_ALGORITHM
         Key signingKey = new SecretKeySpec(apiKeySecretBytes, SignatureAlgorithm.HS512.getJcaName());
 
         Date now = new Date();

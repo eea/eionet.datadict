@@ -71,11 +71,6 @@ public class VocabularyFolderApiActionBeanTestIT extends UnitilsJUnit4 {
     public static final String JWT_API_KEY_HEADER = "X-DD-API-KEY";
 
     /**
-     * API Key identifier in json.
-     */
-    public static final String API_KEY_IDENTIFIER_IN_JSON = "API_KEY";
-
-    /**
      * JWT Key.
      */
     private static final String VALID_JWT_SECRET_KEY = Props.getProperty(PropsIF.DD_VOCABULARY_API_JWT_KEY);
@@ -288,18 +283,18 @@ public class VocabularyFolderApiActionBeanTestIT extends UnitilsJUnit4 {
         MockRoundtrip trip = new MockRoundtrip(ctx, VocabularyFolderApiActionBean.class);
         trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
 
-//        Map<String, String> jwtPayload = new HashMap<String, String>();
-//        jwtPayload.put(API_KEY_IDENTIFIER_IN_JSON, "NotExistingAPIKey");
-        //Payload, generated at: http://jwtbuilder.jamiekurtz.com/ with VALID_JWT_SECRET_KEY and VALID_JWT_AUDIENCE and VALID_JWT_SIGNING_ALGORITHM
-//        {
-//            "iss": "DDTest",
-//            "iat": 1581593039,
-//            "exp": 1581593036,
-//            "aud": "DataDictionary",
-//            "sub":
-//        }
+/*       Payload, generated at: http://jwtbuilder.jamiekurtz.com/ with VALID_JWT_SECRET_KEY and VALID_JWT_AUDIENCE and VALID_JWT_SIGNING_ALGORITHM
+        {
+          "sub": "",
+          "aud": "DataDictionary",
+          "iss": "DDTest",
+          "exp": 1550565939,
+          "iat": 1519029939
+        }
 
-        trip.getRequest().addHeader(JWT_API_KEY_HEADER, "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJERFRlc3QiLCJpYXQiOjE1ODE1OTMwMzksImV4cCI6MTU4MTU5MzAzNiwiYXVkIjoiRGF0YURpY3Rpb25hcnkiLCJzdWIiOiIifQ.m1XG8r0AXldQt6RQKv-c7ypFsoSIL-Tedq7hsF2VnEcrBh4MyJGtAUgZShNAR6pvRvhTXyncleoKL34wJJiOVw");
+ */
+
+        trip.getRequest().addHeader(JWT_API_KEY_HEADER, "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIiLCJhdWQiOiJEYXRhRGljdGlvbmFyeSIsImlzcyI6IkREVGVzdCIsImV4cCI6MTU1MDU2NTkzOSwiaWF0IjoxNTE5MDI5OTM5fQ.HB0m7a5j86zkx3qvAAEnDxB136dfANOxRQCxBcyG7BkVATbZcwZABVjdLo9Rc6edEsaoaBqV71tweAtr6nB0ZA");
         trip.execute("uploadRdf");
         MockHttpServletResponse response = trip.getResponse();
         Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
@@ -317,17 +312,17 @@ public class VocabularyFolderApiActionBeanTestIT extends UnitilsJUnit4 {
         MockRoundtrip trip = new MockRoundtrip(ctx, VocabularyFolderApiActionBean.class);
         trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
 
-        //Payload, generated at: http://jwtbuilder.jamiekurtz.com/ with VALID_JWT_SECRET_KEY and VALID_JWT_AUDIENCE and VALID_JWT_SIGNING_ALGORITHM
-//       {
-//      //    "iss": "DDTest",
-        //    "iat": 1581593039,
-        //    "exp": 1613130321,
-        //    "aud": "wrongAudience",
-        //    "sub": ""
+/*        {
+            "sub": "",
+                "aud": "wrongAudience",
+                "iss": "DDTest",
+                "exp": 1613725106,
+                "iat": 1582102706
+        }
 
-//       }
+ */
 
-        trip.getRequest().addHeader(JWT_API_KEY_HEADER, "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJERFRlc3QiLCJpYXQiOjE1ODE1OTMwMzksImV4cCI6MTYxMzEzMDMyMSwiYXVkIjoid3JvbmdBdWRpZW5jZSIsInN1YiI6IiJ9.cWB-Zg2xXLqEcpjTkXcCB6EbXTprRzmzEPTDKXjXN1wp6NFB-XsSxPr9O74HwFdFMqGfRNrO2SZ6ZPHI0AQmdg");
+        trip.getRequest().addHeader(JWT_API_KEY_HEADER, "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIiLCJhdWQiOiJ3cm9uZ0F1ZGllbmNlIiwiaXNzIjoiRERUZXN0IiwiZXhwIjoxNjEzNzI1MTA2LCJpYXQiOjE1ODIxMDI3MDZ9.EkZuR-mcQJCp0VX6wDLhrNI5laxCYY34aOm365MRZSiExBp74DMceIRKX0vzKZHvVnwzn_IWM3w9yS7RHtvbeQ");
         trip.execute("uploadRdf");
         MockHttpServletResponse response = trip.getResponse();
         Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
@@ -345,16 +340,16 @@ public class VocabularyFolderApiActionBeanTestIT extends UnitilsJUnit4 {
         MockRoundtrip trip = new MockRoundtrip(ctx, VocabularyFolderApiActionBean.class);
         trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
 
-        /*Payload, generated at: http://jwtbuilder.jamiekurtz.com/ with VALID_JWT_SECRET_KEY and VALID_JWT_AUDIENCE and VALID_JWT_SIGNING_ALGORITHM
+/*
         {
-            "iss": "DDTest",
-            "iat": 1581594558,
-            "exp": 1613130560,
-            "aud": "DataDictionary",
-            "sub": ""
+          "sub": "",
+          "aud": "DataDictionary",
+          "iss": "DDTest",
+          "exp": 1739956617,
+          "iat": 1519031817
         }
 */
-        trip.getRequest().addHeader(JWT_API_KEY_HEADER, "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJERFRlc3QiLCJpYXQiOjE1ODE1OTQ1NTgsImV4cCI6MTYxMzEzMDU2MCwiYXVkIjoiRGF0YURpY3Rpb25hcnkiLCJzdWIiOiIifQ.01FTLUbqWWJ1Up-5gPTyTdi0DZOsIWWvMqKM62pykR7utIAkZK4PBfSDlXeYNe6ND7z5kxceWo34Bd-tcQxzrQ");
+        trip.getRequest().addHeader(JWT_API_KEY_HEADER, "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIiLCJhdWQiOiJEYXRhRGljdGlvbmFyeSIsImlzcyI6IkREVGVzdCIsImV4cCI6MTczOTk1NjYxNywiaWF0IjoxNTE5MDMxODE3fQ.t8A9MkvkElB8Ycst23HmuRC93Vvl8OXEfpE-bA4l9gCaSu-WZS9jlTBf3h3WKl9ENRnZ4zmj6cstDzCH4KGUOQ");
         trip.execute("uploadRdf");
         MockHttpServletResponse response = trip.getResponse();
         Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
@@ -391,7 +386,6 @@ public class VocabularyFolderApiActionBeanTestIT extends UnitilsJUnit4 {
         trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
 
         Map<String, String> jwtPayload = new HashMap<String, String>();
-        jwtPayload.put(API_KEY_IDENTIFIER_IN_JSON, VALID_API_KEY);
 
         trip.getRequest().addHeader(JWT_API_KEY_HEADER, jwtService.sign(VALID_JWT_SECRET_KEY, VALID_JWT_AUDIENCE, jwtPayload, VALID_JWT_EXPIRATION_IN_MINUTES, VALID_JWT_SIGNING_ALGORITHM));
         trip.addParameter("vocabularyFolder.folderName", "common");
@@ -415,7 +409,6 @@ public class VocabularyFolderApiActionBeanTestIT extends UnitilsJUnit4 {
         trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
 
         Map<String, String> jwtPayload = new HashMap<String, String>();
-        jwtPayload.put(API_KEY_IDENTIFIER_IN_JSON, VALID_API_KEY);
 
         trip.getRequest().addHeader(JWT_API_KEY_HEADER, jwtService.sign(VALID_JWT_SECRET_KEY, VALID_JWT_AUDIENCE, jwtPayload, VALID_JWT_EXPIRATION_IN_MINUTES, VALID_JWT_SIGNING_ALGORITHM));
         trip.addParameter("vocabularyFolder.folderName", "common");
@@ -439,7 +432,6 @@ public class VocabularyFolderApiActionBeanTestIT extends UnitilsJUnit4 {
         trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
 
         Map<String, String> jwtPayload = new HashMap<String, String>();
-        jwtPayload.put(API_KEY_IDENTIFIER_IN_JSON, VALID_API_KEY);
 
         trip.getRequest().addHeader(JWT_API_KEY_HEADER, jwtService.sign(VALID_JWT_SECRET_KEY, VALID_JWT_AUDIENCE, jwtPayload, VALID_JWT_EXPIRATION_IN_MINUTES, VALID_JWT_SIGNING_ALGORITHM));
         trip.addParameter("vocabularyFolder.folderName", "common");
@@ -464,7 +456,6 @@ public class VocabularyFolderApiActionBeanTestIT extends UnitilsJUnit4 {
         trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
 
         Map<String, String> jwtPayload = new HashMap<String, String>();
-        jwtPayload.put(API_KEY_IDENTIFIER_IN_JSON, VALID_API_KEY);
 
         trip.getRequest().addHeader(JWT_API_KEY_HEADER, jwtService.sign(VALID_JWT_SECRET_KEY, VALID_JWT_AUDIENCE, jwtPayload, VALID_JWT_EXPIRATION_IN_MINUTES, VALID_JWT_SIGNING_ALGORITHM));
         trip.addParameter("vocabularyFolder.folderName", "common");
@@ -489,7 +480,6 @@ public class VocabularyFolderApiActionBeanTestIT extends UnitilsJUnit4 {
         trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
 
         Map<String, String> jwtPayload = new HashMap<String, String>();
-        jwtPayload.put(API_KEY_IDENTIFIER_IN_JSON, VALID_API_KEY);
 
         trip.getRequest().addHeader(JWT_API_KEY_HEADER, jwtService.sign(VALID_JWT_SECRET_KEY, VALID_JWT_AUDIENCE, jwtPayload, VALID_JWT_EXPIRATION_IN_MINUTES, VALID_JWT_SIGNING_ALGORITHM));
         trip.addParameter("vocabularyFolder.folderName", "common");
