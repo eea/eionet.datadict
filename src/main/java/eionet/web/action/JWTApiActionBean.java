@@ -63,49 +63,61 @@ public class JWTApiActionBean extends AbstractActionBean{
      * @return
      */
     @DefaultHandler
-    public Resolution generateJWTToken() throws Exception {
+    public Resolution generateJWTToken(){
         StopWatch timer = new StopWatch();
         timer.start();
         LOGGER.info("generateJWTToken API - Began process for jwt token generation.");
+        JSONObject jsonObject = new JSONObject();
+        try {
 
-        /* The request method should be POST*/
-        if (!isPostRequest()) {
-            throw new ServiceException("generateJWTToken API - The request method was not POST.");
-        }
+            /* The request method should be POST*/
+            if (!isPostRequest()) {
+                throw new ServiceException("The request method was not POST.");
+            }
 
-        HttpServletRequest request = getContext().getRequest();
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
+            HttpServletRequest request = getContext().getRequest();
+            String username = request.getParameter("username");
+            String password = request.getParameter("password");
 
-        if(username == null || password == null){
-            throw new ServiceException("generateJWTToken API - Credentials were missing.");
-        }
+            if (username == null || password == null) {
+                throw new ServiceException("Credentials were missing.");
+            }
 
-        LOGGER.info(String.format("generateJWTToken API - User %s has requested generation of a JWT token.",username));
+            LOGGER.info(String.format("generateJWTToken API - User %s has requested generation of a JWT token.", username));
 
-        if (authenticateUser(username, password) == false) {
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("Error", "Wrong credentials were retrieved");
-            String outputMsg = new ObjectMapper().writeValueAsString(jsonObject);
-            StreamingResolution resolution = new StreamingResolution(JSON_FORMAT, outputMsg);
-            LOGGER.info(String.format("generateJWTToken API - Wrong credentials were retrieved."));
-            return resolution;
-        }
+            if (authenticateUser(username, password) == false) {
+                throw new ServiceException("Wrong credentials were retrieved.");
+            }
 
+            //TODO authorization
         /*if (!user.isUserInRole("dd_admin")) {
-            throw new ServiceException("generateJWTToken API - User is not admin.");
+            throw new ServiceException("User is not admin.");
         }*/
 
-        String generatedToken = this.getJwtService().generateJWTToken();
+            String generatedToken = this.getJwtService().generateJWTToken();
 
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put("token", generatedToken);
-        String outputMsg = new ObjectMapper().writeValueAsString(jsonObject);
-        StreamingResolution resolution = new StreamingResolution(JSON_FORMAT, outputMsg);
+            jsonObject = new JSONObject();
+            jsonObject.put("token", generatedToken);
+            String outputMsg = new ObjectMapper().writeValueAsString(jsonObject);
+            Resolution resolution = new StreamingResolution(JSON_FORMAT, outputMsg);
 
-        timer.stop();
-        LOGGER.info(String.format("generateJWTToken API - Generation of token for user %s was completed, total time of execution: ", username));
-        return resolution;
+            timer.stop();
+            LOGGER.info(String.format("generateJWTToken API - Generation of token for user %s was completed, total time of execution: %s", username, timer.toString()));
+            return resolution;
+        }
+        catch(Exception e){
+            jsonObject.put("Error", e.getMessage());
+            String outputMsg = null;
+            try {
+                outputMsg = new ObjectMapper().writeValueAsString(jsonObject);
+            } catch (JsonProcessingException ex) {
+                jsonObject.put("Error", ex.getMessage());
+            }
+
+            Resolution resolution = new StreamingResolution(JSON_FORMAT, outputMsg);
+            LOGGER.info(String.format("generateJWTToken API - %s", e.getMessage()));
+            return resolution;
+        }
     }
 
     public JWTService getJwtService() {
