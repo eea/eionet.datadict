@@ -204,23 +204,23 @@ public class JWTApiActionBeanTest {
     }
 
     /* Test case: user was not found */
-    @Test
+   /* @Test
     public void testCheckIfUserHasAdminRightsUserNotFound() throws Exception {
         Boolean result = jwtApiActionBean.checkIfUserHasAdminRights("userNotFound");
         Assert.assertThat(result, is(false));
-    }
+    }*/
 
     /* Test case: user does not have admin rights */
-    @Test
+   /* @Test
     public void testCheckIfUserHasAdminRightsUserIsNotAdmin() throws Exception {
         Boolean result = jwtApiActionBean.checkIfUserHasAdminRights("heinlja");
         Assert.assertThat(result, is(false));
-    }
+    }*/
 
     /* Test case: user has admin rights */
-    @Test
+  /*  @Test
     public void testCheckIfUserHasAdminRightsUserIsAdmin() throws Exception {
         Boolean result = jwtApiActionBean.checkIfUserHasAdminRights("anthaant");
         Assert.assertThat(result, is(true));
-    }
+    }*/
 }

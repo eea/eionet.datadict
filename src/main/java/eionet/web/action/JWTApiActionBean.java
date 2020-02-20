@@ -179,8 +179,6 @@ public class JWTApiActionBean extends AbstractActionBean{
 
     public Boolean checkIfUserHasAdminRights(String username){
 
-        AccessController ac = new AccessController();
-
         DDUser user = new DDUser(username, true);
         if(user.isUserInRole("dd_admin")){
             return true;
