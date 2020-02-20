@@ -3,10 +3,13 @@ package eionet.web.action;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import eionet.acl.AccessController;
 import eionet.datadict.services.JWTService;
+import eionet.meta.DDUser;
 import eionet.meta.service.ServiceException;
 import eionet.util.Props;
 import eionet.util.PropsIF;
+import eionet.util.SecurityUtil;
 import net.sf.json.JSONObject;
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.Resolution;
@@ -89,10 +92,11 @@ public class JWTApiActionBean extends AbstractActionBean{
                 throw new ServiceException("Wrong credentials were retrieved.");
             }
 
-            //TODO authorization
-        /*if (!user.isUserInRole("dd_admin")) {
-            throw new ServiceException("User is not admin.");
-        }*/
+            if (!this.checkIfUserHasAdminRights(username)) {
+                throw new ServiceException("User does not have admin rights.");
+            }
+
+            LOGGER.info(String.format("generateJWTToken API - Token will be generated for user %s", username));
 
             String generatedToken = this.getJwtService().generateJWTToken();
 
@@ -171,6 +175,17 @@ public class JWTApiActionBean extends AbstractActionBean{
         catch (Exception e){
             throw (e);
         }
+    }
+
+    public Boolean checkIfUserHasAdminRights(String username){
+
+        AccessController ac = new AccessController();
+
+        DDUser user = new DDUser(username, true);
+        if(user.isUserInRole("dd_admin")){
+            return true;
+        }
+        return false;
     }
 
 }

@@ -10,10 +10,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
-
 import java.util.HashMap;
 import java.util.Map;
-
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.argThat;
@@ -47,7 +45,8 @@ public class JWTApiActionBeanTest {
         when(jwtApiActionBean.generateJWTToken()).thenCallRealMethod();
         when(jwtApiActionBean.isPostRequest()).thenCallRealMethod();
         when(jwtApiActionBean.getExecutionValueFromSSOPage()).thenCallRealMethod();
-        when(jwtApiActionBean.authenticateUser(argThat(not("adminUsername")), argThat(not("adminPassword")))).thenCallRealMethod();
+        when(jwtApiActionBean.authenticateUser(argThat(not("userExistsUsername")), argThat(not("userExistsPassword")))).thenCallRealMethod();
+        when(jwtApiActionBean.checkIfUserHasAdminRights(argThat(not("userExistsUsername")))).thenCallRealMethod();
         when(jwtApiActionBean.getContext()).thenReturn(ctx);
         when(jwtApiActionBean.getSSO_LOGIN_PAGE_URI()).thenReturn("https://sso.eionet.europa.eu/login");
         when(ctx.getRequest()).thenReturn(request);
@@ -100,38 +99,40 @@ public class JWTApiActionBeanTest {
         Assert.assertThat(response.getContentAsString(), is("{\"Error\":\"Wrong credentials were retrieved.\"}"));
     }
 
-    //TODO complete following tests after finding way to authorize user
 
     /* Test case: the user does not have admin rights */
-   /* @Test(expected = ServiceException.class)
+    @Test
     public void testGenerateJWTTokenUserIsNotAdmin() throws Exception {
+        String username = "userExistsUsername";
+        String password = "userExistsPassword";
         Map<String, String> credentials = new HashMap<>();
-        credentials.put("username", "notAdminUsername");
-        credentials.put("password", "notAdminPassword");
+        credentials.put("username", "userExistsUsername");
+        credentials.put("password", "userExistsPassword");
+        when(jwtApiActionBean.authenticateUser(username, password)).thenReturn(true);
+        when(jwtApiActionBean.checkIfUserHasAdminRights(username)).thenReturn(false);
         request.setRequestURI("/api/jwt/generateJWTToken");
         request.setMethod("POST");
         request.setParameters(credentials);
 
-        try
-        {
-            jwtApiActionBean.generateJWTToken();
-        }
-        catch(ServiceException se)
-        {
-            String expectedMessage = "generateJWTToken API - Wrong credentials were retrieved.";
-            Assert.assertThat(se.getMessage(), is(expectedMessage));
-            throw se;
-        }
-        fail("User is not admin - exception did not throw!");
-    }*/
+        StreamingResolution resolution = (StreamingResolution) jwtApiActionBean.generateJWTToken();
+        Assert.assertThat(resolution, is(notNullValue()));
+
+        resolution.execute(ctx.getRequest(), ctx.getResponse());
+        Assert.assertThat(ctx.getResponse().getContentType(), is("application/json"));
+        Assert.assertThat(response.getContentAsString(), is("{\"Error\":\"User does not have admin rights.\"}"));
+    }
 
     /* Test case: successful generation of token */
     @Test
     public void testGenerateJWTTokenSuccessful() throws Exception {
-        when(jwtApiActionBean.authenticateUser("adminUsername","adminPassword")).thenReturn(true);
+        String username = "userExistsUsername";
+        String password = "userExistsPassword";
+
+        when(jwtApiActionBean.authenticateUser(username,password)).thenReturn(true);
+        when(jwtApiActionBean.checkIfUserHasAdminRights(username)).thenReturn(true);
         Map<String, String> credentials = new HashMap<>();
-        credentials.put("username", "adminUsername");
-        credentials.put("password", "adminPassword");
+        credentials.put("username", username);
+        credentials.put("password", password);
         request.setRequestURI("/api/jwt/generateJWTToken");
         request.setMethod("POST");
         request.setParameters(credentials);
@@ -200,5 +201,26 @@ public class JWTApiActionBeanTest {
             throw e;
         }
         fail("Wrong URI - exception did not throw!");
+    }
+
+    /* Test case: user was not found */
+    @Test
+    public void testCheckIfUserHasAdminRightsUserNotFound() throws Exception {
+        Boolean result = jwtApiActionBean.checkIfUserHasAdminRights("userNotFound");
+        Assert.assertThat(result, is(false));
+    }
+
+    /* Test case: user does not have admin rights */
+    @Test
+    public void testCheckIfUserHasAdminRightsUserIsNotAdmin() throws Exception {
+        Boolean result = jwtApiActionBean.checkIfUserHasAdminRights("heinlja");
+        Assert.assertThat(result, is(false));
+    }
+
+    /* Test case: user has admin rights */
+    @Test
+    public void testCheckIfUserHasAdminRightsUserIsAdmin() throws Exception {
+        Boolean result = jwtApiActionBean.checkIfUserHasAdminRights("anthaant");
+        Assert.assertThat(result, is(true));
     }
 }
