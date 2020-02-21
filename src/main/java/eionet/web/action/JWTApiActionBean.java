@@ -3,13 +3,13 @@ package eionet.web.action;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import eionet.acl.AccessController;
+import eionet.datadict.errors.AclLibraryAccessControllerModifiedException;
+import eionet.datadict.errors.AclPropertiesInitializationException;
 import eionet.datadict.services.JWTService;
-import eionet.meta.DDUser;
+import eionet.datadict.services.acl.AclOperationsService;
 import eionet.meta.service.ServiceException;
 import eionet.util.Props;
 import eionet.util.PropsIF;
-import eionet.util.SecurityUtil;
 import net.sf.json.JSONObject;
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.Resolution;
@@ -34,7 +34,9 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Vector;
 
 /**
  * JWT Api Action Bean
@@ -51,6 +53,12 @@ public class JWTApiActionBean extends AbstractActionBean{
      */
     @SpringBean
     private JWTService jwtService;
+
+    /**
+     * acl operations service.
+     */
+    @SpringBean
+    private AclOperationsService aclOperationsService;
 
     /**
      * Json output format.
@@ -132,6 +140,11 @@ public class JWTApiActionBean extends AbstractActionBean{
         return SSO_LOGIN_PAGE_URI;
     }
 
+
+    public AclOperationsService getAclOperationsService() {
+        return aclOperationsService;
+    }
+
     public String getExecutionValueFromSSOPage() throws Exception {
         RestTemplate restTemplate = new RestTemplate();
         String pageHtml = restTemplate.getForObject(this.getSSO_LOGIN_PAGE_URI(), String.class);
@@ -177,10 +190,13 @@ public class JWTApiActionBean extends AbstractActionBean{
         }
     }
 
-    public Boolean checkIfUserHasAdminRights(String username){
-
-        DDUser user = new DDUser(username, true);
-        if(user.isUserInRole("dd_admin")){
+    public Boolean checkIfUserHasAdminRights(String username) throws Exception {
+        Hashtable<String, Vector<String>> groupsAndUsersHash = getAclOperationsService().getGroupsAndUsersHashTable();
+        if(groupsAndUsersHash.get("dd_admin") == null){
+            throw new Exception("No dd_admin role was found.");
+        }
+        Vector<String> adminUsers = groupsAndUsersHash.get("dd_admin");
+        if(adminUsers.contains(username)){
             return true;
         }
         return false;

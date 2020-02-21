@@ -2,7 +2,6 @@ package eionet.datadict.services.acl.impl;
 
 import eionet.acl.AccessController;
 import eionet.acl.AclProperties;
-import eionet.config.ApplicationTestContext;
 import eionet.datadict.errors.AclAccessControllerInitializationException;
 import eionet.datadict.errors.AclLibraryAccessControllerModifiedException;
 import eionet.datadict.errors.AclPropertiesInitializationException;
@@ -14,14 +13,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.test.context.ContextConfiguration;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.core.IsEqual.equalTo;
 import static org.mockito.Mockito.*;
-
-//@RunWith(PowerMockRunner.class)
-@ContextConfiguration(classes = {ApplicationTestContext.class})
-//@PrepareForTest(AccessController.class)
 
 public class AclOperationsServiceTest {
 
@@ -31,10 +25,15 @@ public class AclOperationsServiceTest {
 
     AclOperationsServiceImpl aclOperationsService;
 
+    @Mock
+    AclOperationsServiceImpl aclOperationsServiceMocked;
+
     @Before
-    public void setUp() {
+    public void setUp() throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException {
         MockitoAnnotations.initMocks(this);
         this.aclOperationsService = new AclOperationsServiceImpl(configurationPropertyResolver);
+        when(aclOperationsServiceMocked.getConfigurationPropertyResolver()).thenReturn(configurationPropertyResolver);
+        when(aclOperationsServiceMocked.getGroupsAndUsersHashTable()).thenCallRealMethod();
     }
 
 
@@ -49,7 +48,7 @@ public class AclOperationsServiceTest {
         final AclProperties aclProperties = mock(AclProperties.class);
         AclOperationsServiceImpl aclOperationsServiceImpl = new AclOperationsServiceImpl(this.configurationPropertyResolver) {
             @Override
-            protected AclProperties getAclProperties() throws AclPropertiesInitializationException {
+            protected AclProperties getAclProperties() {
                 return aclProperties;
             }
         };
@@ -58,11 +57,11 @@ public class AclOperationsServiceTest {
 
 
     @Test(expected = AclLibraryAccessControllerModifiedException.class)
-    public void testReninitializeAclRightsThrowsAclLibraryAccessControllerModifiedException() throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException {
+    public void testGetGroupsAndUsersHashTableThrowsAclLibraryAccessControllerModifiedException() throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException {
         final AclProperties aclProperties = mock(AclProperties.class);
         AclOperationsServiceImpl aclOperationsServiceImpl = new AclOperationsServiceImpl(this.configurationPropertyResolver) {
             @Override
-            protected AclProperties getAclProperties() throws AclPropertiesInitializationException {
+            protected AclProperties getAclProperties() {
                 return aclProperties;
             }
 
@@ -71,12 +70,12 @@ public class AclOperationsServiceTest {
                 throw new AclAccessControllerInitializationException();
             }
         };
-        aclOperationsServiceImpl.reinitializeAclRights();
+        aclOperationsServiceImpl.getGroupsAndUsersHashTable();
     }
 
 
     @Test(expected = AclPropertiesInitializationException.class)
-    public void testRenitializeAclRightsThrowsAclPropertiesInitializationException() throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException {
+    public void testGetGroupsAndUsersHashTableThrowsAclPropertiesInitializationException() throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException {
         AclOperationsServiceImpl aclOperationsServiceImpl = new AclOperationsServiceImpl(this.configurationPropertyResolver) {
             @Override
             protected AclProperties getAclProperties() throws AclPropertiesInitializationException {
@@ -88,35 +87,38 @@ public class AclOperationsServiceTest {
                 throw new AclAccessControllerInitializationException();
             }
         };
-        aclOperationsServiceImpl.reinitializeAclRights();
+        aclOperationsServiceImpl.getGroupsAndUsersHashTable();
     }
 
-  /*  @Test
-    public void testSuccessfullyReninitializeAclRightsThroughCallingAccessControllerInvokeMethod() throws Exception {
+    /* The following can not be tested, because Mockito1 does not support final classes and methods*/
+
+   /* @Test
+    public void testGetGroupsAndUsersHashTableThroughCallingAccessControllerInvokeMethodSuccessful() throws Exception {
         AclProperties aclProperties = new AclProperties();
         aclProperties.setOwnerPermission("t");
         aclProperties.setAnonymousAccess("anonymous");
         aclProperties.setFileAclfolder("aclProperties");
         aclProperties.setAuthenticatedAccess("authenticated");
-        AccessController spyAccessController = spy(new AccessController(aclProperties));
-        AclOperationsServiceImpl aclOperationsServiceImpl = new AclOperationsServiceImpl(this.configurationPropertyResolver) {
 
-            @Override
-            protected AclProperties getAclProperties() throws AclPropertiesInitializationException {
-                return aclProperties;
-            }
+        when(aclOperationsServiceMocked.getAclProperties()).thenReturn(aclProperties);
 
-            @Override
-            protected AccessController getAclLibraryAccessControllerInstance(AclProperties aclProperties) throws AclAccessControllerInitializationException {
-                return spyAccessController;
-            }
-        };
-        /*PowerMockito.mockStatic(AccessController.class);
-        PowerMockito.doNothing().when(AccessController.class, "initAcls");
-        aclOperationsServiceImpl.reinitializeAclRights();
-        PowerMockito.verifyPrivate(AccessController.class).invoke("initAcls");*/
+        Constructor<AccessController> accessControllerConstructor = null;
+        accessControllerConstructor = AccessController.class.getDeclaredConstructor(AclProperties.class);
+        accessControllerConstructor.setAccessible(true);
+        AccessController ac = accessControllerConstructor.newInstance(aclProperties);
+        accessControllerConstructor.setAccessible(false);
 
-  //  }
+        Method initAclsMethod = null;
+        initAclsMethod = AccessController.class.getDeclaredMethod("initAcls");
+        initAclsMethod.setAccessible(true);
+        initAclsMethod.invoke(ac);
+        initAclsMethod.setAccessible(false);
+
+        when(aclOperationsServiceMocked.getAclLibraryAccessControllerInstance(aclProperties)).thenReturn(ac);
+
+        Hashtable<String, Vector<String>> groupsAndUsersHash = aclOperationsServiceMocked.getGroupsAndUsersHashTable();
+
+    }*/
 
 
     @After

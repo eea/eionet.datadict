@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Hashtable;
+import java.util.Vector;
 
 @Service
 public class AclOperationsServiceImpl implements AclOperationsService {
@@ -30,37 +32,37 @@ public class AclOperationsServiceImpl implements AclOperationsService {
     }
 
     @Override
-    public void reinitializeAclRights() throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException {
+    public Hashtable<String, Vector<String>> getGroupsAndUsersHashTable() throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException {
         try {
-            AccessController accessController =this.getAclLibraryAccessControllerInstance(this.getAclProperties());
-            Method initAclsMethod = null;
-            initAclsMethod = AccessController.class.getDeclaredMethod("initAcls");
-            initAclsMethod.setAccessible(true);
-            initAclsMethod.invoke(accessController);
-            initAclsMethod.setAccessible(false);
+            AccessController accessController = this.getAclLibraryAccessControllerInstance(this.getAclProperties());
+            Method getGroupsMethod = null;
+            getGroupsMethod = AccessController.class.getDeclaredMethod("getGroups");
+            getGroupsMethod.setAccessible(true);
+            Hashtable<String, Vector<String>> usersAndGroups = (Hashtable<String, Vector<String>>) getGroupsMethod.invoke(accessController);
+            getGroupsMethod.setAccessible(false);
+            return usersAndGroups;
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | AclAccessControllerInitializationException e) {
-            throw new AclLibraryAccessControllerModifiedException("eionet.acl library AccessController.class method:initAcls is modified. Acl Rights cannot be reinitialized",e.getCause());
+            throw new AclLibraryAccessControllerModifiedException("eionet.acl library AccessController.class method:getGroups is modified. Can not retrieve hashtable with users and their groups",e.getCause());
         }
-
     }
 
     protected AclProperties getAclProperties() throws AclPropertiesInitializationException {
         AclProperties aclProperties = new AclProperties();
         try {
-            aclProperties.setOwnerPermission(configurationPropertyResolver.resolveValue("owner.permission"));
-            aclProperties.setAnonymousAccess(configurationPropertyResolver.resolveValue("anonymous.access"));
-            aclProperties.setAuthenticatedAccess(configurationPropertyResolver.resolveValue("authenticated.access"));
-            aclProperties.setDefaultdocPermissions(configurationPropertyResolver.resolveValue("defaultdoc.permissions"));
-            aclProperties.setPersistenceProvider(configurationPropertyResolver.resolveValue("persistence.provider"));
-            aclProperties.setInitialAdmin(configurationPropertyResolver.resolveValue("initial.admin"));
-            aclProperties.setFileAclfolder(configurationPropertyResolver.resolveValue("file.aclfolder"));
-            aclProperties.setFileLocalgroups(configurationPropertyResolver.resolveValue("file.localgroups"));
-            aclProperties.setFileLocalusers(configurationPropertyResolver.resolveValue("file.localusers"));
-            aclProperties.setFilePermissions(configurationPropertyResolver.resolveValue("file.permissions"));
-            aclProperties.setDbDriver(configurationPropertyResolver.resolveValue("db.driver"));
-            aclProperties.setDbUrl(configurationPropertyResolver.resolveValue("db.url"));
-            aclProperties.setDbUser(configurationPropertyResolver.resolveValue("db.user"));
-            aclProperties.setDbPwd(configurationPropertyResolver.resolveValue("db.pwd"));
+            aclProperties.setOwnerPermission(getConfigurationPropertyResolver().resolveValue("owner.permission"));
+            aclProperties.setAnonymousAccess(getConfigurationPropertyResolver().resolveValue("anonymous.access"));
+            aclProperties.setAuthenticatedAccess(getConfigurationPropertyResolver().resolveValue("authenticated.access"));
+            aclProperties.setDefaultdocPermissions(getConfigurationPropertyResolver().resolveValue("defaultdoc.permissions"));
+            aclProperties.setPersistenceProvider(getConfigurationPropertyResolver().resolveValue("persistence.provider"));
+            aclProperties.setInitialAdmin(getConfigurationPropertyResolver().resolveValue("initial.admin"));
+            aclProperties.setFileAclfolder(getConfigurationPropertyResolver().resolveValue("file.aclfolder"));
+            aclProperties.setFileLocalgroups(getConfigurationPropertyResolver().resolveValue("file.localgroups"));
+            aclProperties.setFileLocalusers(getConfigurationPropertyResolver().resolveValue("file.localusers"));
+            aclProperties.setFilePermissions(getConfigurationPropertyResolver().resolveValue("file.permissions"));
+            aclProperties.setDbDriver(getConfigurationPropertyResolver().resolveValue("db.driver"));
+            aclProperties.setDbUrl(getConfigurationPropertyResolver().resolveValue("db.url"));
+            aclProperties.setDbUser(getConfigurationPropertyResolver().resolveValue("db.user"));
+            aclProperties.setDbPwd(getConfigurationPropertyResolver().resolveValue("db.pwd"));
             return aclProperties;
         } catch (UnresolvedPropertyException | CircularReferenceException e) {
             LOGGER.error(e.getMessage(),e.getCause());
@@ -77,4 +79,9 @@ public class AclOperationsServiceImpl implements AclOperationsService {
             throw new AclAccessControllerInitializationException("Could not initialize eionet.acl AccessController:", e.getCause());
         }
     }
+
+    public ConfigurationPropertyResolver getConfigurationPropertyResolver() {
+        return configurationPropertyResolver;
+    }
+
 }

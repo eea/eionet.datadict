@@ -1,6 +1,7 @@
 package eionet.web.action;
 
 import eionet.datadict.services.JWTService;
+import eionet.datadict.services.acl.impl.AclOperationsServiceImpl;
 import eionet.web.DDActionBeanContext;
 import net.sourceforge.stripes.action.StreamingResolution;
 import org.junit.Assert;
@@ -10,8 +11,12 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Map;
+import java.util.Vector;
+
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.argThat;
@@ -33,7 +38,14 @@ public class JWTApiActionBeanTest {
 
     MockHttpServletResponse response;
 
+    @Mock
+    AclOperationsServiceImpl aclOperationsService;
+
     final static String expectedToken = "testToken";
+
+    Hashtable<String, Vector<String>> hashtableWithoutAdmins;
+
+    Hashtable<String, Vector<String>> hashtableWithAdmins;
 
     @Before
     public void setUp() throws Exception {
@@ -51,6 +63,9 @@ public class JWTApiActionBeanTest {
         when(jwtApiActionBean.getSSO_LOGIN_PAGE_URI()).thenReturn("https://sso.eionet.europa.eu/login");
         when(ctx.getRequest()).thenReturn(request);
         when(ctx.getResponse()).thenReturn(response);
+        when(jwtApiActionBean.getAclOperationsService()).thenReturn(aclOperationsService);
+        hashtableWithoutAdmins = createGroupsAndUsersHashtableWithoutAdmins();
+        hashtableWithAdmins = createGroupsAndUsersHashtableWithAdmins();
     }
 
     /* Test case: get method instead of post */
@@ -203,24 +218,92 @@ public class JWTApiActionBeanTest {
         fail("Wrong URI - exception did not throw!");
     }
 
+    /* Test case: admin group doesn't exist */
+    @Test(expected = Exception.class)
+    public void testCheckIfUserHasAdminRightsAdminGroupDoesntExist() throws Exception {
+        when(aclOperationsService.getGroupsAndUsersHashTable()).thenReturn(hashtableWithoutAdmins);
+        try
+        {
+            Boolean result = jwtApiActionBean.checkIfUserHasAdminRights("anthaant");
+        }
+        catch(Exception e)
+        {
+            String expectedMessage = "No dd_admin role was found.";
+            Assert.assertThat(e.getMessage(), is(expectedMessage));
+            throw e;
+        }
+        fail("Admin group does not exist - exception did not throw!");
+    }
+
     /* Test case: user was not found */
-   /* @Test
+    @Test
     public void testCheckIfUserHasAdminRightsUserNotFound() throws Exception {
+        when(aclOperationsService.getGroupsAndUsersHashTable()).thenReturn(hashtableWithAdmins);
         Boolean result = jwtApiActionBean.checkIfUserHasAdminRights("userNotFound");
         Assert.assertThat(result, is(false));
-    }*/
+    }
 
     /* Test case: user does not have admin rights */
-   /* @Test
+    @Test
     public void testCheckIfUserHasAdminRightsUserIsNotAdmin() throws Exception {
+        when(aclOperationsService.getGroupsAndUsersHashTable()).thenReturn(hashtableWithAdmins);
         Boolean result = jwtApiActionBean.checkIfUserHasAdminRights("heinlja");
         Assert.assertThat(result, is(false));
-    }*/
+    }
 
     /* Test case: user has admin rights */
-  /*  @Test
+    @Test
     public void testCheckIfUserHasAdminRightsUserIsAdmin() throws Exception {
+        when(aclOperationsService.getGroupsAndUsersHashTable()).thenReturn(hashtableWithAdmins);
         Boolean result = jwtApiActionBean.checkIfUserHasAdminRights("anthaant");
         Assert.assertThat(result, is(true));
-    }*/
+    }
+
+    private Hashtable<String, Vector<String>> createGroupsAndUsersHashtableWithAdmins(){
+        Hashtable<String, Vector<String>> hashtable = new Hashtable<>();
+        Vector<String> authors = new Vector<>();
+        authors.add("test1");
+        authors.add("test2");
+        authors.add("test3");
+        hashtable.put("dd_author", authors);
+
+        Vector<String> admins = new Vector<>();
+        admins.add("test1");
+        admins.add("test4");
+        admins.add("anthaant");
+        admins.add("test5");
+        hashtable.put("dd_admin", admins);
+
+        Vector<String> xmlgroup = new Vector<>();
+        xmlgroup.add("test1");
+        xmlgroup.add("test4");
+        xmlgroup.add("test5");
+        hashtable.put("xmlgroup", xmlgroup);
+
+        return hashtable;
+    }
+
+    private Hashtable<String, Vector<String>> createGroupsAndUsersHashtableWithoutAdmins(){
+        Hashtable<String, Vector<String>> hashtable = new Hashtable<>();
+        Vector<String> authors = new Vector<>();
+        authors.add("test1");
+        authors.add("test2");
+        authors.add("test3");
+        hashtable.put("dd_author", authors);
+
+        Vector<String> othergroup = new Vector<>();
+        othergroup.add("test1");
+        othergroup.add("test4");
+        othergroup.add("anthaant");
+        othergroup.add("test5");
+        hashtable.put("othergroup", othergroup);
+
+        Vector<String> xmlgroup = new Vector<>();
+        xmlgroup.add("test1");
+        xmlgroup.add("test4");
+        xmlgroup.add("test5");
+        hashtable.put("xmlgroup", xmlgroup);
+
+        return hashtable;
+    }
 }
