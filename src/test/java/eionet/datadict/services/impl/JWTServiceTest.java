@@ -38,7 +38,7 @@ public class JWTServiceTest {
     @Test
     public void testGenerateJWTTokenSuccessful() throws Exception {
         String token = jwtService.generateJWTToken();
-        Assert.assertThat(token, is(nullValue()));
+        Assert.assertThat(token, is(notNullValue()));
 
         JSONObject jsonObject = jwtServiceForVerification.verify(jwtService.getJwtApiKey(), jwtService.getJwtAudience(), token);
         Assert.assertThat(jsonObject.get("sub"), is(jwtService.getJwtSubject()));
