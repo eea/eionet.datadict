@@ -113,6 +113,11 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
     public static final String TOKEN_CREATED_TIME_IDENTIFIER_IN_JSON = "iat";
 
     /**
+     * DOMAIN identifier in json.
+     */
+    public static final String DOMAIN = "domain";
+
+    /**
      * JWT Key.
      */
     private static final String JWT_KEY = Props.getProperty(PropsIF.DD_VOCABULARY_API_JWT_KEY);
@@ -295,6 +300,21 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
                     if (nowInSeconds > (createdTimeInSeconds + (JWT_TIMEOUT_IN_MINUTES * 60))) {
                         LOGGER.error("uploadRdf API - Deprecated token");
                         return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "Cannot authorize: Deprecated token", ErrorActionBean.RETURN_ERROR_EVENT);
+                    }
+
+                    /* Check if the domain that the token was generated in, is the same as this one. */
+                    String domain = null;
+                    try{
+                        domain = jsonObject.getString(DOMAIN);
+                    }
+                    catch(Exception e){
+                        LOGGER.error("uploadRdf API - The token does not include domain information");
+                        return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "Cannot authorize: Domain was not specified", ErrorActionBean.RETURN_ERROR_EVENT);
+                    }
+
+                    if (!Props.getProperty(PropsIF.DD_URL).equals(domain)) {
+                        LOGGER.error("uploadRdf API - The token was not generated from this domain");
+                        return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "Cannot authorize: Different domain", ErrorActionBean.RETURN_ERROR_EVENT);
                     }
 
                 } catch (Exception e) {

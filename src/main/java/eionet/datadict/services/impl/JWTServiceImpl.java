@@ -48,6 +48,11 @@ public class JWTServiceImpl implements JWTService {
     private String JWT_API_KEY= Props.getProperty(PropsIF.DD_VOCABULARY_API_JWT_KEY);
 
     /**
+     * JWT api key.
+     */
+    private String DD_URL= Props.getProperty(PropsIF.DD_URL);
+
+    /**
      * Creates a valid JWT token for vocabulary rdf upload via tha API
      *
      * @return the token
@@ -68,6 +73,7 @@ public class JWTServiceImpl implements JWTService {
         claims.put("iss", this.getJwtIssuer());
         claims.put("sub", this.getJwtSubject());
         claims.put("aud", this.getJwtAudience());
+        claims.put("domain", this.getDD_URL());
 
         //The JWT parameters are set
         JwtBuilder builder = Jwts.builder()
@@ -101,5 +107,10 @@ public class JWTServiceImpl implements JWTService {
     @Override
     public String getJwtApiKey() {
         return JWT_API_KEY;
+    }
+
+    @Override
+    public String getDD_URL() {
+        return DD_URL;
     }
 }

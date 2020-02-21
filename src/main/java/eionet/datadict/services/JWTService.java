@@ -19,4 +19,6 @@ public interface JWTService {
     String getJwtIssuer();
 
     String getJwtApiKey();
+
+    String getDD_URL();
 }
