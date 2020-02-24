@@ -33,10 +33,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * JWT Api Action Bean
@@ -87,8 +84,26 @@ public class JWTApiActionBean extends AbstractActionBean{
             }
 
             HttpServletRequest request = getContext().getRequest();
-            String username = request.getParameter("username");
-            String password = request.getParameter("password");
+
+            /* Retrieve credentials from Basic Authentication */
+            String authentication = request.getHeader("Authorization");
+            if (authentication == null || !authentication.startsWith("Basic ")) {
+                throw new ServiceException("No Basic authentication received.");
+            }
+
+            String[] authenticationArray = authentication.split(" ");
+            if (authenticationArray.length != 2) {
+                throw new ServiceException("Basic Authentication error.");
+            }
+            String encodedUsernamePassword = authenticationArray[1].trim();
+            byte[] decodedBytes = Base64.getDecoder().decode(encodedUsernamePassword);
+            String decodedString = new String(decodedBytes);
+            String[] decodedUsernamePassword = decodedString.split(":");
+            if (decodedUsernamePassword.length != 2) {
+                throw new ServiceException("Credentials were provided incorrectly.");
+            }
+            String username = decodedUsernamePassword[0];
+            String password = decodedUsernamePassword[1];
 
             if (username == null || password == null) {
                 throw new ServiceException("Credentials were missing.");
