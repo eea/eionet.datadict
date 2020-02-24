@@ -105,10 +105,6 @@ public class JWTApiActionBean extends AbstractActionBean{
             String username = decodedUsernamePassword[0];
             String password = decodedUsernamePassword[1];
 
-            if (username == null || password == null) {
-                throw new ServiceException("Credentials were missing.");
-            }
-
             LOGGER.info(String.format("generateJWTToken API - User %s has requested generation of a JWT token.", username));
 
             if (authenticateUser(username, password) == false) {

@@ -90,37 +90,6 @@ public class AclOperationsServiceTest {
         aclOperationsServiceImpl.getGroupsAndUsersHashTable();
     }
 
-    /* The following can not be tested, because Mockito1 does not support final classes and methods*/
-
-   /* @Test
-    public void testGetGroupsAndUsersHashTableThroughCallingAccessControllerInvokeMethodSuccessful() throws Exception {
-        AclProperties aclProperties = new AclProperties();
-        aclProperties.setOwnerPermission("t");
-        aclProperties.setAnonymousAccess("anonymous");
-        aclProperties.setFileAclfolder("aclProperties");
-        aclProperties.setAuthenticatedAccess("authenticated");
-
-        when(aclOperationsServiceMocked.getAclProperties()).thenReturn(aclProperties);
-
-        Constructor<AccessController> accessControllerConstructor = null;
-        accessControllerConstructor = AccessController.class.getDeclaredConstructor(AclProperties.class);
-        accessControllerConstructor.setAccessible(true);
-        AccessController ac = accessControllerConstructor.newInstance(aclProperties);
-        accessControllerConstructor.setAccessible(false);
-
-        Method initAclsMethod = null;
-        initAclsMethod = AccessController.class.getDeclaredMethod("initAcls");
-        initAclsMethod.setAccessible(true);
-        initAclsMethod.invoke(ac);
-        initAclsMethod.setAccessible(false);
-
-        when(aclOperationsServiceMocked.getAclLibraryAccessControllerInstance(aclProperties)).thenReturn(ac);
-
-        Hashtable<String, Vector<String>> groupsAndUsersHash = aclOperationsServiceMocked.getGroupsAndUsersHashTable();
-
-    }*/
-
-
     @After
     public void validate() {
         validateMockitoUsage();

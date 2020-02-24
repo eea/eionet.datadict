@@ -4,6 +4,8 @@ import eionet.datadict.services.JWTService;
 import eionet.datadict.services.acl.impl.AclOperationsServiceImpl;
 import eionet.web.DDActionBeanContext;
 import net.sourceforge.stripes.action.StreamingResolution;
+import org.apache.http.client.methods.HttpPost;
+import org.castor.util.Base64Encoder;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,10 +14,7 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
-import java.util.Vector;
+import java.util.*;
 
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.fail;
@@ -93,18 +92,34 @@ public class JWTApiActionBeanTest {
 
         resolution.execute(ctx.getRequest(), ctx.getResponse());
         Assert.assertThat(ctx.getResponse().getContentType(), is("application/json"));
-        Assert.assertThat(response.getContentAsString(), is("{\"Error\":\"Credentials were missing.\"}"));
+        Assert.assertThat(response.getContentAsString(), is("{\"Error\":\"No Basic authentication received.\"}"));
+    }
+
+    /* Test case: the given credentials do not belong to an eionet user */
+    @Test
+    public void testGenerateJWTTokenNoBasicAuthentication() throws Exception {
+        String usernamePassword = "falseUsername:falsePassword";
+        byte[] encoding = Base64.getEncoder().encode(usernamePassword.getBytes());
+        request.setRequestURI("/api/jwt/generateJWTToken");
+        request.setMethod("POST");
+        request.addHeader("Authorization", "NotBasic " + new String(encoding));
+
+        StreamingResolution resolution = (StreamingResolution) jwtApiActionBean.generateJWTToken();
+        Assert.assertThat(resolution, is(notNullValue()));
+
+        resolution.execute(ctx.getRequest(), ctx.getResponse());
+        Assert.assertThat(ctx.getResponse().getContentType(), is("application/json"));
+        Assert.assertThat(response.getContentAsString(), is("{\"Error\":\"No Basic authentication received.\"}"));
     }
 
     /* Test case: the given credentials do not belong to an eionet user */
     @Test
     public void testGenerateJWTTokenUserDoesNotExist() throws Exception {
-        Map<String, String> credentials = new HashMap<>();
-        credentials.put("username", "falseUsername");
-        credentials.put("password", "falsePassword");
+        String usernamePassword = "falseUsername:falsePassword";
+        byte[] encoding = Base64.getEncoder().encode(usernamePassword.getBytes());
         request.setRequestURI("/api/jwt/generateJWTToken");
         request.setMethod("POST");
-        request.setParameters(credentials);
+        request.addHeader("Authorization", "Basic " + new String(encoding));
 
         StreamingResolution resolution = (StreamingResolution) jwtApiActionBean.generateJWTToken();
         Assert.assertThat(resolution, is(notNullValue()));
@@ -120,14 +135,14 @@ public class JWTApiActionBeanTest {
     public void testGenerateJWTTokenUserIsNotAdmin() throws Exception {
         String username = "userExistsUsername";
         String password = "userExistsPassword";
-        Map<String, String> credentials = new HashMap<>();
-        credentials.put("username", "userExistsUsername");
-        credentials.put("password", "userExistsPassword");
-        when(jwtApiActionBean.authenticateUser(username, password)).thenReturn(true);
-        when(jwtApiActionBean.checkIfUserHasAdminRights(username)).thenReturn(false);
+        String usernamePassword = username + ":" + password;
+        byte[] encoding = Base64.getEncoder().encode(usernamePassword.getBytes());
         request.setRequestURI("/api/jwt/generateJWTToken");
         request.setMethod("POST");
-        request.setParameters(credentials);
+        request.addHeader("Authorization", "Basic " + new String(encoding));
+
+        when(jwtApiActionBean.authenticateUser(username, password)).thenReturn(true);
+        when(jwtApiActionBean.checkIfUserHasAdminRights(username)).thenReturn(false);
 
         StreamingResolution resolution = (StreamingResolution) jwtApiActionBean.generateJWTToken();
         Assert.assertThat(resolution, is(notNullValue()));
@@ -143,14 +158,14 @@ public class JWTApiActionBeanTest {
         String username = "userExistsUsername";
         String password = "userExistsPassword";
 
-        when(jwtApiActionBean.authenticateUser(username,password)).thenReturn(true);
-        when(jwtApiActionBean.checkIfUserHasAdminRights(username)).thenReturn(true);
-        Map<String, String> credentials = new HashMap<>();
-        credentials.put("username", username);
-        credentials.put("password", password);
+        String usernamePassword = username + ":" + password;
+        byte[] encoding = Base64.getEncoder().encode(usernamePassword.getBytes());
         request.setRequestURI("/api/jwt/generateJWTToken");
         request.setMethod("POST");
-        request.setParameters(credentials);
+        request.addHeader("Authorization", "Basic " + new String(encoding));
+
+        when(jwtApiActionBean.authenticateUser(username,password)).thenReturn(true);
+        when(jwtApiActionBean.checkIfUserHasAdminRights(username)).thenReturn(true);
 
         StreamingResolution resolution = (StreamingResolution) jwtApiActionBean.generateJWTToken();
         Assert.assertThat(resolution, is(notNullValue()));
