@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<acl description="/generateJWTToken">
+<entries>
+<entry type="object">
+<principal id="dd_admin" type="localgroup"/>
+<permissions>
+<permission id="v"/>
+<permission id="x"/>
+</permissions>
+</entry>
+</entries>
+</acl>
