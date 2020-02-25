@@ -21,7 +21,9 @@
                     </stripes:link>
                 </li>
              </c:if>
-            <li><stripes:link href="/generateJWTToken">Generate JWT Token</stripes:link></li>
+            <c:if test="${ddfn:userHasPermission(actionBean.user.userName, '/generateJWTToken', 'x')}">
+                <li><stripes:link href="/generateJWTToken">Generate JWT Token</stripes:link></li>
+            </c:if>
         </ul>
     </stripes:layout-component>
 

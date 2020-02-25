@@ -22,6 +22,17 @@ public class JWTActionBean extends AbstractActionBean{
 
     public static final String GENERATE_TOKEN_PAGE = "/pages/generateJWTToken.jsp";
 
+    @Before(on = {"view", "generateToken"})
+    private Resolution checkPermissionsInterceptor() {
+        if (!isUserLoggedIn()) {
+            return createErrorResolution(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "You have to login to access the generateJWTToken page");
+        }
+        if (!hasAuthorizationPermission()) {
+            return createErrorResolution(ErrorActionBean.ErrorType.FORBIDDEN_403, "You are not authorized to access the generateJWTToken page");
+        }
+        return null;
+    }
+
     @DefaultHandler
     public Resolution view() {
         return new ForwardResolution(GENERATE_TOKEN_PAGE);
@@ -49,5 +60,12 @@ public class JWTActionBean extends AbstractActionBean{
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    private boolean hasAuthorizationPermission() {
+        if (getUser() != null) {
+            return getUser().hasPermission("/generateJWTToken", "x");
+        }
+        return false;
     }
 }
