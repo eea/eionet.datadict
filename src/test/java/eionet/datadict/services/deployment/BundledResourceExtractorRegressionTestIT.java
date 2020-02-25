@@ -22,7 +22,7 @@ public class BundledResourceExtractorRegressionTestIT {
         
         File aclDir = FileUtils.getFile(appHomeDir, "acl");
         assertThat("Acl directory not found: " + aclDir.getAbsolutePath(), aclDir.isDirectory(), is(true));
-        assertThat("Acl item count", aclDir.listFiles().length, is(17));
+        assertThat("Acl item count", aclDir.listFiles().length, is(18));
         
         File msAccessDir = FileUtils.getFile(appHomeDir, "msaccess");
         assertThat("MS Access directory not found: " + msAccessDir.getAbsolutePath(), msAccessDir.isDirectory(), is(true));
