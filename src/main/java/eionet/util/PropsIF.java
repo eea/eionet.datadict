@@ -227,5 +227,10 @@ public interface PropsIF {
 
     String NOTIFICATION_EMAIL_FROM="notification.email.from";
 
+    /**
+     * The property that withholds the friendly URI template for DD namespaces.
+     */
+    String SSO_LOGIN_PAGE_URI = "edu.yale.its.tp.cas.client.filter.loginUrl";
+
     String API_USER_MODIFIED_IDENTIFIER= "external_api_request";
 }

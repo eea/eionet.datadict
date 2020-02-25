@@ -28,10 +28,8 @@ import eionet.datadict.services.data.VocabularyDataService;
 import eionet.meta.DDUser;
 import eionet.datadict.errors.UserAuthenticationException;
 import eionet.meta.dao.IVocabularyFolderDAO;
-import eionet.meta.dao.domain.DDApiKey;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.exports.json.VocabularyJSONOutputHelper;
-import eionet.meta.service.IApiKeyService;
 import eionet.meta.service.IJWTService;
 import eionet.meta.service.IRDFVocabularyImportService;
 import eionet.meta.service.IVocabularyImportService.MissingConceptsAction;
@@ -114,14 +112,14 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
     public static final String VALID_CONTENT_TYPE_FOR_RDF_UPLOAD = "application/rdf+xml";
 
     /**
-     * API Key identifier in json.
-     */
-    public static final String API_KEY_IDENTIFIER_IN_JSON = "API_KEY";
-
-    /**
      * Created time identifier in json.
      */
     public static final String TOKEN_CREATED_TIME_IDENTIFIER_IN_JSON = "iat";
+
+    /**
+     * DOMAIN identifier in json.
+     */
+    public static final String DOMAIN = "domain";
 
     /**
      * JWT Key.
@@ -187,12 +185,6 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
      */
     @SpringBean
     private IJWTService jwtService;
-
-    /**
-     * API-Key service.
-     */
-    @SpringBean
-    private IApiKeyService apiKeyService;
 
     /**
      * Vocabulary folder.
@@ -320,25 +312,20 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
                         return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "Cannot authorize: Deprecated token", ErrorActionBean.RETURN_ERROR_EVENT);
                     }
 
-                    String apiKey = jsonObject.getString(API_KEY_IDENTIFIER_IN_JSON);
-
-                    DDApiKey ddApiKey = apiKeyService.getApiKey(apiKey);
-
-                    if (ddApiKey == null) {
-                        LOGGER.error("uploadRdf API - Invalid key");
-                        return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "Cannot authorize: Invalid key", ErrorActionBean.RETURN_ERROR_EVENT);
+                    /* Check if the domain that the token was generated in, is the same as this one. */
+                    String domain = null;
+                    try{
+                        domain = jsonObject.getString(DOMAIN);
+                    }
+                    catch(Exception e){
+                        LOGGER.error("uploadRdf API - The token does not include domain information");
+                        return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "Cannot authorize: Domain was not specified", ErrorActionBean.RETURN_ERROR_EVENT);
                     }
 
-                    //Note: Scope can also be used
-
-                    if (ddApiKey.getExpires() != null) {
-                        Date now = Calendar.getInstance().getTime();
-                        if (now.after(ddApiKey.getExpires())) {
-                            LOGGER.error("uploadRdf API - Expired key");
-                            return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "Cannot authorize: Expired key", ErrorActionBean.RETURN_ERROR_EVENT);
-                        }
+                    if (!Props.getProperty(PropsIF.DD_URL).equals(domain)) {
+                        LOGGER.error("uploadRdf API - The token was not generated from this domain");
+                        return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "Cannot authorize: Different domain", ErrorActionBean.RETURN_ERROR_EVENT);
                     }
-
 
                 } catch (Exception e) {
                     LOGGER.error("uploadRdf API - Cannot verify key", e);
@@ -461,26 +448,6 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
     } // end of method uploadRDF
 
     /**
-     * TODO: TEMP METHOD for testing, will be removed.
-     */
-    private Resolution testUploadRdf() throws ServiceException {
-        PostMethod post = new PostMethod(Props.getRequiredProperty(PropsIF.DD_URL) + "/api/vocabulary/test/geography/uploadRdf");
-        post.setRequestHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
-
-        Map<String, String> jwtPayload = new HashMap<String, String>();
-        jwtPayload.put(API_KEY_IDENTIFIER_IN_JSON, "TestingAPIKey");
-
-        post.setRequestHeader(JWT_API_KEY_HEADER, jwtService.sign(JWT_KEY, JWT_AUDIENCE, jwtPayload, JWT_EXPIRATION_IN_MINUTES, JWT_SIGNING_ALGORITHM));
-        HttpClient httpClient = new HttpClient();
-        try {
-            httpClient.executeMethod(post);
-        } catch (IOException e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-        return null;
-    } // end of method testUploadRdf
-
-    /**
      * Validator and enum value converter for upload action before parameter.
      *
      * @param supportedUploadActionBefore supported action before list for this upload operation.
@@ -596,14 +563,6 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
 
     public void setJwtService(IJWTService jwtService) {
         this.jwtService = jwtService;
-    }
-
-    public IApiKeyService getApiKeyService() {
-        return apiKeyService;
-    }
-
-    public void setApiKeyService(IApiKeyService apiKeyService) {
-        this.apiKeyService = apiKeyService;
     }
 
     public IRDFVocabularyImportService getVocabularyRdfImportService() {

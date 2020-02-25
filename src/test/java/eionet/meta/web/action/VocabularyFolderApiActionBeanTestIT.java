@@ -71,12 +71,12 @@ public class VocabularyFolderApiActionBeanTestIT extends UnitilsJUnit4 {
     public static final String JWT_API_KEY_HEADER = "X-DD-API-KEY";
 
     /**
-     * API Key identifier in json.
+     * DOMAIN identifier in json.
      */
-    public static final String API_KEY_IDENTIFIER_IN_JSON = "API_KEY";
+    public static final String DOMAIN = "domain";
 
     /**
-     * JWT Key. i.e. ddTestAp1KeyF4VocUpload_87923!@Q
+     * JWT Key.
      */
     private static final String VALID_JWT_SECRET_KEY = Props.getProperty(PropsIF.DD_VOCABULARY_API_JWT_KEY);
 
@@ -288,19 +288,18 @@ public class VocabularyFolderApiActionBeanTestIT extends UnitilsJUnit4 {
         MockRoundtrip trip = new MockRoundtrip(ctx, VocabularyFolderApiActionBean.class);
         trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
 
-//        Map<String, String> jwtPayload = new HashMap<String, String>();
-//        jwtPayload.put(API_KEY_IDENTIFIER_IN_JSON, "NotExistingAPIKey");
-        //Payload, generated at: http://jwtbuilder.jamiekurtz.com/ with VALID_JWT_SECRET_KEY and VALID_JWT_AUDIENCE and VALID_JWT_SIGNING_ALGORITHM
-//        {
-//            "iss": "DDTest",
-//            "iat": 1422429619,
-//            "exp": 1422429933,
-//            "aud": "DataDictionary",
-//            "sub": "",
-//            "API_KEY": "NotExistingAPIKey"
-//        }
+/*       Payload, generated at: http://jwtbuilder.jamiekurtz.com/ with VALID_JWT_SECRET_KEY and VALID_JWT_AUDIENCE and VALID_JWT_SIGNING_ALGORITHM
+        {
+          "sub": "",
+          "aud": "DataDictionary",
+          "iss": "DDTest",
+          "exp": 1550565939,
+          "iat": 1519029939
+        }
 
-        trip.getRequest().addHeader(JWT_API_KEY_HEADER, "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJERFRlc3QiLCJpYXQiOjE0MjI0Mjk2MTksImV4cCI6MTQyMjQyOTkzMywiYXVkIjoiRGF0YURpY3Rpb25hcnkiLCJzdWIiOiIiLCJBUElfS0VZIjoiTm90RXhpc3RpbmdBUElLZXkifQ.Fs_fr9cp2o4imv8ErnXBgzdcv-ZMKpiEB6pL5cAdgm-RU0ZSJUV5i1H5Zqfe3snO65t4vos41jum7f8atHh62A");
+ */
+
+        trip.getRequest().addHeader(JWT_API_KEY_HEADER, "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIiLCJhdWQiOiJEYXRhRGljdGlvbmFyeSIsImlzcyI6IkREVGVzdCIsImV4cCI6MTU1MDU2NTkzOSwiaWF0IjoxNTE5MDI5OTM5fQ.HB0m7a5j86zkx3qvAAEnDxB136dfANOxRQCxBcyG7BkVATbZcwZABVjdLo9Rc6edEsaoaBqV71tweAtr6nB0ZA");
         trip.execute("uploadRdf");
         MockHttpServletResponse response = trip.getResponse();
         Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
@@ -318,17 +317,17 @@ public class VocabularyFolderApiActionBeanTestIT extends UnitilsJUnit4 {
         MockRoundtrip trip = new MockRoundtrip(ctx, VocabularyFolderApiActionBean.class);
         trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
 
-        //Payload, generated at: http://jwtbuilder.jamiekurtz.com/ with VALID_JWT_SECRET_KEY and VALID_JWT_AUDIENCE and VALID_JWT_SIGNING_ALGORITHM
-//        {
-//            "iss": "DDTest",
-//            "iat": 1451610061,
-//            "exp": 4607287261,
-//            "aud": "ContentRegistry",
-//            "sub": "",
-//            "API_KEY": "NotExistingAPIKey"
-//        }
+/*        {
+            "sub": "",
+                "aud": "wrongAudience",
+                "iss": "DDTest",
+                "exp": 1613725106,
+                "iat": 1582102706
+            }
 
-        trip.getRequest().addHeader(JWT_API_KEY_HEADER, "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJERFRlc3QiLCJpYXQiOjE0NTE2MTAwNjEsImV4cCI6NDYwNzI4NzI2MSwiYXVkIjoiQ29udGVudFJlZ2lzdHJ5Iiwic3ViIjoiIiwiQVBJX0tFWSI6Ik5vdEV4aXN0aW5nQVBJS2V5In0.0TyN0RebnKJJr28-jZ_d0R6mHUEvbsD2GY6h7tZVHsOsxuUTiC5-_cpd3DCFnWX2bhzydYEZS0EapIPG1ym-4g");
+ */
+
+        trip.getRequest().addHeader(JWT_API_KEY_HEADER, "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIiLCJhdWQiOiJ3cm9uZ0F1ZGllbmNlIiwiaXNzIjoiRERUZXN0IiwiZXhwIjoxNjEzNzI1MTA2LCJpYXQiOjE1ODIxMDI3MDZ9.EkZuR-mcQJCp0VX6wDLhrNI5laxCYY34aOm365MRZSiExBp74DMceIRKX0vzKZHvVnwzn_IWM3w9yS7RHtvbeQ");
         trip.execute("uploadRdf");
         MockHttpServletResponse response = trip.getResponse();
         Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
@@ -346,123 +345,21 @@ public class VocabularyFolderApiActionBeanTestIT extends UnitilsJUnit4 {
         MockRoundtrip trip = new MockRoundtrip(ctx, VocabularyFolderApiActionBean.class);
         trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
 
-        //Payload, generated at: http://jwtbuilder.jamiekurtz.com/ with VALID_JWT_SECRET_KEY and VALID_JWT_AUDIENCE and VALID_JWT_SIGNING_ALGORITHM
-//        {
-//            "iss": "DDTest",
-//            "iat": 1422429619,
-//            "exp": 10892129133,
-//            "aud": "DataDictionary",
-//            "sub": "",
-//            "API_KEY": "NotExistingAPIKey"
-//        }
-
-        trip.getRequest().addHeader(JWT_API_KEY_HEADER, "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJERFRlc3QiLCJpYXQiOjE0MjI0Mjk2MTksImV4cCI6MTA4OTIxMjkxMzMsImF1ZCI6IkRhdGFEaWN0aW9uYXJ5Iiwic3ViIjoiIiwiQVBJX0tFWSI6Ik5vdEV4aXN0aW5nQVBJS2V5In0.gij-9-r6PAKYGicjaBXTIiFL72Zon7LZrV_e0cQZvvCfcunWX__t5YZyS6GfZbkhJfNYDC6mhdcAOoZHSiWpQg");
+/*
+        {
+          "sub": "",
+          "aud": "DataDictionary",
+          "iss": "DDTest",
+          "exp": 1739956617,
+          "iat": 1519031817
+        }
+*/
+        trip.getRequest().addHeader(JWT_API_KEY_HEADER, "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIiLCJhdWQiOiJEYXRhRGljdGlvbmFyeSIsImlzcyI6IkREVGVzdCIsImV4cCI6MTczOTk1NjYxNywiaWF0IjoxNTE5MDMxODE3fQ.t8A9MkvkElB8Ycst23HmuRC93Vvl8OXEfpE-bA4l9gCaSu-WZS9jlTBf3h3WKl9ENRnZ4zmj6cstDzCH4KGUOQ");
         trip.execute("uploadRdf");
         MockHttpServletResponse response = trip.getResponse();
         Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
         Assert.assertEquals("Error message", "Cannot authorize: Deprecated token", response.getErrorMessage());
     } // end of test step testValidDeprecatedJwt
-
-    /**
-     * Call api with valid jwt with not existing api key.
-     *
-     * @throws Exception if test fails
-     */
-    @Test
-    public void testValidJwtNotExistingApiKey() throws Exception {
-        MockServletContext ctx = ActionBeanUtils.getServletContext();
-        MockRoundtrip trip = new MockRoundtrip(ctx, VocabularyFolderApiActionBean.class);
-        trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
-
-        //Payload, generated at: http://jwtbuilder.jamiekurtz.com/ with VALID_JWT_SECRET_KEY and VALID_JWT_AUDIENCE and VALID_JWT_SIGNING_ALGORITHM
-//        {
-//            "iss": "DDTest",
-//            "iat": 10889450419,
-//            "exp": 10892129133,
-//            "aud": "DataDictionary",
-//            "sub": "",
-//            "API_KEY": "NotExistingAPIKey"
-//        }
-
-        trip.getRequest().addHeader(JWT_API_KEY_HEADER, "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJERFRlc3QiLCJpYXQiOjEwODg5NDUwNDE5LCJleHAiOjEwODkyMTI5MTMzLCJhdWQiOiJEYXRhRGljdGlvbmFyeSIsInN1YiI6IiIsIkFQSV9LRVkiOiJOb3RFeGlzdGluZ0FQSUtleSJ9.gtS_aw5GniHmu4820veWbSksv6r1cF10MhONO09hvIKAMrnKHIsVzTAvRKHa1oN96McUuMNq6-yzBaSqITrbfQ");
-        trip.execute("uploadRdf");
-        MockHttpServletResponse response = trip.getResponse();
-        Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
-        Assert.assertEquals("Error message", "Cannot authorize: Failed to get api key", response.getErrorMessage());
-    } // end of test step testValidJwtNotExistingApiKey
-
-    /**
-     * Call api with valid jwt with blank api key.
-     *
-     * @throws Exception if test fails
-     */
-    @Test
-    public void testValidJwtBlankApiKey() throws Exception {
-        MockServletContext ctx = ActionBeanUtils.getServletContext();
-        MockRoundtrip trip = new MockRoundtrip(ctx, VocabularyFolderApiActionBean.class);
-        trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
-
-        //Payload, generated at: http://jwtbuilder.jamiekurtz.com/ with VALID_JWT_SECRET_KEY and VALID_JWT_AUDIENCE and VALID_JWT_SIGNING_ALGORITHM
-//        {
-//            "iss": "DDTest",
-//            "iat": 10889450419,
-//            "exp": 10892129133,
-//            "aud": "DataDictionary",
-//            "sub": "",
-//            "API_KEY": " "
-//        }
-
-        trip.getRequest().addHeader(JWT_API_KEY_HEADER, "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJERFRlc3QiLCJpYXQiOjEwODg5NDUwNDE5LCJleHAiOjEwODkyMTI5MTMzLCJhdWQiOiJEYXRhRGljdGlvbmFyeSIsInN1YiI6IiIsIkFQSV9LRVkiOiIgIn0.YaMzqJywCpQFn7-xT-x-PevfD1eeHfzd5LeQm7-wp0lL2LWj0sFM4PbyXl4owb7vHqxvG99fpIRF--YN40473Q");
-        trip.execute("uploadRdf");
-        MockHttpServletResponse response = trip.getResponse();
-        Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
-        Assert.assertEquals("Error message", "Cannot authorize: Failed to get api key", response.getErrorMessage());
-    } // end of test step testValidJwtBlankApiKey
-
-    /**
-     * Call api with valid jwt without api key.
-     *
-     * @throws Exception if test fails
-     */
-    @Test
-    public void testValidJwtWithoutApiKey() throws Exception {
-        MockServletContext ctx = ActionBeanUtils.getServletContext();
-        MockRoundtrip trip = new MockRoundtrip(ctx, VocabularyFolderApiActionBean.class);
-        trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
-
-        //Payload, generated at: http://jwtbuilder.jamiekurtz.com/ with VALID_JWT_SECRET_KEY and VALID_JWT_AUDIENCE and VALID_JWT_SIGNING_ALGORITHM
-//        {
-//            "iss": "DDTest",
-//            "iat": 10889450419,
-//            "exp": 10892129133,
-//            "aud": "DataDictionary",
-//            "sub": ""
-//        }
-
-        trip.getRequest().addHeader(JWT_API_KEY_HEADER, "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJERFRlc3QiLCJpYXQiOjEwODg5NDUwNDE5LCJleHAiOjEwODkyMTI5MTMzLCJhdWQiOiJEYXRhRGljdGlvbmFyeSIsInN1YiI6IiJ9.GUj1BZ5KLsdiYfkVHbMbYYNQMEXTBUo8x4DehQZ5fbP_cU66jQDN8rId9l6OY_i7HnkDg2rNOxfEeOXfbHJ4Sg");
-        trip.execute("uploadRdf");
-        MockHttpServletResponse response = trip.getResponse();
-        Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
-        Assert.assertEquals("Error message", "Cannot authorize: JSONObject[\"API_KEY\"] not found.", response.getErrorMessage());
-    } // end of test step testValidJwtWithoutApiKey
-
-    /**
-     * Call api with valid jwt without api key.
-     *
-     * @throws Exception if test fails
-     */
-    @Test
-    public void testValidJwtWithoutApiKeyWithOurService() throws Exception {
-        MockServletContext ctx = ActionBeanUtils.getServletContext();
-        MockRoundtrip trip = new MockRoundtrip(ctx, VocabularyFolderApiActionBean.class);
-        trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
-
-        trip.getRequest().addHeader(JWT_API_KEY_HEADER, jwtService.sign(VALID_JWT_SECRET_KEY, VALID_JWT_AUDIENCE, new HashMap(), VALID_JWT_EXPIRATION_IN_MINUTES, VALID_JWT_SIGNING_ALGORITHM));
-        trip.execute("uploadRdf");
-        MockHttpServletResponse response = trip.getResponse();
-        Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
-        Assert.assertEquals("Error message", "Cannot authorize: JSONObject[\"API_KEY\"] not found.", response.getErrorMessage());
-    } // end of test step testValidJwtWithoutApiKeyWithOurService
 
     /**
      * Call api with wrong secret key encoded jwt.
@@ -483,50 +380,6 @@ public class VocabularyFolderApiActionBeanTestIT extends UnitilsJUnit4 {
     } // end of test step testWrongSecretKeyGeneratedJwt
 
     /**
-     * Call api with valid jwt without api key.
-     *
-     * @throws Exception if test fails
-     */
-    @Test
-    public void testValidJwtWithBlankApiKeyWithOurService() throws Exception {
-        MockServletContext ctx = ActionBeanUtils.getServletContext();
-        MockRoundtrip trip = new MockRoundtrip(ctx, VocabularyFolderApiActionBean.class);
-        trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
-
-        Map<String, String> jwtPayload = new HashMap<String, String>();
-        jwtPayload.put(API_KEY_IDENTIFIER_IN_JSON, "");
-
-        trip.getRequest().addHeader(JWT_API_KEY_HEADER, jwtService.sign(VALID_JWT_SECRET_KEY, VALID_JWT_AUDIENCE, jwtPayload, VALID_JWT_EXPIRATION_IN_MINUTES, VALID_JWT_SIGNING_ALGORITHM));
-        trip.execute("uploadRdf");
-        MockHttpServletResponse response = trip.getResponse();
-        Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
-        Assert.assertEquals("Error message", "Cannot authorize: Failed to get api key", response.getErrorMessage());
-    } // end of test step testValidJwtWithBlankApiKeyWithOurService
-
-    /**
-     * Call api with expired api key.
-     *
-     * @throws Exception if test fails
-     */
-    @Test
-    public void testExpiredApiKey() throws Exception {
-        MockServletContext ctx = ActionBeanUtils.getServletContext();
-        MockRoundtrip trip = new MockRoundtrip(ctx, VocabularyFolderApiActionBean.class);
-        trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
-
-        Map<String, String> jwtPayload = new HashMap<String, String>();
-        jwtPayload.put(API_KEY_IDENTIFIER_IN_JSON, "ThisKeyExpired");
-
-        trip.getRequest().addHeader(JWT_API_KEY_HEADER, jwtService.sign(VALID_JWT_SECRET_KEY, VALID_JWT_AUDIENCE, jwtPayload, VALID_JWT_EXPIRATION_IN_MINUTES, VALID_JWT_SIGNING_ALGORITHM));
-        trip.execute("uploadRdf");
-        MockHttpServletResponse response = trip.getResponse();
-        Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
-        Assert.assertEquals("Error message", "Cannot authorize: Expired key", response.getErrorMessage());
-    } // end of test step testExpiredApiKey
-
-
-
-    /**
      * Call api with a valid API key and working copy folder.
      *
      * @throws Exception if test fails
@@ -538,7 +391,7 @@ public class VocabularyFolderApiActionBeanTestIT extends UnitilsJUnit4 {
         trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
 
         Map<String, String> jwtPayload = new HashMap<String, String>();
-        jwtPayload.put(API_KEY_IDENTIFIER_IN_JSON, VALID_API_KEY);
+        jwtPayload.put(DOMAIN, "http://dd.eionet.europa.eu");
 
         trip.getRequest().addHeader(JWT_API_KEY_HEADER, jwtService.sign(VALID_JWT_SECRET_KEY, VALID_JWT_AUDIENCE, jwtPayload, VALID_JWT_EXPIRATION_IN_MINUTES, VALID_JWT_SIGNING_ALGORITHM));
         trip.addParameter("vocabularyFolder.folderName", "common");
@@ -562,7 +415,7 @@ public class VocabularyFolderApiActionBeanTestIT extends UnitilsJUnit4 {
         trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
 
         Map<String, String> jwtPayload = new HashMap<String, String>();
-        jwtPayload.put(API_KEY_IDENTIFIER_IN_JSON, VALID_API_KEY);
+        jwtPayload.put(DOMAIN, "http://dd.eionet.europa.eu");
 
         trip.getRequest().addHeader(JWT_API_KEY_HEADER, jwtService.sign(VALID_JWT_SECRET_KEY, VALID_JWT_AUDIENCE, jwtPayload, VALID_JWT_EXPIRATION_IN_MINUTES, VALID_JWT_SIGNING_ALGORITHM));
         trip.addParameter("vocabularyFolder.folderName", "common");
@@ -586,7 +439,7 @@ public class VocabularyFolderApiActionBeanTestIT extends UnitilsJUnit4 {
         trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
 
         Map<String, String> jwtPayload = new HashMap<String, String>();
-        jwtPayload.put(API_KEY_IDENTIFIER_IN_JSON, VALID_API_KEY);
+        jwtPayload.put(DOMAIN, "http://dd.eionet.europa.eu");
 
         trip.getRequest().addHeader(JWT_API_KEY_HEADER, jwtService.sign(VALID_JWT_SECRET_KEY, VALID_JWT_AUDIENCE, jwtPayload, VALID_JWT_EXPIRATION_IN_MINUTES, VALID_JWT_SIGNING_ALGORITHM));
         trip.addParameter("vocabularyFolder.folderName", "common");
@@ -611,7 +464,7 @@ public class VocabularyFolderApiActionBeanTestIT extends UnitilsJUnit4 {
         trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
 
         Map<String, String> jwtPayload = new HashMap<String, String>();
-        jwtPayload.put(API_KEY_IDENTIFIER_IN_JSON, VALID_API_KEY);
+        jwtPayload.put(DOMAIN, "http://dd.eionet.europa.eu");
 
         trip.getRequest().addHeader(JWT_API_KEY_HEADER, jwtService.sign(VALID_JWT_SECRET_KEY, VALID_JWT_AUDIENCE, jwtPayload, VALID_JWT_EXPIRATION_IN_MINUTES, VALID_JWT_SIGNING_ALGORITHM));
         trip.addParameter("vocabularyFolder.folderName", "common");
@@ -636,7 +489,7 @@ public class VocabularyFolderApiActionBeanTestIT extends UnitilsJUnit4 {
         trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
 
         Map<String, String> jwtPayload = new HashMap<String, String>();
-        jwtPayload.put(API_KEY_IDENTIFIER_IN_JSON, VALID_API_KEY);
+        jwtPayload.put(DOMAIN, "http://dd.eionet.europa.eu");
 
         trip.getRequest().addHeader(JWT_API_KEY_HEADER, jwtService.sign(VALID_JWT_SECRET_KEY, VALID_JWT_AUDIENCE, jwtPayload, VALID_JWT_EXPIRATION_IN_MINUTES, VALID_JWT_SIGNING_ALGORITHM));
         trip.addParameter("vocabularyFolder.folderName", "common");
@@ -648,6 +501,59 @@ public class VocabularyFolderApiActionBeanTestIT extends UnitilsJUnit4 {
         Assert.assertEquals("Status code", INVALID_INPUT_STATUS_CODE, response.getStatus());
         Assert.assertEquals("Error message", "Invalid missing concepts action parameter: removed", response.getErrorMessage());
     } // end of test step testValidApiKeyValidVocabularyInvalidMissingConcepts
+
+    /**
+     * Call api with a valid API key, domain is missing
+     *
+     * @throws Exception if test fails
+     */
+    @Test
+    public void testValidApiKeyDomainMissing() throws Exception {
+        MockServletContext ctx = ActionBeanUtils.getServletContext();
+        MockRoundtrip trip = new MockRoundtrip(ctx, VocabularyFolderApiActionBean.class);
+        trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
+
+        /*
+                {
+                  "sub": "eea",
+                  "aud": "DataDictionary",
+                  "iss": "eea",
+                  "iat": 1582290733409
+                }
+        */
+        trip.getRequest().addHeader(JWT_API_KEY_HEADER, "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJlZWEiLCJhdWQiOiJEYXRhRGljdGlvbmFyeSIsImlzcyI6ImVlYSIsImlhdCI6MTU4MjI5MDczMzQwOX0.97eLe-2KztuQ5cPTOOdmTanCLsC0vEBNhYgSWffmrar-ACopGJSjUPQGLUZ1_KoUXlVtbOX1eI-I5NnlrIzj5Q");
+        trip.execute("uploadRdf");
+        MockHttpServletResponse response = trip.getResponse();
+        Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
+        Assert.assertEquals("Error message", "Cannot authorize: Domain was not specified", response.getErrorMessage());
+    } // end of test step testValidApiKeyDomainMissing
+
+    /**
+     * Call api with a valid API key, domain is wrong
+     *
+     * @throws Exception if test fails
+     */
+    @Test
+    public void testValidApiKeyWrongDomain() throws Exception {
+        MockServletContext ctx = ActionBeanUtils.getServletContext();
+        MockRoundtrip trip = new MockRoundtrip(ctx, VocabularyFolderApiActionBean.class);
+        trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
+
+        /*
+                {
+                  "sub": "eea",
+                  "aud": "DataDictionary",
+                  "domain": "testDomain",
+                  "iss": "eea",
+                  "iat": 1582291638260
+                }
+        */
+        trip.getRequest().addHeader(JWT_API_KEY_HEADER, "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJlZWEiLCJhdWQiOiJEYXRhRGljdGlvbmFyeSIsImRvbWFpbiI6InRlc3REb21haW4iLCJpc3MiOiJlZWEiLCJpYXQiOjE1ODIyOTE2MzgyNjB9.32fLW-5HO4KnY2ywx6qaRG9lvN_mFbOI5PXCKrLvpk8FYdY8FJpAB1QYMfouJVCreOamVA3Dms6hu5l4q9ytaA");
+        trip.execute("uploadRdf");
+        MockHttpServletResponse response = trip.getResponse();
+        Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
+        Assert.assertEquals("Error message", "Cannot authorize: Different domain", response.getErrorMessage());
+    } // end of test step testValidApiKeyWrongDomain
 
     /**
      * Extension of {@link net.sourceforge.stripes.controller.DefaultActionBeanPropertyBinder} in order to directly inject the proper file bean.

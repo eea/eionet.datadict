@@ -21,6 +21,7 @@
                     </stripes:link>
                 </li>
              </c:if>
+            <li><stripes:link href="/generateJWTToken">Generate JWT Token</stripes:link></li>
         </ul>
     </stripes:layout-component>
 

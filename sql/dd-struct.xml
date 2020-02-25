@@ -2803,4 +2803,8 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
     <changeSet id="rev-206" author="skiadas">
         <dropColumn tableName="API_KEY" columnName="REMOTE_ADDR"/>
     </changeSet>
+    <changeSet id="rev-207" author="anthaant">
+        <comment>Remove the table for api key that became obsolete</comment>
+        <dropTable tableName="API_KEY"/>
+    </changeSet>
 </databaseChangeLog>
