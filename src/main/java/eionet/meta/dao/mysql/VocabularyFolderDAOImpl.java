@@ -23,11 +23,7 @@ package eionet.meta.dao.mysql;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -43,7 +39,6 @@ import eionet.meta.dao.domain.VocabularyType;
 import eionet.meta.service.data.VocabularyFilter;
 import eionet.meta.service.data.VocabularyResult;
 import eionet.util.Triple;
-import java.util.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -965,6 +960,33 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("vocabularyIds", vocabularyIds);
         return getNamedParameterJdbcTemplate().queryForList(sql, params, Integer.class);
+    }
+
+    /**
+     * Updates the date and user modified columns of Vocabulary
+     *
+     * @param dateModified
+     * @param username
+     * @param vocabularyId
+     */
+    @Override
+    public void updateDateAndUserModified(Date dateModified, String username, Integer vocabularyId){
+        StringBuilder sql = new StringBuilder();
+        sql.append("update VOCABULARY set ");
+        sql.append("DATE_MODIFIED = :dateModified ");
+        if(username != null) {
+            sql.append(", USER_MODIFIED = :userModified ");
+        }
+        sql.append("where VOCABULARY_ID = :vocabularyFolderId ");
+
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("vocabularyFolderId", vocabularyId);
+        parameters.put("dateModified", dateModified);
+        if(username != null) {
+            parameters.put("userModified", username);
+        }
+
+        getNamedParameterJdbcTemplate().update(sql.toString(), parameters);
     }
 
 }

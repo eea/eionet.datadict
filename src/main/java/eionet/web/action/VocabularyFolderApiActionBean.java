@@ -27,6 +27,7 @@ import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.services.data.VocabularyDataService;
 import eionet.meta.DDUser;
 import eionet.datadict.errors.UserAuthenticationException;
+import eionet.meta.dao.IVocabularyFolderDAO;
 import eionet.meta.dao.domain.DDApiKey;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.exports.json.VocabularyJSONOutputHelper;
@@ -69,6 +70,7 @@ import java.util.Map;
 import net.sourceforge.stripes.action.DefaultHandler;
 import org.apache.commons.io.ByteOrderMark;
 import org.apache.commons.io.input.BOMInputStream;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Vocabulary folder API action bean.
@@ -173,6 +175,12 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
      */
     @SpringBean
     private IVocabularyService vocabularyService;
+
+    /**
+     * Vocabulary folder DAO.
+     */
+    @SpringBean
+    private IVocabularyFolderDAO vocabularyFolderDAO;
 
     /**
      * JWT service.
@@ -427,6 +435,11 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
                 addSystemMessage(systemMessage);
                 LOGGER.info(systemMessage);
             }
+
+            Date dateModified = new Date();
+            String userModified = PropsIF.API_USER_MODIFIED_IDENTIFIER;
+            vocabularyFolderDAO.updateDateAndUserModified(dateModified, userModified, vocabularyFolder.getId());
+            LOGGER.info("uploadRdf API - DATE_MODIFIED was updated");
 
             StreamingResolution result = new StreamingResolution(JSON_FORMAT) {
                 @Override
