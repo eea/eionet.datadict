@@ -820,7 +820,7 @@ else if (mode.equals("add"))
                                     There are <%=xmlConvData.getNumberOfQAScripts()%> QA scripts and <%=xmlConvData.getNumberOfConversions()%> conversion scripts registered for this table.
                                     <% if (xmlConvData.getNumberOfQAScripts() > 0 || xmlConvData.getNumberOfConversions() > 0) {%>
                                     <br />
-                                    <a href="<%=xmlConvData.getXmlConvUrl()%>?schema=<%=schemaUrl%>">Link to the schema page on XMLCONV</a>
+                                    <a href="<%=xmlConvData.getXmlConvUrl()%>?schemaUrl=<%=schemaUrl%>">Link to the schema page on XMLCONV</a>
                                     <%}%>
                                     </strong>
                                 </div><%
