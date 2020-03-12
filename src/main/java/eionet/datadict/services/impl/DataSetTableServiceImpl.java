@@ -281,6 +281,20 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                 }
                 dataElementSimpleType.appendChild(dataElementRestriction);
             }
+            if (Datatype.equalsIgnoreCase("double")) {
+                dataElementRestriction.setAttribute(DataDictXMLConstants.BASE, DataDictXMLConstants.XS_PREFIX + ":" + Datatype);
+                if (!MinInclusiveValue.equals("")) {
+                    Element minInclusiveElement = elMaker.createElement("minInclusive");
+                    minInclusiveElement.setAttribute("value", MinInclusiveValue);
+                    dataElementRestriction.appendChild(minInclusiveElement);
+                }
+                if (!MaxInclusiveValue.equals("")) {
+                    Element maxInclusiveElement = elMaker.createElement("maxInclusive");
+                    maxInclusiveElement.setAttribute("value", MaxInclusiveValue);
+                    dataElementRestriction.appendChild(maxInclusiveElement);
+                }
+                dataElementSimpleType.appendChild(dataElementRestriction);
+            }
             if (Datatype.equalsIgnoreCase("Date")||Datatype.equalsIgnoreCase("dateTime") || Datatype.equalsIgnoreCase("gYearMonth") ||
                     Datatype.equalsIgnoreCase("duration") || Datatype.equalsIgnoreCase("gYear") || Datatype.equalsIgnoreCase("time")) {
                 dataElementRestriction.setAttribute(DataDictXMLConstants.BASE, DataDictXMLConstants.XS_PREFIX + ":" + Datatype);
