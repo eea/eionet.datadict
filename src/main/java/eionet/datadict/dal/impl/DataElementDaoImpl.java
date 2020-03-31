@@ -200,7 +200,7 @@ public class DataElementDaoImpl extends JdbcDaoBase implements DataElementDao {
             dataElement.setRegStatus(DatasetRegStatus.fromString(rs.getString("DATAELEM.REG_STATUS")));
             dataElement.setVersion(rs.getInt("DATAELEM.VERSION"));
             dataElement.setUser(rs.getString("DATAELEM.USER"));
-            dataElement.setDate(rs.getInt("DATAELEM.DATE"));
+            dataElement.setDate(rs.getLong("DATAELEM.DATE"));
             dataElement.setIdentifier(rs.getString("DATAELEM.IDENTIFIER"));
             dataElement.setCheckedOutCopyId(rs.getInt("DATAELEM.CHECKEDOUT_COPY_ID"));
             dataElement.setVocabularyId(rs.getInt("DATAELEM.VOCABULARY_ID"));
