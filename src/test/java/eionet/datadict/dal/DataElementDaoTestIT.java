@@ -54,7 +54,7 @@ public class DataElementDaoTestIT {
         assertThat(actualDataElement.getRegStatus(), is(equalTo(DatasetRegStatus.RELEASED)));
         assertThat(actualDataElement.getUser(), is(equalTo("staromar")));
         assertThat(actualDataElement.getVersion(), is(equalTo(1)));
-        assertThat(actualDataElement.getDate(), is(equalTo(1193839)));
+        assertThat(actualDataElement.getDate(), is(equalTo(Long.valueOf(1193839))));
         assertThat(actualDataElement.getIdentifier(), is(equalTo("HCO3")));
     }
 
@@ -89,7 +89,7 @@ public class DataElementDaoTestIT {
         assertThat(actualDataElement.getRegStatus(), is(equalTo(DatasetRegStatus.RELEASED)));
         assertThat(actualDataElement.getUser(), is(equalTo("staromar")));
         assertThat(actualDataElement.getVersion(), is(equalTo(1)));
-        assertThat(actualDataElement.getDate(), is(equalTo(1193839)));
+        assertThat(actualDataElement.getDate(), is(equalTo(Long.valueOf(1193839))));
         assertThat(actualDataElement.getIdentifier(), is(equalTo("HCO3")));
         assertThat(actualDataElement.getCheckedOutCopyId(),is(equalTo(36619)));
         assertThat(actualDataElement.getNamespace().getId(),is(equalTo(1)));
