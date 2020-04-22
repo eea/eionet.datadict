@@ -36,7 +36,7 @@ public abstract class DataElement implements AttributeOwner {
     private DatasetRegStatus regStatus;
     private Integer version;
     private String user;
-    private Integer date;
+    private Long date;
     private Namespace parentNS;
     private Namespace topNS;
     private Integer checkedOutCopyId;
@@ -272,11 +272,11 @@ public abstract class DataElement implements AttributeOwner {
         this.user = user;
     }
 
-    public Integer getDate() {
+    public Long getDate() {
         return date;
     }
 
-    public void setDate(Integer date) {
+    public void setDate(Long date) {
         this.date = date;
     }
 

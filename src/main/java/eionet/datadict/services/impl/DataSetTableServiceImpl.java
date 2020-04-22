@@ -172,6 +172,8 @@ public class DataSetTableServiceImpl implements DataSetTableService {
             String Datatype = "";
             String MinInclusiveValue = "";
             String MaxInclusiveValue = "";
+            String MinExclusiveValue = "";
+            String MaxExclusiveValue = "";
             String DecimalPrecision = "";
             List<VocabularyConcept> vocabularyConcepts = new LinkedList<VocabularyConcept>();
             if (dataElement.getVocabularyId() != null) {
@@ -206,6 +208,14 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                 }
                 if (attribute.getShortName().equals("MaxInclusiveValue")) {
                     MaxInclusiveValue = attributeValue.getValue();
+                    continue;
+                }
+                if (attribute.getShortName().equals("MinExclusiveValue")) {
+                    MinExclusiveValue = attributeValue.getValue();
+                    continue;
+                }
+                if (attribute.getShortName().equals("MaxExclusiveValue")) {
+                    MaxExclusiveValue = attributeValue.getValue();
                     continue;
                 }
                 if (attribute.getShortName().equals("DecimalPrecision")) {
@@ -243,6 +253,16 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                     maxInclusiveElement.setAttribute("value", MaxInclusiveValue);
                     dataElementRestriction.appendChild(maxInclusiveElement);
                 }
+                if (!MinExclusiveValue.equals("")) {
+                    Element minExclusiveElement = elMaker.createElement("minExclusive");
+                    minExclusiveElement.setAttribute("value", MinExclusiveValue);
+                    dataElementRestriction.appendChild(minExclusiveElement);
+                }
+                if (!MaxExclusiveValue.equals("")) {
+                    Element maxExclusiveElement = elMaker.createElement("maxExclusive");
+                    maxExclusiveElement.setAttribute("value", MaxExclusiveValue);
+                    dataElementRestriction.appendChild(maxExclusiveElement);
+                }
                 if (!DecimalPrecision.equals("")) {
                     Element fractionDigitsElement = elMaker.createElement("fractionDigits");
                     fractionDigitsElement.setAttribute("value", DecimalPrecision);
@@ -265,6 +285,16 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                     maxInclusiveElement.setAttribute("value", MaxInclusiveValue);
                     dataElementRestriction.appendChild(maxInclusiveElement);
                 }
+                if (!MinExclusiveValue.equals("")) {
+                    Element minExclusiveElement = elMaker.createElement("minExclusive");
+                    minExclusiveElement.setAttribute("value", MinExclusiveValue);
+                    dataElementRestriction.appendChild(minExclusiveElement);
+                }
+                if (!MaxExclusiveValue.equals("")) {
+                    Element maxExclusiveElement = elMaker.createElement("maxExclusive");
+                    maxExclusiveElement.setAttribute("value", MaxExclusiveValue);
+                    dataElementRestriction.appendChild(maxExclusiveElement);
+                }
                 dataElementSimpleType.appendChild(dataElementRestriction);
             }
             if (Datatype.equalsIgnoreCase("float")) {
@@ -279,6 +309,16 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                     maxInclusiveElement.setAttribute("value", MaxInclusiveValue);
                     dataElementRestriction.appendChild(maxInclusiveElement);
                 }
+                if (!MinExclusiveValue.equals("")) {
+                    Element minExclusiveElement = elMaker.createElement("minExclusive");
+                    minExclusiveElement.setAttribute("value", MinExclusiveValue);
+                    dataElementRestriction.appendChild(minExclusiveElement);
+                }
+                if (!MaxExclusiveValue.equals("")) {
+                    Element maxExclusiveElement = elMaker.createElement("maxExclusive");
+                    maxExclusiveElement.setAttribute("value", MaxExclusiveValue);
+                    dataElementRestriction.appendChild(maxExclusiveElement);
+                }
                 dataElementSimpleType.appendChild(dataElementRestriction);
             }
             if (Datatype.equalsIgnoreCase("double")) {
@@ -292,6 +332,16 @@ public class DataSetTableServiceImpl implements DataSetTableService {
                     Element maxInclusiveElement = elMaker.createElement("maxInclusive");
                     maxInclusiveElement.setAttribute("value", MaxInclusiveValue);
                     dataElementRestriction.appendChild(maxInclusiveElement);
+                }
+                if (!MinExclusiveValue.equals("")) {
+                    Element minExclusiveElement = elMaker.createElement("minExclusive");
+                    minExclusiveElement.setAttribute("value", MinExclusiveValue);
+                    dataElementRestriction.appendChild(minExclusiveElement);
+                }
+                if (!MaxExclusiveValue.equals("")) {
+                    Element maxExclusiveElement = elMaker.createElement("maxExclusive");
+                    maxExclusiveElement.setAttribute("value", MaxExclusiveValue);
+                    dataElementRestriction.appendChild(maxExclusiveElement);
                 }
                 dataElementSimpleType.appendChild(dataElementRestriction);
             }
