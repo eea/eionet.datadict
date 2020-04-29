@@ -28,7 +28,7 @@ public class LdapRoleDaoImpl extends BaseLdapDao implements LdapRoleDao {
         DirContext ctx = null;
         try {
             ctx = getDirContext();
-            String myFilter = "(&(objectClass=groupOfUniqueNames)(uniqueMember=uid=" + user + "," + usersDn + "))";
+            String myFilter = "(&(objectClass=groupOfUniqueNames)(uniqueMember=cn=" + user + "," + usersDn + "))";
             SearchControls sc = new SearchControls();
             sc.setSearchScope(SearchControls.SUBTREE_SCOPE);
             NamingEnumeration results = ctx.search(rolesDn, myFilter, sc);
