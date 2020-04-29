@@ -20,16 +20,16 @@ public class BaseLdapDao {
 
     protected static String baseDn;
     static {
-        baseDn = "o=EIONET,l=Europe";
+        baseDn = "dc=example,dc=com";
     }
 
     protected DirContext getDirContext() throws NamingException {
         Hashtable env = new Hashtable();
         env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
-        env.put(Context.PROVIDER_URL, "ldaps://ldap.eionet.europa.eu:636");
+        env.put(Context.PROVIDER_URL, "ldap://172.18.0.2:389");
         env.put(Context.SECURITY_AUTHENTICATION, "simple");
-        env.put(Context.SECURITY_PRINCIPAL, "cn=Accounts browser,o=EIONET,l=Europe");
-        env.put(Context.SECURITY_CREDENTIALS, "bixelome");
+        env.put(Context.SECURITY_PRINCIPAL, "cn=admin,dc=example,dc=com");
+        env.put(Context.SECURITY_CREDENTIALS, "secret123");
         DirContext ctx = new InitialDirContext(env);
         return ctx;
     }
@@ -37,10 +37,10 @@ public class BaseLdapDao {
     protected LdapContext getPagedLdapContext() throws NamingException, IOException {
         Hashtable env = new Hashtable();
         env.put(LdapContext.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
-        env.put(LdapContext.PROVIDER_URL, "ldaps://ldap.eionet.europa.eu:636");
-        env.put(LdapContext.SECURITY_AUTHENTICATION, "simple");
-        env.put(LdapContext.SECURITY_PRINCIPAL, "cn=Accounts browser,o=EIONET,l=Europe");
-        env.put(LdapContext.SECURITY_CREDENTIALS, "bixelome");
+        env.put(LdapContext.PROVIDER_URL, "ldap://172.18.0.2:389");
+        env.put(Context.SECURITY_AUTHENTICATION, "simple");
+        env.put(Context.SECURITY_PRINCIPAL, "cn=admin,dc=example,dc=com");
+        env.put(Context.SECURITY_CREDENTIALS, "secret123");
         LdapContext ctx = new InitialLdapContext(env, null);
         ctx.setRequestControls(new Control[]{
                 new PagedResultsControl(PAGE_SIZE, Control.CRITICAL)

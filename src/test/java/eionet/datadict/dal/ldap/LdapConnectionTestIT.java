@@ -24,7 +24,7 @@ public class LdapConnectionTestIT {
         ldapUserDao = new LdapUserDaoImpl();
         ldapRoleDao = new LdapRoleDaoImpl();
         List result = ldapUserDao.findAllUsers();
-        List<Role> roles = ldapRoleDao.findUserRoles("spangl");
+        List<Role> roles = ldapRoleDao.findUserRoles("dd_admin");
         assertNotNull(result);
         assertNotNull(roles);
     }

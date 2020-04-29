@@ -36,7 +36,7 @@ public class LdapUserDaoImpl extends BaseLdapDao implements LdapUserDao {
             ctls.setCountLimit(0);
             ctls.setTimeLimit(0);
             ctls.setReturningObjFlag(true);
-            NamingEnumeration<SearchResult> results = ctx.search(usersDn, "(objectClass=person)", ctls);
+            NamingEnumeration<SearchResult> results = ctx.search(usersDn, "(objectClass=top)", ctls);
             while (results != null && results.hasMore()) {
                 SearchResult result = (SearchResult) results.next();
                 Attributes attrs = result.getAttributes();
