@@ -26,10 +26,10 @@ public class BaseLdapDao {
     protected DirContext getDirContext() throws NamingException {
         Hashtable env = new Hashtable();
         env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
-        env.put(Context.PROVIDER_URL, "ldaps://ldap.eionet.europa.eu:636");
+        env.put(Context.PROVIDER_URL, "");
         env.put(Context.SECURITY_AUTHENTICATION, "simple");
-        env.put(Context.SECURITY_PRINCIPAL, "cn=Accounts browser,o=EIONET,l=Europe");
-        env.put(Context.SECURITY_CREDENTIALS, "bixelome");
+        env.put(Context.SECURITY_PRINCIPAL, "");
+        env.put(Context.SECURITY_CREDENTIALS, "");
         DirContext ctx = new InitialDirContext(env);
         return ctx;
     }
@@ -40,7 +40,7 @@ public class BaseLdapDao {
         env.put(LdapContext.PROVIDER_URL, "ldaps://ldap.eionet.europa.eu:636");
         env.put(LdapContext.SECURITY_AUTHENTICATION, "simple");
         env.put(LdapContext.SECURITY_PRINCIPAL, "cn=Accounts browser,o=EIONET,l=Europe");
-        env.put(LdapContext.SECURITY_CREDENTIALS, "bixelome");
+        env.put(LdapContext.SECURITY_CREDENTIALS, "");
         LdapContext ctx = new InitialLdapContext(env, null);
         ctx.setRequestControls(new Control[]{
                 new PagedResultsControl(PAGE_SIZE, Control.CRITICAL)
