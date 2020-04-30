@@ -263,28 +263,4 @@ public class Enumerations {
 
     }
 
-    public enum CompleteJsonExportVocabularyIdentifiers {
-        BATAELValue("BATAELValue");
-
-        private final String identifier;
-
-        CompleteJsonExportVocabularyIdentifiers(String identifier) {
-            this.identifier = identifier;
-        }
-
-        public String getIdentifier() {
-            return this.identifier;
-        }
-
-        public static Boolean containsIdentifier(String str) {
-            for (CompleteJsonExportVocabularyIdentifiers value: CompleteJsonExportVocabularyIdentifiers.values()){
-                if(value.getIdentifier().equals(str)){
-                    return true;
-                }
-            }
-            return false;
-        }
-
-    }
-
 }
