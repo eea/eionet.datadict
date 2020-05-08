@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+    <VOCABULARY_SET ID="1" IDENTIFIER="test"
+                    LABEL="testing folder"/>
+    <VOCABULARY VOCABULARY_ID="1" CONTINUITY_ID="123" IDENTIFIER="otherVocabulary" LABEL="test" REG_STATUS="Released"
+                WORKING_COPY="0" WORKING_USER="testUser" FOLDER_ID="1" BASE_URI="http://test.tripledev.ee/datadict/vocabulary/test/other/" VOCABULARY_TYPE="COMMON"/>
+    <VOCABULARY VOCABULARY_ID="2" CONTINUITY_ID="124" IDENTIFIER="otherVocabulary2" LABEL="test" REG_STATUS="Released"
+                WORKING_COPY="0" WORKING_USER="testUser" FOLDER_ID="1" BASE_URI="http://test.tripledev.ee/datadict/vocabulary/test/other2/" VOCABULARY_TYPE="COMMON"/>
+</dataset>
+
+
