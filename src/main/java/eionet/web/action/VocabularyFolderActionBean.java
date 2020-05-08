@@ -1504,6 +1504,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             vocabularyFolder =
                     vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
                             false);
+            LOGGER.info(String.format("Exporting rdf for vocabulary #%d", vocabularyFolder.getId()));
 
             if (vocabularyFolder.isDraftStatus()) {
                 throw new RuntimeException("Vocabulary is not in released or public draft status.");
@@ -1512,20 +1513,10 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             List<VocabularyFolder> vocabularyFolders = new ArrayList<VocabularyFolder>();
             vocabularyFolders.add(vocabularyFolder);
             final List<RdfNamespace> nameSpaces = vocabularyService.getVocabularyNamespaces(vocabularyFolders);
+            LOGGER.info(String.format("Retrieved namespaces for vocabulary #%d", vocabularyFolder.getId()));
 
-            final List<? extends VocabularyConcept> concepts;
-            if (vocabularyFolder.isSiteCodeType()) {
-                String countryCode = getContext().getRequestParameter("countryCode");
-                String identifier = getContext().getRequestParameter("identifier");
-                SiteCodeFilter siteCodeFilter = new SiteCodeFilter();
-                siteCodeFilter.setUsePaging(false);
-                siteCodeFilter.setCountryCode(countryCode);
-                siteCodeFilter.setIdentifier(identifier);
-                concepts = siteCodeService.searchSiteCodes(siteCodeFilter).getList();
-            } else {
-                concepts = vocabularyService.getAllConceptsWithAttributes(vocabularyFolder.getId());
-            }
-
+            final List<? extends VocabularyConcept> concepts = vocabularyService.getAllConceptsWithAttributes(vocabularyFolder.getId());
+            LOGGER.info(String.format("Retrieved concepts for vocabulary #%d", vocabularyFolder.getId()));
             final String contextRoot = VocabularyFolder.getBaseUri(vocabularyFolder);
 
             final String folderContextRoot =
@@ -1541,6 +1532,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                 }
             };
             result.setFilename(vocabularyFolder.getIdentifier() + ".rdf");
+            LOGGER.info(String.format("Finishing exporting rdf for vocabulary #%d", vocabularyFolder.getId()));
             return result;
         } catch (Exception e) {
             LOGGER.error("Failed to output vocabulary RDF data", e);

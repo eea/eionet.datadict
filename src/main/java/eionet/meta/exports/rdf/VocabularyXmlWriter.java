@@ -96,7 +96,7 @@ public class VocabularyXmlWriter {
     public void writeRDFXml(String commonElemsUri, String folderContextRoot, String contextRoot, VocabularyFolder vocabularyFolder,
             List<? extends VocabularyConcept> vocabularyConcepts, List<RdfNamespace> rdfNamespaces) throws XMLStreamException {
 
-        writeXmlStart(vocabularyFolder.isSiteCodeType(), commonElemsUri, contextRoot, rdfNamespaces);
+        writeXmlStart(commonElemsUri, contextRoot, rdfNamespaces);
 
         writeVocabularyFolderXml(folderContextRoot, contextRoot, vocabularyFolder, vocabularyConcepts);
 
@@ -117,7 +117,7 @@ public class VocabularyXmlWriter {
      * @throws XMLStreamException
      *             if writing does not succeed
      */
-    public void writeXmlStart(boolean siteCodeType, String commonElemsUri, String contextRoot, List<RdfNamespace> nameSpaces)
+    public void writeXmlStart(String commonElemsUri, String contextRoot, List<RdfNamespace> nameSpaces)
             throws XMLStreamException {
         writer.writeStartDocument(ENCODING, "1.0");
         writer.writeCharacters("\n");
@@ -125,10 +125,6 @@ public class VocabularyXmlWriter {
         // default namespaces
         for (String prefix : VocabularyOutputHelper.LinkedDataNamespaces.DEFAULT_NAMESPACES.keySet()) {
             writer.setPrefix(prefix, VocabularyOutputHelper.LinkedDataNamespaces.DEFAULT_NAMESPACES.get(prefix));
-        }
-
-        if (siteCodeType) {
-            writer.setPrefix("dd", VocabularyOutputHelper.LinkedDataNamespaces.DD_SCHEMA_NS);
         }
 
         writer.writeStartElement("rdf", "RDF", VocabularyOutputHelper.LinkedDataNamespaces.RDF_NS);
@@ -142,9 +138,6 @@ public class VocabularyXmlWriter {
             }
         }
 
-        if (siteCodeType) {
-            writer.writeNamespace("dd", VocabularyOutputHelper.LinkedDataNamespaces.DD_SCHEMA_NS);
-        }
         writer.writeDefaultNamespace(commonElemsUri);
         writer.writeAttribute("xml", VocabularyOutputHelper.LinkedDataNamespaces.XML_NS, "base", VocabularyOutputHelper.escapeIRI(contextRoot));
     }
@@ -279,12 +272,8 @@ public class VocabularyXmlWriter {
             writer.writeAttribute("rdf", VocabularyOutputHelper.LinkedDataNamespaces.RDF_NS, "resource",
                     StringEncoder.encodeToIRI(vocabularyContextRoot));
 
-            // Write site code data or bound elements as last block.
-            if (vocabularyFolder.isSiteCodeType()) {
-                writeSiteCodeData((SiteCode) vc);
-            } else {
-                writeBoundElements(vocabularyContextRoot, vc.getElementAttributes());
-            }
+            // Write bound elements as last block.
+            writeBoundElements(vocabularyContextRoot, vc.getElementAttributes());
 
             writer.writeCharacters("\n");
             writer.writeEndElement();
