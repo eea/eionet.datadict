@@ -21,16 +21,13 @@
 
 package eionet.meta.dao;
 
-import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.service.data.SiteCode;
 import eionet.meta.service.data.SiteCodeFilter;
 import eionet.meta.service.data.SiteCodeResult;
-import eionet.util.Pair;
 
 /**
  * Site code DAO interface.
@@ -45,13 +42,13 @@ public interface ISiteCodeDAO {
      * @param filter
      * @return SiteCodeResult object with found rows.
      */
-    SiteCodeResult searchSiteCodes(SiteCodeFilter filter) throws Exception;
+    SiteCodeResult searchSiteCodes(SiteCodeFilter filter);
 
     /**
      * @param vocabularyConcepts
      * @param userName
      */
-    void insertAvailableSiteCodes(List<VocabularyConcept> vocabularyConcepts, String userName) throws Exception;
+    void insertSiteCodesFromConcepts(List<VocabularyConcept> vocabularyConcepts, String userName);
 
     /**
      * Allocates the given site codes for country. If Site names are provided, then this information is stored as for information.
@@ -63,13 +60,13 @@ public interface ISiteCodeDAO {
      * @param userName
      *            User who started the allocation.
      * @param siteNames
-     *            Optional list of site names.
+     *            Optinoal list of site names.
      *
      * @param allocationTime
      *            allocation time
      */
     void allocateSiteCodes(List<SiteCode> freeSiteCodes, String countryCode, String userName, String[] siteNames,
-                           Date allocationTime) throws Exception;
+            Date allocationTime);
 
     /**
      * Returns the first vocabulary folder Id where type is SITE_CODE.
@@ -95,7 +92,7 @@ public interface ISiteCodeDAO {
     int getCountryUnusedAllocations(String countryCode, boolean withoutInitialName);
 
     /**
-     * Returns number of site codes in status: assigned, deleted, disappeared.
+     * Returns number of site codes in status: assigned, deleted, disapared.
      *
      * @param countryCode
      * @return
@@ -108,42 +105,4 @@ public interface ISiteCodeDAO {
      * @return
      */
     boolean siteCodeFolderExists();
-
-    /**
-     * Returns a list of SiteCode objects which contains information for the codes.
-     *
-     * @param vcId the site code id
-     * @param dataElementIds
-     * @return a hashmap with key the element's id and value, the element's value
-     */
-    Map<Integer, String> getBoundElementIdAndValue(Integer vcId,List<Integer> dataElementIds);
-
-    /**
-     * Creates the query for site codes and retrieves the site code list
-     *
-     * @param filter filtering
-     * @param elementMap map for elements' identifier and id
-     * @return a pair where left is the total number of site codes and right is the site code list
-     */
-    Pair<Integer, List<SiteCode>> createQueryAndRetrieveSiteCodes(SiteCodeFilter filter, Map<String, Integer> elementMap) throws Exception;
-
-    /**
-     * Executes a query and returns a site code list
-     *
-     * @param query the sql query
-     * @param params the parameters for the query
-     * @param elementMap map for elements' identifier and id
-     * @return a list of site codes
-     */
-    List<SiteCode> getSiteCodeList(String query, Map<String, Object> params, Map<String, Integer> elementMap);
-
-    /**
-     * Updates the status of the site code
-     *
-     * @param vcIds the list of vocabulary Concept ids that the status will be updated for
-     * @param statusId the element's id
-     * @param status the status
-     * @return
-     */
-    void updateSiteCodeStatus(List<Integer> vcIds, Integer statusId, String status) throws Exception;
 }

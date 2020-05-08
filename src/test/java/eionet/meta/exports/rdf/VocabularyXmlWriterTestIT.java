@@ -82,8 +82,7 @@ public class VocabularyXmlWriterTestIT {
 		reader.close();
         }
 
-    //The following test will be commented since the SiteCodes vocabulary will have the same functionality as all other vocabularies
-	/*@Test
+	@Test
 	public void writeSiteCodesXml() throws Exception {
 
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -123,7 +122,7 @@ public class VocabularyXmlWriterTestIT {
 		parser.parse(reader, vocabularyContext);
 		reader.close();
 
-	}*/
+	}
 
 	private VocabularyFolder prepareVocabularyFolder(VocabularyType vocabularyType) {
 		VocabularyFolder vocabulary = new VocabularyFolder();

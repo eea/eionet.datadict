@@ -88,11 +88,23 @@ public class FolderActionBean extends AbstractActionBean {
                             Props.getRequiredProperty(PropsIF.DD_URL) + "/vocabulary/" + folder.getIdentifier() + "/";
                     String commonElemsUri = Props.getRequiredProperty(PropsIF.DD_URL) + "/property/";
                     List<RdfNamespace> nameSpaces = vocabularyService.getVocabularyNamespaces(vocabularyFolders);
-                    xmlWriter.writeXmlStart(commonElemsUri, folderContextRoot, nameSpaces);
+                    xmlWriter.writeXmlStart(true, commonElemsUri, folderContextRoot, nameSpaces);
                     xmlWriter.writeFolderXml(folderContextRoot, folder, vocabularyFolders);
 
                     for (VocabularyFolder vocabularyFolder : vocabularyFolders) {
-                        List<? extends VocabularyConcept> concepts = vocabularyService.getAllConceptsWithAttributes(vocabularyFolder.getId());
+                        List<? extends VocabularyConcept> concepts = null;
+                        if (vocabularyFolder.isSiteCodeType()) {
+                            String countryCode = getContext().getRequestParameter("countryCode");
+                            String identifier = getContext().getRequestParameter("identifier");
+                            SiteCodeFilter siteCodeFilter = new SiteCodeFilter();
+                            siteCodeFilter.setUsePaging(false);
+                            siteCodeFilter.setCountryCode(countryCode);
+                            siteCodeFilter.setIdentifier(identifier);
+                            concepts = siteCodeService.searchSiteCodes(siteCodeFilter).getList();
+                        } else {
+                            concepts =
+                                    vocabularyService.getAllConceptsWithAttributes(vocabularyFolder.getId());
+                        }
 
                         final List<? extends VocabularyConcept> finalConcepts = concepts;
 

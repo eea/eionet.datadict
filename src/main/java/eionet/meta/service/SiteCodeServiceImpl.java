@@ -26,10 +26,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import eionet.meta.dao.IVocabularyConceptDAO;
-import eionet.meta.dao.domain.StandardGenericStatus;
-import eionet.meta.service.data.*;
-import org.displaytag.properties.SortOrderEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +37,10 @@ import eionet.meta.dao.IDataElementDAO;
 import eionet.meta.dao.ISiteCodeDAO;
 import eionet.meta.dao.domain.FixedValue;
 import eionet.meta.dao.domain.SiteCodeStatus;
+import eionet.meta.service.data.AllocationResult;
+import eionet.meta.service.data.CountryAllocations;
+import eionet.meta.service.data.SiteCodeFilter;
+import eionet.meta.service.data.SiteCodeResult;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.SecurityUtil;
@@ -67,12 +67,6 @@ public class SiteCodeServiceImpl implements ISiteCodeService {
     /** Site Code DAO. */
     @Autowired
     private ISiteCodeDAO siteCodeDao;
-
-    /**
-     * Vocabulary concept DAO.
-     */
-    @Autowired
-    private IVocabularyConceptDAO vocabularyConceptDAO;
 
     /**
      * {@inheritDoc}
@@ -138,7 +132,8 @@ public class SiteCodeServiceImpl implements ISiteCodeService {
         int amount = siteNames.length;
         SiteCodeFilter siteCodeFilter = new SiteCodeFilter();
         siteCodeFilter.setPageNumber(1);
-        siteCodeFilter.setNumberOfElements(amount);
+       // siteCodeFilter.setPageSize(amount);
+        //We disable paging, in order not to set any limits to the query to retrieve all available sitecodes.
         siteCodeFilter.setUsePaging(false);
         siteCodeFilter.setStatus(SiteCodeStatus.AVAILABLE);
         try {
@@ -151,20 +146,6 @@ public class SiteCodeServiceImpl implements ISiteCodeService {
             if (freeSiteCodes.getList().size() < amount) {
                 throw new ServiceException("Did not find enough free site codes for allocating " + amount + " sites!");
             }
-
-
-            List<Integer> vocabularyConceptIds = new ArrayList<>();
-            for( int i=0; i<freeSiteCodes.getList().size(); i++){
-                vocabularyConceptIds.add(freeSiteCodes.getList().get(i).getId());
-            }
-
-            LOGGER.info("Retrieved concepts with ids: "+ vocabularyConceptIds.toString());
-
-            String label = "<" + SiteCodeStatus.ALLOCATED.toString().toLowerCase() + ">";
-            vocabularyConceptDAO.updateVocabularyConceptLabelStatusModifiedDate(vocabularyConceptIds, label, StandardGenericStatus.RESERVED.getValue());
-
-            LOGGER.info("Updated status, label and status moodified for concepts: "+ vocabularyConceptIds.toString());
-
             siteCodeDao.allocateSiteCodes(freeSiteCodes.getList(), countryCode, userName, siteNames, allocationTime);
 
             AllocationResult result = new AllocationResult();

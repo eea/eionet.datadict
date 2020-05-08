@@ -1,10 +1,8 @@
 
 package eionet.datadict.model.enums;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class Enumerations {
@@ -261,39 +259,6 @@ public class Enumerations {
 
         public String getLabel() {
             return this.label;
-        }
-
-    }
-
-    public enum SiteCodeBoundElementIdentifiers {
-        COUNTRY_CODE("sitecodes_CC_ISO2"),
-        DATE_ALLOCATED("sitecodes_DATE_ALLOCATED"),
-        DATE_CREATED("sitecodes_DATE_CREATED"),
-        DATE_DELETED("sitecodes_DATE_DELETED"),
-        INITIAL_SITE_NAME("sitecodes_INITIAL_SITE_NAME"),
-        SITE_CODE_NAT("sitecodes_SITE_CODE_NAT"),
-        STATUS("sitecodes_STATUS"),
-        USER_ALLOCATED("sitecodes_USER_ALLOCATED"),
-        USER_CREATED("sitecodes_USER_CREATED"),
-        YEARS_DELETED("sitecodes_YEARS_DELETED"),
-        YEARS_DISAPPEARED("sitecodes_YEARS_DISAPPEARED");
-
-        private final String identifier;
-
-        SiteCodeBoundElementIdentifiers(String identifier) {
-            this.identifier = identifier;
-        }
-
-        public String getIdentifier() {
-            return this.identifier;
-        }
-
-        public static List<String> getEnumValuesAsList() {
-            List<String> identifiers = new ArrayList();
-            for (SiteCodeBoundElementIdentifiers element : SiteCodeBoundElementIdentifiers.values()) {
-                identifiers.add(element.identifier);
-            }
-            return identifiers;
         }
 
     }

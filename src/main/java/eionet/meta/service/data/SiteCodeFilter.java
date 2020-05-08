@@ -56,8 +56,6 @@ public class SiteCodeFilter extends PagedRequest {
     /** use only allocated codes in use */
     private boolean allocatedUsedStatuses;
 
-    private Integer numberOfElements;
-
     /**
      * @return the status
      */
@@ -175,20 +173,6 @@ public class SiteCodeFilter extends PagedRequest {
      */
     public void setAllocatedUsedStatuses(boolean allocatedUsed) {
         this.allocatedUsedStatuses = allocatedUsed;
-    }
-
-    /**
-     * @return the numberOfElements
-     */
-    public Integer getNumberOfElements() {
-        return numberOfElements;
-    }
-
-    /**
-     * @param numberOfElements the numberOfElements to set
-     */
-    public void setNumberOfElements(Integer numberOfElements) {
-        this.numberOfElements = numberOfElements;
     }
 
 }
