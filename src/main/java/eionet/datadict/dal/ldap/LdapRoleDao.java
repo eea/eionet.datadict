@@ -1,10 +1,12 @@
 package eionet.datadict.dal.ldap;
 
-import eionet.datadict.model.Role;
+import eionet.datadict.model.LdapRole;
 
 import java.util.List;
 
 public interface LdapRoleDao {
 
-    public List<Role> findUserRoles(String user) throws Exception;
+    public List<LdapRole> findUserRoles(String user, String usersOU, String rolesOU) throws Exception;
+
+    public List<LdapRole> findAllRoles(String usersOU, String rolesOU) throws Exception;
 }

@@ -26,10 +26,10 @@ public class BaseLdapDao {
     protected DirContext getDirContext() throws NamingException {
         Hashtable env = new Hashtable();
         env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
-        env.put(Context.PROVIDER_URL, "ldap://192.168.99.100:389");
+        env.put(Context.PROVIDER_URL, "");
         env.put(Context.SECURITY_AUTHENTICATION, "simple");
-        env.put(Context.SECURITY_PRINCIPAL, "cn=admin,dc=example,dc=com");
-        env.put(Context.SECURITY_CREDENTIALS, "secret123");
+        env.put(Context.SECURITY_PRINCIPAL, "");
+        env.put(Context.SECURITY_CREDENTIALS, "");
         DirContext ctx = new InitialDirContext(env);
         return ctx;
     }
@@ -37,10 +37,10 @@ public class BaseLdapDao {
     protected LdapContext getPagedLdapContext() throws NamingException, IOException {
         Hashtable env = new Hashtable();
         env.put(LdapContext.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
-        env.put(LdapContext.PROVIDER_URL, "ldap://192.168.99.100:389");
+        env.put(LdapContext.PROVIDER_URL, "");
         env.put(Context.SECURITY_AUTHENTICATION, "simple");
-        env.put(Context.SECURITY_PRINCIPAL, "cn=admin,dc=example,dc=com");
-        env.put(Context.SECURITY_CREDENTIALS, "secret123");
+        env.put(Context.SECURITY_PRINCIPAL, "");
+        env.put(Context.SECURITY_CREDENTIALS, "");
         LdapContext ctx = new InitialLdapContext(env, null);
         ctx.setRequestControls(new Control[]{
                 new PagedResultsControl(PAGE_SIZE, Control.CRITICAL)

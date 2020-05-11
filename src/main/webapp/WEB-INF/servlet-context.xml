@@ -13,7 +13,7 @@
     <context:component-scan base-package="eionet.datadict.web" />
         
     <beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-        <beans:property name="prefix" value="/" />
+        <beans:property name="prefix" value="/WEB-INF/view/" />
         <beans:property name="suffix" value=".jsp" />
     </beans:bean>
 </beans:beans>

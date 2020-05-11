@@ -1,8 +1,7 @@
 package eionet.datadict.dal.ldap.impl;
 
 import eionet.datadict.dal.ldap.LdapUserDao;
-import eionet.datadict.model.User;
-import org.springframework.stereotype.Component;
+import eionet.datadict.model.LdapUser;
 import org.springframework.stereotype.Repository;
 
 import javax.naming.NamingEnumeration;
@@ -27,7 +26,7 @@ public class LdapUserDaoImpl extends BaseLdapDao implements LdapUserDao {
 
     @Override
     public List findAllUsers() {
-        List ldapUsers = new ArrayList<User>();
+        List ldapUsers = new ArrayList<LdapUser>();
         LdapContext ctx = null;
         try {
             ctx = getPagedLdapContext();
@@ -47,7 +46,7 @@ public class LdapUserDaoImpl extends BaseLdapDao implements LdapUserDao {
                     fullname = (String) fullnameAttr.get();
                 }
 
-                User ldapUser = new User();
+                LdapUser ldapUser = new LdapUser();
                 ldapUser.setFullName(fullname);
 
                 ldapUsers.add(ldapUser);

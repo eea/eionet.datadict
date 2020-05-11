@@ -2,7 +2,7 @@ package eionet.datadict.model;
 
 import java.io.Serializable;
 
-public class Role implements Serializable {
+public class LdapRole implements Serializable {
 
     private Integer id;
 

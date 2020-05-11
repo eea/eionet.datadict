@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<acl description="/v2/admintools">
+    <entries>
+        <entry type="object">
+            <principal id="dd_admin" type="localgroup"/>
+            <permissions>
+                <permission id="v"/>
+                <permission id="i"/>
+                <permission id="u"/>
+                <permission id="d"/>
+            </permissions>
+        </entry>
+    </entries>
+</acl>

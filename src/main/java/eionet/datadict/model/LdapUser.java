@@ -2,14 +2,24 @@ package eionet.datadict.model;
 
 import java.io.Serializable;
 
-public class User implements Serializable  {
+public class LdapUser implements Serializable  {
 
     private Integer id;
 
+    private String uid;
+
     private String fullName;
 
-    public User() {
+    public LdapUser() {
 
+    }
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 
     public void setFullName(String fullname) {
