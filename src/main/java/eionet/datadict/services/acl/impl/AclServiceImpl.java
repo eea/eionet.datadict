@@ -23,6 +23,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.xpath.*;
 import java.io.File;
 import java.io.IOException;
 
@@ -69,7 +70,7 @@ public class AclServiceImpl implements AclService {
     }
 
     @Override
-    public void addUserToAclGroup(String username, String groupName) throws ParserConfigurationException, IOException, SAXException, TransformerException {
+    public void addUserToAclGroup(String username, String groupName) throws ParserConfigurationException, IOException, SAXException, TransformerException, XPathExpressionException {
 
         // Use a better way to open the xml file to avoid new operator
         File file = new File(AccessController.getAclProperties().getFileLocalgroups());
@@ -79,17 +80,27 @@ public class AclServiceImpl implements AclService {
                 .newInstance();
         DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
         Document document = documentBuilder.parse(file);
-
+        XPathFactory xPathfactory = XPathFactory.newInstance();
+        XPath xpath = xPathfactory.newXPath();
         // All hardcoded values should be final strings declared centrally
-        NodeList groupEntries = document.getElementsByTagName("dd_admin");
+        String expression = "//group[@id=" + "'" + "dd_admin" + "'" + "]";
+
+        XPathExpression expr = xpath.compile(expression);
+        //NodeList groupEntries = document.getElementsByTagName("dd_admin");
+        NodeList groupEntries =(NodeList) expr.evaluate(document, XPathConstants.NODESET);
+
+
         for (int i = 0; i < groupEntries.getLength(); i++) {
             if (groupEntries.item(i).getNodeType() == Node.ELEMENT_NODE) {
                 Element el = (Element) groupEntries.item(i);
-                if (el.getNodeName().contains(groupName)) {
+                if (el.getAttribute("userid").contains(username)) {
                     // throw appropriate exception here
+                }
+                if (el.getNodeName().contains(groupName)) {
                 }
             }
         }
+
 
         Element groupEntry = document.createElement("member");
         groupEntry.setAttribute("userid",username);
