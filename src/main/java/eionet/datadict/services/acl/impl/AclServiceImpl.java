@@ -17,10 +17,7 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.*;
@@ -72,46 +69,40 @@ public class AclServiceImpl implements AclService {
     @Override
     public void addUserToAclGroup(String username, String groupName) throws ParserConfigurationException, IOException, SAXException, TransformerException, XPathExpressionException {
 
-        // Use a better way to open the xml file to avoid new operator
         File file = new File(AccessController.getAclProperties().getFileLocalgroups());
-
 
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory
                 .newInstance();
         DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
         Document document = documentBuilder.parse(file);
+        // given a dd_group name, we get its children.
         XPathFactory xPathfactory = XPathFactory.newInstance();
         XPath xpath = xPathfactory.newXPath();
-        // All hardcoded values should be final strings declared centrally
-        String expression = "//group[@id=" + "'" + "dd_admin" + "'" + "]";
+        String expression = "//group[@id=" + "'" + groupName + "'" + "]";
 
         XPathExpression expr = xpath.compile(expression);
         //NodeList groupEntries = document.getElementsByTagName("dd_admin");
-        NodeList groupEntries =(NodeList) expr.evaluate(document, XPathConstants.NODESET);
-
-
-        for (int i = 0; i < groupEntries.getLength(); i++) {
-            if (groupEntries.item(i).getNodeType() == Node.ELEMENT_NODE) {
-                Element el = (Element) groupEntries.item(i);
+        NodeList DDAdmingroups =(NodeList) expr.evaluate(document, XPathConstants.NODESET);
+        Node group = DDAdmingroups.item(0);
+        for (int i = 0; i < group.getChildNodes().getLength(); i++) {
+            if (group.getChildNodes().item(i).getNodeType() == Node.ELEMENT_NODE) {
+                Element el = (Element) group.getChildNodes().item(i);
+                //throw appropriate exception here
                 if (el.getAttribute("userid").contains(username)) {
-                    // throw appropriate exception here
-                }
-                if (el.getNodeName().contains(groupName)) {
                 }
             }
         }
 
-
         Element groupEntry = document.createElement("member");
         groupEntry.setAttribute("userid",username);
-        document.getElementsByTagName(groupName).item(0).appendChild(groupEntry);
-
-
+        group.appendChild(groupEntry);
 
         DOMSource source = new DOMSource(document);
 
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
         Transformer transformer = transformerFactory.newTransformer();
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+        transformer.setOutputProperty(OutputKeys.METHOD, "xml");
         StreamResult result = new StreamResult(AccessController.getAclProperties().getFileLocalgroups());
         transformer.transform(source, result);
     }
