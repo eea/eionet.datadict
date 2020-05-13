@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ include file="/pages/common/taglibs.jsp"%>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
@@ -84,27 +85,17 @@
             </tbody>
         </table>
         <button id="myBtn" class="btn btn-info" style="margin-bottom:5px">Add User</button></br></br>
-        <form id="myForm" style="display:none" action="/v2/admintools/addUser" method="post">
-            <select name="groupSelection">
-                <option value="selected" selected>select a DD group</option>
-                <c:forEach var="ddGroup" items="${ddGroups}">
-                    <option value="${ddGroup}">${ddGroup}</option>
-                </c:forEach>
-            </select>
-            <input type="text" name="userName" placeholder="Enter user name"/>
+        <form:form id="myForm" style="display:none" action="addUser" modelAttribute="groupDetails" method="post">
+            <form:select path="groupNameOptionOne" items="${ddGroups}"/>
+            <form:input path="userName" placeholder="Enter user name"/>
             <input type="submit" class="btn btn-info" name="submit" value="Submit"/>
-        </form>
+        </form:form>
         <button id="mySecondBtn" class="btn btn-info" style="margin-bottom:5px">Add LDAP Group</button></br></br>
-        <form id="mySecondForm" style="display:none" action="/v2/admintools/addUser" method="post">
-            <select name="groupSelection">
-                <option value="selected" selected>select a DD group</option>
-                <c:forEach var="ddGroup" items="${ddGroups}">
-                    <option value="${ddGroup}">${ddGroup}</option>
-                </c:forEach>
-            </select>
-            <input type="text" id="ch" name="ldapGroupName" placeholder="Enter LDAP group name">
+        <form:form id="mySecondForm" style="display:none" action="addUser" modelAttribute="groupDetails" method="post">
+            <form:select path="groupNameOptionTwo" items="${ddGroups}"/>
+            <form:input id="ch" path="ldapGroupName" placeholder="Enter LDAP group name"/>
             <input type="submit" class="btn btn-info" name="submit" value="Submit"/>
-        </form>
+        </form:form>
     </div> <!-- workarea -->
 </div> <!-- container -->
 <%@ include file="../../footer.jsp" %>

@@ -24,7 +24,7 @@
             <c:if test="${ddfn:userHasPermission(actionBean.user.userName, '/generateJWTToken', 'x')}">
                 <li><stripes:link href="/generateJWTToken">Generate JWT Token</stripes:link></li>
             </c:if>
-            <c:if test="${ddfn:userHasPermission(actionBean.user.userName, '/v2/admintools', 'v')}">
+            <c:if test="${ddfn:userHasPermission(actionBean.user.userName, '/admintools', 'v')}">
                 <li><stripes:link href="/v2/admintools/list">Admin tools</stripes:link></li>
             </c:if>
         </ul>

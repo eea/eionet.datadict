@@ -5,31 +5,32 @@
 <head>
     <%@ include file="../../headerinfo.jsp" %>
     <title>Error</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
     <style>
-        #msgOne {
-            float: left;
-        }
-        #msgCont {
-            padding: 0px;
-            color: red;
-            text-align: center;
-            border: 1px solid red;
-            font-size: small;
-        }
+        .error-template {padding: 40px 15px;text-align: center;color: red;}
     </style>
 </head>
 <body>
 <div id="container">
     <jsp:include page="../../nlocation.jsp" flush="true">
-        <jsp:param name="name" value="Admin tools"/>
-        <jsp:param name="helpscreen" value="groups_and_users"/>
+        <jsp:param name="name" value="Error page"/>
+        <jsp:param name="helpscreen" value="error_page"/>
     </jsp:include>
-    <c:set var="currentSection" value="groups" />
+    <c:set var="currentSection" value="errorPage" />
     <%@ include file="/pages/common/navigation.jsp" %>
     <div id="workarea">
-        <div id="msgCont">
-            <h1 id="msgOne">${msgOne}</h1>
-            <h1 id="msgTwo">${msgTwo}</h1>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="error-template">
+                        <h1 style="color:red">${msgOne}</h1>
+                        <div>Sorry, an error has occured!</div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div> <!-- workarea -->
 </div> <!-- container -->

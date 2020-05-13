@@ -2,27 +2,30 @@ package eionet.datadict.web;
 
 import eionet.datadict.errors.AclLibraryAccessControllerModifiedException;
 import eionet.datadict.errors.AclPropertiesInitializationException;
+import eionet.datadict.errors.UserExistsException;
 import eionet.datadict.services.LdapService;
 import eionet.datadict.services.acl.AclOperationsService;
-import eionet.meta.DDUser;
-import eionet.util.SecurityUtil;
-import eionet.web.action.ErrorActionBean;
+import eionet.datadict.services.acl.AclService;
+import eionet.datadict.web.viewmodel.GroupDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+import org.xml.sax.SAXException;
 
 import javax.servlet.http.HttpServletRequest;
-import java.security.Principal;
-import java.security.acl.Group;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.xpath.XPathExpressionException;
+import java.io.IOException;
 import java.util.*;
 
 @Controller
 @RequestMapping("/admintools")
 public class GroupsController {
+
+    @Autowired
+    private AclService aclService;
 
     @Autowired
     private AclOperationsService aclOperationsService;
@@ -33,26 +36,26 @@ public class GroupsController {
     @GetMapping("/list")
     public String getGroupsAndUsers(Model model, HttpServletRequest request) throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException {
         if(!UserUtils.isUserLoggedIn(request)) {
-            model.addAttribute("msgOne", ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401);
-            model.addAttribute("msgTwo", "You have to login to access Admin tools page");
+            model.addAttribute("msgOne", PageErrorConstants.NOT_AUTHENTICATED + " Admin tools");
             return "message";
         }
-        if (!UserUtils.hasAuthorizationPermission(request, "/v2/admintools", "v")) {
-            model.addAttribute("errorType", ErrorActionBean.ErrorType.FORBIDDEN_403);
-            model.addAttribute("errorMessage", "You are not authorized to access Admin tools page");
+        if (!UserUtils.hasAuthorizationPermission(request, "/admintools", "v")) {
+            model.addAttribute("msgOne", PageErrorConstants.FORBIDDEN + " Admin tools");
             return "message";
         }
         Hashtable<String, Vector<String>> ddGroupsAndUsers = getGroupsAndUsers();
         Set<String> ddGroups = ddGroupsAndUsers.keySet();
         model.addAttribute("ddGroups", ddGroups);
         model.addAttribute("ddGroupsAndUsers", ddGroupsAndUsers);
+        GroupDetails groupDetails = new GroupDetails();
+        model.addAttribute("groupDetails", groupDetails);
         //REAL IMPLEMENTATION - CODE TO BE ADDED
 //        HashMap<String, ArrayList<String>> ldapRolesByUser = new HashMap<String, ArrayList<String>>();
 //        for (String ddGroup : ddGroups) {
 //            Vector<String> ddGroupUsers = ddGroupsAndUsers.get(ddGroup);
 //            for (String user : ddGroupUsers) {
 //                ArrayList<String> ldapRoles = new ArrayList<>();
-//                List<LdapRole> userLdapRolesList = ldapService.getUserLdapRoles(user, "Users", "DD_roles");
+//                List<LdapRole> userLdapRolesList = ldapService.getUserLdapRoles(user, "Users", "Roles");
 //                for (LdapRole ldapRole : userLdapRolesList) {
 //                    ldapRoles.add(ldapRole.getName());
 //                }
@@ -100,7 +103,7 @@ public class GroupsController {
     public List<String> getLdapList(@RequestParam(value="term", required = false, defaultValue="") String term) {
         //REAL IMPLEMENTATION - CODE TO BE ADDED
 //        List<String> ldapRoleNames = new ArrayList<>();
-//        List<LdapRole> ldapRoles = ldapService.getAllLdapRoles("Users", "DD_roles");
+//        List<LdapRole> ldapRoles = ldapService.getAllLdapRoles("Roles");
 //        for (LdapRole ldapRole : ldapRoles) {
 //            String roleName = ldapRole.getName();
 //            ldapRoleNames.add(roleName);
@@ -129,47 +132,27 @@ public class GroupsController {
         return results;
     }
 
-    @GetMapping("/addUser")
-    public String addUser() throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException {
-        Set<String> groups = getGroups();
-        return "";
+    @PostMapping("/addUser")
+    public String addUser(@ModelAttribute("groupDetails") GroupDetails groupDetails, Model model)
+            throws ParserConfigurationException, TransformerException, SAXException, XPathExpressionException, IOException {
+        try {
+            if (groupDetails.getGroupNameOptionOne()!=null) {
+                aclService.addUserToAclGroup(groupDetails.getUserName(), groupDetails.getGroupNameOptionOne());
+            } else {
+                aclService.addUserToAclGroup(groupDetails.getLdapGroupName(), groupDetails.getGroupNameOptionTwo());
+            }
+        } catch (UserExistsException e) {
+            model.addAttribute("msgOne", e.getMessage());
+            return "message";
+        }
+        return "redirect:/v2/admintools/list";
     }
 
     @GetMapping("/removeUser")
-    public String removeUser(@RequestParam("ddGroupName") String groupName, @RequestParam("memberName") String memberName)
-            throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException {
-        Hashtable<String, Vector<String>> groupsAndUsers = getGroupsAndUsers();
-        Hashtable<String, Group> groups = new Hashtable<String, Group>();
-        for (String groupN : groupsAndUsers.keySet()) {
-            Vector<String> groupVector = groupsAndUsers.get(groupN);
-            groups.put(groupN, (Group) groupsAndUsers.get(groupN));
-        }
-        Group group = (Group) groupsAndUsers.get(groupName);
-        Enumeration<? extends Principal> members = group.members();
-        while (members.hasMoreElements()) {
-            Principal member = members.nextElement();
-            if (member.getName().equals(memberName)) {
-                group.removeMember(member);
-            }
-            break;
-        }
-//        groups.put(groupName, group);
-//        GroupImpl group = new GroupImpl(groupName);
-//        for (String member : members) {
-//            group.addMember(member);
-//       }
-//        aclOperationsService.setGroups(groups);
-        return "redirect:/v2/groups/list";
-    }
-
-    @GetMapping("/addGroup")
-    public String addGroup() {
-        return "";
-    }
-
-    Set<String> getGroups() throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException {
-        Hashtable<String, Vector<String>> groupsAndUsers = getGroupsAndUsers();
-        return groupsAndUsers.keySet();
+    public String removeUser(@RequestParam("ddGroupName") String groupName, @RequestParam("memberName") String userName, Model model)
+            throws SAXException, TransformerException, ParserConfigurationException, XPathExpressionException, IOException {
+        aclService.removeUserFromAclGroup(userName, groupName);
+        return "redirect:/v2/admintools/list";
     }
 
     Hashtable<String, Vector<String>> getGroupsAndUsers() throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException {

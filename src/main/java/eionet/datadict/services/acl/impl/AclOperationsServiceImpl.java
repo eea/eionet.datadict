@@ -35,6 +35,12 @@ public class AclOperationsServiceImpl implements AclOperationsService {
     public Hashtable<String, Vector<String>> getGroupsAndUsersHashTable() throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException {
         try {
             AccessController accessController = this.getAclLibraryAccessControllerInstance(this.getAclProperties());
+            Method[] declaredMethods = AccessController.class.getDeclaredMethods();
+            Method initAcls = null;
+            initAcls = AccessController.class.getDeclaredMethod("initAcls");
+            initAcls.setAccessible(true);
+            initAcls.invoke(accessController);
+            initAcls.setAccessible(false);
             Method getGroupsMethod = null;
             getGroupsMethod = AccessController.class.getDeclaredMethod("getGroups");
             getGroupsMethod.setAccessible(true);

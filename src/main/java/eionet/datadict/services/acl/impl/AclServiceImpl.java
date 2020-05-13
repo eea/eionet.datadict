@@ -2,6 +2,7 @@ package eionet.datadict.services.acl.impl;
 
 import eionet.acl.AccessController;
 import eionet.acl.SignOnException;
+import eionet.datadict.errors.UserExistsException;
 import eionet.datadict.services.acl.AclEntity;
 import eionet.datadict.services.acl.AclService;
 import eionet.datadict.services.acl.Permission;
@@ -67,36 +68,53 @@ public class AclServiceImpl implements AclService {
     }
 
     @Override
-    public void addUserToAclGroup(String username, String groupName) throws ParserConfigurationException, IOException, SAXException, TransformerException, XPathExpressionException {
-
-        File file = new File(AccessController.getAclProperties().getFileLocalgroups());
-
-        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory
-                .newInstance();
-        DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-        Document document = documentBuilder.parse(file);
-        // given a dd_group name, we get its children.
-        XPathFactory xPathfactory = XPathFactory.newInstance();
-        XPath xpath = xPathfactory.newXPath();
-        String expression = "//group[@id=" + "'" + groupName + "'" + "]";
-
-        XPathExpression expr = xpath.compile(expression);
-        //NodeList groupEntries = document.getElementsByTagName("dd_admin");
-        NodeList DDAdmingroups =(NodeList) expr.evaluate(document, XPathConstants.NODESET);
-        Node group = DDAdmingroups.item(0);
+    public void addUserToAclGroup(String username, String groupName) throws ParserConfigurationException, IOException, SAXException, TransformerException, XPathExpressionException, UserExistsException {
+        Document document = getDocument();
+        Node group = getGroupNode(groupName, document);
         for (int i = 0; i < group.getChildNodes().getLength(); i++) {
             if (group.getChildNodes().item(i).getNodeType() == Node.ELEMENT_NODE) {
                 Element el = (Element) group.getChildNodes().item(i);
-                //throw appropriate exception here
                 if (el.getAttribute("userid").contains(username)) {
+                    throw new UserExistsException(username + " exists in group " + groupName);
                 }
             }
         }
-
         Element groupEntry = document.createElement("member");
         groupEntry.setAttribute("userid",username);
         group.appendChild(groupEntry);
+        writeResultToFile(document);
+    }
 
+    @Override
+    public void removeUserFromAclGroup(String userName, String groupName) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, TransformerException {
+        Document document = getDocument();
+        Node group = getGroupNode(groupName, document);
+        for (int i = 0; i < group.getChildNodes().getLength(); i++) {
+            if (group.getChildNodes().item(i).getNodeType() == Node.ELEMENT_NODE) {
+                Element el = (Element) group.getChildNodes().item(i);
+                if (el.getAttribute("userid").contains(userName)) {
+                    group.removeChild(group.getChildNodes().item(i));
+                    break;
+                }
+            }
+        }
+        removeEmptyLines(document);
+        writeResultToFile(document);
+    }
+
+    private void removeEmptyLines(Document document) throws XPathExpressionException {
+        XPathFactory xpathFactory = XPathFactory.newInstance();
+        XPathExpression xpathExp = xpathFactory.newXPath().compile(
+                "//text()[normalize-space(.) = '']");
+        NodeList emptyTextNodes = (NodeList)
+                xpathExp.evaluate(document, XPathConstants.NODESET);
+        for (int j = 0; j < emptyTextNodes.getLength(); j++) {
+            Node emptyTextNode = emptyTextNodes.item(j);
+            emptyTextNode.getParentNode().removeChild(emptyTextNode);
+        }
+    }
+
+    void writeResultToFile(Document document) throws TransformerException {
         DOMSource source = new DOMSource(document);
 
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
@@ -105,6 +123,25 @@ public class AclServiceImpl implements AclService {
         transformer.setOutputProperty(OutputKeys.METHOD, "xml");
         StreamResult result = new StreamResult(AccessController.getAclProperties().getFileLocalgroups());
         transformer.transform(source, result);
+    }
+
+    Node getGroupNode(String groupName, Document document) throws XPathExpressionException {
+        XPathFactory xPathfactory = XPathFactory.newInstance();
+        XPath xpath = xPathfactory.newXPath();
+        String expression = "//group[@id=" + "'" + groupName + "'" + "]";
+
+        XPathExpression expr = xpath.compile(expression);
+        NodeList DDAdmingroups =(NodeList) expr.evaluate(document, XPathConstants.NODESET);
+        return DDAdmingroups.item(0);
+    }
+
+    Document getDocument() throws ParserConfigurationException, SAXException, IOException {
+        File file = new File(AccessController.getAclProperties().getFileLocalgroups());
+
+        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory
+                .newInstance();
+        DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+        return documentBuilder.parse(file);
     }
 
     protected String getUserName(DDUser user) {
