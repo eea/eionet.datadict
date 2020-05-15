@@ -68,8 +68,8 @@ public class GroupsControllerTest {
 
     @Test
     public void getGroupsAndUsersTest() throws Exception {
-        Hashtable<String, Vector<String>> groupsAndUsers = new Hashtable<String, Vector<String>>();
-        Vector<String> vector = new Vector<String>();
+        Hashtable<String, Vector<String>> groupsAndUsers = new Hashtable<>();
+        Vector<String> vector = new Vector<>();
         groupsAndUsers.put("key", vector);
         when(groupsController.getGroupsAndUsers()).thenReturn(groupsAndUsers);
         when(ldapService.getUserLdapRoles(anyString(), anyString(), anyString())).thenReturn(ldapRoles);
