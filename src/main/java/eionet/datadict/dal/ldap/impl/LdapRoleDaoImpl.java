@@ -26,8 +26,7 @@ public class LdapRoleDaoImpl extends BaseLdapDao implements LdapRoleDao {
     private String rolesDn;
 
     public LdapRoleDaoImpl() {
-//        usersDn = "ou=Users," + baseDn;
-//        rolesDn = "ou=DD_roles," + baseDn;
+
     }
 
     @Override
@@ -38,7 +37,7 @@ public class LdapRoleDaoImpl extends BaseLdapDao implements LdapRoleDao {
         DirContext ctx = null;
         try {
             ctx = getDirContext();
-            String myFilter = "(&(objectClass=groupOfUniqueNames)(uniqueMember=cn=" + user + "," + usersDn + "))";
+            String myFilter = "(&(objectClass=groupOfUniqueNames)(uniqueMember=uid=" + user + "," + usersDn + "))";
             SearchControls sc = new SearchControls();
             sc.setSearchScope(SearchControls.SUBTREE_SCOPE);
             NamingEnumeration results = ctx.search(rolesDn, myFilter, sc);
@@ -61,8 +60,7 @@ public class LdapRoleDaoImpl extends BaseLdapDao implements LdapRoleDao {
     }
 
     @Override
-    public List<LdapRole> findAllRoles(String usersOU, String rolesOU) throws Exception {
-        usersDn = "ou=" + usersOU + "," + baseDn;
+    public List<LdapRole> findAllRoles(String rolesOU) throws Exception {
         rolesDn = "ou=" + rolesOU + "," + baseDn;
         List<LdapRole> result = new ArrayList(1);
         LdapContext ctx = null;

@@ -23,11 +23,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertNotNull;
 
-@RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {ApplicationTestContext.class})
-@TestExecutionListeners({DependencyInjectionTestExecutionListener.class,
-        TransactionalTestExecutionListener.class,
-        DbUnitTestExecutionListener.class})
 public class LdapConnectionTestIT {
 
     // @Autowired
@@ -35,18 +31,20 @@ public class LdapConnectionTestIT {
     LdapRoleDaoImpl ldapRoleDaoImpl;
     LdapRoleDao ldapRoleDao;
     @Autowired
-    LdapService ldapService;
+//    LdapService ldapService;
 
     @Test
     public void testConnection() throws Exception {
-//        ldapUserDaoImpl = new LdapUserDaoImpl();
-//        ldapRoleDaoImpl = new LdapRoleDaoImpl();
-////        ldapService = new LdapServiceImpl(ldapRoleDao);
+        ldapUserDaoImpl = new LdapUserDaoImpl();
+        ldapRoleDaoImpl = new LdapRoleDaoImpl();
+//        ldapService = new LdapServiceImpl(ldapRoleDao);
 //        List result = ldapUserDaoImpl.findAllUsers();
-//        List<LdapRole> roles = ldapRoleDaoImpl.findUserRoles("maria", "Users", "DD_roles");
-//        List<LdapRole> ldapRoles = ldapService.getLdapRoles("maria", "Users", "DD_roles");
+        List<LdapRole> roles = ldapRoleDaoImpl.findUserRoles("favvmary", "Users", "Roles");
+        List<LdapRole> ldapRoles = ldapRoleDaoImpl.findAllRoles("Roles");
+        //List<LdapRole> ldapRoles = ldapService.getUserLdapRoles("maria", "Users", "DD_roles");
 //        assertNotNull(result);
-//        assertNotNull(roles);
+        assertNotNull(roles);
+        assertNotNull(ldapRoles);
     }
 
 }

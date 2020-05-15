@@ -26,7 +26,7 @@ public class UserUtils {
      * @param perm
      * @return
      */
-    public static boolean hasAuthorizationPermission(HttpServletRequest request, String aclPath, String perm) {
+    public static boolean hasAuthPermission(HttpServletRequest request, String aclPath, String perm) {
         DDUser user = getUser(request);
         if (user!=null) {
             return hasPermission(user, aclPath, perm);

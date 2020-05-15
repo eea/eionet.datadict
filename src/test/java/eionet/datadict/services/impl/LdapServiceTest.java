@@ -32,7 +32,7 @@ public class LdapServiceTest {
     public void testGetLdapRoles() throws Exception {
         List<LdapRole> ldapRoleList = new ArrayList<>();
         LdapRole ldapRole = new LdapRole();
-        ldapRole.setId(1);
+        ldapRole.setName("dd_admin");
         ldapRoleList.add(ldapRole);
         when(ldapRoleDao.findUserRoles(anyString(),anyString(),anyString())).thenReturn(ldapRoleList);
         String user = "maria";

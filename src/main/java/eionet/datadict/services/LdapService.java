@@ -14,9 +14,8 @@ public interface LdapService {
 
     /**
      * fetces all ldap roles
-     * @param usersOU
      * @param rolesOU
      * @return
      */
-    List<LdapRole> getAllLdapRoles(String usersOU, String rolesOU);
+    List<LdapRole> getAllLdapRoles(String rolesOU);
 }
