@@ -2,8 +2,7 @@ package eionet.datadict.dal.ldap.impl;
 
 import eionet.datadict.dal.ldap.LdapRoleDao;
 import eionet.datadict.model.LdapRole;
-import eionet.meta.dao.DAOException;
-import org.springframework.stereotype.Component;
+import eionet.meta.dao.LdapDaoException;
 import org.springframework.stereotype.Repository;
 
 import javax.naming.NamingEnumeration;
@@ -52,7 +51,7 @@ public class LdapRoleDaoImpl extends BaseLdapDao implements LdapRoleDao {
                 }
             }
         } catch (NamingException e) {
-            throw new Exception(e);
+            throw new LdapDaoException(e);
         } finally {
             closeContext(ctx);
         }
@@ -105,7 +104,7 @@ public class LdapRoleDaoImpl extends BaseLdapDao implements LdapRoleDao {
         } catch (NamingException e) {
             throw new Exception(e);
         } catch (IOException e) {
-            throw new Exception("Error: " + e);
+            throw new LdapDaoException("Error: " + e);
         } finally {
             closeContext(ctx);
         }
