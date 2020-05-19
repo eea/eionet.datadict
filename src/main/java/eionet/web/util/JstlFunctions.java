@@ -20,9 +20,11 @@
  */
 package eionet.web.util;
 
+import eionet.datadict.web.UserUtils;
 import eionet.util.Props;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
@@ -54,15 +56,21 @@ public final class JstlFunctions {
     }
 
     /**
-     * Returns the value of {@link CRUser#hasPermission(HttpSession, String, String)}, using the given inputs.
-     *
-     * @param session
+     * Checks if user has permission based on given inputs.
+     * @param usr
      * @param aclPath
-     * @param permission
+     * @param prm
      * @return
+     * @throws Exception
      */
     public static boolean userHasPermission(java.lang.String usr, java.lang.String aclPath, java.lang.String prm) throws Exception {
-        return SecurityUtil.hasPerm(usr, aclPath, prm);
+        ArrayList<String> results = UserUtils.getUserOrGroup(usr);
+        for (String result : results) {
+            if (SecurityUtil.hasPerm(result, aclPath, prm)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
