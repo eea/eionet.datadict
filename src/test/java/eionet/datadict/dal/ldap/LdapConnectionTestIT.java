@@ -3,7 +3,6 @@ package eionet.datadict.dal.ldap;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import eionet.config.ApplicationTestContext;
 import eionet.datadict.dal.ldap.impl.LdapRoleDaoImpl;
-import eionet.datadict.dal.ldap.impl.LdapUserDaoImpl;
 import eionet.datadict.model.LdapRole;
 import eionet.datadict.services.LdapService;
 import eionet.datadict.services.impl.LdapServiceImpl;
@@ -26,19 +25,14 @@ import static org.junit.Assert.assertNotNull;
 @ContextConfiguration(classes = {ApplicationTestContext.class})
 public class LdapConnectionTestIT {
 
-    // @Autowired
-    LdapUserDaoImpl ldapUserDaoImpl;
     LdapRoleDaoImpl ldapRoleDaoImpl;
     LdapRoleDao ldapRoleDao;
-    @Autowired
 //    LdapService ldapService;
 
     @Test
     public void testConnection() throws Exception {
-        ldapUserDaoImpl = new LdapUserDaoImpl();
         ldapRoleDaoImpl = new LdapRoleDaoImpl();
 //        ldapService = new LdapServiceImpl(ldapRoleDao);
-//        List result = ldapUserDaoImpl.findAllUsers();
         List<LdapRole> roles = ldapRoleDaoImpl.findUserRoles("favvmary", "Users", "Roles");
         List<LdapRole> ldapRoles = ldapRoleDaoImpl.findAllRoles("Roles");
         //List<LdapRole> ldapRoles = ldapService.getUserLdapRoles("maria", "Users", "DD_roles");

@@ -20,7 +20,7 @@ public class BaseLdapDao {
 
     protected static String baseDn;
     static {
-        baseDn = "dc=example,dc=com";
+        baseDn = "o=EIONET,l=Europe";
     }
 
     protected DirContext getDirContext() throws NamingException {

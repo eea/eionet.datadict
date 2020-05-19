@@ -24,11 +24,15 @@
 package eionet.meta;
 
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Vector;
 
 import javax.servlet.http.HttpSession;
 
+import eionet.datadict.errors.AclLibraryAccessControllerModifiedException;
+import eionet.datadict.errors.AclPropertiesInitializationException;
+import eionet.datadict.web.UserUtils;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 import eionet.acl.AccessControlListIF;
@@ -309,6 +313,17 @@ public class DDUser {
      * @return
      */
     public boolean hasPermission(String aclPath, String permission) {
-        return DDUser.hasPermission(username, aclPath, permission);
+        ArrayList<String> results = null;
+        try {
+            results = UserUtils.getUserOrGroup(username);
+        } catch (AclLibraryAccessControllerModifiedException | AclPropertiesInitializationException e) {
+            e.printStackTrace();
+        }
+        for (String result : results) {
+            if (DDUser.hasPermission(result, aclPath, permission)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

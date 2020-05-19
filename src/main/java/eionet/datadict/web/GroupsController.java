@@ -8,17 +8,13 @@ import eionet.datadict.services.LdapService;
 import eionet.datadict.services.acl.AclOperationsService;
 import eionet.datadict.services.acl.AclService;
 import eionet.datadict.web.viewmodel.GroupDetails;
-import eionet.meta.DDUser;
-import eionet.util.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.xml.sax.SAXException;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPathExpressionException;
@@ -58,59 +54,23 @@ public class GroupsController {
         model.addAttribute("ddGroupsAndUsers", ddGroupsAndUsers);
         GroupDetails groupDetails = new GroupDetails();
         model.addAttribute("groupDetails", groupDetails);
-        //REAL IMPLEMENTATION - CODE TO BE ADDED
         HashMap<String, ArrayList<String>> ldapRolesByUser = new HashMap<>();
         for (String ddGroup : ddGroups) {
             Vector<String> ddGroupUsers = ddGroupsAndUsers.get(ddGroup);
             for (String user : ddGroupUsers) {
                 ArrayList<String> ldapRoles = new ArrayList<>();
                 List<LdapRole> userLdapRolesList = ldapService.getUserLdapRoles(user, "Users", "Roles");
-                for (LdapRole ldapRole : userLdapRolesList) {
-                    ldapRoles.add(ldapRole.getName());
-                }
+                userLdapRolesList.forEach(role->ldapRoles.add(role.getName()));
                 ldapRolesByUser.put(user, ldapRoles);
             }
         }
         model.addAttribute("memberLdapGroups", ldapRolesByUser);
-        //REAL IMPLEMENTATION - CODE TO BE ADDED
-
-        //CODE FOR GETTING TEST RESULTS - TO BE DELETED
-//        String[] ldapGroups = getTestLdapGroups(model);
-//        HashMap<String, ArrayList<String>> memberLdapGroups = getTestMemberLdapGroups(ldapGroups);
-//        model.addAttribute("memberLdapGroups", memberLdapGroups);
-        //CODE FOR GETTING TEST RESULTS - TO BE DELETED
         return "groupsAndUsers";
-    }
-
-    private HashMap<String, ArrayList<String>> getTestMemberLdapGroups(String[] ldapGroups) {
-        HashMap<String, ArrayList<String>> memberLdapGroups = new HashMap<>();
-        ArrayList<String> memberList = new ArrayList<>();
-        memberList.add(ldapGroups[0]);
-        memberList.add(ldapGroups[1]);
-        memberLdapGroups.put("favvmary", memberList);
-        ArrayList<String> memberList2 = new ArrayList<>();
-        memberList2.add(ldapGroups[0]);
-        memberList2.add(ldapGroups[1]);
-        memberList2.add(ldapGroups[2]);
-        memberLdapGroups.put("cryan", memberList2);
-        return memberLdapGroups;
-    }
-
-    private String[] getTestLdapGroups(Model model) throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException {
-        String[] ldapGroups = new String[100];
-        ldapGroups[0] = "administrator";
-        ldapGroups[1] = "simple_user";
-        ldapGroups[2] = "eea_user";
-        ldapGroups[3] = "authors";
-        ldapGroups[4] = "developers";
-        ldapGroups[5] = "dd_administrators";
-        return ldapGroups;
     }
 
     @RequestMapping(value = "/ldapOptions")
     @ResponseBody
     public List<String> getLdapList(@RequestParam(value="term", required = false, defaultValue="") String term) {
-        //REAL IMPLEMENTATION - CODE TO BE ADDED
         List<String> ldapRoleNames = getAllLdapRoles();
         List<String> results = new ArrayList<>();
         for (String roleName : ldapRoleNames) {
@@ -118,11 +78,6 @@ public class GroupsController {
                 results.add(roleName);
             }
         }
-        //REAL IMPLEMENTATION - CODE TO BE ADDED
-
-        //CODE FOR GETTING TEST RESULTS - TO BE DELETED
-//        List<String> results = getTestLdapList(term);
-        //CODE FOR GETTING TEST RESULTS - TO BE DELETED
         return results;
     }
 
@@ -134,21 +89,6 @@ public class GroupsController {
             ldapRoleNames.add(roleName);
         }
         return ldapRoleNames;
-    }
-
-    List<String> getTestLdapList(String term) {
-        List<String> options = new ArrayList<>();
-        options.add("admins");
-        options.add("dd_admins");
-        options.add("eea");
-        options.add("authors");
-        List<String> results = new ArrayList<>();
-        for (String option : options) {
-            if (option.startsWith(term)) {
-                results.add(option);
-            }
-        }
-        return results;
     }
 
     @PostMapping("/addUser")
