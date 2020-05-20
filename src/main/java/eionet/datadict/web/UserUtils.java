@@ -16,9 +16,6 @@ import java.util.*;
 
 public class UserUtils {
 
-    private static final String USERS_OU = Props.getProperty(PropsIF.LDAP_USER_DIR);
-    private static final String ROLES_OU = Props.getProperty(PropsIF.LDAP_ROLE_DIR);
-
     public UserUtils() {
     }
 

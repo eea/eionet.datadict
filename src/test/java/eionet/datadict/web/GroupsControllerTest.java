@@ -1,5 +1,7 @@
 package eionet.datadict.web;
 
+import eionet.datadict.errors.AclLibraryAccessControllerModifiedException;
+import eionet.datadict.errors.AclPropertiesInitializationException;
 import eionet.datadict.model.LdapRole;
 import eionet.datadict.services.LdapService;
 import eionet.datadict.services.acl.AclOperationsService;
@@ -49,30 +51,45 @@ public class GroupsControllerTest {
     MockHttpSession session;
     List<LdapRole> ldapRoles;
     LdapRole ldapRole;
+    Hashtable<String, Vector<String>> groupsAndUsers;
 
     @Before
-    public void setUp() {
+    public void setUp() throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException {
         MockitoAnnotations.initMocks(this);
         this.groupsController = new GroupsController(aclService, aclOperationsService, ldapService);
         user = mock(DDUser.class);
+        when(groupsController.getGroupsAndUsers()).thenReturn(groupsAndUsers);
+        when(ldapService.getUserLdapRoles(anyString())).thenReturn(ldapRoles);
         when(user.isAuthentic()).thenReturn(true);
         when(user.hasPermission(anyString(), anyString())).thenReturn(true);
+        setSession();
+        setLdapRoles();
+        setGroupsAndUsers();
+        mockMvc = MockMvcBuilders.standaloneSetup(groupsController).build();
+    }
+
+    void setGroupsAndUsers() {
+        groupsAndUsers = new Hashtable<>();
+        Vector<String> vector = new Vector<>();
+        groupsAndUsers.put("key", vector);
+    }
+
+    void setSession() {
         session = new MockHttpSession();
         session.setAttribute(REMOTEUSER, user);
+    }
+
+    void setLdapRoles() {
         ldapRoles = new ArrayList<>();
         ldapRole = new LdapRole();
         ldapRole.setName("testRole");
         ldapRoles.add(ldapRole);
-        mockMvc = MockMvcBuilders.standaloneSetup(groupsController).build();
     }
 
     @Test
     public void getGroupsAndUsersTest() throws Exception {
-        Hashtable<String, Vector<String>> groupsAndUsers = new Hashtable<>();
-        Vector<String> vector = new Vector<>();
-        groupsAndUsers.put("key", vector);
         when(groupsController.getGroupsAndUsers()).thenReturn(groupsAndUsers);
-        when(ldapService.getUserLdapRoles(anyString(), anyString(), anyString())).thenReturn(ldapRoles);
+        when(ldapService.getUserLdapRoles(anyString())).thenReturn(ldapRoles);
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get("/admintools/list")
                 .session(session);
         mockMvc.perform(builder)
@@ -82,7 +99,7 @@ public class GroupsControllerTest {
 
     @Test
     public void getLdapListTest() throws Exception {
-        when(ldapService.getAllLdapRoles(anyString())).thenReturn(ldapRoles);
+        when(ldapService.getAllLdapRoles()).thenReturn(ldapRoles);
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get("/admintools/ldapOptions")
                 .param("term", "test");
         mockMvc.perform(builder)
@@ -93,7 +110,7 @@ public class GroupsControllerTest {
     public void addUserTest() throws Exception {
         GroupDetails groupDetails = new GroupDetails();
         groupDetails.setLdapGroupName("testRole");
-        when(ldapService.getAllLdapRoles(anyString())).thenReturn(ldapRoles);
+        when(ldapService.getAllLdapRoles()).thenReturn(ldapRoles);
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.post("/admintools/addUser")
                 .session(session).flashAttr("groupDetails", groupDetails);
         mockMvc.perform(builder)
