@@ -62,6 +62,13 @@ public class UserUtils {
         return SecurityUtil.getUser(request);
     }
 
+    /**
+     * If a user belongs to specific acl group retrieves user's username. If not retrieves user's ldap groups.
+     * @param userName
+     * @return
+     * @throws AclLibraryAccessControllerModifiedException
+     * @throws AclPropertiesInitializationException
+     */
     public static ArrayList<String> getUserOrGroup(String userName) throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException {
         ArrayList<String> results = new ArrayList<>();
         Hashtable<String, Vector<String>> ddGroupsAndUsers = getAclOperationsService().getGroupsAndUsersHashTable();

@@ -30,8 +30,6 @@ public class GroupsController {
     private LdapService ldapService;
 
     public static final String LDAP_GROUP_NOT_EXIST = "The LDAP group name you entered doesn't exist";
-    private static final String USERS_OU = "Users";
-    private static final String ROLES_OU = "Roles";
 
     @Autowired
     public GroupsController(AclService aclService, AclOperationsService aclOperationsService, LdapService ldapService) {
@@ -86,10 +84,7 @@ public class GroupsController {
     List<String> getAllLdapRoles() {
         List<String> ldapRoleNames = new ArrayList<>();
         List<LdapRole> ldapRoles = ldapService.getAllLdapRoles();
-        for (LdapRole ldapRole : ldapRoles) {
-            String roleName = ldapRole.getName();
-            ldapRoleNames.add(roleName);
-        }
+        ldapRoles.forEach(role->ldapRoleNames.add(role.getName()));
         return ldapRoleNames;
     }
 
