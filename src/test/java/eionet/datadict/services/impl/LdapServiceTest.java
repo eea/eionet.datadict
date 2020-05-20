@@ -34,11 +34,11 @@ public class LdapServiceTest {
         LdapRole ldapRole = new LdapRole();
         ldapRole.setName("dd_admin");
         ldapRoleList.add(ldapRole);
-        when(ldapRoleDao.findUserRoles(anyString(),anyString(),anyString())).thenReturn(ldapRoleList);
+        when(ldapRoleDao.findUserRoles(anyString())).thenReturn(ldapRoleList);
         String user = "maria";
         String usersOU = "Users";
         String rolesOU = "DD_roles";
-        List<LdapRole> results = ldapServiceImpl.getUserLdapRoles(user, usersOU, rolesOU);
+        List<LdapRole> results = ldapServiceImpl.getUserLdapRoles(user);
         Assert.assertEquals(ldapRoleList, results);
     }
 }

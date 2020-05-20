@@ -10,12 +10,11 @@ public interface LdapService {
      * fetches user ldap roles
      * @return
      */
-    List<LdapRole> getUserLdapRoles(String user, String usersOU, String rolesOU);
+    List<LdapRole> getUserLdapRoles(String user);
 
     /**
      * fetces all ldap roles
-     * @param rolesOU
      * @return
      */
-    List<LdapRole> getAllLdapRoles(String rolesOU);
+    List<LdapRole> getAllLdapRoles();
 }

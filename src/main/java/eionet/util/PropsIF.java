@@ -233,4 +233,16 @@ public interface PropsIF {
     String SSO_LOGIN_PAGE_URI = "edu.yale.its.tp.cas.client.filter.loginUrl";
 
     String API_USER_MODIFIED_IDENTIFIER= "external_api_request";
+
+    String LDAP_URL = "ldap.url";
+
+    String LDAP_PRINCIPAL = "ldap.principal";
+
+    String LDAP_PASSWORD = "ldap.password";
+
+    String LDAP_CONTEXT = "ldap.context";
+
+    String LDAP_ROLE_DIR = "ldap.role.dir";
+
+    String LDAP_USER_DIR = "ldap.user.dir";
 }

@@ -21,9 +21,9 @@ public class LdapServiceImpl implements LdapService {
     }
 
     @Override
-    public List<LdapRole> getUserLdapRoles(String user, String usersOU, String rolesOU) {
+    public List<LdapRole> getUserLdapRoles(String user) {
         try {
-            ldapRoles = ldapRoleDao.findUserRoles(user, usersOU, rolesOU);
+            ldapRoles = ldapRoleDao.findUserRoles(user);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -31,9 +31,9 @@ public class LdapServiceImpl implements LdapService {
     }
 
     @Override
-    public List<LdapRole> getAllLdapRoles(String rolesOU) {
+    public List<LdapRole> getAllLdapRoles() {
         try {
-            ldapRoles = ldapRoleDao.findAllRoles(rolesOU);
+            ldapRoles = ldapRoleDao.findAllRoles();
         } catch (Exception e) {
             e.printStackTrace();
         }

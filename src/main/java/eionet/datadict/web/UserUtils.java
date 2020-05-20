@@ -7,12 +7,17 @@ import eionet.datadict.services.LdapService;
 import eionet.datadict.services.acl.AclOperationsService;
 import eionet.meta.DDUser;
 import eionet.meta.spring.SpringApplicationContext;
+import eionet.util.Props;
+import eionet.util.PropsIF;
 import eionet.util.SecurityUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 public class UserUtils {
+
+    private static final String USERS_OU = Props.getProperty(PropsIF.LDAP_USER_DIR);
+    private static final String ROLES_OU = Props.getProperty(PropsIF.LDAP_ROLE_DIR);
 
     public UserUtils() {
     }
@@ -71,7 +76,7 @@ public class UserUtils {
                 return results;
             }
         }
-        List<LdapRole> userLdapRolesList = getLdapService().getUserLdapRoles(userName, "Users", "Roles");
+        List<LdapRole> userLdapRolesList = getLdapService().getUserLdapRoles(userName);
         userLdapRolesList.forEach(role->results.add(role.getName()));
         return results;
     }

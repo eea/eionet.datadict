@@ -23,35 +23,24 @@
 
 package eionet.util;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.*;
+import edu.yale.its.tp.cas.client.filter.CASFilter;
+import eionet.acl.AccessControlListIF;
+import eionet.acl.AccessController;
+import eionet.datadict.web.UserUtils;
+import eionet.meta.*;
+import eionet.meta.filters.CASFilterConfig;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-
-import eionet.datadict.errors.AclLibraryAccessControllerModifiedException;
-import eionet.datadict.errors.AclPropertiesInitializationException;
-import eionet.datadict.model.LdapRole;
-import eionet.datadict.services.LdapService;
-import eionet.datadict.services.acl.AclOperationsService;
-import eionet.datadict.web.UserUtils;
-import eionet.meta.spring.SpringApplicationContext;
-import org.apache.commons.lang.StringUtils;
-
-import eionet.acl.AccessControlListIF;
-import eionet.acl.AccessController;
-
-import edu.yale.its.tp.cas.client.filter.CASFilter;
-import eionet.meta.AfterCASLoginServlet;
-import eionet.meta.DDCASUser;
-import eionet.meta.DDRuntimeException;
-import eionet.meta.DDUser;
-import eionet.meta.LoginServlet;
-import eionet.meta.filters.CASFilterConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * This is a class containing several utility methods for keeping security.

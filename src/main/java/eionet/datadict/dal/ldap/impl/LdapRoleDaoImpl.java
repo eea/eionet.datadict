@@ -3,6 +3,8 @@ package eionet.datadict.dal.ldap.impl;
 import eionet.datadict.dal.ldap.LdapRoleDao;
 import eionet.datadict.model.LdapRole;
 import eionet.meta.dao.LdapDaoException;
+import eionet.util.Props;
+import eionet.util.PropsIF;
 import org.springframework.stereotype.Repository;
 
 import javax.naming.NamingEnumeration;
@@ -25,13 +27,12 @@ public class LdapRoleDaoImpl extends BaseLdapDao implements LdapRoleDao {
     private String rolesDn;
 
     public LdapRoleDaoImpl() {
-
+        usersDn = Props.getProperty(PropsIF.LDAP_USER_DIR) + "," + baseDn;
+        rolesDn = Props.getProperty(PropsIF.LDAP_ROLE_DIR) + "," + baseDn;
     }
 
     @Override
-    public List<LdapRole> findUserRoles(String user, String usersOU, String rolesOU) throws Exception {
-        usersDn = "ou=" + usersOU + "," + baseDn;
-        rolesDn = "ou=" + rolesOU + "," + baseDn;
+    public List<LdapRole> findUserRoles(String user) throws Exception {
         List<LdapRole> result = new ArrayList<>();
         DirContext ctx = null;
         try {
@@ -59,8 +60,7 @@ public class LdapRoleDaoImpl extends BaseLdapDao implements LdapRoleDao {
     }
 
     @Override
-    public List<LdapRole> findAllRoles(String rolesOU) throws Exception {
-        rolesDn = "ou=" + rolesOU + "," + baseDn;
+    public List<LdapRole> findAllRoles() throws Exception {
         List<LdapRole> result = new ArrayList(1);
         LdapContext ctx = null;
         try {
