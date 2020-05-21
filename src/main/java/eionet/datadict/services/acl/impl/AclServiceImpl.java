@@ -74,7 +74,7 @@ public class AclServiceImpl implements AclService {
         for (int i = 0; i < group.getChildNodes().getLength(); i++) {
             if (group.getChildNodes().item(i).getNodeType() == Node.ELEMENT_NODE) {
                 Element el = (Element) group.getChildNodes().item(i);
-                if (el.getAttribute("userid").contains(username)) {
+                if (el.getAttribute("userid").contentEquals(username)) {
                     throw new UserExistsException(username + " exists in group " + groupName);
                 }
             }
@@ -92,7 +92,7 @@ public class AclServiceImpl implements AclService {
         for (int i = 0; i < group.getChildNodes().getLength(); i++) {
             if (group.getChildNodes().item(i).getNodeType() == Node.ELEMENT_NODE) {
                 Element el = (Element) group.getChildNodes().item(i);
-                if (el.getAttribute("userid").contains(userName)) {
+                if (el.getAttribute("userid").contentEquals(userName)) {
                     group.removeChild(group.getChildNodes().item(i));
                     break;
                 }

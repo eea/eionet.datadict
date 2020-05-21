@@ -18,7 +18,9 @@
     <script>
         $(function() {
             $("#ch" ).autocomplete({
-                source: "ldapOptions"
+                serviceUrl: "${pageContext.request.contextPath}/v2/admintools/ldapOptions",
+                minLength: 10,
+                maxShowItems: 10
             });
         });
 
@@ -85,13 +87,13 @@
             </tbody>
         </table>
         <button id="myBtn" class="btn btn-info" style="margin-bottom:5px">Add User</button></br></br>
-        <form:form id="myForm" style="display:none" action="addUser" modelAttribute="groupDetails" method="post">
+        <form:form id="myForm" style="display:none" action="${pageContext.request.contextPath}/v2/admintools/addUser" modelAttribute="groupDetails" method="post">
             <form:select path="groupNameOptionOne" items="${ddGroups}"/>
             <form:input path="userName" placeholder="Enter user name"/>
             <input type="submit" class="btn btn-info" name="submit" value="Submit"/>
         </form:form>
         <button id="mySecondBtn" class="btn btn-info" style="margin-bottom:5px">Add LDAP Group</button></br></br>
-        <form:form id="mySecondForm" style="display:none" action="addUser" modelAttribute="groupDetails" method="post">
+        <form:form id="mySecondForm" style="display:none" action="${pageContext.request.contextPath}/v2/admintools/addUser" modelAttribute="groupDetails" method="post">
             <form:select path="groupNameOptionTwo" items="${ddGroups}"/>
             <form:input id="ch" path="ldapGroupName" placeholder="Enter LDAP group name"/>
             <input type="submit" class="btn btn-info" name="submit" value="Submit"/>
