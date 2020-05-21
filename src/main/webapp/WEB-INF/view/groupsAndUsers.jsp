@@ -18,10 +18,11 @@
     <script>
         $(function() {
             $("#ch" ).autocomplete({
-                serviceUrl: "${pageContext.request.contextPath}/v2/admintools/ldapOptions",
-                minLength: 10,
-                maxShowItems: 10
+                source: "ldapOptions",
+                minLength: 5
             });
+
+            $("#ch").autocomplete("widget").attr('style', 'max-height: 100px; overflow-y: auto; overflow-x: hidden;')
         });
 
         $(document).ready(function(){
