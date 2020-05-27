@@ -8,6 +8,7 @@ import eionet.datadict.services.acl.AclOperationsService;
 import eionet.datadict.services.acl.AclService;
 import eionet.datadict.web.viewmodel.GroupDetails;
 import eionet.meta.DDUser;
+import eionet.meta.dao.LdapDaoException;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -19,12 +20,10 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 
 import static eionet.util.SecurityUtil.REMOTEUSER;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -45,33 +44,52 @@ public class GroupsControllerTest {
     private LdapService ldapService;
 
     @InjectMocks
-    GroupsController groupsController;
+    private GroupsController groupsController;
 
-    DDUser user;
-    MockHttpSession session;
-    List<LdapRole> ldapRoles;
-    LdapRole ldapRole;
-    Hashtable<String, Vector<String>> groupsAndUsers;
+    private DDUser user;
+    private MockHttpSession session;
+    private List<LdapRole> ldapRoles;
+    private LdapRole ldapRole;
+    private Hashtable<String, Vector<String>> groupsAndUsers;
+    private ArrayList<String> roles;
+    private GroupDetails groupDetails;
+    private static final String ACL_GROUP = "dd_admin";
+    private static final String TEST_USER = "testUser";
+    private static final String TEST_ROLE = "testRole";
 
     @Before
-    public void setUp() throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException {
+    public void setUp() throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException, LdapDaoException {
         MockitoAnnotations.initMocks(this);
         this.groupsController = new GroupsController(aclService, aclOperationsService, ldapService);
         user = mock(DDUser.class);
-        when(groupsController.getGroupsAndUsers()).thenReturn(groupsAndUsers);
-        when(ldapService.getUserLdapRoles(anyString())).thenReturn(ldapRoles);
-        when(user.isAuthentic()).thenReturn(true);
-        when(user.hasPermission(anyString(), anyString())).thenReturn(true);
         setSession();
         setLdapRoles();
         setGroupsAndUsers();
+        setRoleNames();
+        setGroupDetails();
+        when(groupsController.getRefreshedGroupsAndUsers()).thenReturn(groupsAndUsers);
+        when(ldapService.getUserLdapRoles(anyString())).thenReturn(ldapRoles);
+        when(ldapService.getAllLdapRoles()).thenReturn(ldapRoles);
+        when(user.isAuthentic()).thenReturn(true);
+        when(user.hasPermission(anyString(), anyString())).thenReturn(true);
         mockMvc = MockMvcBuilders.standaloneSetup(groupsController).build();
+    }
+
+    private void setGroupDetails() {
+        groupDetails = new GroupDetails();
+        groupDetails.setLdapGroupName("testRole");
+    }
+
+    private void setRoleNames() {
+        roles = new ArrayList<>();
+        roles.add(TEST_ROLE);
     }
 
     void setGroupsAndUsers() {
         groupsAndUsers = new Hashtable<>();
         Vector<String> vector = new Vector<>();
-        groupsAndUsers.put("key", vector);
+        vector.add(TEST_USER);
+        groupsAndUsers.put(ACL_GROUP, vector);
     }
 
     void setSession() {
@@ -82,14 +100,12 @@ public class GroupsControllerTest {
     void setLdapRoles() {
         ldapRoles = new ArrayList<>();
         ldapRole = new LdapRole();
-        ldapRole.setName("testRole");
+        ldapRole.setName(TEST_ROLE);
         ldapRoles.add(ldapRole);
     }
 
     @Test
-    public void getGroupsAndUsersTest() throws Exception {
-        when(groupsController.getGroupsAndUsers()).thenReturn(groupsAndUsers);
-        when(ldapService.getUserLdapRoles(anyString())).thenReturn(ldapRoles);
+    public void testGetGroupsAndUsersSuccess() throws Exception {
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get("/admintools/list")
                 .session(session);
         mockMvc.perform(builder)
@@ -98,8 +114,36 @@ public class GroupsControllerTest {
     }
 
     @Test
-    public void getLdapListTest() throws Exception {
-        when(ldapService.getAllLdapRoles()).thenReturn(ldapRoles);
+    public void testGetGroupsAndUsersUserNotLoggedIn() throws Exception {
+        when(user.hasPermission(anyString(), anyString())).thenReturn(false);
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get("/admintools/list");
+        mockMvc.perform(builder)
+                .andExpect(status().isOk())
+                .andExpect(view().name("message"));
+    }
+
+    @Test
+    public void testGetGroupsAndUsersNoPermission() throws Exception {
+        when(user.hasPermission(anyString(), anyString())).thenReturn(false);
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get("/admintools/list")
+                .session(session);
+        mockMvc.perform(builder)
+                .andExpect(status().isOk())
+                .andExpect(view().name("message"));
+    }
+
+    @Test
+    public void testGetUserLdapRolesSuccess() {
+        Set<String> ddGroups = new HashSet<>();
+        ddGroups.add(ACL_GROUP);
+        HashMap<String, ArrayList<String>> ldapRolesByUser = new HashMap<>();
+        ldapRolesByUser.put(TEST_USER, roles);
+        HashMap<String, ArrayList<String>> result = groupsController.getUserLdapRoles(groupsAndUsers, ddGroups);
+        assertEquals(ldapRolesByUser, result);
+    }
+
+    @Test
+    public void testGetLdapListSuccess() throws Exception {
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get("/admintools/ldapOptions")
                 .param("term", "test");
         mockMvc.perform(builder)
@@ -107,9 +151,13 @@ public class GroupsControllerTest {
     }
 
     @Test
-    public void addUserTest() throws Exception {
-        GroupDetails groupDetails = new GroupDetails();
-        groupDetails.setLdapGroupName("testRole");
+    public void testGetAllLdapRolesSuccess() {
+        List<String> result = groupsController.getAllLdapRoles();
+        assertEquals(roles, result);
+    }
+
+    @Test
+    public void testAddUserSuccess() throws Exception {
         when(ldapService.getAllLdapRoles()).thenReturn(ldapRoles);
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.post("/admintools/addUser")
                 .session(session).flashAttr("groupDetails", groupDetails);
@@ -118,10 +166,44 @@ public class GroupsControllerTest {
     }
 
     @Test
-    public void removeUserTest() throws Exception {
+    public void testAddUserNoPermission() throws Exception {
+        when(user.hasPermission(anyString(), anyString())).thenReturn(false);
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.post("/admintools/addUser")
+                .session(session).flashAttr("groupDetails", groupDetails);
+        mockMvc.perform(builder)
+                .andExpect(view().name("message"));
+    }
+
+    @Test
+    public void testAddUserGroupNotExist() throws Exception {
+        groupDetails.setLdapGroupName("test");
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.post("/admintools/addUser")
+                .session(session).flashAttr("groupDetails", groupDetails);
+        mockMvc.perform(builder)
+                .andExpect(view().name("message"));
+    }
+
+    @Test
+    public void testRemoveUserSuccess() throws Exception {
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get("/admintools/removeUser")
-                .session(session).param("ddGroupName", "testG").param("memberName", "test");
+                .session(session).param("ddGroupName", ACL_GROUP).param("memberName", "test");
         mockMvc.perform(builder)
                 .andExpect(status().is3xxRedirection());
+    }
+
+    @Test
+    public void testRemoveUserNoPermission() throws Exception {
+        when(user.hasPermission(anyString(), anyString())).thenReturn(false);
+        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get("/admintools/removeUser")
+                .session(session).param("ddGroupName", ACL_GROUP).param("memberName", "test");
+        mockMvc.perform(builder)
+                .andExpect(view().name("message"));
+    }
+
+    @Test
+    public void testGetRefreshedGroupsAndUsersSuccess() throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException {
+        when(aclOperationsService.getRefreshedGroupsAndUsersHashTable()).thenReturn(groupsAndUsers);
+        Hashtable<String, Vector<String>> result = groupsController.getRefreshedGroupsAndUsers();
+        assertEquals(groupsAndUsers, result);
     }
 }

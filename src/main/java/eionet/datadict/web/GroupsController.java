@@ -44,7 +44,7 @@ public class GroupsController {
             model.addAttribute("msgOne", PageErrorConstants.FORBIDDEN_ACCESS + " Admin tools");
             return "message";
         }
-        Hashtable<String, Vector<String>> ddGroupsAndUsers = getGroupsAndUsers();
+        Hashtable<String, Vector<String>> ddGroupsAndUsers = getRefreshedGroupsAndUsers();
         Set<String> ddGroups = ddGroupsAndUsers.keySet();
         model.addAttribute("ddGroups", ddGroups);
         model.addAttribute("ddGroupsAndUsers", ddGroupsAndUsers);
@@ -118,7 +118,7 @@ public class GroupsController {
         return "redirect:/v2/admintools/list";
     }
 
-    protected Hashtable<String, Vector<String>> getGroupsAndUsers() throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException {
+    protected Hashtable<String, Vector<String>> getRefreshedGroupsAndUsers() throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException {
         return aclOperationsService.getRefreshedGroupsAndUsersHashTable();
     }
 

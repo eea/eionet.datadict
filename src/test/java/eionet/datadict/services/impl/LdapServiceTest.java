@@ -2,6 +2,7 @@ package eionet.datadict.services.impl;
 
 import eionet.datadict.dal.ldap.LdapRoleDao;
 import eionet.datadict.model.LdapRole;
+import eionet.meta.dao.LdapDaoException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,22 +24,45 @@ public class LdapServiceTest {
     @InjectMocks
     private LdapServiceImpl ldapServiceImpl;
 
+    private List<LdapRole> ldapRoleList;
+    private LdapRole ldapRole;
+    private static final String USER = "maria";
+    private static final String ACL_GROUP = "dd_admin";
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+        ldapRoleList = new ArrayList<>();
+        ldapRole = new LdapRole();
+        ldapRole.setName(ACL_GROUP);
+        ldapRoleList.add(ldapRole);
     }
 
     @Test
-    public void testGetLdapRoles() throws Exception {
-        List<LdapRole> ldapRoleList = new ArrayList<>();
-        LdapRole ldapRole = new LdapRole();
-        ldapRole.setName("dd_admin");
-        ldapRoleList.add(ldapRole);
+    public void testGetUserLdapRolesSuccess() throws Exception {
         when(ldapRoleDao.findUserRoles(anyString())).thenReturn(ldapRoleList);
-        String user = "maria";
-        String usersOU = "Users";
-        String rolesOU = "DD_roles";
-        List<LdapRole> results = ldapServiceImpl.getUserLdapRoles(user);
+        List<LdapRole> results = ldapServiceImpl.getUserLdapRoles(USER);
         Assert.assertEquals(ldapRoleList, results);
+    }
+
+    @Test
+    public void testGetUserLdapRolesException() throws LdapDaoException {
+        when(ldapRoleDao.findUserRoles(anyString())).thenThrow(LdapDaoException.class);
+        List<LdapRole> results = ldapServiceImpl.getUserLdapRoles(USER);
+        Assert.assertEquals(0, results.size());
+    }
+
+    @Test
+    public void testGetAllLdapRolesSuccess() throws Exception {
+        when(ldapRoleDao.findAllRoles()).thenReturn(ldapRoleList);
+        List<LdapRole> results = ldapServiceImpl.getAllLdapRoles();
+        Assert.assertEquals(ldapRoleList, results);
+    }
+
+    @Test
+    public void testGetAllLdapRolesException() throws LdapDaoException {
+        when(ldapRoleDao.findAllRoles()).thenThrow(LdapDaoException.class);
+        List<LdapRole> results = ldapServiceImpl.getAllLdapRoles();
+        Assert.assertEquals(0, results.size());
     }
 }
