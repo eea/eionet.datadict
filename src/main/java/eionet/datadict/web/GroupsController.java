@@ -3,6 +3,7 @@ package eionet.datadict.web;
 import eionet.datadict.errors.AclLibraryAccessControllerModifiedException;
 import eionet.datadict.errors.AclPropertiesInitializationException;
 import eionet.datadict.errors.UserExistsException;
+import eionet.datadict.errors.XmlMalformedException;
 import eionet.datadict.model.LdapRole;
 import eionet.datadict.services.LdapService;
 import eionet.datadict.services.acl.AclOperationsService;
@@ -12,13 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.xml.sax.SAXException;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.xpath.XPathExpressionException;
-import java.io.IOException;
 import java.util.*;
 
 @Controller
@@ -54,6 +50,12 @@ public class GroupsController {
         model.addAttribute("ddGroupsAndUsers", ddGroupsAndUsers);
         GroupDetails groupDetails = new GroupDetails();
         model.addAttribute("groupDetails", groupDetails);
+        HashMap<String, ArrayList<String>> ldapRolesByUser = getUserLdapRoles(ddGroupsAndUsers, ddGroups);
+        model.addAttribute("memberLdapGroups", ldapRolesByUser);
+        return "groupsAndUsers";
+    }
+
+    protected HashMap<String, ArrayList<String>> getUserLdapRoles(Hashtable<String, Vector<String>> ddGroupsAndUsers, Set<String> ddGroups) {
         HashMap<String, ArrayList<String>> ldapRolesByUser = new HashMap<>();
         for (String ddGroup : ddGroups) {
             Vector<String> ddGroupUsers = ddGroupsAndUsers.get(ddGroup);
@@ -64,8 +66,7 @@ public class GroupsController {
                 ldapRolesByUser.put(user, ldapRoles);
             }
         }
-        model.addAttribute("memberLdapGroups", ldapRolesByUser);
-        return "groupsAndUsers";
+        return ldapRolesByUser;
     }
 
     @RequestMapping(value = "/ldapOptions")
@@ -89,33 +90,26 @@ public class GroupsController {
     }
 
     @PostMapping("/addUser")
-    public String addUser(@ModelAttribute("groupDetails") GroupDetails groupDetails, Model model, HttpServletRequest request)
-            throws ParserConfigurationException, TransformerException, SAXException, XPathExpressionException, IOException {
+    public String addUser(@ModelAttribute("groupDetails") GroupDetails groupDetails, Model model, HttpServletRequest request) throws UserExistsException, XmlMalformedException {
         if (!UserUtils.hasAuthPermission(request, "/admintools", "u")) {
             model.addAttribute("msgOne", PageErrorConstants.PERMISSION_REQUIRED);
             return "message";
         }
-        try {
-            if (groupDetails.getGroupNameOptionOne()!=null) {
-                aclService.addUserToAclGroup(groupDetails.getUserName(), groupDetails.getGroupNameOptionOne());
-            } else {
-                List<String> ldapRoles = getAllLdapRoles();
-                if (!ldapRoles.contains(groupDetails.getLdapGroupName())) {
-                    model.addAttribute("msgOne", LDAP_GROUP_NOT_EXIST);
-                    return "message";
-                }
-                aclService.addUserToAclGroup(groupDetails.getLdapGroupName(), groupDetails.getGroupNameOptionTwo());
+        if (groupDetails.getGroupNameOptionOne()!=null) {
+            aclService.addUserToAclGroup(groupDetails.getUserName(), groupDetails.getGroupNameOptionOne());
+        } else {
+            List<String> ldapRoles = getAllLdapRoles();
+            if (!ldapRoles.contains(groupDetails.getLdapGroupName())) {
+                model.addAttribute("msgOne", LDAP_GROUP_NOT_EXIST);
+                return "message";
             }
-        } catch (UserExistsException e) {
-            model.addAttribute("msgOne", e.getMessage());
-            return "message";
+            aclService.addUserToAclGroup(groupDetails.getLdapGroupName(), groupDetails.getGroupNameOptionTwo());
         }
         return "redirect:/v2/admintools/list";
     }
 
     @GetMapping("/removeUser")
-    public String removeUser(@RequestParam("ddGroupName") String groupName, @RequestParam("memberName") String userName, Model model, HttpServletRequest request)
-            throws SAXException, TransformerException, ParserConfigurationException, XPathExpressionException, IOException {
+    public String removeUser(@RequestParam("ddGroupName") String groupName, @RequestParam("memberName") String userName, Model model, HttpServletRequest request) throws XmlMalformedException {
         if (!UserUtils.hasAuthPermission(request, "/admintools", "d")) {
             model.addAttribute("msgOne", PageErrorConstants.PERMISSION_REQUIRED);
             return "message";
@@ -124,8 +118,20 @@ public class GroupsController {
         return "redirect:/v2/admintools/list";
     }
 
-    Hashtable<String, Vector<String>> getGroupsAndUsers() throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException {
-        return aclOperationsService.getGroupsAndUsersHashTable();
+    protected Hashtable<String, Vector<String>> getGroupsAndUsers() throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException {
+        return aclOperationsService.getRefreshedGroupsAndUsersHashTable();
+    }
+
+    @ExceptionHandler(AclPropertiesInitializationException.class)
+    public String handleAclLibraryAccessControllerModifiedException(Model model) {
+        model.addAttribute("msgOne", PageErrorConstants.ACL_PROPS_INIT);
+        return "message";
+    }
+
+    @ExceptionHandler({AclLibraryAccessControllerModifiedException.class, UserExistsException.class, XmlMalformedException.class})
+    public String handleExceptions(Model model, Exception exception) {
+        model.addAttribute("msgOne", exception.getMessage());
+        return "message";
     }
 
 }

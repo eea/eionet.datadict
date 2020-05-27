@@ -32,7 +32,7 @@ public class LdapRoleDaoImpl extends BaseLdapDao implements LdapRoleDao {
     }
 
     @Override
-    public List<LdapRole> findUserRoles(String user) throws Exception {
+    public List<LdapRole> findUserRoles(String user) throws LdapDaoException {
         List<LdapRole> result = new ArrayList<>();
         DirContext ctx = null;
         try {
@@ -60,7 +60,7 @@ public class LdapRoleDaoImpl extends BaseLdapDao implements LdapRoleDao {
     }
 
     @Override
-    public List<LdapRole> findAllRoles() throws Exception {
+    public List<LdapRole> findAllRoles() throws LdapDaoException {
         List<LdapRole> result = new ArrayList(1);
         LdapContext ctx = null;
         try {
@@ -101,9 +101,7 @@ public class LdapRoleDaoImpl extends BaseLdapDao implements LdapRoleDao {
                 ctx.setRequestControls(new Control[]{
                         new PagedResultsControl(PAGE_SIZE, cookie, Control.CRITICAL)});
             } while (cookie != null);
-        } catch (NamingException e) {
-            throw new Exception(e);
-        } catch (IOException e) {
+        } catch (IOException | NamingException e) {
             throw new LdapDaoException("Error: " + e);
         } finally {
             closeContext(ctx);

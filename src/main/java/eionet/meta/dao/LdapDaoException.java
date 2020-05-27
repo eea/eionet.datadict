@@ -4,7 +4,6 @@ import eionet.meta.DDException;
 
 /**
  * 
- * @author Jaanus Heinlaid
  *
  */
 public class LdapDaoException extends DDException {

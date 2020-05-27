@@ -3,8 +3,6 @@ package eionet.web.action;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import eionet.datadict.errors.AclLibraryAccessControllerModifiedException;
-import eionet.datadict.errors.AclPropertiesInitializationException;
 import eionet.datadict.services.JWTService;
 import eionet.datadict.services.acl.AclOperationsService;
 import eionet.meta.service.ServiceException;
@@ -202,7 +200,7 @@ public class JWTApiActionBean extends AbstractActionBean{
     }
 
     public Boolean checkIfUserHasAdminRights(String username) throws Exception {
-        Hashtable<String, Vector<String>> groupsAndUsersHash = getAclOperationsService().getGroupsAndUsersHashTable();
+        Hashtable<String, Vector<String>> groupsAndUsersHash = getAclOperationsService().getRefreshedGroupsAndUsersHashTable();
         if(groupsAndUsersHash.get("dd_admin") == null){
             throw new Exception("No dd_admin role was found.");
         }

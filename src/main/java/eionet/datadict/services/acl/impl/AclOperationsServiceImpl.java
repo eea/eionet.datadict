@@ -31,11 +31,9 @@ public class AclOperationsServiceImpl implements AclOperationsService {
         this.configurationPropertyResolver = configurationPropertyResolver;
     }
 
-    @Override
-    public Hashtable<String, Vector<String>> getGroupsAndUsersHashTable() throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException {
+    public Hashtable<String, Vector<String>> getRefreshedGroupsAndUsersHashTable() throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException {
         try {
             AccessController accessController = this.getAclLibraryAccessControllerInstance(this.getAclProperties());
-            Method[] declaredMethods = AccessController.class.getDeclaredMethods();
             Method initAcls = null;
             initAcls = AccessController.class.getDeclaredMethod("initAcls");
             initAcls.setAccessible(true);

@@ -7,8 +7,6 @@ import eionet.datadict.services.LdapService;
 import eionet.datadict.services.acl.AclOperationsService;
 import eionet.meta.DDUser;
 import eionet.meta.spring.SpringApplicationContext;
-import eionet.util.Props;
-import eionet.util.PropsIF;
 import eionet.util.SecurityUtil;
 
 import javax.servlet.http.HttpServletRequest;
@@ -71,7 +69,7 @@ public class UserUtils {
      */
     public static ArrayList<String> getUserOrGroup(String userName) throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException {
         ArrayList<String> results = new ArrayList<>();
-        Hashtable<String, Vector<String>> ddGroupsAndUsers = getAclOperationsService().getGroupsAndUsersHashTable();
+        Hashtable<String, Vector<String>> ddGroupsAndUsers = getAclOperationsService().getRefreshedGroupsAndUsersHashTable();
         Set<String> ddGroups = ddGroupsAndUsers.keySet();
         for (String ddGroup : ddGroups) {
             Vector<String> ddGroupUsers = ddGroupsAndUsers.get(ddGroup);

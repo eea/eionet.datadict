@@ -4,8 +4,6 @@ import eionet.datadict.services.JWTService;
 import eionet.datadict.services.acl.impl.AclOperationsServiceImpl;
 import eionet.web.DDActionBeanContext;
 import net.sourceforge.stripes.action.StreamingResolution;
-import org.apache.http.client.methods.HttpPost;
-import org.castor.util.Base64Encoder;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -236,7 +234,7 @@ public class JWTApiActionBeanTest {
     /* Test case: admin group doesn't exist */
     @Test(expected = Exception.class)
     public void testCheckIfUserHasAdminRightsAdminGroupDoesntExist() throws Exception {
-        when(aclOperationsService.getGroupsAndUsersHashTable()).thenReturn(hashtableWithoutAdmins);
+        when(aclOperationsService.getRefreshedGroupsAndUsersHashTable()).thenReturn(hashtableWithoutAdmins);
         try
         {
             Boolean result = jwtApiActionBean.checkIfUserHasAdminRights("anthaant");
@@ -253,7 +251,7 @@ public class JWTApiActionBeanTest {
     /* Test case: user was not found */
     @Test
     public void testCheckIfUserHasAdminRightsUserNotFound() throws Exception {
-        when(aclOperationsService.getGroupsAndUsersHashTable()).thenReturn(hashtableWithAdmins);
+        when(aclOperationsService.getRefreshedGroupsAndUsersHashTable()).thenReturn(hashtableWithAdmins);
         Boolean result = jwtApiActionBean.checkIfUserHasAdminRights("userNotFound");
         Assert.assertThat(result, is(false));
     }
@@ -261,7 +259,7 @@ public class JWTApiActionBeanTest {
     /* Test case: user does not have admin rights */
     @Test
     public void testCheckIfUserHasAdminRightsUserIsNotAdmin() throws Exception {
-        when(aclOperationsService.getGroupsAndUsersHashTable()).thenReturn(hashtableWithAdmins);
+        when(aclOperationsService.getRefreshedGroupsAndUsersHashTable()).thenReturn(hashtableWithAdmins);
         Boolean result = jwtApiActionBean.checkIfUserHasAdminRights("heinlja");
         Assert.assertThat(result, is(false));
     }
@@ -269,7 +267,7 @@ public class JWTApiActionBeanTest {
     /* Test case: user has admin rights */
     @Test
     public void testCheckIfUserHasAdminRightsUserIsAdmin() throws Exception {
-        when(aclOperationsService.getGroupsAndUsersHashTable()).thenReturn(hashtableWithAdmins);
+        when(aclOperationsService.getRefreshedGroupsAndUsersHashTable()).thenReturn(hashtableWithAdmins);
         Boolean result = jwtApiActionBean.checkIfUserHasAdminRights("anthaant");
         Assert.assertThat(result, is(true));
     }

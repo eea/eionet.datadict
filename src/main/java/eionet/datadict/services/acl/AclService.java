@@ -1,6 +1,7 @@
 package eionet.datadict.services.acl;
 
 import eionet.datadict.errors.UserExistsException;
+import eionet.datadict.errors.XmlMalformedException;
 import eionet.meta.DDUser;
 import eionet.datadict.errors.UserAuthorizationException;
 import org.xml.sax.SAXException;
@@ -21,7 +22,7 @@ public interface AclService {
     
     void removeAccessRightsForDeletedEntity(AclEntity entity, String entityId);
 
-    void addUserToAclGroup(String username,String groupName) throws ParserConfigurationException, IOException, SAXException, TransformerException, XPathExpressionException, UserExistsException;
+    void addUserToAclGroup(String username,String groupName) throws UserExistsException, XmlMalformedException;
 
-    void removeUserFromAclGroup(String userName, String groupName) throws IOException, SAXException, ParserConfigurationException, XPathExpressionException, TransformerException;
+    void removeUserFromAclGroup(String userName, String groupName) throws XmlMalformedException;
 }

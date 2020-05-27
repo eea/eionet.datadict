@@ -23,31 +23,25 @@
 
 package eionet.meta;
 
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Vector;
-
-import javax.servlet.http.HttpSession;
-
+import eionet.acl.*;
 import eionet.datadict.errors.AclLibraryAccessControllerModifiedException;
 import eionet.datadict.errors.AclPropertiesInitializationException;
 import eionet.datadict.web.UserUtils;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.lang.StringUtils;
-import eionet.acl.AccessControlListIF;
-import eionet.acl.AccessController;
-import eionet.acl.AclNotFoundException;
-import eionet.acl.AuthMechanism;
-import eionet.acl.SignOnException;
-
 import eionet.directory.DirectoryService;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.SecurityUtil;
 import eionet.util.sql.ConnectionUtil;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.servlet.http.HttpSession;
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Vector;
 
 /**
  *
@@ -317,7 +311,7 @@ public class DDUser {
         try {
             results = UserUtils.getUserOrGroup(username);
         } catch (AclLibraryAccessControllerModifiedException | AclPropertiesInitializationException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage(), e);
         }
         for (String result : results) {
             if (DDUser.hasPermission(result, aclPath, permission)) {
