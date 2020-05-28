@@ -9,6 +9,7 @@ import eionet.datadict.services.LdapService;
 import eionet.datadict.services.acl.AclOperationsService;
 import eionet.datadict.services.acl.AclService;
 import eionet.datadict.web.viewmodel.GroupDetails;
+import eionet.meta.dao.LdapDaoException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -35,7 +36,7 @@ public class GroupsController {
     }
 
     @GetMapping("/list")
-    public String getGroupsAndUsers(Model model, HttpServletRequest request) throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException {
+    public String getGroupsAndUsers(Model model, HttpServletRequest request) throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException, LdapDaoException {
         if(!UserUtils.isUserLoggedIn(request)) {
             model.addAttribute("msgOne", PageErrorConstants.NOT_AUTHENTICATED + " Admin tools");
             return "message";
@@ -55,7 +56,7 @@ public class GroupsController {
         return "groupsAndUsers";
     }
 
-    protected HashMap<String, ArrayList<String>> getUserLdapRoles(Hashtable<String, Vector<String>> ddGroupsAndUsers, Set<String> ddGroups) {
+    protected HashMap<String, ArrayList<String>> getUserLdapRoles(Hashtable<String, Vector<String>> ddGroupsAndUsers, Set<String> ddGroups) throws LdapDaoException {
         HashMap<String, ArrayList<String>> ldapRolesByUser = new HashMap<>();
         for (String ddGroup : ddGroups) {
             Vector<String> ddGroupUsers = ddGroupsAndUsers.get(ddGroup);
@@ -71,7 +72,7 @@ public class GroupsController {
 
     @RequestMapping(value = "/ldapOptions")
     @ResponseBody
-    public List<String> getLdapList(@RequestParam(value="term", required = false, defaultValue="") String term) {
+    public List<String> getLdapList(@RequestParam(value="term", required = false, defaultValue="") String term) throws LdapDaoException {
         List<String> ldapRoleNames = getAllLdapRoles();
         List<String> results = new ArrayList<>();
         for (String roleName : ldapRoleNames) {
@@ -82,7 +83,7 @@ public class GroupsController {
         return results;
     }
 
-    List<String> getAllLdapRoles() {
+    protected List<String> getAllLdapRoles() throws LdapDaoException {
         List<String> ldapRoleNames = new ArrayList<>();
         List<LdapRole> ldapRoles = ldapService.getAllLdapRoles();
         ldapRoles.forEach(role->ldapRoleNames.add(role.getName()));
@@ -90,7 +91,7 @@ public class GroupsController {
     }
 
     @PostMapping("/addUser")
-    public String addUser(@ModelAttribute("groupDetails") GroupDetails groupDetails, Model model, HttpServletRequest request) throws UserExistsException, XmlMalformedException {
+    public String addUser(@ModelAttribute("groupDetails") GroupDetails groupDetails, Model model, HttpServletRequest request) throws UserExistsException, XmlMalformedException, LdapDaoException {
         if (!UserUtils.hasAuthPermission(request, "/admintools", "u")) {
             model.addAttribute("msgOne", PageErrorConstants.PERMISSION_REQUIRED);
             return "message";
@@ -131,6 +132,12 @@ public class GroupsController {
     @ExceptionHandler({AclLibraryAccessControllerModifiedException.class, UserExistsException.class, XmlMalformedException.class})
     public String handleExceptions(Model model, Exception exception) {
         model.addAttribute("msgOne", exception.getMessage());
+        return "message";
+    }
+
+    @ExceptionHandler(LdapDaoException.class)
+    public String handleLdapDaoException(Model model) {
+        model.addAttribute("msgOne", PageErrorConstants.LDAP_ERROR);
         return "message";
     }
 

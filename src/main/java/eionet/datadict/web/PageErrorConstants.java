@@ -9,4 +9,6 @@ public class PageErrorConstants {
     public static final String PERMISSION_REQUIRED = "You don't have permission for this action";
 
     public static final String ACL_PROPS_INIT = "Error initializing acl properties";
+
+    public static final String LDAP_ERROR = "Unable to retrieve user ldap roles";
 }

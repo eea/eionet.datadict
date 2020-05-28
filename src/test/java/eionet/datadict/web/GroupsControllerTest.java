@@ -133,7 +133,7 @@ public class GroupsControllerTest {
     }
 
     @Test
-    public void testGetUserLdapRolesSuccess() {
+    public void testGetUserLdapRolesSuccess() throws LdapDaoException {
         Set<String> ddGroups = new HashSet<>();
         ddGroups.add(ACL_GROUP);
         HashMap<String, ArrayList<String>> ldapRolesByUser = new HashMap<>();
@@ -151,7 +151,7 @@ public class GroupsControllerTest {
     }
 
     @Test
-    public void testGetAllLdapRolesSuccess() {
+    public void testGetAllLdapRolesSuccess() throws LdapDaoException {
         List<String> result = groupsController.getAllLdapRoles();
         assertEquals(roles, result);
     }

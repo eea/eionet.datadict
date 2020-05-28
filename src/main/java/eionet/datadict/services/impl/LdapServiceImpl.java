@@ -29,22 +29,14 @@ public class LdapServiceImpl implements LdapService {
     }
 
     @Override
-    public List<LdapRole> getUserLdapRoles(String user) {
-        try {
-            ldapRoles = ldapRoleDao.findUserRoles(user);
-        } catch (LdapDaoException e) {
-            LOGGER.error(e.getMessage(), e);
-        }
+    public List<LdapRole> getUserLdapRoles(String user) throws LdapDaoException {
+        ldapRoles = ldapRoleDao.findUserRoles(user);
         return ldapRoles;
     }
 
     @Override
-    public List<LdapRole> getAllLdapRoles() {
-        try {
-            ldapRoles = ldapRoleDao.findAllRoles();
-        } catch (LdapDaoException e) {
-            LOGGER.error(e.getMessage(), e);
-        }
+    public List<LdapRole> getAllLdapRoles() throws LdapDaoException {
+        ldapRoles = ldapRoleDao.findAllRoles();
         return ldapRoles;
     }
 }

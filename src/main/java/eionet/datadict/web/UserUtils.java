@@ -6,6 +6,7 @@ import eionet.datadict.model.LdapRole;
 import eionet.datadict.services.LdapService;
 import eionet.datadict.services.acl.AclOperationsService;
 import eionet.meta.DDUser;
+import eionet.meta.dao.LdapDaoException;
 import eionet.meta.spring.SpringApplicationContext;
 import eionet.util.SecurityUtil;
 
@@ -67,7 +68,7 @@ public class UserUtils {
      * @throws AclLibraryAccessControllerModifiedException
      * @throws AclPropertiesInitializationException
      */
-    public static ArrayList<String> getUserOrGroup(String userName) throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException {
+    public static ArrayList<String> getUserOrGroup(String userName) throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException, LdapDaoException {
         ArrayList<String> results = new ArrayList<>();
         Hashtable<String, Vector<String>> ddGroupsAndUsers = getAclOperationsService().getRefreshedGroupsAndUsersHashTable();
         Set<String> ddGroups = ddGroupsAndUsers.keySet();

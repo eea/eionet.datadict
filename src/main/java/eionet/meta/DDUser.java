@@ -28,6 +28,7 @@ import eionet.datadict.errors.AclLibraryAccessControllerModifiedException;
 import eionet.datadict.errors.AclPropertiesInitializationException;
 import eionet.datadict.web.UserUtils;
 import eionet.directory.DirectoryService;
+import eionet.meta.dao.LdapDaoException;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.SecurityUtil;
@@ -310,13 +311,13 @@ public class DDUser {
         ArrayList<String> results = null;
         try {
             results = UserUtils.getUserOrGroup(username);
-        } catch (AclLibraryAccessControllerModifiedException | AclPropertiesInitializationException e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-        for (String result : results) {
-            if (DDUser.hasPermission(result, aclPath, permission)) {
-                return true;
+            for (String result : results) {
+                if (DDUser.hasPermission(result, aclPath, permission)) {
+                    return true;
+                }
             }
+        } catch (AclLibraryAccessControllerModifiedException | AclPropertiesInitializationException | LdapDaoException e) {
+            LOGGER.error(e.getMessage(), e);
         }
         return false;
     }

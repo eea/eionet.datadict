@@ -45,11 +45,10 @@ public class LdapServiceTest {
         Assert.assertEquals(ldapRoleList, results);
     }
 
-    @Test
+    @Test(expected = LdapDaoException.class)
     public void testGetUserLdapRolesException() throws LdapDaoException {
         when(ldapRoleDao.findUserRoles(anyString())).thenThrow(LdapDaoException.class);
         List<LdapRole> results = ldapServiceImpl.getUserLdapRoles(USER);
-        Assert.assertEquals(0, results.size());
     }
 
     @Test
@@ -59,10 +58,9 @@ public class LdapServiceTest {
         Assert.assertEquals(ldapRoleList, results);
     }
 
-    @Test
+    @Test(expected = LdapDaoException.class)
     public void testGetAllLdapRolesException() throws LdapDaoException {
         when(ldapRoleDao.findAllRoles()).thenThrow(LdapDaoException.class);
         List<LdapRole> results = ldapServiceImpl.getAllLdapRoles();
-        Assert.assertEquals(0, results.size());
     }
 }

@@ -28,6 +28,7 @@ import eionet.acl.AccessControlListIF;
 import eionet.acl.AccessController;
 import eionet.datadict.web.UserUtils;
 import eionet.meta.*;
+import eionet.meta.dao.LdapDaoException;
 import eionet.meta.filters.CASFilterConfig;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -112,11 +113,15 @@ public final class SecurityUtil {
     public static boolean userHasPerm(HttpServletRequest request, String aclPath, String prm) throws Exception {
         DDUser user = SecurityUtil.getUser(request);
         if (user!=null) {
-            ArrayList<String> results = UserUtils.getUserOrGroup(user.getUserName());
-            for (String result : results) {
-                if (SecurityUtil.hasPerm(result, aclPath, prm)) {
-                    return true;
+            try {
+                ArrayList<String> results = UserUtils.getUserOrGroup(user.getUserName());
+                for (String result : results) {
+                    if (SecurityUtil.hasPerm(result, aclPath, prm)) {
+                        return true;
+                    }
                 }
+            } catch (LdapDaoException e) {
+                LOGGER.error(e.getMessage(), e);
             }
             return false;
         }

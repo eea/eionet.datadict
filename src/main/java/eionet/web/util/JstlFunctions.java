@@ -21,6 +21,8 @@
 package eionet.web.util;
 
 import eionet.datadict.web.UserUtils;
+import eionet.meta.DDUser;
+import eionet.meta.dao.LdapDaoException;
 import eionet.util.Props;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -32,6 +34,9 @@ import org.apache.commons.lang.StringUtils;
 
 import eionet.util.SecurityUtil;
 import eionet.util.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
@@ -47,6 +52,7 @@ public final class JstlFunctions {
     private static final String INPUT_CHECKED_STRING = "checked=\"checked\"";
     private static final String INPUT_SELECTED_STRING = "selected=\"selected\"";
     private static final String INPUT_DISABLED_STRING = "disabled=\"disabled\"";
+    private static final Logger LOGGER = LoggerFactory.getLogger(JstlFunctions.class);
 
     /**
      * Prevent initialization.
@@ -64,11 +70,15 @@ public final class JstlFunctions {
      * @throws Exception
      */
     public static boolean userHasPermission(java.lang.String usr, java.lang.String aclPath, java.lang.String prm) throws Exception {
-        ArrayList<String> results = UserUtils.getUserOrGroup(usr);
-        for (String result : results) {
-            if (SecurityUtil.hasPerm(result, aclPath, prm)) {
-                return true;
+        try {
+            ArrayList<String> results = UserUtils.getUserOrGroup(usr);
+            for (String result : results) {
+                if (SecurityUtil.hasPerm(result, aclPath, prm)) {
+                    return true;
+                }
             }
+        } catch (LdapDaoException e) {
+            LOGGER.error(e.getMessage(), e);
         }
         return false;
     }
