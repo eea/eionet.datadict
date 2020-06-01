@@ -8,8 +8,11 @@ import eionet.datadict.model.LdapRole;
 import eionet.datadict.services.LdapService;
 import eionet.datadict.services.acl.AclOperationsService;
 import eionet.datadict.services.acl.AclService;
+import eionet.datadict.services.impl.LdapServiceImpl;
 import eionet.datadict.web.viewmodel.GroupDetails;
 import eionet.meta.dao.LdapDaoException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,6 +30,9 @@ public class GroupsController {
     private LdapService ldapService;
 
     public static final String LDAP_GROUP_NOT_EXIST = "The LDAP group name you entered doesn't exist";
+
+    /** */
+    private static final Logger LOGGER = LoggerFactory.getLogger(GroupsController.class);
 
     @Autowired
     public GroupsController(AclService aclService, AclOperationsService aclOperationsService, LdapService ldapService) {
@@ -124,19 +130,22 @@ public class GroupsController {
     }
 
     @ExceptionHandler(AclPropertiesInitializationException.class)
-    public String handleAclLibraryAccessControllerModifiedException(Model model) {
+    public String handleAclLibraryAccessControllerModifiedException(Model model, Exception exception) {
+        LOGGER.error(exception.getMessage(), exception);
         model.addAttribute("msgOne", PageErrorConstants.ACL_PROPS_INIT);
         return "message";
     }
 
     @ExceptionHandler({AclLibraryAccessControllerModifiedException.class, UserExistsException.class, XmlMalformedException.class})
     public String handleExceptions(Model model, Exception exception) {
+        LOGGER.error(exception.getMessage(), exception);
         model.addAttribute("msgOne", exception.getMessage());
         return "message";
     }
 
     @ExceptionHandler(LdapDaoException.class)
-    public String handleLdapDaoException(Model model) {
+    public String handleLdapDaoException(Model model, Exception exception) {
+        LOGGER.error(exception.getMessage(), exception);
         model.addAttribute("msgOne", PageErrorConstants.LDAP_ERROR);
         return "message";
     }
