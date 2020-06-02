@@ -7,6 +7,8 @@ import eionet.datadict.errors.XmlMalformedException;
 import eionet.datadict.services.acl.AclEntity;
 import eionet.datadict.services.acl.AclService;
 import eionet.datadict.services.acl.Permission;
+import eionet.datadict.web.GroupsController;
+import eionet.datadict.web.UserUtils;
 import eionet.meta.DDUser;
 import eionet.util.SecurityUtil;
 import org.springframework.stereotype.Service;
@@ -85,6 +87,8 @@ public class AclServiceImpl implements AclService {
             groupEntry.setAttribute("userid",username);
             group.appendChild(groupEntry);
             writeResultToFile(document);
+            UserUtils.groupModified = true;
+            GroupsController.groupModified = true;
         } catch (ParserConfigurationException | IOException | SAXException | TransformerException | XPathExpressionException e) {
             throw new XmlMalformedException(e.getMessage());
         }
@@ -106,6 +110,8 @@ public class AclServiceImpl implements AclService {
             }
             removeEmptyLines(document);
             writeResultToFile(document);
+            UserUtils.groupModified = true;
+            GroupsController.groupModified = true;
         } catch (ParserConfigurationException | IOException | SAXException | TransformerException | XPathExpressionException e) {
             throw new XmlMalformedException(e.getMessage());
         }

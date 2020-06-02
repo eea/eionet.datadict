@@ -15,6 +15,11 @@ import java.util.*;
 
 public class UserUtils {
 
+    private static List<LdapRole> userLdapRolesList;
+    private static Hashtable<String, Vector<String>> ddGroupsAndUsers;
+    private static ArrayList<String> groupResults;
+    public static boolean groupModified;
+
     public UserUtils() {
     }
 
@@ -69,19 +74,29 @@ public class UserUtils {
      * @throws AclPropertiesInitializationException
      */
     public static ArrayList<String> getUserOrGroup(String userName) throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException, LdapDaoException {
-        ArrayList<String> results = new ArrayList<>();
-        Hashtable<String, Vector<String>> ddGroupsAndUsers = getAclOperationsService().getRefreshedGroupsAndUsersHashTable();
-        Set<String> ddGroups = ddGroupsAndUsers.keySet();
-        for (String ddGroup : ddGroups) {
-            Vector<String> ddGroupUsers = ddGroupsAndUsers.get(ddGroup);
-            if (ddGroupUsers.contains(userName)) {
-                results.add(userName);
-                return results;
+        if (groupResults == null || groupModified) {
+            groupResults = new ArrayList<>();
+            ddGroupsAndUsers = new Hashtable<>();
+            userLdapRolesList = new ArrayList<>();
+            if (groupModified) {
+                ddGroupsAndUsers = getAclOperationsService().getRefreshedGroupsAndUsersHashTable(true);
+                groupModified = false;
+            } else {
+                ddGroupsAndUsers = getAclOperationsService().getRefreshedGroupsAndUsersHashTable(false);
             }
+            Set<String> ddGroups = ddGroupsAndUsers.keySet();
+            for (String ddGroup : ddGroups) {
+                Vector<String> ddGroupUsers = ddGroupsAndUsers.get(ddGroup);
+                if (ddGroupUsers.contains(userName)) {
+                    groupResults.add(userName);
+                    return groupResults;
+                }
+            }
+            userLdapRolesList = getLdapService().getUserLdapRoles(userName);
+            userLdapRolesList.forEach(role->groupResults.add(role.getName()));
+            return groupResults;
         }
-        List<LdapRole> userLdapRolesList = getLdapService().getUserLdapRoles(userName);
-        userLdapRolesList.forEach(role->results.add(role.getName()));
-        return results;
+        return groupResults;
     }
 
     public static AclOperationsService getAclOperationsService() {

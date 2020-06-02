@@ -8,7 +8,6 @@ import eionet.datadict.model.LdapRole;
 import eionet.datadict.services.LdapService;
 import eionet.datadict.services.acl.AclOperationsService;
 import eionet.datadict.services.acl.AclService;
-import eionet.datadict.services.impl.LdapServiceImpl;
 import eionet.datadict.web.viewmodel.GroupDetails;
 import eionet.meta.dao.LdapDaoException;
 import org.slf4j.Logger;
@@ -30,9 +29,11 @@ public class GroupsController {
     private LdapService ldapService;
 
     public static final String LDAP_GROUP_NOT_EXIST = "The LDAP group name you entered doesn't exist";
-
-    /** */
     private static final Logger LOGGER = LoggerFactory.getLogger(GroupsController.class);
+    private static Hashtable<String, Vector<String>> ddGroupsAndUsers;
+    private static HashMap<String, ArrayList<String>> ldapRolesByUser;
+    private static List<LdapRole> ldapRoles;
+    public static boolean groupModified;
 
     @Autowired
     public GroupsController(AclService aclService, AclOperationsService aclOperationsService, LdapService ldapService) {
@@ -51,29 +52,39 @@ public class GroupsController {
             model.addAttribute("msgOne", PageErrorConstants.FORBIDDEN_ACCESS + " Admin tools");
             return "message";
         }
-        Hashtable<String, Vector<String>> ddGroupsAndUsers = getRefreshedGroupsAndUsers();
+        if (ddGroupsAndUsers == null) {
+            ddGroupsAndUsers = new Hashtable<>();
+            ddGroupsAndUsers = getRefreshedGroupsAndUsers(false);
+        }
+        if (groupModified) {
+            ddGroupsAndUsers = getRefreshedGroupsAndUsers(true);
+        }
         Set<String> ddGroups = ddGroupsAndUsers.keySet();
         model.addAttribute("ddGroups", ddGroups);
         model.addAttribute("ddGroupsAndUsers", ddGroupsAndUsers);
         GroupDetails groupDetails = new GroupDetails();
         model.addAttribute("groupDetails", groupDetails);
-        HashMap<String, ArrayList<String>> ldapRolesByUser = getUserLdapRoles(ddGroupsAndUsers, ddGroups);
+        if (ldapRolesByUser == null || groupModified) {
+            ldapRolesByUser = new HashMap<>();
+            ldapRolesByUser = getUserLdapRoles(ddGroupsAndUsers, ddGroups);
+            groupModified = false;
+        }
         model.addAttribute("memberLdapGroups", ldapRolesByUser);
         return "groupsAndUsers";
     }
 
     protected HashMap<String, ArrayList<String>> getUserLdapRoles(Hashtable<String, Vector<String>> ddGroupsAndUsers, Set<String> ddGroups) throws LdapDaoException {
-        HashMap<String, ArrayList<String>> ldapRolesByUser = new HashMap<>();
+        HashMap<String, ArrayList<String>> rolesByUser = new HashMap<>();
         for (String ddGroup : ddGroups) {
             Vector<String> ddGroupUsers = ddGroupsAndUsers.get(ddGroup);
             for (String user : ddGroupUsers) {
                 ArrayList<String> ldapRoles = new ArrayList<>();
                 List<LdapRole> userLdapRolesList = ldapService.getUserLdapRoles(user);
                 userLdapRolesList.forEach(role->ldapRoles.add(role.getName()));
-                ldapRolesByUser.put(user, ldapRoles);
+                rolesByUser.put(user, ldapRoles);
             }
         }
-        return ldapRolesByUser;
+        return rolesByUser;
     }
 
     @RequestMapping(value = "/ldapOptions")
@@ -91,7 +102,10 @@ public class GroupsController {
 
     protected List<String> getAllLdapRoles() throws LdapDaoException {
         List<String> ldapRoleNames = new ArrayList<>();
-        List<LdapRole> ldapRoles = ldapService.getAllLdapRoles();
+        if (ldapRoles == null) {
+            ldapRoles = new ArrayList<>();
+            ldapRoles = ldapService.getAllLdapRoles();
+        }
         ldapRoles.forEach(role->ldapRoleNames.add(role.getName()));
         return ldapRoleNames;
     }
@@ -125,8 +139,8 @@ public class GroupsController {
         return "redirect:/v2/admintools/list";
     }
 
-    protected Hashtable<String, Vector<String>> getRefreshedGroupsAndUsers() throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException {
-        return aclOperationsService.getRefreshedGroupsAndUsersHashTable();
+    protected Hashtable<String, Vector<String>> getRefreshedGroupsAndUsers(boolean init) throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException {
+        return aclOperationsService.getRefreshedGroupsAndUsersHashTable(init);
     }
 
     @ExceptionHandler(AclPropertiesInitializationException.class)

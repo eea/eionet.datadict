@@ -200,7 +200,7 @@ public class JWTApiActionBean extends AbstractActionBean{
     }
 
     public Boolean checkIfUserHasAdminRights(String username) throws Exception {
-        Hashtable<String, Vector<String>> groupsAndUsersHash = getAclOperationsService().getRefreshedGroupsAndUsersHashTable();
+        Hashtable<String, Vector<String>> groupsAndUsersHash = getAclOperationsService().getRefreshedGroupsAndUsersHashTable(false);
         if(groupsAndUsersHash.get("dd_admin") == null){
             throw new Exception("No dd_admin role was found.");
         }

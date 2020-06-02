@@ -24,6 +24,7 @@ import java.util.*;
 
 import static eionet.util.SecurityUtil.REMOTEUSER;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -67,7 +68,7 @@ public class GroupsControllerTest {
         setGroupsAndUsers();
         setRoleNames();
         setGroupDetails();
-        when(groupsController.getRefreshedGroupsAndUsers()).thenReturn(groupsAndUsers);
+        when(groupsController.getRefreshedGroupsAndUsers(anyBoolean())).thenReturn(groupsAndUsers);
         when(ldapService.getUserLdapRoles(anyString())).thenReturn(ldapRoles);
         when(ldapService.getAllLdapRoles()).thenReturn(ldapRoles);
         when(user.isAuthentic()).thenReturn(true);
@@ -202,8 +203,8 @@ public class GroupsControllerTest {
 
     @Test
     public void testGetRefreshedGroupsAndUsersSuccess() throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException {
-        when(aclOperationsService.getRefreshedGroupsAndUsersHashTable()).thenReturn(groupsAndUsers);
-        Hashtable<String, Vector<String>> result = groupsController.getRefreshedGroupsAndUsers();
+        when(aclOperationsService.getRefreshedGroupsAndUsersHashTable(anyBoolean())).thenReturn(groupsAndUsers);
+        Hashtable<String, Vector<String>> result = groupsController.getRefreshedGroupsAndUsers(anyBoolean());
         assertEquals(groupsAndUsers, result);
     }
 }
