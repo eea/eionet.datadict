@@ -308,9 +308,8 @@ public class DDUser {
      * @return
      */
     public boolean hasPermission(String aclPath, String permission) {
-        ArrayList<String> results = null;
         try {
-            results = UserUtils.getUserOrGroup(username);
+            ArrayList<String> results = UserUtils.getUserOrGroup(username);
             for (String result : results) {
                 if (DDUser.hasPermission(result, aclPath, permission)) {
                     return true;

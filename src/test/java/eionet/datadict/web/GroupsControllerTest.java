@@ -59,16 +59,16 @@ public class GroupsControllerTest {
     private static final String TEST_ROLE = "testRole";
 
     @Before
-    public void setUp() throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException, LdapDaoException {
+    public void setUp() throws LdapDaoException, AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException {
         MockitoAnnotations.initMocks(this);
-        this.groupsController = new GroupsController(aclService, aclOperationsService, ldapService);
+        this.groupsController = new GroupsController(aclService, ldapService);
         user = mock(DDUser.class);
         setSession();
         setLdapRoles();
         setGroupsAndUsers();
         setRoleNames();
         setGroupDetails();
-        when(groupsController.getRefreshedGroupsAndUsers(anyBoolean())).thenReturn(groupsAndUsers);
+        UserUtils.ddGroupsAndUsers = groupsAndUsers;
         when(ldapService.getUserLdapRoles(anyString())).thenReturn(ldapRoles);
         when(ldapService.getAllLdapRoles()).thenReturn(ldapRoles);
         when(user.isAuthentic()).thenReturn(true);
@@ -199,12 +199,5 @@ public class GroupsControllerTest {
                 .session(session).param("ddGroupName", ACL_GROUP).param("memberName", "test");
         mockMvc.perform(builder)
                 .andExpect(view().name("message"));
-    }
-
-    @Test
-    public void testGetRefreshedGroupsAndUsersSuccess() throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException {
-        when(aclOperationsService.getRefreshedGroupsAndUsersHashTable(anyBoolean())).thenReturn(groupsAndUsers);
-        Hashtable<String, Vector<String>> result = groupsController.getRefreshedGroupsAndUsers(anyBoolean());
-        assertEquals(groupsAndUsers, result);
     }
 }

@@ -1,12 +1,9 @@
 package eionet.datadict.web;
 
-import eionet.datadict.errors.AclLibraryAccessControllerModifiedException;
-import eionet.datadict.errors.AclPropertiesInitializationException;
 import eionet.datadict.errors.UserExistsException;
 import eionet.datadict.errors.XmlMalformedException;
 import eionet.datadict.model.LdapRole;
 import eionet.datadict.services.LdapService;
-import eionet.datadict.services.acl.AclOperationsService;
 import eionet.datadict.services.acl.AclService;
 import eionet.datadict.web.viewmodel.GroupDetails;
 import eionet.meta.dao.LdapDaoException;
@@ -25,25 +22,22 @@ import java.util.*;
 public class GroupsController {
 
     private AclService aclService;
-    private AclOperationsService aclOperationsService;
     private LdapService ldapService;
 
     public static final String LDAP_GROUP_NOT_EXIST = "The LDAP group name you entered doesn't exist";
     private static final Logger LOGGER = LoggerFactory.getLogger(GroupsController.class);
-    private static Hashtable<String, Vector<String>> ddGroupsAndUsers;
     private static HashMap<String, ArrayList<String>> ldapRolesByUser;
     private static List<LdapRole> ldapRoles;
     public static boolean groupModified;
 
     @Autowired
-    public GroupsController(AclService aclService, AclOperationsService aclOperationsService, LdapService ldapService) {
+    public GroupsController(AclService aclService, LdapService ldapService) {
         this.aclService = aclService;
-        this.aclOperationsService = aclOperationsService;
         this.ldapService = ldapService;
     }
 
     @GetMapping("/list")
-    public String getGroupsAndUsers(Model model, HttpServletRequest request) throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException, LdapDaoException {
+    public String getGroupsAndUsers(Model model, HttpServletRequest request) throws LdapDaoException {
         if(!UserUtils.isUserLoggedIn(request)) {
             model.addAttribute("msgOne", PageErrorConstants.NOT_AUTHENTICATED + " Admin tools");
             return "message";
@@ -52,20 +46,13 @@ public class GroupsController {
             model.addAttribute("msgOne", PageErrorConstants.FORBIDDEN_ACCESS + " Admin tools");
             return "message";
         }
-        if (ddGroupsAndUsers == null) {
-            ddGroupsAndUsers = new Hashtable<>();
-            ddGroupsAndUsers = getRefreshedGroupsAndUsers(false);
-        }
-        if (groupModified) {
-            ddGroupsAndUsers = getRefreshedGroupsAndUsers(true);
-        }
+        Hashtable<String, Vector<String>> ddGroupsAndUsers = UserUtils.ddGroupsAndUsers;
         Set<String> ddGroups = ddGroupsAndUsers.keySet();
         model.addAttribute("ddGroups", ddGroups);
         model.addAttribute("ddGroupsAndUsers", ddGroupsAndUsers);
         GroupDetails groupDetails = new GroupDetails();
         model.addAttribute("groupDetails", groupDetails);
         if (ldapRolesByUser == null || groupModified) {
-            ldapRolesByUser = new HashMap<>();
             ldapRolesByUser = getUserLdapRoles(ddGroupsAndUsers, ddGroups);
             groupModified = false;
         }
@@ -103,7 +90,6 @@ public class GroupsController {
     protected List<String> getAllLdapRoles() throws LdapDaoException {
         List<String> ldapRoleNames = new ArrayList<>();
         if (ldapRoles == null) {
-            ldapRoles = new ArrayList<>();
             ldapRoles = ldapService.getAllLdapRoles();
         }
         ldapRoles.forEach(role->ldapRoleNames.add(role.getName()));
@@ -139,18 +125,7 @@ public class GroupsController {
         return "redirect:/v2/admintools/list";
     }
 
-    protected Hashtable<String, Vector<String>> getRefreshedGroupsAndUsers(boolean init) throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException {
-        return aclOperationsService.getRefreshedGroupsAndUsersHashTable(init);
-    }
-
-    @ExceptionHandler(AclPropertiesInitializationException.class)
-    public String handleAclLibraryAccessControllerModifiedException(Model model, Exception exception) {
-        LOGGER.error(exception.getMessage(), exception);
-        model.addAttribute("msgOne", PageErrorConstants.ACL_PROPS_INIT);
-        return "message";
-    }
-
-    @ExceptionHandler({AclLibraryAccessControllerModifiedException.class, UserExistsException.class, XmlMalformedException.class})
+    @ExceptionHandler({UserExistsException.class, XmlMalformedException.class})
     public String handleExceptions(Model model, Exception exception) {
         LOGGER.error(exception.getMessage(), exception);
         model.addAttribute("msgOne", exception.getMessage());

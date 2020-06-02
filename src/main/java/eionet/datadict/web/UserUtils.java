@@ -16,9 +16,9 @@ import java.util.*;
 public class UserUtils {
 
     private static List<LdapRole> userLdapRolesList;
-    private static Hashtable<String, Vector<String>> ddGroupsAndUsers;
     private static ArrayList<String> groupResults;
     public static boolean groupModified;
+    public static Hashtable<String, Vector<String>> ddGroupsAndUsers;
 
     public UserUtils() {
     }
@@ -76,14 +76,7 @@ public class UserUtils {
     public static ArrayList<String> getUserOrGroup(String userName) throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException, LdapDaoException {
         if (groupResults == null || groupModified) {
             groupResults = new ArrayList<>();
-            ddGroupsAndUsers = new Hashtable<>();
-            userLdapRolesList = new ArrayList<>();
-            if (groupModified) {
-                ddGroupsAndUsers = getAclOperationsService().getRefreshedGroupsAndUsersHashTable(true);
-                groupModified = false;
-            } else {
-                ddGroupsAndUsers = getAclOperationsService().getRefreshedGroupsAndUsersHashTable(false);
-            }
+            setGroupsAndUsers();
             Set<String> ddGroups = ddGroupsAndUsers.keySet();
             for (String ddGroup : ddGroups) {
                 Vector<String> ddGroupUsers = ddGroupsAndUsers.get(ddGroup);
@@ -92,11 +85,23 @@ public class UserUtils {
                     return groupResults;
                 }
             }
-            userLdapRolesList = getLdapService().getUserLdapRoles(userName);
+            if (userLdapRolesList == null) {
+                userLdapRolesList = getLdapService().getUserLdapRoles(userName);
+            }
             userLdapRolesList.forEach(role->groupResults.add(role.getName()));
             return groupResults;
         }
         return groupResults;
+    }
+
+    protected static void setGroupsAndUsers() throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException {
+        ddGroupsAndUsers = new Hashtable<>();
+        if (groupModified) {
+            ddGroupsAndUsers = getAclOperationsService().getRefreshedGroupsAndUsersHashTable(true);
+            groupModified = false;
+        } else {
+            ddGroupsAndUsers = getAclOperationsService().getRefreshedGroupsAndUsersHashTable(false);
+        }
     }
 
     public static AclOperationsService getAclOperationsService() {
