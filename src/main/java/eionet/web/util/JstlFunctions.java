@@ -20,6 +20,8 @@
  */
 package eionet.web.util;
 
+import eionet.datadict.errors.AclLibraryAccessControllerModifiedException;
+import eionet.datadict.errors.AclPropertiesInitializationException;
 import eionet.datadict.web.UserUtils;
 import eionet.meta.DDUser;
 import eionet.meta.dao.LdapDaoException;
@@ -70,17 +72,7 @@ public final class JstlFunctions {
      * @throws Exception
      */
     public static boolean userHasPermission(java.lang.String usr, java.lang.String aclPath, java.lang.String prm) throws Exception {
-        try {
-            ArrayList<String> results = UserUtils.getUserOrGroup(usr);
-            for (String result : results) {
-                if (SecurityUtil.hasPerm(result, aclPath, prm)) {
-                    return true;
-                }
-            }
-        } catch (LdapDaoException e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-        return false;
+        return SecurityUtil.hasPerm(usr, aclPath, prm);
     }
 
     /**

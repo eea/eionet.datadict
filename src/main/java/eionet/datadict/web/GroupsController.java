@@ -52,7 +52,7 @@ public class GroupsController {
         model.addAttribute("ddGroupsAndUsers", ddGroupsAndUsers);
         GroupDetails groupDetails = new GroupDetails();
         model.addAttribute("groupDetails", groupDetails);
-        if (ldapRolesByUser == null || groupModified) {
+        if (ldapRolesByUser == null || (ldapRolesByUser!=null && ldapRolesByUser.size()==0) || groupModified) {
             ldapRolesByUser = getUserLdapRoles(ddGroupsAndUsers, ddGroups);
             groupModified = false;
         }
@@ -89,7 +89,7 @@ public class GroupsController {
 
     protected List<String> getAllLdapRoles() throws LdapDaoException {
         List<String> ldapRoleNames = new ArrayList<>();
-        if (ldapRoles == null) {
+        if (ldapRoles == null || (ldapRoles!=null && ldapRoles.size()==0)) {
             ldapRoles = ldapService.getAllLdapRoles();
         }
         ldapRoles.forEach(role->ldapRoleNames.add(role.getName()));

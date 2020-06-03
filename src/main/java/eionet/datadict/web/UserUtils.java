@@ -74,7 +74,10 @@ public class UserUtils {
      * @throws AclPropertiesInitializationException
      */
     public static ArrayList<String> getUserOrGroup(String userName) throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException, LdapDaoException {
-        if (groupResults == null || groupModified) {
+        if (groupResults == null || (groupResults!=null && groupResults.size()==0) || groupModified) {
+            if (groupResults == null) {
+                groupModified = true;
+            }
             groupResults = new ArrayList<>();
             setGroupsAndUsers();
             Set<String> ddGroups = ddGroupsAndUsers.keySet();
@@ -85,7 +88,7 @@ public class UserUtils {
                     return groupResults;
                 }
             }
-            if (userLdapRolesList == null) {
+            if (userLdapRolesList == null || (userLdapRolesList!=null && userLdapRolesList.size()==0)) {
                 userLdapRolesList = getLdapService().getUserLdapRoles(userName);
             }
             userLdapRolesList.forEach(role->groupResults.add(role.getName()));

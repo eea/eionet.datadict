@@ -26,6 +26,8 @@ package eionet.util;
 import edu.yale.its.tp.cas.client.filter.CASFilter;
 import eionet.acl.AccessControlListIF;
 import eionet.acl.AccessController;
+import eionet.datadict.errors.AclLibraryAccessControllerModifiedException;
+import eionet.datadict.errors.AclPropertiesInitializationException;
 import eionet.datadict.web.UserUtils;
 import eionet.meta.*;
 import eionet.meta.dao.LdapDaoException;
@@ -112,20 +114,7 @@ public final class SecurityUtil {
      */
     public static boolean userHasPerm(HttpServletRequest request, String aclPath, String prm) throws Exception {
         DDUser user = SecurityUtil.getUser(request);
-        if (user!=null) {
-            try {
-                ArrayList<String> results = UserUtils.getUserOrGroup(user.getUserName());
-                for (String result : results) {
-                    if (SecurityUtil.hasPerm(result, aclPath, prm)) {
-                        return true;
-                    }
-                }
-            } catch (LdapDaoException e) {
-                LOGGER.error(e.getMessage(), e);
-            }
-            return false;
-        }
-        return SecurityUtil.hasPerm(null, aclPath, prm);
+        return SecurityUtil.hasPerm(user == null ? null : user.getUserName(), aclPath, prm);
     }
 
     /**
@@ -143,6 +132,13 @@ public final class SecurityUtil {
             return false;
         }
 
+        ArrayList<String> results;
+        try {
+            results = UserUtils.getUserOrGroup(usr);
+        } catch (AclLibraryAccessControllerModifiedException | AclPropertiesInitializationException | LdapDaoException e) {
+            LOGGER.error(e.getMessage(), e);
+            return false;
+        }
         boolean has = false;
         AccessControlListIF acl = null;
         int i = aclPath.length() <= 1 ? -1 : aclPath.indexOf("/", 1); // not forgetting root path ("/")
@@ -155,7 +151,12 @@ public final class SecurityUtil {
             }
 
             if (acl != null) {
-                has = acl.checkPermission(usr, prm);
+                for (String result : results) {
+                    if (acl.checkPermission(result, prm)) {
+                        has = true;
+                        break;
+                    }
+                }
             }
 
             i = aclPath.indexOf("/", i + 1);
@@ -169,7 +170,12 @@ public final class SecurityUtil {
             }
 
             if (acl != null) {
-                has = acl.checkPermission(usr, prm);
+                for (String result : results) {
+                    if (acl.checkPermission(result, prm)) {
+                        has = true;
+                        break;
+                    }
+                }
             }
         }
 
