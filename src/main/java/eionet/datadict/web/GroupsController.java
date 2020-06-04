@@ -28,7 +28,7 @@ public class GroupsController {
     private static final Logger LOGGER = LoggerFactory.getLogger(GroupsController.class);
     private static HashMap<String, ArrayList<String>> ldapRolesByUser;
     private static List<LdapRole> ldapRoles;
-    public static boolean groupModified;
+    public static volatile boolean groupModified;
 
     @Autowired
     public GroupsController(AclService aclService, LdapService ldapService) {
@@ -46,21 +46,21 @@ public class GroupsController {
             model.addAttribute("msgOne", PageErrorConstants.FORBIDDEN_ACCESS + " Admin tools");
             return "message";
         }
-        Hashtable<String, Vector<String>> ddGroupsAndUsers = UserUtils.ddGroupsAndUsers;
+        Hashtable<String, Vector<String>> ddGroupsAndUsers = UserUtils.getDdGroupsAndUsers();
         Set<String> ddGroups = ddGroupsAndUsers.keySet();
         model.addAttribute("ddGroups", ddGroups);
         model.addAttribute("ddGroupsAndUsers", ddGroupsAndUsers);
         GroupDetails groupDetails = new GroupDetails();
         model.addAttribute("groupDetails", groupDetails);
-        if (ldapRolesByUser == null || (ldapRolesByUser!=null && ldapRolesByUser.size()==0) || groupModified) {
-            ldapRolesByUser = getUserLdapRoles(ddGroupsAndUsers, ddGroups);
+        if (getLdapRolesByUser() == null || (getLdapRolesByUser()!=null && getLdapRolesByUser().size()==0) || groupModified) {
+            setLdapRolesByUser(getUserLdapRoles(ddGroupsAndUsers, ddGroups));
             groupModified = false;
         }
-        model.addAttribute("memberLdapGroups", ldapRolesByUser);
+        model.addAttribute("memberLdapGroups", getLdapRolesByUser());
         return "groupsAndUsers";
     }
 
-    protected HashMap<String, ArrayList<String>> getUserLdapRoles(Hashtable<String, Vector<String>> ddGroupsAndUsers, Set<String> ddGroups) throws LdapDaoException {
+    protected synchronized HashMap<String, ArrayList<String>> getUserLdapRoles(Hashtable<String, Vector<String>> ddGroupsAndUsers, Set<String> ddGroups) throws LdapDaoException {
         HashMap<String, ArrayList<String>> rolesByUser = new HashMap<>();
         for (String ddGroup : ddGroups) {
             Vector<String> ddGroupUsers = ddGroupsAndUsers.get(ddGroup);
@@ -87,12 +87,12 @@ public class GroupsController {
         return results;
     }
 
-    protected List<String> getAllLdapRoles() throws LdapDaoException {
+    protected synchronized List<String> getAllLdapRoles() throws LdapDaoException {
         List<String> ldapRoleNames = new ArrayList<>();
-        if (ldapRoles == null || (ldapRoles!=null && ldapRoles.size()==0)) {
-            ldapRoles = ldapService.getAllLdapRoles();
+        if (getLdapRoles() == null || (getLdapRoles()!=null && getLdapRoles().size()==0)) {
+            setLdapRoles(ldapService.getAllLdapRoles());
         }
-        ldapRoles.forEach(role->ldapRoleNames.add(role.getName()));
+        getLdapRoles().forEach(role->ldapRoleNames.add(role.getName()));
         return ldapRoleNames;
     }
 
@@ -139,4 +139,19 @@ public class GroupsController {
         return "message";
     }
 
+    public static synchronized HashMap<String, ArrayList<String>> getLdapRolesByUser() {
+        return ldapRolesByUser;
+    }
+
+    public static synchronized void setLdapRolesByUser(HashMap<String, ArrayList<String>> ldapRolesByUser) {
+        GroupsController.ldapRolesByUser = ldapRolesByUser;
+    }
+
+    public static synchronized List<LdapRole> getLdapRoles() {
+        return ldapRoles;
+    }
+
+    public static synchronized void setLdapRoles(List<LdapRole> ldapRoles) {
+        GroupsController.ldapRoles = ldapRoles;
+    }
 }

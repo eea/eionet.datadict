@@ -1,10 +1,7 @@
 package eionet.datadict.web;
 
-import eionet.datadict.errors.AclLibraryAccessControllerModifiedException;
-import eionet.datadict.errors.AclPropertiesInitializationException;
 import eionet.datadict.model.LdapRole;
 import eionet.datadict.services.LdapService;
-import eionet.datadict.services.acl.AclOperationsService;
 import eionet.datadict.services.acl.AclService;
 import eionet.datadict.web.viewmodel.GroupDetails;
 import eionet.meta.DDUser;
@@ -24,7 +21,6 @@ import java.util.*;
 
 import static eionet.util.SecurityUtil.REMOTEUSER;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -37,9 +33,6 @@ public class GroupsControllerTest {
 
     @Mock
     private AclService aclService;
-
-    @Mock
-    private AclOperationsService aclOperationsService;
 
     @Mock
     private LdapService ldapService;
@@ -59,7 +52,7 @@ public class GroupsControllerTest {
     private static final String TEST_ROLE = "testRole";
 
     @Before
-    public void setUp() throws LdapDaoException, AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException {
+    public void setUp() throws LdapDaoException {
         MockitoAnnotations.initMocks(this);
         this.groupsController = new GroupsController(aclService, ldapService);
         user = mock(DDUser.class);
@@ -68,7 +61,7 @@ public class GroupsControllerTest {
         setGroupsAndUsers();
         setRoleNames();
         setGroupDetails();
-        UserUtils.ddGroupsAndUsers = groupsAndUsers;
+        UserUtils.setDdGroupsAndUsers(groupsAndUsers);
         when(ldapService.getUserLdapRoles(anyString())).thenReturn(ldapRoles);
         when(ldapService.getAllLdapRoles()).thenReturn(ldapRoles);
         when(user.isAuthentic()).thenReturn(true);
