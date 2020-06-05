@@ -128,17 +128,24 @@ public final class SecurityUtil {
      * @throws Exception if check fails
      */
     public static boolean hasPerm(String usr, String aclPath, String prm) throws Exception {
+        try {
+            ArrayList<String> results = UserUtils.getUserOrGroup(usr);
+            for (String result : results) {
+                if (SecurityUtil.groupHasPerm(result, aclPath, prm)) {
+                    return true;
+                }
+            }
+        } catch (AclLibraryAccessControllerModifiedException | AclPropertiesInitializationException | LdapDaoException e) {
+            LOGGER.error(e.getMessage(), e);
+        }
+        return false;
+    }
+
+    public static boolean groupHasPerm(String usr, String aclPath, String prm) throws Exception {
         if (!aclPath.startsWith("/")) {
             return false;
         }
 
-        ArrayList<String> results;
-        try {
-            results = UserUtils.getUserOrGroup(usr);
-        } catch (AclLibraryAccessControllerModifiedException | AclPropertiesInitializationException | LdapDaoException e) {
-            LOGGER.error(e.getMessage(), e);
-            return false;
-        }
         boolean has = false;
         AccessControlListIF acl = null;
         int i = aclPath.length() <= 1 ? -1 : aclPath.indexOf("/", 1); // not forgetting root path ("/")
@@ -151,12 +158,7 @@ public final class SecurityUtil {
             }
 
             if (acl != null) {
-                for (String result : results) {
-                    if (acl.checkPermission(result, prm)) {
-                        has = true;
-                        break;
-                    }
-                }
+                has = acl.checkPermission(usr, prm);
             }
 
             i = aclPath.indexOf("/", i + 1);
@@ -170,12 +172,7 @@ public final class SecurityUtil {
             }
 
             if (acl != null) {
-                for (String result : results) {
-                    if (acl.checkPermission(result, prm)) {
-                        has = true;
-                        break;
-                    }
-                }
+                has = acl.checkPermission(usr, prm);
             }
         }
 
