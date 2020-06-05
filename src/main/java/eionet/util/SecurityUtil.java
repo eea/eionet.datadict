@@ -114,7 +114,10 @@ public final class SecurityUtil {
      */
     public static boolean userHasPerm(HttpServletRequest request, String aclPath, String prm) throws Exception {
         DDUser user = SecurityUtil.getUser(request);
-        return SecurityUtil.hasPerm(user == null ? null : user.getUserName(), aclPath, prm);
+        if (user != null) {
+            return SecurityUtil.hasPerm(user.getUserName(), aclPath, prm);
+        }
+        return SecurityUtil.groupHasPerm(null, aclPath, prm);
     }
 
     /**
