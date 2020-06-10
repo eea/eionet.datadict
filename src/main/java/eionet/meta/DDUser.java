@@ -72,7 +72,7 @@ public class DDUser {
     protected String fullName = null;
     protected String[] roles = null;
     protected HashMap acls = null;
-
+    protected boolean localUser = false;
     /**
      *
      */
@@ -310,5 +310,13 @@ public class DDUser {
      */
     public boolean hasPermission(String aclPath, String permission) {
         return DDUser.hasPermission(username, aclPath, permission);
+    }
+
+    public boolean isLocalUser() {
+        return localUser;
+    }
+
+    public void setLocalUser(boolean localUser) {
+        this.localUser = localUser;
     }
 }
