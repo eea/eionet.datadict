@@ -138,7 +138,7 @@ public class CodelistServlet extends HttpServlet {
         DDUser user = SecurityUtil.getUser(req);
         if (user == null) throw new Exception("Not logged in!");
 
-        if (!SecurityUtil.hasPerm(user.getUserName(), "/", "xmli"))
+        if (!SecurityUtil.hasPerm(user, "/", "xmli"))
             throw new Exception("Not permitted!");
     }
 

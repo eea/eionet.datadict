@@ -10,7 +10,7 @@
                 <li class="back">
                     <stripes:link href="/administration">Back to administration</stripes:link>
                 </li>
-                <c:if test="${ddfn:userHasPermission(actionBean.user.userName, '/attributes', 'i')}">
+                <c:if test="${ddfn:userHasPermission(actionBean.user, '/attributes', 'i')}">
                     <li class="add">
                         <stripes:link beanclass="eionet.web.action.AttributeActionBean" event="add">
                             Add attribute
@@ -28,9 +28,9 @@
                     This is a list of all definition attributes used in Data Dictionary.
                     Every attribute is uniquely identifed by its short name. Click page help
                     and question marks in column headers to to find out more.
-                    To view<c:if test="${ddfn:userHasPermission(actionBean.user.userName, '/attributes', 'i')}"> or modify</c:if> an attribute's
+                    To view<c:if test="${ddfn:userHasPermission(actionBean.user, '/attributes', 'i')}"> or modify</c:if> an attribute's
                     definition, click its short name.
-                    <c:if test="${ddfn:userHasPermission(actionBean.user.userName, '/attributes', 'i')}">
+                    <c:if test="${ddfn:userHasPermission(actionBean.user, '/attributes', 'i')}">
                         To add a new attribute, click the 'Add' button on top of the list.
                     </c:if>
                 </p>

@@ -85,7 +85,7 @@
                 String[] ds_ids = request.getParameterValues("ds_id");
                 for (int i=0; ds_ids!=null && i<ds_ids.length; i++) {
                     String dsIdf = request.getParameter("ds_idf_" + ds_ids[i]);
-                    if (dsIdf==null || !SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dsIdf, "d")){ %>
+                    if (dsIdf==null || !SecurityUtil.hasPerm(user, "/datasets/" + dsIdf, "d")){ %>
                         <b>Not allowed!</b><%
                     }
                 }
@@ -218,8 +218,8 @@
             
             boolean canDelete = !dataset.isWorkingCopy() && dataset.getWorkingUser()==null && dataset.getStatus()!=null && user!=null;
             if (canDelete) {
-                boolean editPrm = SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "u");
-                boolean editReleasedPrm = SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "er");
+                boolean editPrm = SecurityUtil.hasPerm(user, "/datasets/" + dataset.getIdentifier(), "u");
+                boolean editReleasedPrm = SecurityUtil.hasPerm(user, "/datasets/" + dataset.getIdentifier(), "er");
                 if (dataset.getStatus().equals("Released") || dataset.getStatus().equals("Recorded")) {
                     canDelete = editReleasedPrm;
                 } else {
@@ -238,7 +238,7 @@
         request.setAttribute("datasets", datasetsToTables);
         request.setAttribute("deletableDatasets", deletableDatasets);
         request.setAttribute("user", user);
-        if (user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets", "i")) {
+        if (user!=null && SecurityUtil.hasPerm(user, "/datasets", "i")) {
             request.setAttribute("canAddDataset", "true");
         }
         request.setAttribute("ctx", contextParam);

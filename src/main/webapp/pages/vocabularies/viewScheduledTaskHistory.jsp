@@ -5,7 +5,7 @@
         <h1>View scheduled Task History </h1>
           <div id="drop-operations">
             <ul>
-                <c:if test="${not empty actionBean.user && ddfn:userHasPermission(actionBean.userName, '/vocabularies', 'i')}">
+                <c:if test="${not empty actionBean.user && ddfn:userHasPermission(actionBean.user, '/vocabularies', 'i')}">
                     <li class="back">
                         <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="viewScheduledJobs"> 
                             Back to scheduled jobs

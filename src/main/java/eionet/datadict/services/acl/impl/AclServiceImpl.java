@@ -34,7 +34,7 @@ public class AclServiceImpl implements AclService {
     @Override
     public boolean hasPermission(DDUser user, AclEntity entity, Permission prm) {
         try {
-            return SecurityUtil.hasPerm(this.getUserName(user), entity.getPath(), prm.getValue());
+            return SecurityUtil.hasPerm(user, entity.getPath(), prm.getValue());
         }
         catch (Exception ex) {
             throw new RuntimeException(ex);
@@ -44,7 +44,7 @@ public class AclServiceImpl implements AclService {
     @Override
     public boolean hasPermission(DDUser user, AclEntity entity, String entityId, Permission prm) {
         try {
-            return SecurityUtil.hasPerm(this.getUserName(user), this.getEntityPath(entity, entityId), prm.getValue());
+            return SecurityUtil.hasPerm(user, this.getEntityPath(entity, entityId), prm.getValue());
         }
         catch (Exception ex) {
             throw new RuntimeException(ex);
@@ -87,8 +87,6 @@ public class AclServiceImpl implements AclService {
             groupEntry.setAttribute("userid",username);
             group.appendChild(groupEntry);
             writeResultToFile(document);
-            UserUtils.groupModified = true;
-            GroupsController.groupModified = true;
         } catch (ParserConfigurationException | IOException | SAXException | TransformerException | XPathExpressionException e) {
             throw new XmlMalformedException(e.getMessage());
         }
@@ -110,8 +108,6 @@ public class AclServiceImpl implements AclService {
             }
             removeEmptyLines(document);
             writeResultToFile(document);
-            UserUtils.groupModified = true;
-            GroupsController.groupModified = true;
         } catch (ParserConfigurationException | IOException | SAXException | TransformerException | XPathExpressionException e) {
             throw new XmlMalformedException(e.getMessage());
         }

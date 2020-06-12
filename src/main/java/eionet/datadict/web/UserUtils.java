@@ -15,9 +15,6 @@ import java.util.*;
 
 public class UserUtils {
 
-    private static List<LdapRole> userLdapRolesList;
-    private static ArrayList<String> groupResults;
-    public static volatile boolean groupModified;
     private static Hashtable<String, Vector<String>> ddGroupsAndUsers;
 
     public UserUtils() {
@@ -73,72 +70,40 @@ public class UserUtils {
      * @throws AclLibraryAccessControllerModifiedException
      * @throws AclPropertiesInitializationException
      */
-    public static synchronized ArrayList<String> getUserOrGroup(String userName) throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException, LdapDaoException {
-        if (getGroupResults() == null || (getGroupResults()!=null && getGroupResults().size()==0) || groupModified) {
-            if (getGroupResults() == null) {
-                groupModified = true;
-            }
-            setGroupResults(new ArrayList<>());
-            setGroupsAndUsers();
-            Set<String> ddGroups = getDdGroupsAndUsers().keySet();
-            for (String ddGroup : ddGroups) {
-                Vector<String> ddGroupUsers = getDdGroupsAndUsers().get(ddGroup);
-                if (ddGroupUsers.contains(userName)) {
-                    getGroupResults().add(userName);
-                    return getGroupResults();
-                }
-            }
-            if (getUserLdapRolesList() == null || (getUserLdapRolesList()!=null && getUserLdapRolesList().size()==0)) {
-                List<LdapRole> rolesList = getLdapService().getUserLdapRoles(userName);
-                setUserLdapRolesList(rolesList);
-            }
-            getUserLdapRolesList().forEach(role->getGroupResults().add(role.getName()));
-            return getGroupResults();
-        }
-        return getGroupResults();
-    }
-
-    protected static synchronized void setGroupsAndUsers() throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException {
+    public ArrayList<String> getUserOrGroup(String userName, boolean init) throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException, LdapDaoException {
+        ArrayList<String> userGroupResults = new ArrayList<>();
         Hashtable<String, Vector<String>> results;
-        if (groupModified) {
+        if (init) {
             results = getAclOperationsService().getRefreshedGroupsAndUsersHashTable(true);
-            setDdGroupsAndUsers(results);
-            groupModified = false;
-        } else {
-            results = getAclOperationsService().getRefreshedGroupsAndUsersHashTable(false);
-            setDdGroupsAndUsers(results);
         }
+        results = getAclOperationsService().getRefreshedGroupsAndUsersHashTable(false);
+        setDdGroupsAndUsers(results);
+        Set<String> ddGroups = getDdGroupsAndUsers().keySet();
+        for (String ddGroup : ddGroups) {
+            Vector<String> ddGroupUsers = getDdGroupsAndUsers().get(ddGroup);
+            if (ddGroupUsers.contains(userName)) {
+                userGroupResults.add(userName);
+                return userGroupResults;
+            }
+        }
+        List<LdapRole> rolesList = this.getLdapService().getUserLdapRoles(userName);
+        rolesList.forEach(role -> userGroupResults.add(role.getName()));
+        return userGroupResults;
     }
 
     public static AclOperationsService getAclOperationsService() {
         return SpringApplicationContext.getBean(AclOperationsService.class);
     }
 
-    public static LdapService getLdapService() {
+    public LdapService getLdapService() {
         return SpringApplicationContext.getBean(LdapService.class);
     }
 
-    public static synchronized ArrayList<String> getGroupResults() {
-        return groupResults;
-    }
-
-    public static synchronized void setGroupResults(ArrayList<String> groupResults) {
-        UserUtils.groupResults = groupResults;
-    }
-
-    public static synchronized List<LdapRole> getUserLdapRolesList() {
-        return userLdapRolesList;
-    }
-
-    public static synchronized void setUserLdapRolesList(List<LdapRole> userLdapRolesList) {
-        UserUtils.userLdapRolesList = userLdapRolesList;
-    }
-
-    public static synchronized Hashtable<String, Vector<String>> getDdGroupsAndUsers() {
+    public static Hashtable<String, Vector<String>> getDdGroupsAndUsers() {
         return ddGroupsAndUsers;
     }
 
-    public static synchronized void setDdGroupsAndUsers(Hashtable<String, Vector<String>> ddGroupsAndUsers) {
+    public static void setDdGroupsAndUsers(Hashtable<String, Vector<String>> ddGroupsAndUsers) {
         UserUtils.ddGroupsAndUsers = ddGroupsAndUsers;
     }
 }

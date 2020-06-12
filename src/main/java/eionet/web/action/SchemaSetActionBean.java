@@ -288,7 +288,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
             throw new ServiceException("Operation allowed on your working copy only!");
         }
 
-        schemaService.checkInSchemaSet(schemaSet.getId(), getUserName(), schemaSet.getComment());
+        schemaService.checkInSchemaSet(schemaSet.getId(), getUser(), schemaSet.getComment());
         addSystemMessage("Schema set successfully checked in!");
         return new RedirectResolution(getClass()).addParameter("schemaSet.identifier", schemaSet.getIdentifier()).addParameter(
                 "workingCopy", false);
@@ -345,7 +345,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
             throw new ServiceException("You are not authorized for this operation!");
         }
 
-        schemaService.deleteSchemaSets(Collections.singletonList(schemaSet.getId()), getUserName(), true);
+        schemaService.deleteSchemaSets(Collections.singletonList(schemaSet.getId()), getUser(), true);
         addSystemMessage("Schema set succesfully deleted.");
         return new RedirectResolution(BrowseSchemaSetsActionBean.class);
     }
@@ -363,7 +363,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
             throw new ServiceException("Operation allowed on your working copy only!");
         }
 
-        int checkedOutCopyId = schemaService.undoCheckOutSchemaSet(schemaSet.getId(), getUserName());
+        int checkedOutCopyId = schemaService.undoCheckOutSchemaSet(schemaSet.getId(), getUser());
         addSystemMessage("Working copy successfully deleted!");
         if (checkedOutCopyId > 0) {
             return new RedirectResolution(getClass()).addParameter("schemaSet.identifier", schemaSet.getIdentifier())
@@ -747,10 +747,10 @@ public class SchemaSetActionBean extends AbstractActionBean {
      */
     public boolean isCheckoutAllowed() {
         try {
-            if (SecurityUtil.hasPerm(getUserName(), "/schemasets", "er")) {
+            if (SecurityUtil.hasPerm(getUser(), "/schemasets", "er")) {
                 return true;
             } else {
-                return !schemaSet.isReleased() && SecurityUtil.hasPerm(getUserName(), "/schemasets", "u");
+                return !schemaSet.isReleased() && SecurityUtil.hasPerm(getUser(), "/schemasets", "u");
             }
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
@@ -766,10 +766,10 @@ public class SchemaSetActionBean extends AbstractActionBean {
     public boolean isDeleteAllowed() {
 
         try {
-            if (SecurityUtil.hasPerm(getUserName(), "/schemasets", "er")) {
+            if (SecurityUtil.hasPerm(getUser(), "/schemasets", "er")) {
                 return true;
             } else {
-                return !schemaSet.isReleased() && SecurityUtil.hasPerm(getUserName(), "/schemasets", "d");
+                return !schemaSet.isReleased() && SecurityUtil.hasPerm(getUser(), "/schemasets", "d");
             }
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
@@ -786,7 +786,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
 
         if (getUser() != null) {
             try {
-                return SecurityUtil.hasPerm(getUserName(), "/schemasets", "i");
+                return SecurityUtil.hasPerm(getUser(), "/schemasets", "i");
             } catch (Exception e) {
                 LOGGER.error(e.getMessage(), e);
             }

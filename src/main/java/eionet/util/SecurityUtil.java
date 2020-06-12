@@ -82,6 +82,7 @@ public final class SecurityUtil {
             String casUserName = session == null ? null : (String) session.getAttribute(CASFilter.CAS_FILTER_USER);
             if (casUserName != null) {
                 user = DDCASUser.create(casUserName);
+                setUserGroupResults(user);
                 session.setAttribute(REMOTEUSER, user);
             }
         } else if (user instanceof DDCASUser) {
@@ -93,6 +94,7 @@ public final class SecurityUtil {
             } else if (!casUserName.equals(user.getUserName())) {
                 user.invalidate();
                 user = DDCASUser.create(casUserName);
+                setUserGroupResults(user);
                 session.setAttribute(REMOTEUSER, user);
             }
         }
@@ -101,6 +103,16 @@ public final class SecurityUtil {
             return user.isAuthentic() ? user : null;
         } else {
             return null;
+        }
+    }
+
+    protected static void setUserGroupResults(DDUser user) {
+        try {
+            UserUtils userUtils = new UserUtils();
+            ArrayList<String> results = userUtils.getUserOrGroup(user.getUserName(), false);
+            user.setGroupResults(results);
+        } catch (AclLibraryAccessControllerModifiedException | AclPropertiesInitializationException | LdapDaoException e) {
+            LOGGER.error(e.getMessage(), e);
         }
     }
 
@@ -115,7 +127,7 @@ public final class SecurityUtil {
     public static boolean userHasPerm(HttpServletRequest request, String aclPath, String prm) throws Exception {
         DDUser user = SecurityUtil.getUser(request);
         if (user != null) {
-            return SecurityUtil.hasPerm(user.getUserName(), aclPath, prm);
+            return SecurityUtil.hasPerm(user, aclPath, prm);
         }
         return SecurityUtil.groupHasPerm(null, aclPath, prm);
     }
@@ -123,23 +135,21 @@ public final class SecurityUtil {
     /**
      * Checks if the user has permission for the ACl.
      * NB If user has permission to the parent ACL *and parent ACL is not root ACL* - no children ACL is checked!
-     *
-     * @param usr user name
-     * @param aclPath full acl path
-     * @param prm permission
-     * @return true if user has permission
-     * @throws Exception if check fails
+     * @param user
+     * @param aclPath
+     * @param prm
+     * @return
+     * @throws Exception
      */
-    public static boolean hasPerm(String usr, String aclPath, String prm) throws Exception {
-        try {
-            ArrayList<String> results = UserUtils.getUserOrGroup(usr);
-            for (String result : results) {
-                if (SecurityUtil.groupHasPerm(result, aclPath, prm)) {
-                    return true;
+    public static boolean hasPerm(DDUser user, String aclPath, String prm) throws Exception {
+        if (user!=null && user.isAuthentic()) {
+            if (user.getGroupResults() != null) {
+                for (String result : user.getGroupResults()) {
+                    if (SecurityUtil.groupHasPerm(result, aclPath, prm)) {
+                        return true;
+                    }
                 }
             }
-        } catch (AclLibraryAccessControllerModifiedException | AclPropertiesInitializationException | LdapDaoException e) {
-            LOGGER.error(e.getMessage(), e);
         }
         return false;
     }

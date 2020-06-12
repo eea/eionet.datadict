@@ -273,7 +273,7 @@
         // security for add common element
         if (mode.equals("add") && elmCommon) {
             if (user == null
-                    || !SecurityUtil.hasPerm(user.getUserName(),
+                    || !SecurityUtil.hasPerm(user,
                             "/elements", "i")) {
                 request.setAttribute("DD_ERR_MSG",
                         "You have no permission to create new common element!");
@@ -538,10 +538,10 @@
                             && delem_id.equals(latestID);
 
                     editPrm = user != null
-                            && SecurityUtil.hasPerm(user.getUserName(),
+                            && SecurityUtil.hasPerm(user,
                                     "/elements/" + delemIdf, "u");
                     editReleasedPrm = user != null
-                            && SecurityUtil.hasPerm(user.getUserName(),
+                            && SecurityUtil.hasPerm(user,
                                     "/elements/" + delemIdf, "er");
                     canNewVersion = !dataElement.isWorkingCopy()
                             && elmWorkingUser == null

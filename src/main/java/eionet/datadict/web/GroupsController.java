@@ -1,11 +1,14 @@
 package eionet.datadict.web;
 
+import eionet.datadict.errors.AclLibraryAccessControllerModifiedException;
+import eionet.datadict.errors.AclPropertiesInitializationException;
 import eionet.datadict.errors.UserExistsException;
 import eionet.datadict.errors.XmlMalformedException;
 import eionet.datadict.model.LdapRole;
 import eionet.datadict.services.LdapService;
 import eionet.datadict.services.acl.AclService;
 import eionet.datadict.web.viewmodel.GroupDetails;
+import eionet.meta.DDUser;
 import eionet.meta.dao.LdapDaoException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +18,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.*;
 
 @Controller
@@ -23,12 +27,11 @@ public class GroupsController {
 
     private AclService aclService;
     private LdapService ldapService;
+    /** */
+    public static final String REMOTEUSER = "eionet.util.SecurityUtil.user";
 
     public static final String LDAP_GROUP_NOT_EXIST = "The LDAP group name you entered doesn't exist";
     private static final Logger LOGGER = LoggerFactory.getLogger(GroupsController.class);
-    private static HashMap<String, ArrayList<String>> ldapRolesByUser;
-    private static List<LdapRole> ldapRoles;
-    public static volatile boolean groupModified;
 
     @Autowired
     public GroupsController(AclService aclService, LdapService ldapService) {
@@ -52,11 +55,8 @@ public class GroupsController {
         model.addAttribute("ddGroupsAndUsers", ddGroupsAndUsers);
         GroupDetails groupDetails = new GroupDetails();
         model.addAttribute("groupDetails", groupDetails);
-        if (getLdapRolesByUser() == null || (getLdapRolesByUser()!=null && getLdapRolesByUser().size()==0) || groupModified) {
-            setLdapRolesByUser(getUserLdapRoles(ddGroupsAndUsers, ddGroups));
-            groupModified = false;
-        }
-        model.addAttribute("memberLdapGroups", getLdapRolesByUser());
+        HashMap<String, ArrayList<String>> ldapRolesByUser = getUserLdapRoles(ddGroupsAndUsers, ddGroups);
+        model.addAttribute("memberLdapGroups", ldapRolesByUser);
         return "groupsAndUsers";
     }
 
@@ -89,15 +89,14 @@ public class GroupsController {
 
     protected synchronized List<String> getAllLdapRoles() throws LdapDaoException {
         List<String> ldapRoleNames = new ArrayList<>();
-        if (getLdapRoles() == null || (getLdapRoles()!=null && getLdapRoles().size()==0)) {
-            setLdapRoles(ldapService.getAllLdapRoles());
-        }
-        getLdapRoles().forEach(role->ldapRoleNames.add(role.getName()));
+        List<LdapRole> ldapRoles = ldapService.getAllLdapRoles();
+        ldapRoles.forEach(role->ldapRoleNames.add(role.getName()));
         return ldapRoleNames;
     }
 
     @PostMapping("/addUser")
-    public String addUser(@ModelAttribute("groupDetails") GroupDetails groupDetails, Model model, HttpServletRequest request) throws UserExistsException, XmlMalformedException, LdapDaoException {
+    public String addUser(@ModelAttribute("groupDetails") GroupDetails groupDetails, Model model, HttpServletRequest request)
+            throws UserExistsException, XmlMalformedException, LdapDaoException, AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException {
         if (!UserUtils.hasAuthPermission(request, "/admintools", "u")) {
             model.addAttribute("msgOne", PageErrorConstants.PERMISSION_REQUIRED);
             return "message";
@@ -112,20 +111,34 @@ public class GroupsController {
             }
             aclService.addUserToAclGroup(groupDetails.getLdapGroupName(), groupDetails.getGroupNameOptionTwo());
         }
+        refreshUserGroupResults(request);
         return "redirect:/v2/admintools/list";
     }
 
     @GetMapping("/removeUser")
-    public String removeUser(@RequestParam("ddGroupName") String groupName, @RequestParam("memberName") String userName, Model model, HttpServletRequest request) throws XmlMalformedException {
+    public String removeUser(@RequestParam("ddGroupName") String groupName, @RequestParam("memberName") String userName, Model model, HttpServletRequest request)
+            throws XmlMalformedException, AclPropertiesInitializationException, LdapDaoException, AclLibraryAccessControllerModifiedException {
         if (!UserUtils.hasAuthPermission(request, "/admintools", "d")) {
             model.addAttribute("msgOne", PageErrorConstants.PERMISSION_REQUIRED);
             return "message";
         }
         aclService.removeUserFromAclGroup(userName, groupName);
+        refreshUserGroupResults(request);
         return "redirect:/v2/admintools/list";
     }
 
-    @ExceptionHandler({UserExistsException.class, XmlMalformedException.class})
+    protected void refreshUserGroupResults(HttpServletRequest request) throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException, LdapDaoException {
+        HttpSession session = request.getSession();
+        DDUser user = session == null ? null : (DDUser) session.getAttribute(REMOTEUSER);
+        if (user!=null && user.isAuthentic()) {
+            UserUtils userUtils = new UserUtils();
+            ArrayList<String> results = userUtils.getUserOrGroup(user.getUserName(), true);
+            user.setGroupResults(results);
+            session.setAttribute(REMOTEUSER, user);
+        }
+    }
+
+    @ExceptionHandler({UserExistsException.class, XmlMalformedException.class, AclLibraryAccessControllerModifiedException.class})
     public String handleExceptions(Model model, Exception exception) {
         LOGGER.error(exception.getMessage(), exception);
         model.addAttribute("msgOne", exception.getMessage());
@@ -139,19 +152,11 @@ public class GroupsController {
         return "message";
     }
 
-    public static synchronized HashMap<String, ArrayList<String>> getLdapRolesByUser() {
-        return ldapRolesByUser;
+    @ExceptionHandler(AclPropertiesInitializationException.class)
+    public String handleAclPropertiesException(Model model, Exception exception) {
+        LOGGER.error(exception.getMessage(), exception);
+        model.addAttribute("msgOne", PageErrorConstants.ACL_PROPS_INIT);
+        return "message";
     }
 
-    public static synchronized void setLdapRolesByUser(HashMap<String, ArrayList<String>> ldapRolesByUser) {
-        GroupsController.ldapRolesByUser = ldapRolesByUser;
-    }
-
-    public static synchronized List<LdapRole> getLdapRoles() {
-        return ldapRoles;
-    }
-
-    public static synchronized void setLdapRoles(List<LdapRole> ldapRoles) {
-        GroupsController.ldapRoles = ldapRoles;
-    }
 }

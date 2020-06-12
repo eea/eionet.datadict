@@ -32,7 +32,7 @@
         <div id="drop-operations">
             <ul>
                 <li class="search open"><a class="searchSection" href="#" title="Search schemas">Search</a></li>
-                <c:if test="${ddfn:userHasPermission(actionBean.userName, '/schemas', 'i')}">
+                <c:if test="${ddfn:userHasPermission(actionBean.user, '/schemas', 'i')}">
                     <li class="add"><stripes:link beanclass="eionet.web.action.SchemaActionBean" event="add">Add root-level schema</stripes:link></li>
                 </c:if>
                 <li class="search"><a href="${pageContext.request.contextPath}/schemasets/search/">Search schema sets</a></li>

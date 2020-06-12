@@ -111,13 +111,13 @@
             <ul>
                 <li class="search"><stripes:link id="searchLnk" href="#">Search vocabularies</stripes:link></li>
                 <li class="search"><stripes:link id="searchConceptLnk" href="#">Search concepts</stripes:link></li>
-                <c:if test="${not empty actionBean.user && ddfn:userHasPermission(actionBean.userName, '/vocabularies', 'i')}">
+                <c:if test="${not empty actionBean.user && ddfn:userHasPermission(actionBean.user, '/vocabularies', 'i')}">
                     <li class="add"><stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="add">Add vocabulary</stripes:link></li>
                 </c:if>
-                <c:if test="${not empty actionBean.user && ddfn:userHasPermission(actionBean.userName, '/vocabularies', 'i')}">
+                <c:if test="${not empty actionBean.user && ddfn:userHasPermission(actionBean.user, '/vocabularies', 'i')}">
                     <li class="maintain"><stripes:link id="maintainLnk"  href="#">Maintain vocabularies</stripes:link></li>
                 </c:if>
-                <c:if test="${not empty actionBean.user && ddfn:userHasPermission(actionBean.userName, '/vocabularies', 'i')}">
+                <c:if test="${not empty actionBean.user && ddfn:userHasPermission(actionBean.user, '/vocabularies', 'i')}">
                    <li class="maintain">
                         <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="viewScheduledJobs"> 
                             View scheduled jobs
@@ -142,7 +142,7 @@
                         <span class="description">(<c:out value="${folder.label}"/>)</span>
 
 
-                    <c:if test="${folder.expanded && not empty actionBean.user && ddfn:userHasPermission(actionBean.userName, '/vocabularies', 'u')}">
+                    <c:if test="${folder.expanded && not empty actionBean.user && ddfn:userHasPermission(actionBean.user, '/vocabularies', 'u')}">
                         <a href="#" data-divid="editFolderDiv${folder.id}" class="openFolderLink" title="Edit folder">
                             <img style="border:0" src="${editIcon}" alt="Edit folder" />
                         </a>
@@ -159,7 +159,7 @@
                         <ul class="menu">
                             <c:forEach var="item" items="${folder.items}" varStatus="itemLoop">
                                 <li${item.workingCopy || not empty item.workingUser ? ' class="disabled"' : ''}>
-                                    <c:if test="${not empty actionBean.user  && ddfn:userHasPermission(actionBean.userName, '/vocabularies', 'd')}">
+                                    <c:if test="${not empty actionBean.user  && ddfn:userHasPermission(actionBean.user, '/vocabularies', 'd')}">
                                         <stripes:checkbox class="selectable" name="folderIds" value="${item.id}" disabled="${item.workingCopy || not empty item.workingUser}" />
                                     </c:if>
                                     <c:choose>
@@ -203,7 +203,7 @@
                  </c:forEach>
             </ul>
             <stripes:hidden id="txtKeepRelations" name="keepRelationsOnDelete" value="false"></stripes:hidden>
-            <c:if test="${not empty actionBean.user && actionBean.visibleEditableVocabularies && ddfn:userHasPermission(actionBean.userName, '/vocabularies', 'd')}">
+            <c:if test="${not empty actionBean.user && actionBean.visibleEditableVocabularies && ddfn:userHasPermission(actionBean.user, '/vocabularies', 'd')}">
                 <stripes:button id="deleteBtn" name="delete" value="Delete" />
                 <input type="button" id="toggleSelectAll" value="Select all" name="selectAll" />
             </c:if>
@@ -212,7 +212,7 @@
 
         <%-- Editable folder popups --%>
         <c:forEach var="item" items="${actionBean.folders}" varStatus="loop">
-          <c:if test="${item.expanded && not empty actionBean.user  && ddfn:userHasPermission(actionBean.userName, '/vocabularies', 'u')}">
+          <c:if test="${item.expanded && not empty actionBean.user  && ddfn:userHasPermission(actionBean.user, '/vocabularies', 'u')}">
             <div id="editFolderDiv${item.id}" title="Edit folder" class="editFolderDiv">
                 <stripes:form id="form${item.id}" method="post" beanclass="${actionBean['class'].name}">
 

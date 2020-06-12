@@ -730,7 +730,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
         if (getUser() != null) {
             try {
-                return SecurityUtil.hasPerm(getUserName(), "/sitecodes", "i");
+                return SecurityUtil.hasPerm(getUser(), "/sitecodes", "i");
             } catch (Exception e) {
                 LOGGER.error(e.getMessage(), e);
             }

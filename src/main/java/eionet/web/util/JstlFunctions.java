@@ -20,27 +20,18 @@
  */
 package eionet.web.util;
 
-import eionet.datadict.errors.AclLibraryAccessControllerModifiedException;
-import eionet.datadict.errors.AclPropertiesInitializationException;
-import eionet.datadict.web.UserUtils;
-import eionet.meta.DDUser;
-import eionet.meta.dao.LdapDaoException;
 import eionet.util.Props;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-
-import org.apache.commons.lang.StringUtils;
-
 import eionet.util.SecurityUtil;
 import eionet.util.Util;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.List;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * JSTL functions to be used in JSP.
@@ -71,7 +62,7 @@ public final class JstlFunctions {
      * @return
      * @throws Exception
      */
-    public static boolean userHasPermission(java.lang.String usr, java.lang.String aclPath, java.lang.String prm) throws Exception {
+    public static boolean userHasPermission(eionet.meta.DDUser usr, java.lang.String aclPath, java.lang.String prm) throws Exception {
         return SecurityUtil.hasPerm(usr, aclPath, prm);
     }
 
