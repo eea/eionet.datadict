@@ -22,7 +22,7 @@
         <div id="drop-operations">
             <ul>
                 <li class="search open"><a class="searchSection" href="#" title="Search schema sets">Search</a></li>
-                <c:if test="${ddfn:userHasPermission(actionBean.userName, '/schemasets', 'i')}">
+                <c:if test="${ddfn:userHasPermission(actionBean.user, '/schemasets', 'i')}">
                     <li class="add">
                         <stripes:link beanclass="eionet.web.action.SchemaSetActionBean" event="add">Add schema set</stripes:link>
                     </li>

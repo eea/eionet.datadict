@@ -154,7 +154,7 @@ public class DocUpload extends HttpServlet {
             throw new Exception("Missing " + REQPAR_IDF + " request parameter!");
         }
 
-        if (!SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + idf, "u")) {
+        if (!SecurityUtil.hasPerm(user, "/datasets/" + idf, "u")) {
             throw new Exception("Not permitted!");
         }
     }

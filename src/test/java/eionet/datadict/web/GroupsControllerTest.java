@@ -1,5 +1,7 @@
 package eionet.datadict.web;
 
+import eionet.datadict.errors.AclLibraryAccessControllerModifiedException;
+import eionet.datadict.errors.AclPropertiesInitializationException;
 import eionet.datadict.model.LdapRole;
 import eionet.datadict.services.LdapService;
 import eionet.datadict.services.acl.AclService;
@@ -8,19 +10,19 @@ import eionet.meta.DDUser;
 import eionet.meta.dao.LdapDaoException;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.*;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 
 import static eionet.util.SecurityUtil.REMOTEUSER;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -37,6 +39,7 @@ public class GroupsControllerTest {
     @Mock
     private LdapService ldapService;
 
+    @Spy
     @InjectMocks
     private GroupsController groupsController;
 
@@ -52,10 +55,10 @@ public class GroupsControllerTest {
     private static final String TEST_ROLE = "testRole";
 
     @Before
-    public void setUp() throws LdapDaoException {
+    public void setUp() throws LdapDaoException, AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException {
         MockitoAnnotations.initMocks(this);
-        this.groupsController = new GroupsController(aclService, ldapService);
         user = mock(DDUser.class);
+        when(user.getUserName()).thenReturn(TEST_USER);
         setSession();
         setLdapRoles();
         setGroupsAndUsers();
@@ -66,6 +69,7 @@ public class GroupsControllerTest {
         when(ldapService.getAllLdapRoles()).thenReturn(ldapRoles);
         when(user.isAuthentic()).thenReturn(true);
         when(user.hasPermission(anyString(), anyString())).thenReturn(true);
+        Mockito.doNothing().when(groupsController).refreshUserGroupResults(any(HttpServletRequest.class));
         mockMvc = MockMvcBuilders.standaloneSetup(groupsController).build();
     }
 

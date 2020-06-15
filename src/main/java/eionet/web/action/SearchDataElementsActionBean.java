@@ -182,7 +182,7 @@ public class SearchDataElementsActionBean extends AbstractActionBean {
      */
     public boolean isPermissionToAdd() {
         try {
-            return getUser() != null && SecurityUtil.hasPerm(getUser().getUserName(), "/elements", "i");
+            return getUser() != null && SecurityUtil.hasPerm(getUser(), "/elements", "i");
         } catch (Exception e) {
             LOGGER.error("Failed to get user permission: " + e.getMessage(), e);
             return false;

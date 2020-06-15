@@ -24,11 +24,7 @@
 package eionet.meta;
 
 import eionet.acl.*;
-import eionet.datadict.errors.AclLibraryAccessControllerModifiedException;
-import eionet.datadict.errors.AclPropertiesInitializationException;
-import eionet.datadict.web.UserUtils;
 import eionet.directory.DirectoryService;
-import eionet.meta.dao.LdapDaoException;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.SecurityUtil;
@@ -71,6 +67,7 @@ public class DDUser {
     protected String fullName = null;
     protected String[] roles = null;
     protected HashMap acls = null;
+    protected ArrayList<String> groupResults = null;
 
     /**
      *
@@ -205,6 +202,7 @@ public class DDUser {
         authented = false;
         username = null;
         password = null;
+        groupResults = null;
     }
 
     /**
@@ -308,16 +306,21 @@ public class DDUser {
      * @return
      */
     public boolean hasPermission(String aclPath, String permission) {
-        try {
-            ArrayList<String> results = UserUtils.getUserOrGroup(username);
-            for (String result : results) {
+        if (groupResults != null) {
+            for (String result : groupResults) {
                 if (DDUser.hasPermission(result, aclPath, permission)) {
                     return true;
                 }
             }
-        } catch (AclLibraryAccessControllerModifiedException | AclPropertiesInitializationException | LdapDaoException e) {
-            LOGGER.error(e.getMessage(), e);
         }
         return false;
+    }
+
+    public ArrayList<String> getGroupResults() {
+        return groupResults;
+    }
+
+    public void setGroupResults(ArrayList<String> groupResults) {
+        this.groupResults = groupResults;
     }
 }

@@ -780,11 +780,11 @@ public class DataElementHandler extends BaseHandler {
             } else if (useForce == false) {
                 boolean canDelete = false;
                 if (regStatus.equals("Released") || regStatus.equals("Recorded")) {
-                    canDelete = SecurityUtil.hasPerm(user.getUserName(), "/elements/" + identifier, "er");
+                    canDelete = SecurityUtil.hasPerm(user, "/elements/" + identifier, "er");
                 } else {
                     canDelete =
-                            SecurityUtil.hasPerm(user.getUserName(), "/elements/" + identifier, "u")
-                                    || SecurityUtil.hasPerm(user.getUserName(), "/elements/" + identifier, "er");
+                            SecurityUtil.hasPerm(user, "/elements/" + identifier, "u")
+                                    || SecurityUtil.hasPerm(user, "/elements/" + identifier, "er");
                 }
                 if (!canDelete) {
                     throw new Exception("You have no permission to delete this element: " + rs.getString("DATAELEM_ID"));

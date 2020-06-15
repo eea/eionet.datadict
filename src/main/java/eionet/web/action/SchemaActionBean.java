@@ -415,7 +415,7 @@ public class SchemaActionBean extends AbstractActionBean {
     @ValidationMethod(on = {"add"})
     public void validateAdd() throws Exception {
 
-        if (!SecurityUtil.hasPerm(getUserName(), "/schemas", "i")) {
+        if (!SecurityUtil.hasPerm(getUser(), "/schemas", "i")) {
             throw new ServiceException("No permission to create root-level schemas!");
         }
 
@@ -949,10 +949,10 @@ public class SchemaActionBean extends AbstractActionBean {
         }
 
         try {
-            if (SecurityUtil.hasPerm(getUserName(), "/schemas", "er")) {
+            if (SecurityUtil.hasPerm(getUser(), "/schemas", "er")) {
                 return true;
             } else {
-                return !schema.isReleased() && SecurityUtil.hasPerm(getUserName(), "/schemas", "u");
+                return !schema.isReleased() && SecurityUtil.hasPerm(getUser(), "/schemas", "u");
             }
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
@@ -969,7 +969,7 @@ public class SchemaActionBean extends AbstractActionBean {
 
         if (getUser() != null) {
             try {
-                return SecurityUtil.hasPerm(getUserName(), "/schemas", "i");
+                return SecurityUtil.hasPerm(getUser(), "/schemas", "i");
             } catch (Exception e) {
                 LOGGER.error(e.getMessage(), e);
             }

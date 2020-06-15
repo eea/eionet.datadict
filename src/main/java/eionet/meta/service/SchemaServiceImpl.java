@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import eionet.meta.DDUser;
 import net.sourceforge.stripes.action.FileBean;
 
 import org.apache.commons.lang.StringUtils;
@@ -122,27 +123,27 @@ public class SchemaServiceImpl implements ISchemaService {
 
     @Override
     @Transactional(rollbackFor = ServiceException.class)
-    public void deleteSchemaSets(List<Integer> ids, String userName, boolean includingContents) throws ServiceException {
-        doDeleteSchemaSets(ids, userName, includingContents);
+    public void deleteSchemaSets(List<Integer> ids, DDUser user, boolean includingContents) throws ServiceException {
+        doDeleteSchemaSets(ids, user, includingContents);
     }
 
     /**
      * @param schemaSetIds
-     * @param username
+     * @param user
      * @param includingContents
      * @throws ServiceException
      */
-    private void doDeleteSchemaSets(List<Integer> schemaSetIds, String username, boolean includingContents)
+    private void doDeleteSchemaSets(List<Integer> schemaSetIds, DDUser user, boolean includingContents)
             throws ServiceException {
         try {
             // Validate permissions
-            boolean deletePerm = username != null && SecurityUtil.hasPerm(username, "/schemasets", "d");
+            boolean deletePerm = user != null && SecurityUtil.hasPerm(user, "/schemasets", "d");
             if (!deletePerm) {
                 throw new ValidationException("No delete permission!");
             }
-            boolean deleteReleasedPerm = username != null && SecurityUtil.hasPerm(username, "/schemasets", "er");
+            boolean deleteReleasedPerm = user != null && SecurityUtil.hasPerm(user, "/schemasets", "er");
             List<SchemaSet> schemaSets = schemaSetDAO.getSchemaSets(schemaSetIds);
-            ensureDeleteAllowed(username, deleteReleasedPerm, schemaSets);
+            ensureDeleteAllowed(user, deleteReleasedPerm, schemaSets);
 
             // Delete schemas
             List<Integer> schemaIds = schemaDAO.getSchemaIds(schemaSetIds);
@@ -166,17 +167,17 @@ public class SchemaServiceImpl implements ISchemaService {
     }
 
     /**
-     * @param username
+     * @param user
      * @param deleteReleasedPerm
      * @param schemaSets
      * @throws ValidationException
      */
-    private void ensureDeleteAllowed(String username, boolean deleteReleasedPerm, List<SchemaSet> schemaSets)
+    private void ensureDeleteAllowed(DDUser user, boolean deleteReleasedPerm, List<SchemaSet> schemaSets)
             throws ValidationException {
         for (SchemaSet schemaSet : schemaSets) {
             if (schemaSet.isCheckedOut()) {
                 throw new ValidationException("Cannot delete a checked-out schema set: " + schemaSet.getIdentifier());
-            } else if (schemaSet.isWorkingCopy() && !StringUtils.equals(username, schemaSet.getWorkingUser())) {
+            } else if (schemaSet.isWorkingCopy() && !StringUtils.equals(user.getUserName(), schemaSet.getWorkingUser())) {
                 throw new ValidationException("Cannot delete another user's working copy: " + schemaSet.getIdentifier());
             } else if (schemaSet.getRegStatus().equals(RegStatus.RELEASED)) {
                 if (!deleteReleasedPerm) {
@@ -291,14 +292,14 @@ public class SchemaServiceImpl implements ISchemaService {
 
     @Override
     @Transactional(rollbackFor = ServiceException.class)
-    public int checkInSchemaSet(int schemaSetId, String username, String comment) throws ServiceException {
+    public int checkInSchemaSet(int schemaSetId, DDUser user, String comment) throws ServiceException {
 
-        if (StringUtils.isBlank(username)) {
+        if (StringUtils.isBlank(user.getUserName())) {
             throw new IllegalArgumentException("User name must not be blank.");
         }
 
         try {
-            LOGGER.info(String.format("Checking in schema set #%d for user %s with comment: %s.", schemaSetId, username, comment));
+            LOGGER.info(String.format("Checking in schema set #%d for user %s with comment: %s.", schemaSetId, user.getUserName(), comment));
             // Load schema set to check in.
             SchemaSet schemaSet = schemaSetDAO.getSchemaSet(schemaSetId);
 
@@ -308,7 +309,7 @@ public class SchemaServiceImpl implements ISchemaService {
             }
 
             // Ensure that the check-in user is the working user.
-            if (!StringUtils.equals(username, schemaSet.getWorkingUser())) {
+            if (!StringUtils.equals(user.getUserName(), schemaSet.getWorkingUser())) {
                 throw new ServiceException("Check-in user is not the current working user.");
             }
 
@@ -324,7 +325,7 @@ public class SchemaServiceImpl implements ISchemaService {
 
                     // Delete the checked-out copy, unlock it first.
                     schemaSetDAO.setWorkingUser(checkedOutCopyId, null);
-                    deleteSchemaSets(Collections.singletonList(checkedOutCopyId), username, false);
+                    deleteSchemaSets(Collections.singletonList(checkedOutCopyId), user, false);
 
                     // Schemas of the new schema set must get the ids of the schemas that were in the checked-out copy.
                     for (Map.Entry<Integer, Integer> entry : schemaMappings.entrySet()) {
@@ -343,12 +344,12 @@ public class SchemaServiceImpl implements ISchemaService {
             LOGGER.info(String.format("Schema set #%d will have new id #%d.", schemaSetId, checkedOutCopyId));
             // Update the checked-in schema set.
             int finalId = isOverwrite ? checkedOutCopyId : schemaSetId;
-            schemaSetDAO.checkIn(finalId, username, comment);
+            schemaSetDAO.checkIn(finalId, user.getUserName(), comment);
 
             // Finally, do necessary check-in actions in the repository too.
             List<String> schemasInDatabase = schemaSetDAO.getSchemaFileNames(schemaSet.getIdentifier());
             schemaRepository.checkInSchemaSet(schemaSet.getIdentifier(), schemasInDatabase);
-            LOGGER.info(String.format("Schema set #%d has been checked in by user %s successfully.", schemaSetId, username));
+            LOGGER.info(String.format("Schema set #%d has been checked in by user %s successfully.", schemaSetId, user.getUserName()));
             return finalId;
         } catch (Exception e) {
             throw new ServiceException("Schema set check-in failed: " + e.getMessage(), e);
@@ -515,18 +516,18 @@ public class SchemaServiceImpl implements ISchemaService {
 
     @Override
     @Transactional(rollbackFor = ServiceException.class)
-    public int undoCheckOutSchemaSet(int schemaSetId, String username) throws ServiceException {
+    public int undoCheckOutSchemaSet(int schemaSetId, DDUser user) throws ServiceException {
 
         try {
-            LOGGER.info(String.format("Undoing check out schema set #%d for user %s.", schemaSetId, username));
+            LOGGER.info(String.format("Undoing check out schema set #%d for user %s.", schemaSetId, user.getUserName()));
             int result = 0;
             SchemaSet schemaSet = schemaSetDAO.getSchemaSet(schemaSetId);
             if (schemaSet != null) {
 
-                if (!schemaSet.isWorkingCopyOf(username)) {
+                if (!schemaSet.isWorkingCopyOf(user.getUserName())) {
                     throw new ServiceException("Undo checkout can only be performed on your working copy!");
                 }
-                doDeleteSchemaSets(Collections.singletonList(schemaSetId), username, false);
+                doDeleteSchemaSets(Collections.singletonList(schemaSetId), user, false);
                 int checkedOutCopyId = schemaSet.getCheckedOutCopyId();
                 if (checkedOutCopyId > 0) {
                     schemaSetDAO.setWorkingUser(checkedOutCopyId, null);
@@ -537,7 +538,7 @@ public class SchemaServiceImpl implements ISchemaService {
             // Finally, do the necessary undo-checkout actions in repository too.
             List<String> schemasInDatabase = schemaSetDAO.getSchemaFileNames(schemaSet.getIdentifier());
             schemaRepository.undoCheckOutSchemaSet(schemaSet.getIdentifier(), schemasInDatabase);
-            LOGGER.info(String.format("Undoing checking out for schema set #%d by user %s has been completed successfully.", schemaSetId, username));
+            LOGGER.info(String.format("Undoing checking out for schema set #%d by user %s has been completed successfully.", schemaSetId, user.getUserName()));
             return result;
         } catch (Exception e) {
             throw new ServiceException("Failed to undo check-out of schema set: " + e.getMessage(), e);
