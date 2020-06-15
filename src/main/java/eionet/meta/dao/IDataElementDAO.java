@@ -103,7 +103,7 @@ public interface IDataElementDAO {
      *            common element identifier
      * @return ID in DATAELEM table
      */
-    int getCommonDataElementId(String identifier);
+    Integer getCommonDataElementId(String identifier);
 
     /**
      * Returns the parent dataset of the non-common element with the given id.
@@ -461,5 +461,7 @@ public interface IDataElementDAO {
     int[][] batchCreateVocabularyBoundElements(List<Pair<Integer, Integer>> vocabularyIdToDataElementId, int batchSize);
 
     int[][] batchCreateInverseRelations(List<Triple<Integer, Integer, Integer>> relatedReferenceElements, int batchSize);
+
+    Map<String, Integer> getMultipleCommonDataElementIds(List<String> identifiers);
 
 }

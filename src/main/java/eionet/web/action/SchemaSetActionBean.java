@@ -410,6 +410,13 @@ public class SchemaSetActionBean extends AbstractActionBean {
      */
     public Resolution uploadSchema() throws ServiceException, IOException {
 
+        if (!isUserLoggedIn()) {
+            throw new ServiceException("Only authenticated users can upload a schema.");
+        }
+
+        if (isUserLoggedIn() && schemaSet.isCheckedOutBy(getUserName())) {
+            throw new ServiceException("Only owner of the cheked out schema set can upload a schema file.");
+        }
         File schemaFile = null;
         try {
             schemaFile = schemaRepository.addSchema(uploadedFile, schemaSet.getIdentifier(), true);
@@ -444,6 +451,14 @@ public class SchemaSetActionBean extends AbstractActionBean {
      */
     public Resolution uploadOtherDocument() throws ServiceException, IOException {
 
+        if (!isUserLoggedIn()) {
+            throw new ServiceException("Only authenticated users can upload a Schema file.");
+        }
+
+        if (isUserLoggedIn() && schemaSet.isCheckedOutBy(getUserName())) {
+            throw new ServiceException("Only owner of the cheked out schema set can upload a schema file.");
+        }
+
         File schemaFile = null;
         try {
             schemaFile = schemaRepository.addSchema(uploadedFile, schemaSet.getIdentifier(), true);
@@ -454,7 +469,7 @@ public class SchemaSetActionBean extends AbstractActionBean {
             schema.setSchemaSetId(schemaSet.getId());
             schema.setOtherDocument(true);
             schemaService.addSchema(schema, getSaveAttributeValues());
-        } catch (ServiceException e) {
+         } catch (ServiceException e) {
             SchemaRepository.deleteQuietly(schemaFile);
             throw e;
         } catch (RuntimeException e) {

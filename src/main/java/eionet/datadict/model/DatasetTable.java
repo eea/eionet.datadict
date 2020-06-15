@@ -22,7 +22,7 @@ public class DatasetTable implements AttributeOwner {
     private Boolean workingCopy;
     private String workingUser;
     private Integer version;
-    private Integer date;
+    private Long date;
     private String user;
     private Namespace correspondingNS;
     private Namespace parentNamespace;
@@ -102,11 +102,11 @@ public class DatasetTable implements AttributeOwner {
         this.version = version;
     }
 
-    public Integer getDate() {
+    public Long getDate() {
         return date;
     }
 
-    public void setDate(Integer date) {
+    public void setDate(Long date) {
         this.date = date;
     }
 

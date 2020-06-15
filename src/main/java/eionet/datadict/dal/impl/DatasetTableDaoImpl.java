@@ -95,7 +95,7 @@ public class DatasetTableDaoImpl extends JdbcDaoBase implements DatasetTableDao 
             datasetTable.setWorkingCopy(new BooleanToMysqlEnumYesNoConverter(Boolean.FALSE).convertBack(rs.getString("DS_TABLE.WORKING_COPY")));           
             datasetTable.setWorkingUser(rs.getString("DS_TABLE.WORKING_USER"));
             datasetTable.setVersion(rs.getInt("DS_TABLE.VERSION"));
-            datasetTable.setDate(rs.getInt("DS_TABLE.DATE"));
+            datasetTable.setDate(rs.getLong("DS_TABLE.DATE"));
             datasetTable.setUser(rs.getString("DS_TABLE.USER"));
             datasetTable.setIdentifier(rs.getString("DS_TABLE.IDENTIFIER"));
             
