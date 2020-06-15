@@ -614,7 +614,7 @@
         <dependency>
             <groupId>commons-collections</groupId>
             <artifactId>commons-collections</artifactId>
-            <version>3.2</version>
+            <version>3.2.2</version>
         </dependency>
         <!-- commons-dbcp: used in spring-context as datasource bean -->
         <dependency>
