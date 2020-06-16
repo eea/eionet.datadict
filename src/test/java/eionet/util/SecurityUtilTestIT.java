@@ -1,6 +1,7 @@
 package eionet.util;
 
 import eionet.meta.DDUser;
+import eionet.meta.FakeUser;
 import org.easymock.EasyMock;
 import org.junit.Before;
 import org.junit.Test;
@@ -87,12 +88,13 @@ public class SecurityUtilTestIT   {
 
     @Test
     public void testUserPermission() throws Exception {
+        DDUser user = new FakeUser();
+        user.authenticate("heinlja", "heinlja");
         String aclPath = "/testacl";
 
-        assertTrue("heinlja should have '78' permission.", SecurityUtil.hasPerm(user1, aclPath, "i"));
-
-        assertTrue("heinlja should have 'er' permission.",!SecurityUtil.hasPerm(user1, aclPath, "er"));
-        assertTrue("heinlja should NOT have 'u' permission as overriden by entry ACL.", !SecurityUtil.hasPerm(user1, aclPath, "u"));
+        assertTrue("heinlja should have '78' permission.", SecurityUtil.hasPerm(user, aclPath, "i"));
+        assertTrue("heinlja should have 'er' permission.",!SecurityUtil.hasPerm(user, aclPath, "er"));
+        assertTrue("heinlja should NOT have 'u' permission as overriden by entry ACL.", !SecurityUtil.hasPerm(user, aclPath, "u"));
 
     }
 
@@ -102,7 +104,6 @@ public class SecurityUtilTestIT   {
         String aclPath1 = "/testacl/first";
         String aclPath2 = "/testacl/second";
         String aclPath3 = "/testacl/third";
-
         //anonymous has 'amsa' in /testacl/first, in /testacl/amsa - authenticated
         assertTrue("anonymous should have 'amsa' in first", SecurityUtil.hasPerm(null, aclPath1, "amsa"));
         assertTrue("anonymous should not have 'amsa' in second ", !SecurityUtil.hasPerm(null, aclPath2, "amsa"));
