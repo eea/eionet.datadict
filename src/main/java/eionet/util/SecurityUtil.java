@@ -149,6 +149,8 @@ public final class SecurityUtil {
                         return true;
                     }
                 }
+            } else {
+                return SecurityUtil.groupHasPerm(user.getUserName(),aclPath,prm);
             }
         }
         return false;
