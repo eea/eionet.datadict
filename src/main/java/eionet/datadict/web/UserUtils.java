@@ -83,7 +83,6 @@ public class UserUtils {
             Vector<String> ddGroupUsers = getDdGroupsAndUsers().get(ddGroup);
             if (ddGroupUsers.contains(userName)) {
                 userGroupResults.add(userName);
-                return userGroupResults;
             }
         }
         List<LdapRole> rolesList = this.getLdapService().getUserLdapRoles(userName);

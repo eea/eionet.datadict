@@ -312,8 +312,10 @@ public class DDUser {
                     return true;
                 }
             }
+            return false;
+        } else {
+            return DDUser.hasPermission(username, aclPath, permission);
         }
-        return false;
     }
 
     public ArrayList<String> getGroupResults() {
