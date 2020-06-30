@@ -9,9 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
-import javax.naming.directory.DirContext;
-import javax.naming.directory.SearchControls;
-import javax.naming.directory.SearchResult;
+import javax.naming.directory.*;
 import javax.naming.ldap.Control;
 import javax.naming.ldap.LdapContext;
 import javax.naming.ldap.PagedResultsControl;
@@ -103,6 +101,37 @@ public class LdapRoleDaoImpl extends BaseLdapDao implements LdapRoleDao {
             } while (cookie != null);
         } catch (IOException | NamingException e) {
             throw new LdapDaoException("Error: " + e);
+        } finally {
+            closeContext(ctx);
+        }
+        return result;
+    }
+
+    @Override
+    public List<String> findRoleUsers(String roleName) throws LdapDaoException {
+        List<String> result = new ArrayList<>();
+        DirContext ctx = null;
+        try {
+            ctx = getDirContext();
+            String myFilter = "(&(objectClass=groupOfUniqueNames)(" + roleName + "))";
+            SearchControls sc = new SearchControls();
+            sc.setSearchScope(SearchControls.SUBTREE_SCOPE);
+            NamingEnumeration results = ctx.search(rolesDn, myFilter, sc);
+            while (results != null && results.hasMore()) {
+                SearchResult sr = (SearchResult) results.next();
+                Attributes attrs = sr.getAttributes();
+                Attribute usersAttr = attrs.get("uniquemember");
+                if (usersAttr != null && usersAttr.get() != null){
+                    for (int i=0; i<usersAttr.size(); i++) {
+                        String user = (String) usersAttr.get(i);
+                        int pos = user.indexOf("ou=");
+                        String userName = user.substring(4, pos-1);
+                        result.add(userName);
+                    }
+                }
+            }
+        } catch (NamingException e) {
+            throw new LdapDaoException(e);
         } finally {
             closeContext(ctx);
         }

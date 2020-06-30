@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri = "http://java.sun.com/jsp/jstl/functions" prefix = "fn" %>
 <%@ include file="/pages/common/taglibs.jsp"%>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
@@ -15,6 +16,7 @@
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+    <script src="../../groupsAndUsersTable.js" type="text/javascript"></script>
     <script>
         $(function() {
             $("#ch" ).autocomplete({
@@ -47,42 +49,35 @@
     <c:set var="currentSection" value="groups" />
     <%@ include file="/pages/common/navigation.jsp" %>
     <div id="workarea">
-        <table id="tab" class="table border">
+        <table id="groupsAndUsers" class="table border">
             <thead>
             <tr>
-                <th>Member</th>
-                <th>LDAP_Group</th>
-                <th>DD_Group</th>
+                <th>User/Ldap group</th>
+                <th>DD Group</th>
                 <th>Action</th>
             </tr>
             </thead>
-            <tbody id="myTable">
+            <tbody>
             <c:forEach var="ddGroup" items="${ddGroups}" varStatus="loop">
                 <c:forEach var="member" items="${ddGroupsAndUsers.get(ddGroup)}">
                     <c:url var="removeUser" value="/v2/admintools/removeUser">
                         <c:param name="ddGroupName" value="${ddGroup}" />
                         <c:param name="memberName" value="${member}" />
                     </c:url>
-                    <c:choose>
-                        <c:when test="${not empty memberLdapGroups.get(member)}">
-                            <c:forEach var="memberLdapGroup" items="${memberLdapGroups.get(member)}">
-                                <tr>
-                                    <td>${member}</td>
-                                    <td>${memberLdapGroup}</td>
-                                    <td>${ddGroup}</td>
-                                    <td style="cursor: pointer;"><a href="${removeUser}">Remove</a></td>
-                                </tr>
-                            </c:forEach>
-                        </c:when>
-                        <c:otherwise>
-                            <tr>
+                    <tr>
+                        <c:choose>
+                            <c:when test='${fn:startsWith(member, "cn=")}'>
                                 <td>${member}</td>
-                                <td>-</td>
                                 <td>${ddGroup}</td>
-                                <td style="cursor: pointer;"><a href="${removeUser}">Remove</a></td>
-                            </tr>
-                        </c:otherwise>
-                    </c:choose>
+                                <td style="cursor: pointer;"><a class="text-info" style="text-decoration: underline" href="${removeUser}">Remove</a> / <span class="details-control text-info" style="text-decoration: underline">Show users</span></td>
+                            </c:when>
+                            <c:otherwise>
+                                <td>${member}</td>
+                                <td>${ddGroup}</td>
+                                <td style="cursor: pointer;"><a class="text-info" style="text-decoration: underline" href="${removeUser}">Remove</a></td>
+                            </c:otherwise>
+                        </c:choose>
+                    </tr>
                 </c:forEach>
             </c:forEach>
             </tbody>
@@ -103,12 +98,7 @@
 </div> <!-- container -->
 <%@ include file="../../footer.jsp" %>
 <script>
-    $(document).ready( function () {
-        $('#tab').DataTable({
-            "order": [[2, "asc"]]
-        });
-        $('.dataTables_length').addClass('bs-select');
-    });
+
 </script>
 </body>
 </html>

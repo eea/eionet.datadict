@@ -33,4 +33,9 @@ public class LdapServiceImpl implements LdapService {
         ldapRoles = ldapRoleDao.findAllRoles();
         return ldapRoles;
     }
+
+    @Override
+    public List<String> getRoleUsers(String roleName) throws LdapDaoException {
+        return ldapRoleDao.findRoleUsers(roleName);
+    }
 }

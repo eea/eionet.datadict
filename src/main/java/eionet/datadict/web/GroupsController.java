@@ -55,23 +55,7 @@ public class GroupsController {
         model.addAttribute("ddGroupsAndUsers", ddGroupsAndUsers);
         GroupDetails groupDetails = new GroupDetails();
         model.addAttribute("groupDetails", groupDetails);
-        HashMap<String, ArrayList<String>> ldapRolesByUser = getUserLdapRoles(ddGroupsAndUsers, ddGroups);
-        model.addAttribute("memberLdapGroups", ldapRolesByUser);
         return "groupsAndUsers";
-    }
-
-    protected synchronized HashMap<String, ArrayList<String>> getUserLdapRoles(Hashtable<String, Vector<String>> ddGroupsAndUsers, Set<String> ddGroups) throws LdapDaoException {
-        HashMap<String, ArrayList<String>> rolesByUser = new HashMap<>();
-        for (String ddGroup : ddGroups) {
-            Vector<String> ddGroupUsers = ddGroupsAndUsers.get(ddGroup);
-            for (String user : ddGroupUsers) {
-                ArrayList<String> ldapRoles = new ArrayList<>();
-                List<LdapRole> userLdapRolesList = ldapService.getUserLdapRoles(user);
-                userLdapRolesList.forEach(role->ldapRoles.add(role.getName()));
-                rolesByUser.put(user, ldapRoles);
-            }
-        }
-        return rolesByUser;
     }
 
     @RequestMapping(value = "/ldapOptions")
@@ -136,6 +120,35 @@ public class GroupsController {
             user.setGroupResults(results);
             session.setAttribute(REMOTEUSER, user);
         }
+    }
+
+    @PostMapping(value ="/roleUsers/{ldapGroup}")
+    @ResponseBody
+    public String getLdapRoleUsers(@PathVariable String ldapGroup) {
+        int pos = ldapGroup.indexOf("cn=", ldapGroup.indexOf("cn=") + 1);
+        String group = null;
+        List<String> users;
+        try {
+            if (pos != -1) {
+                group = ldapGroup.substring(0, pos-1);
+                users = ldapService.getRoleUsers(group);
+            } else {
+                users = ldapService.getRoleUsers(ldapGroup);
+            }
+        } catch (LdapDaoException e) {
+            return "Unable to retrieve users of ldap role " + ldapGroup;
+        }
+        String result = "";
+        if (users !=null && users.size()>0) {
+            for (String user : users) {
+                if (!result.equals("")) {
+                    result += ", ";
+                }
+                result += user;
+            }
+            return result;
+        }
+        return "No users found for ldap role " + ldapGroup;
     }
 
     @ExceptionHandler({UserExistsException.class, XmlMalformedException.class, AclLibraryAccessControllerModifiedException.class})

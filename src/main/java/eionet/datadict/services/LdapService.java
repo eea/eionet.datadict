@@ -14,8 +14,16 @@ public interface LdapService {
     List<LdapRole> getUserLdapRoles(String user) throws LdapDaoException;
 
     /**
-     * fetces all ldap roles
+     * fetches all ldap roles
      * @return
      */
     List<LdapRole> getAllLdapRoles() throws LdapDaoException;
+
+    /**
+     * fetches users that belong to role roleName
+     * @param roleName
+     * @return
+     * @throws LdapDaoException
+     */
+    List<String> getRoleUsers(String roleName) throws LdapDaoException;
 }

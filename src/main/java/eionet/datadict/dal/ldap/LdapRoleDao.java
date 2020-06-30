@@ -21,4 +21,12 @@ public interface LdapRoleDao {
      * @throws Exception
      */
     public List<LdapRole> findAllRoles() throws LdapDaoException;
+
+    /**
+     * fetches users that belong to role roleName
+     * @param roleName
+     * @return
+     * @throws LdapDaoException
+     */
+    public List<String> findRoleUsers(String roleName) throws LdapDaoException;
 }

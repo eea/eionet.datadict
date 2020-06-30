@@ -131,16 +131,6 @@ public class GroupsControllerTest {
     }
 
     @Test
-    public void testGetUserLdapRolesSuccess() throws LdapDaoException {
-        Set<String> ddGroups = new HashSet<>();
-        ddGroups.add(ACL_GROUP);
-        HashMap<String, ArrayList<String>> ldapRolesByUser = new HashMap<>();
-        ldapRolesByUser.put(TEST_USER, roles);
-        HashMap<String, ArrayList<String>> result = groupsController.getUserLdapRoles(groupsAndUsers, ddGroups);
-        assertEquals(ldapRolesByUser, result);
-    }
-
-    @Test
     public void testGetLdapListSuccess() throws Exception {
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get("/admintools/ldapOptions")
                 .param("term", "test");
