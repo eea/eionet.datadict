@@ -911,6 +911,120 @@ public class VocabularyFolderActionBeanTestIT extends DDDatabaseTestCase {
                 parser.nextToken(); // move to value
                 val = parser.getText();
                 Assert.assertEquals("Language Value", VocabularyJSONOutputHelper.DEFAULT_LANGUAGE, val);
+
+
+                // After changes in #110776
+                // move to VocabularyId
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("VocabularyId", "VocabularyId", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("VocabularyId value", "2", val);
+                // move to ContinuityId
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("ContinuityId", "ContinuityId", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("ContinuityId value", "123", val);
+                // move to Identifier
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Identifier", "Identifier", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("Identifier value", "BWClosed", val);
+                // move to Label
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Label", "Label", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("Label value", "Bathing Water Closed status", val);
+                // move to RegistrationStatus
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("RegistrationStatus", "RegistrationStatus", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("RegistrationStatus value", "Public draft", val);
+                // move to IsWorkingCopy
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("IsWorkingCopy", "IsWorkingCopy", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("IsWorkingCopy value", "false", val);
+                // move to CheckedOutCopyId
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("CheckedOutCopyId", "CheckedOutCopyId", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("CheckedOutCopyId value", "0", val);
+                // move to WorkingUser
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("WorkingUser", "WorkingUser", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("WorkingUser value", "testUser", val);
+                // move to DateModified
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("DateModified", "DateModified", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                // move to UserModified
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("UserModified", "UserModified", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("UserModified value", "null", val);
+                // move to IsNumericConceptIdentifiers
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("IsNumericConceptIdentifiers", "IsNumericConceptIdentifiers", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("IsNumericConceptIdentifiers value", "false", val);
+                // move to VocabularyType
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("VocabularyType", "VocabularyType", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("VocabularyType value", "Common", val);
+                // move to FolderId
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("FolderId", "FolderId", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("FolderId value", "10", val);
+                // move to FolderName
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("FolderName", "FolderName", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("FolderName value", "wise", val);
+                // move to FolderLabel
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("FolderLabel", "FolderLabel", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("FolderLabel value", "10, wise, WISE - Water Information System for Europe", val);
+                // move to IsNotationsEqualIdentifiers
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("IsNotationsEqualIdentifiers", "IsNotationsEqualIdentifiers", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("IsNotationsEqualIdentifiers value", "false", val);
             }
             Assert.assertEquals(JsonToken.END_OBJECT, parser.nextToken()); // JsonToken.END_OBJECT
             // move to concepts array
@@ -959,6 +1073,45 @@ public class VocabularyFolderActionBeanTestIT extends DDDatabaseTestCase {
                     Assert.assertEquals(JsonToken.END_OBJECT, parser.nextToken()); // JsonToken.END_OBJECT
                 }
                 Assert.assertEquals(JsonToken.END_ARRAY, parser.nextToken()); // JsonToken.END_ARRAY
+
+                // After changes in #110776
+                // move to VocabularyConceptId
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("VocabularyConceptId", "VocabularyConceptId", val);
+                parser.nextToken(); // move to value
+                // move to VocabularyId
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("VocabularyId", "VocabularyId", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("VocabularyId", "2", val);
+                // move to Identifier
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Identifier", "Identifier", val);
+                parser.nextToken(); // move to value
+                // move to Label
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Label", "Label", val);
+                parser.nextToken(); // move to value
+                // move to Definition
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Definition", "Definition", val);
+                parser.nextToken(); // move to value
+                // move to Notation
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Notation", "Notation", val);
+                parser.nextToken(); // move to value
+                // move to Status
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Status", "Status", val);
+                parser.nextToken(); // move to value
                 Assert.assertEquals(JsonToken.END_OBJECT, parser.nextToken()); // JsonToken.END_OBJECT
             }
             Assert.assertEquals(JsonToken.END_ARRAY, parser.nextToken()); // JsonToken.END_ARRAY
@@ -1070,6 +1223,119 @@ public class VocabularyFolderActionBeanTestIT extends DDDatabaseTestCase {
                 parser.nextToken(); // move to value
                 val = parser.getText();
                 Assert.assertEquals("Language Value", "bg", val);
+
+                // After changes in #110776
+                // move to VocabularyId
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("VocabularyId", "VocabularyId", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("VocabularyId value", "4", val);
+                // move to ContinuityId
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("ContinuityId", "ContinuityId", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("ContinuityId value", "124", val);
+                // move to Identifier
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Identifier", "Identifier", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("Identifier value", "csv_header_vocab", val);
+                // move to Label
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Label", "Label", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("Label value", "csv_header_vocab_test", val);
+                // move to RegistrationStatus
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("RegistrationStatus", "RegistrationStatus", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("RegistrationStatus value", "Released", val);
+                // move to IsWorkingCopy
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("IsWorkingCopy", "IsWorkingCopy", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("IsWorkingCopy value", "false", val);
+                // move to CheckedOutCopyId
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("CheckedOutCopyId", "CheckedOutCopyId", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("CheckedOutCopyId value", "0", val);
+                // move to WorkingUser
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("WorkingUser", "WorkingUser", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("WorkingUser value", "testUser", val);
+                // move to DateModified
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("DateModified", "DateModified", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                // move to UserModified
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("UserModified", "UserModified", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("UserModified value", "null", val);
+                // move to IsNumericConceptIdentifiers
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("IsNumericConceptIdentifiers", "IsNumericConceptIdentifiers", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("IsNumericConceptIdentifiers value", "false", val);
+                // move to VocabularyType
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("VocabularyType", "VocabularyType", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("VocabularyType value", "Common", val);
+                // move to FolderId
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("FolderId", "FolderId", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("FolderId value", "5", val);
+                // move to FolderName
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("FolderName", "FolderName", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("FolderName value", "csv_header_vs", val);
+                // move to FolderLabel
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("FolderLabel", "FolderLabel", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("FolderLabel value", "csv_header_vs_test", val);
+                // move to IsNotationsEqualIdentifiers
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("IsNotationsEqualIdentifiers", "IsNotationsEqualIdentifiers", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("IsNotationsEqualIdentifiers value", "false", val);
             }
             Assert.assertEquals(JsonToken.END_OBJECT, parser.nextToken()); // JsonToken.END_OBJECT
             // move to concepts array
@@ -1115,9 +1381,49 @@ public class VocabularyFolderActionBeanTestIT extends DDDatabaseTestCase {
                     parser.nextToken(); // move to value
                     val = parser.getText();
                     Assert.assertEquals("Language Value", conceptLanguages[i], val);
+
+
                     Assert.assertEquals(JsonToken.END_OBJECT, parser.nextToken()); // JsonToken.END_OBJECT
                 }
                 Assert.assertEquals(JsonToken.END_ARRAY, parser.nextToken()); // JsonToken.END_ARRAY
+                // After changes in #110776
+                // move to VocabularyConceptId
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("VocabularyConceptId", "VocabularyConceptId", val);
+                parser.nextToken(); // move to value
+                // move to VocabularyId
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("VocabularyId", "VocabularyId", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("VocabularyId", "4", val);
+                // move to Identifier
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Identifier", "Identifier", val);
+                parser.nextToken(); // move to value
+                // move to Label
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Label", "Label", val);
+                parser.nextToken(); // move to value
+                // move to Definition
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Definition", "Definition", val);
+                parser.nextToken(); // move to value
+                // move to Notation
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Notation", "Notation", val);
+                parser.nextToken(); // move to value
+                // move to Status
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Status", "Status", val);
+                parser.nextToken(); // move to value
                 Assert.assertEquals(JsonToken.END_OBJECT, parser.nextToken()); // JsonToken.END_OBJECT
             }
             Assert.assertEquals(JsonToken.END_ARRAY, parser.nextToken()); // JsonToken.END_ARRAY
@@ -1206,6 +1512,119 @@ public class VocabularyFolderActionBeanTestIT extends DDDatabaseTestCase {
                 parser.nextToken(); // move to value
                 val = parser.getText();
                 Assert.assertEquals("Language Value", VocabularyJSONOutputHelper.DEFAULT_LANGUAGE, val);
+
+                // After changes in #110776
+                // move to VocabularyId
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("VocabularyId", "VocabularyId", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("VocabularyId value", "2", val);
+                // move to ContinuityId
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("ContinuityId", "ContinuityId", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("ContinuityId value", "123", val);
+                // move to Identifier
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Identifier", "Identifier", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("Identifier value", "BWClosed", val);
+                // move to Label
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Label", "Label", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("Label value", "Bathing Water Closed status", val);
+                // move to RegistrationStatus
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("RegistrationStatus", "RegistrationStatus", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("RegistrationStatus value", "Public draft", val);
+                // move to IsWorkingCopy
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("IsWorkingCopy", "IsWorkingCopy", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("IsWorkingCopy value", "false", val);
+                // move to CheckedOutCopyId
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("CheckedOutCopyId", "CheckedOutCopyId", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("CheckedOutCopyId value", "0", val);
+                // move to WorkingUser
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("WorkingUser", "WorkingUser", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("WorkingUser value", "testUser", val);
+                // move to DateModified
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("DateModified", "DateModified", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                // move to UserModified
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("UserModified", "UserModified", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("UserModified value", "null", val);
+                // move to IsNumericConceptIdentifiers
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("IsNumericConceptIdentifiers", "IsNumericConceptIdentifiers", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("IsNumericConceptIdentifiers value", "false", val);
+                // move to VocabularyType
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("VocabularyType", "VocabularyType", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("VocabularyType value", "Common", val);
+                // move to FolderId
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("FolderId", "FolderId", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("FolderId value", "10", val);
+                // move to FolderName
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("FolderName", "FolderName", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("FolderName value", "wise", val);
+                // move to FolderLabel
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("FolderLabel", "FolderLabel", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("FolderLabel value", "10, wise, WISE - Water Information System for Europe", val);
+                // move to IsNotationsEqualIdentifiers
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("IsNotationsEqualIdentifiers", "IsNotationsEqualIdentifiers", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("IsNotationsEqualIdentifiers value", "false", val);
             }
             Assert.assertEquals(JsonToken.END_OBJECT, parser.nextToken()); // JsonToken.END_OBJECT
             // move to concepts array
@@ -1254,6 +1673,45 @@ public class VocabularyFolderActionBeanTestIT extends DDDatabaseTestCase {
                     Assert.assertEquals(JsonToken.END_OBJECT, parser.nextToken()); // JsonToken.END_OBJECT
                 }
                 Assert.assertEquals(JsonToken.END_ARRAY, parser.nextToken()); // JsonToken.END_ARRAY
+
+                // After changes in #110776
+                // move to VocabularyConceptId
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("VocabularyConceptId", "VocabularyConceptId", val);
+                parser.nextToken(); // move to value
+                // move to VocabularyId
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("VocabularyId", "VocabularyId", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("VocabularyId", "2", val);
+                // move to Identifier
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Identifier", "Identifier", val);
+                parser.nextToken(); // move to value
+                // move to Label
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Label", "Label", val);
+                parser.nextToken(); // move to value
+                // move to Definition
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Definition", "Definition", val);
+                parser.nextToken(); // move to value
+                // move to Notation
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Notation", "Notation", val);
+                parser.nextToken(); // move to value
+                // move to Status
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Status", "Status", val);
+                parser.nextToken(); // move to value
                 Assert.assertEquals(JsonToken.END_OBJECT, parser.nextToken()); // JsonToken.END_OBJECT
             }
             Assert.assertEquals(JsonToken.END_ARRAY, parser.nextToken()); // JsonToken.END_ARRAY
@@ -1347,6 +1805,119 @@ public class VocabularyFolderActionBeanTestIT extends DDDatabaseTestCase {
                 parser.nextToken(); // move to value
                 val = parser.getText();
                 Assert.assertEquals("Language Value", VocabularyJSONOutputHelper.DEFAULT_LANGUAGE, val);
+
+                // After changes in #110776
+                // move to VocabularyId
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("VocabularyId", "VocabularyId", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("VocabularyId value", "4", val);
+                // move to ContinuityId
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("ContinuityId", "ContinuityId", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("ContinuityId value", "124", val);
+                // move to Identifier
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Identifier", "Identifier", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("Identifier value", "csv_header_vocab", val);
+                // move to Label
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Label", "Label", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("Label value", "csv_header_vocab_test", val);
+                // move to RegistrationStatus
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("RegistrationStatus", "RegistrationStatus", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("RegistrationStatus value", "Released", val);
+                // move to IsWorkingCopy
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("IsWorkingCopy", "IsWorkingCopy", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("IsWorkingCopy value", "false", val);
+                // move to CheckedOutCopyId
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("CheckedOutCopyId", "CheckedOutCopyId", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("CheckedOutCopyId value", "0", val);
+                // move to WorkingUser
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("WorkingUser", "WorkingUser", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("WorkingUser value", "testUser", val);
+                // move to DateModified
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("DateModified", "DateModified", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                // move to UserModified
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("UserModified", "UserModified", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("UserModified value", "null", val);
+                // move to IsNumericConceptIdentifiers
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("IsNumericConceptIdentifiers", "IsNumericConceptIdentifiers", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("IsNumericConceptIdentifiers value", "false", val);
+                // move to VocabularyType
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("VocabularyType", "VocabularyType", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("VocabularyType value", "Common", val);
+                // move to FolderId
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("FolderId", "FolderId", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("FolderId value", "5", val);
+                // move to FolderName
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("FolderName", "FolderName", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("FolderName value", "csv_header_vs", val);
+                // move to FolderLabel
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("FolderLabel", "FolderLabel", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("FolderLabel value", "csv_header_vs_test", val);
+                // move to IsNotationsEqualIdentifiers
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("IsNotationsEqualIdentifiers", "IsNotationsEqualIdentifiers", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("IsNotationsEqualIdentifiers value", "false", val);
             }
             Assert.assertEquals(JsonToken.END_OBJECT, parser.nextToken()); // JsonToken.END_OBJECT
             // move to concepts array
@@ -1397,6 +1968,46 @@ public class VocabularyFolderActionBeanTestIT extends DDDatabaseTestCase {
                     }
                 }
                 Assert.assertEquals(JsonToken.END_ARRAY, parser.nextToken()); // JsonToken.END_ARRAY
+
+                // After changes in #110776
+                // move to VocabularyConceptId
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("VocabularyConceptId", "VocabularyConceptId", val);
+                parser.nextToken(); // move to value
+                // move to VocabularyId
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("VocabularyId", "VocabularyId", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("VocabularyId", "4", val);
+                // move to Identifier
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Identifier", "Identifier", val);
+                parser.nextToken(); // move to value
+                // move to Label
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Label", "Label", val);
+                parser.nextToken(); // move to value
+                // move to Definition
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Definition", "Definition", val);
+                parser.nextToken(); // move to value
+                // move to Notation
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Notation", "Notation", val);
+                parser.nextToken(); // move to value
+                // move to Status
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Status", "Status", val);
+                parser.nextToken(); // move to value
+
                 Assert.assertEquals(JsonToken.END_OBJECT, parser.nextToken()); // JsonToken.END_OBJECT
             }
             Assert.assertEquals(JsonToken.END_ARRAY, parser.nextToken()); // JsonToken.END_ARRAY
@@ -1482,6 +2093,119 @@ public class VocabularyFolderActionBeanTestIT extends DDDatabaseTestCase {
                 parser.nextToken(); // move to value
                 val = parser.getText();
                 Assert.assertEquals("Language Value", VocabularyJSONOutputHelper.DEFAULT_LANGUAGE, val);
+
+                // After changes in #110776
+                // move to VocabularyId
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("VocabularyId", "VocabularyId", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("VocabularyId value", "4", val);
+                // move to ContinuityId
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("ContinuityId", "ContinuityId", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("ContinuityId value", "124", val);
+                // move to Identifier
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Identifier", "Identifier", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("Identifier value", "csv_header_vocab", val);
+                // move to Label
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Label", "Label", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("Label value", "csv_header_vocab_test", val);
+                // move to RegistrationStatus
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("RegistrationStatus", "RegistrationStatus", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("RegistrationStatus value", "Released", val);
+                // move to IsWorkingCopy
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("IsWorkingCopy", "IsWorkingCopy", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("IsWorkingCopy value", "false", val);
+                // move to CheckedOutCopyId
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("CheckedOutCopyId", "CheckedOutCopyId", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("CheckedOutCopyId value", "0", val);
+                // move to WorkingUser
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("WorkingUser", "WorkingUser", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("WorkingUser value", "testUser", val);
+                // move to DateModified
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("DateModified", "DateModified", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                // move to UserModified
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("UserModified", "UserModified", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("UserModified value", "null", val);
+                // move to IsNumericConceptIdentifiers
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("IsNumericConceptIdentifiers", "IsNumericConceptIdentifiers", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("IsNumericConceptIdentifiers value", "false", val);
+                // move to VocabularyType
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("VocabularyType", "VocabularyType", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("VocabularyType value", "Common", val);
+                // move to FolderId
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("FolderId", "FolderId", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("FolderId value", "5", val);
+                // move to FolderName
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("FolderName", "FolderName", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("FolderName value", "csv_header_vs", val);
+                // move to FolderLabel
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("FolderLabel", "FolderLabel", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("FolderLabel value", "csv_header_vs_test", val);
+                // move to IsNotationsEqualIdentifiers
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("IsNotationsEqualIdentifiers", "IsNotationsEqualIdentifiers", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("IsNotationsEqualIdentifiers value", "false", val);
             }
             Assert.assertEquals(JsonToken.END_OBJECT, parser.nextToken()); // JsonToken.END_OBJECT
             // move to concepts array
@@ -1578,6 +2302,119 @@ public class VocabularyFolderActionBeanTestIT extends DDDatabaseTestCase {
                 parser.nextToken(); // move to value
                 val = parser.getText();
                 Assert.assertEquals("Language Value", "et", val);
+
+                // After changes in #110776
+                // move to VocabularyId
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("VocabularyId", "VocabularyId", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("VocabularyId value", "4", val);
+                // move to ContinuityId
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("ContinuityId", "ContinuityId", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("ContinuityId value", "124", val);
+                // move to Identifier
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Identifier", "Identifier", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("Identifier value", "csv_header_vocab", val);
+                // move to Label
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Label", "Label", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("Label value", "csv_header_vocab_test", val);
+                // move to RegistrationStatus
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("RegistrationStatus", "RegistrationStatus", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("RegistrationStatus value", "Released", val);
+                // move to IsWorkingCopy
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("IsWorkingCopy", "IsWorkingCopy", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("IsWorkingCopy value", "false", val);
+                // move to CheckedOutCopyId
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("CheckedOutCopyId", "CheckedOutCopyId", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("CheckedOutCopyId value", "0", val);
+                // move to WorkingUser
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("WorkingUser", "WorkingUser", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("WorkingUser value", "testUser", val);
+                // move to DateModified
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("DateModified", "DateModified", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                // move to UserModified
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("UserModified", "UserModified", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("UserModified value", "null", val);
+                // move to IsNumericConceptIdentifiers
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("IsNumericConceptIdentifiers", "IsNumericConceptIdentifiers", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("IsNumericConceptIdentifiers value", "false", val);
+                // move to VocabularyType
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("VocabularyType", "VocabularyType", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("VocabularyType value", "Common", val);
+                // move to FolderId
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("FolderId", "FolderId", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("FolderId value", "5", val);
+                // move to FolderName
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("FolderName", "FolderName", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("FolderName value", "csv_header_vs", val);
+                // move to FolderLabel
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("FolderLabel", "FolderLabel", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("FolderLabel value", "csv_header_vs_test", val);
+                // move to IsNotationsEqualIdentifiers
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("IsNotationsEqualIdentifiers", "IsNotationsEqualIdentifiers", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("IsNotationsEqualIdentifiers value", "false", val);
             }
             Assert.assertEquals(JsonToken.END_OBJECT, parser.nextToken()); // JsonToken.END_OBJECT
             // move to concepts array
@@ -1626,6 +2463,45 @@ public class VocabularyFolderActionBeanTestIT extends DDDatabaseTestCase {
                     Assert.assertEquals(JsonToken.END_OBJECT, parser.nextToken()); // JsonToken.END_OBJECT
                 }
                 Assert.assertEquals(JsonToken.END_ARRAY, parser.nextToken()); // JsonToken.END_ARRAY
+
+                // After changes in #110776
+                // move to VocabularyConceptId
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("VocabularyConceptId", "VocabularyConceptId", val);
+                parser.nextToken(); // move to value
+                // move to VocabularyId
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("VocabularyId", "VocabularyId", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("VocabularyId", "4", val);
+                // move to Identifier
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Identifier", "Identifier", val);
+                parser.nextToken(); // move to value
+                // move to Label
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Label", "Label", val);
+                parser.nextToken(); // move to value
+                // move to Definition
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Definition", "Definition", val);
+                parser.nextToken(); // move to value
+                // move to Notation
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Notation", "Notation", val);
+                parser.nextToken(); // move to value
+                // move to Status
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Status", "Status", val);
+                parser.nextToken(); // move to value
                 Assert.assertEquals(JsonToken.END_OBJECT, parser.nextToken()); // JsonToken.END_OBJECT
             }
             Assert.assertEquals(JsonToken.END_ARRAY, parser.nextToken()); // JsonToken.END_ARRAY
@@ -1717,6 +2593,119 @@ public class VocabularyFolderActionBeanTestIT extends DDDatabaseTestCase {
                 parser.nextToken(); // move to value
                 val = parser.getText();
                 Assert.assertEquals("Language Value", VocabularyJSONOutputHelper.DEFAULT_LANGUAGE, val);
+
+                // After changes in #110776
+                // move to VocabularyId
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("VocabularyId", "VocabularyId", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("VocabularyId value", "10", val);
+                // move to ContinuityId
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("ContinuityId", "ContinuityId", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("ContinuityId value", "126", val);
+                // move to Identifier
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Identifier", "Identifier", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("Identifier value", "hierarchical", val);
+                // move to Label
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Label", "Label", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("Label value", "hierarchical vocabulary", val);
+                // move to RegistrationStatus
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("RegistrationStatus", "RegistrationStatus", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("RegistrationStatus value", "Released", val);
+                // move to IsWorkingCopy
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("IsWorkingCopy", "IsWorkingCopy", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("IsWorkingCopy value", "false", val);
+                // move to CheckedOutCopyId
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("CheckedOutCopyId", "CheckedOutCopyId", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("CheckedOutCopyId value", "0", val);
+                // move to WorkingUser
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("WorkingUser", "WorkingUser", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("WorkingUser value", "testUser", val);
+                // move to DateModified
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("DateModified", "DateModified", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                // move to UserModified
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("UserModified", "UserModified", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("UserModified value", "null", val);
+                // move to IsNumericConceptIdentifiers
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("IsNumericConceptIdentifiers", "IsNumericConceptIdentifiers", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("IsNumericConceptIdentifiers value", "false", val);
+                // move to VocabularyType
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("VocabularyType", "VocabularyType", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("VocabularyType value", "Common", val);
+                // move to FolderId
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("FolderId", "FolderId", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("FolderId value", "15", val);
+                // move to FolderName
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("FolderName", "FolderName", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("FolderName value", "json_hierarchical", val);
+                // move to FolderLabel
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("FolderLabel", "FolderLabel", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("FolderLabel value", "json_hierarchical_test", val);
+                // move to IsNotationsEqualIdentifiers
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("IsNotationsEqualIdentifiers", "IsNotationsEqualIdentifiers", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("IsNotationsEqualIdentifiers value", "false", val);
             }
             Assert.assertEquals(JsonToken.END_OBJECT, parser.nextToken()); // JsonToken.END_OBJECT
             // move to concepts array
@@ -1765,6 +2754,45 @@ public class VocabularyFolderActionBeanTestIT extends DDDatabaseTestCase {
                     Assert.assertEquals(JsonToken.END_OBJECT, parser.nextToken()); // JsonToken.END_OBJECT
                 }
                 Assert.assertEquals(JsonToken.END_ARRAY, parser.nextToken()); // JsonToken.END_ARRAY
+
+                // After changes in #110776
+                // move to VocabularyConceptId
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("VocabularyConceptId", "VocabularyConceptId", val);
+                parser.nextToken(); // move to value
+                // move to VocabularyId
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("VocabularyId", "VocabularyId", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("VocabularyId", "10", val);
+                // move to Identifier
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Identifier", "Identifier", val);
+                parser.nextToken(); // move to value
+                // move to Label
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Label", "Label", val);
+                parser.nextToken(); // move to value
+                // move to Definition
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Definition", "Definition", val);
+                parser.nextToken(); // move to value
+                // move to Notation
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Notation", "Notation", val);
+                parser.nextToken(); // move to value
+                // move to Status
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Status", "Status", val);
+                parser.nextToken(); // move to value
 
                 if (broaders[i].length > 0) {
                     // broaders array

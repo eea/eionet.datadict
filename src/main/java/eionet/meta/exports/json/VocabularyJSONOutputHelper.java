@@ -146,6 +146,7 @@ public final class VocabularyJSONOutputHelper {
      */
     public static void writeJSON(OutputStream out, VocabularyFolder vocabulary, List<VocabularyConcept> concepts, String language)
             throws IOException {
+
         OutputStreamWriter osw = new OutputStreamWriter(out, "UTF-8");
 
         JsonFactory f = new JsonFactory();
@@ -173,6 +174,30 @@ public final class VocabularyJSONOutputHelper {
                 generator.writeStringField(dataElemShortIdentifier, DATA_ELEM_MAP.get(dataElemShortIdentifier));
             }
             generator.writeStringField(JSON_LD_LANGUAGE, StringUtils.isNotBlank(language) ? language : DEFAULT_LANGUAGE);
+
+            // Write VOCABULARY columns values
+            generator.writeStringField("VocabularyId", String.valueOf(vocabulary.getId()));
+            generator.writeStringField("ContinuityId", vocabulary.getContinuityId());
+            generator.writeStringField("Identifier", vocabulary.getIdentifier());
+            generator.writeStringField("Label", vocabulary.getLabel());
+            if(vocabulary.getRegStatus() != null){
+                generator.writeStringField("RegistrationStatus", vocabulary.getRegStatus().getLabel());
+            }
+            generator.writeStringField("IsWorkingCopy", String.valueOf(vocabulary.isWorkingCopy()));
+            generator.writeStringField("CheckedOutCopyId", String.valueOf(vocabulary.getCheckedOutCopyId()));
+            generator.writeStringField("WorkingUser", vocabulary.getWorkingUser());
+            if(vocabulary.getDateModified() != null){
+                generator.writeStringField("DateModified", vocabulary.getDateModified().toString());
+            }
+            generator.writeStringField("UserModified", vocabulary.getUserModified());
+            generator.writeStringField("IsNumericConceptIdentifiers", String.valueOf(vocabulary.isNumericConceptIdentifiers()));
+            if(vocabulary.getType() != null){
+                generator.writeStringField("VocabularyType", vocabulary.getType().getLabel());
+            }
+            generator.writeStringField("FolderId", String.valueOf(vocabulary.getFolderId()));
+            generator.writeStringField("FolderName", vocabulary.getFolderName());
+            generator.writeStringField("FolderLabel", vocabulary.getFolderLabel());
+            generator.writeStringField("IsNotationsEqualIdentifiers", String.valueOf(vocabulary.isNotationsEqualIdentifiers()));
         }
         generator.writeEndObject();
         // start writing concepts...
@@ -235,6 +260,27 @@ public final class VocabularyJSONOutputHelper {
                 }
                 // end writing prefLabels
                 generator.writeEndArray();
+
+                // Write VOCABULARY_CONCEPT columns values
+                generator.writeStringField("VocabularyConceptId", String.valueOf(concept.getId()));
+                generator.writeStringField("VocabularyId", String.valueOf(vocabulary.getId()));
+                generator.writeStringField("Identifier", concept.getIdentifier());
+                generator.writeStringField("Label", concept.getLabel());
+                generator.writeStringField("Definition", concept.getDefinition());
+                generator.writeStringField("Notation", concept.getNotation());
+                if(concept.getStatus() != null){
+                    generator.writeStringField("Status", concept.getStatus().getLabel());
+                }
+                if(concept.getStatusModified() != null){
+                    generator.writeStringField("StatusModifiedDate", concept.getStatusModified().toString());
+                }
+                if(concept.getAcceptedDate() != null){
+                    generator.writeStringField("AcceptedDate", concept.getAcceptedDate().toString());
+                }
+                if(concept.getNotAcceptedDate() != null){
+                    generator.writeStringField("NotAcceptedDate", concept.getNotAcceptedDate().toString());
+                }
+
                 // write data elements
                 for (String shortDataElemIdentifier : relationalDataElemIdentifiers) {
                     // check if it has this element
@@ -299,4 +345,5 @@ public final class VocabularyJSONOutputHelper {
         generator.close();
         osw.close();
     } // end of static method writeJSON
+
 } // end of class VocabularyJSONOutputHelper
