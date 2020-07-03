@@ -461,10 +461,10 @@ public class DatasetHandler extends BaseHandler {
             } else if (useForce == false) {
                 boolean canDelete = false;
                 if (regStatus.equals("Released") || regStatus.equals("Recorded")) {
-                    canDelete = SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + identifier, "er");
+                    canDelete = SecurityUtil.hasPerm(user, "/datasets/" + identifier, "er");
                 } else {
-                    canDelete = SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + identifier, "u") ||
-                    SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + identifier, "er");
+                    canDelete = SecurityUtil.hasPerm(user, "/datasets/" + identifier, "u") ||
+                    SecurityUtil.hasPerm(user, "/datasets/" + identifier, "er");
                 }
                 if (!canDelete) {
                     throw new Exception("You have no permission to delete this dataset: "

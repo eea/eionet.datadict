@@ -48,6 +48,7 @@ public class AuthenticationRequestFilter extends GenericFilterBean {
         interceptedUrlPatterns.add("**/datasets/*/edit");
         interceptedUrlPatterns.add("/inference_rules");
         interceptedUrlPatterns.add("/generateJWTToken");
+        interceptedUrlPatterns.add("/v2/admintools/**");
         INTERCEPTED_URL_PATTERNS = Collections.unmodifiableList(interceptedUrlPatterns);
     }
 

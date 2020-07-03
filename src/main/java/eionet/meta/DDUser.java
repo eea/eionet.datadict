@@ -23,27 +23,22 @@
 
 package eionet.meta;
 
-import java.sql.Connection;
-import java.util.HashMap;
-import java.util.Vector;
-
-import javax.servlet.http.HttpSession;
-
-import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.lang.StringUtils;
-import eionet.acl.AccessControlListIF;
-import eionet.acl.AccessController;
-import eionet.acl.AclNotFoundException;
-import eionet.acl.AuthMechanism;
-import eionet.acl.SignOnException;
-
+import eionet.acl.*;
 import eionet.directory.DirectoryService;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.SecurityUtil;
 import eionet.util.sql.ConnectionUtil;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.servlet.http.HttpSession;
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Vector;
 
 /**
  *
@@ -72,7 +67,11 @@ public class DDUser {
     protected String fullName = null;
     protected String[] roles = null;
     protected HashMap acls = null;
+
     protected boolean localUser = false;
+
+    protected ArrayList<String> groupResults = null;
+
     /**
      *
      */
@@ -206,6 +205,7 @@ public class DDUser {
         authented = false;
         username = null;
         password = null;
+        groupResults = null;
     }
 
     /**
@@ -309,7 +309,24 @@ public class DDUser {
      * @return
      */
     public boolean hasPermission(String aclPath, String permission) {
-        return DDUser.hasPermission(username, aclPath, permission);
+        if (groupResults != null) {
+            for (String result : groupResults) {
+                if (DDUser.hasPermission(result, aclPath, permission)) {
+                    return true;
+                }
+            }
+            return false;
+        } else {
+            return DDUser.hasPermission(username, aclPath, permission);
+        }
+    }
+
+    public ArrayList<String> getGroupResults() {
+        return groupResults;
+    }
+
+    public void setGroupResults(ArrayList<String> groupResults) {
+        this.groupResults = groupResults;
     }
 
     public boolean isLocalUser() {

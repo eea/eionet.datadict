@@ -33,7 +33,7 @@ public class AclOperationsServiceTest {
         MockitoAnnotations.initMocks(this);
         this.aclOperationsService = new AclOperationsServiceImpl(configurationPropertyResolver);
         when(aclOperationsServiceMocked.getConfigurationPropertyResolver()).thenReturn(configurationPropertyResolver);
-        when(aclOperationsServiceMocked.getGroupsAndUsersHashTable()).thenCallRealMethod();
+        when(aclOperationsServiceMocked.getRefreshedGroupsAndUsersHashTable(anyBoolean())).thenCallRealMethod();
     }
 
 
@@ -70,7 +70,7 @@ public class AclOperationsServiceTest {
                 throw new AclAccessControllerInitializationException();
             }
         };
-        aclOperationsServiceImpl.getGroupsAndUsersHashTable();
+        aclOperationsServiceImpl.getRefreshedGroupsAndUsersHashTable(false);
     }
 
 
@@ -87,7 +87,7 @@ public class AclOperationsServiceTest {
                 throw new AclAccessControllerInitializationException();
             }
         };
-        aclOperationsServiceImpl.getGroupsAndUsersHashTable();
+        aclOperationsServiceImpl.getRefreshedGroupsAndUsersHashTable(false);
     }
 
     @After

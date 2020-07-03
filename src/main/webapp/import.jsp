@@ -9,7 +9,7 @@
     request.setCharacterEncoding("UTF-8");
     
     DDUser user = SecurityUtil.getUser(request);
-    if (user==null || !SecurityUtil.hasPerm(user.getUserName(), "/import", "x")){ %>
+    if (user==null || !SecurityUtil.hasPerm(user, "/import", "x")){ %>
         <b>Not allowed!</b><%
         return;
     }

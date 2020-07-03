@@ -132,7 +132,7 @@ public class SearchSchemaSetsActionBean extends AbstractActionBean {
     public Resolution delete() throws ServiceException {
         if (isDeletePermission()) {
             try {
-                schemaService.deleteSchemaSets(selected, getUserName(), true);
+                schemaService.deleteSchemaSets(selected, getUser(), true);
             } catch (ValidationException e) {
                 LOGGER.info(e.getMessage());
                 addGlobalValidationError(e.getMessage());
@@ -155,8 +155,8 @@ public class SearchSchemaSetsActionBean extends AbstractActionBean {
     public boolean isDeletePermission() {
         if (getUser() != null) {
             try {
-                return SecurityUtil.hasPerm(getUserName(), "/schemasets", "d")
-                || SecurityUtil.hasPerm(getUserName(), "/schemasets", "er");
+                return SecurityUtil.hasPerm(getUser(), "/schemasets", "d")
+                || SecurityUtil.hasPerm(getUser(), "/schemasets", "er");
             } catch (Exception e) {
                 LOGGER.error("Failed to read user permission", e);
             }
@@ -287,7 +287,7 @@ public class SearchSchemaSetsActionBean extends AbstractActionBean {
                     // Must not be a working copy, nor must it be checked out
                     if (!schemaSet.isWorkingCopy() && StringUtils.isBlank(schemaSet.getWorkingUser())) {
                         String permission = schemaSet.getRegStatus().equals(RegStatus.RELEASED) ? "er" : "d";
-                        if (SecurityUtil.hasPerm(userName, "/schemasets", permission)) {
+                        if (SecurityUtil.hasPerm(getUser(), "/schemasets", permission)) {
                             deletable.add(schemaSet.getId());
                         }
                     }

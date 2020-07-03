@@ -5,7 +5,7 @@
       <h1>Task History details</h1>
         <div id="drop-operations">
             <ul>
-                <c:if test="${not empty actionBean.user && ddfn:userHasPermission(actionBean.userName, '/vocabularies', 'i')}">
+                <c:if test="${not empty actionBean.user && ddfn:userHasPermission(actionBean.user, '/vocabularies', 'i')}">
                     <li class="maintain">
                         <stripes:link  href="${pageContext.request.contextPath}/vocabulary/viewScheduledJobHistory?scheduledTaskId=${fn:escapeXml(actionBean.scheduledTaskId)}">
                             Back to scheduled Task History

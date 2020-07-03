@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import eionet.meta.DDUser;
 import net.sourceforge.stripes.action.FileBean;
 import eionet.meta.dao.domain.Attribute;
 import eionet.meta.dao.domain.Schema;
@@ -112,11 +113,11 @@ public interface ISchemaService {
      * Deletes SchemaSets with given id.
      *
      * @param ids
-     * @param userName
+     * @param user
      * @param includingContents
      * @throws ServiceException
      */
-    void deleteSchemaSets(List<Integer> ids, String userName, boolean includingContents) throws ServiceException;
+    void deleteSchemaSets(List<Integer> ids, DDUser user, boolean includingContents) throws ServiceException;
 
     /**
      * Deletes Schemas with given id..
@@ -132,12 +133,12 @@ public interface ISchemaService {
      * Checks in schema set with given id.
      *
      * @param schemaSetId
-     * @param username
+     * @param user
      * @param comment
      * @return
      * @throws ServiceException
      */
-    int checkInSchemaSet(int schemaSetId, String username, String comment) throws ServiceException;
+    int checkInSchemaSet(int schemaSetId, DDUser user, String comment) throws ServiceException;
 
     /**
      *
@@ -176,11 +177,11 @@ public interface ISchemaService {
     /**
      *
      * @param schemaSetId
-     * @param username
+     * @param user
      * @return
      * @throws ServiceException
      */
-    int undoCheckOutSchemaSet(int schemaSetId, String username) throws ServiceException;
+    int undoCheckOutSchemaSet(int schemaSetId, DDUser user) throws ServiceException;
 
     /**
      *

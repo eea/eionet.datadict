@@ -28,12 +28,12 @@
 
         <div id="drop-operations">
             <ul>
-                <c:if test="${ddfn:userHasPermission(actionBean.userName, '/schemasets', 'i')}">
+                <c:if test="${ddfn:userHasPermission(actionBean.user, '/schemasets', 'i')}">
                     <li class="add">
                         <stripes:link beanclass="eionet.web.action.SchemaSetActionBean" event="add">Add schema set</stripes:link>
                     </li>
                 </c:if>
-                <c:if test="${ddfn:userHasPermission(actionBean.userName, '/schemas', 'i')}">
+                <c:if test="${ddfn:userHasPermission(actionBean.user, '/schemas', 'i')}">
                     <li class="add">
                         <stripes:link beanclass="eionet.web.action.SchemaActionBean" event="add">Add root-level schema</stripes:link>
                     </li>

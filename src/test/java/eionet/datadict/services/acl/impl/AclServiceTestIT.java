@@ -1,21 +1,23 @@
 package eionet.datadict.services.acl.impl;
 
-import eionet.datadict.services.acl.impl.AclServiceImpl;
 import eionet.datadict.services.acl.AclEntity;
 import eionet.datadict.services.acl.Permission;
 import eionet.meta.DDUser;
 import eionet.meta.service.DBUnitHelper;
 import org.junit.After;
-import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.Spy;
-import static org.junit.Assert.assertFalse;
 import org.unitils.UnitilsJUnit4;
 import org.unitils.spring.annotation.SpringApplicationContext;
+
+import java.util.ArrayList;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 
 @SpringApplicationContext("mock-spring-context.xml")
@@ -31,6 +33,9 @@ public class AclServiceTestIT extends UnitilsJUnit4 {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         DBUnitHelper.loadData("seed-acldata.xml");
+        Mockito.doReturn(true).when(user).isAuthentic();
+        ArrayList<String> groupResults = new ArrayList<>();
+        user.setGroupResults(groupResults);
     }
     
     @After

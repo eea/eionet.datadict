@@ -10,7 +10,7 @@
                 <li class="back">
                     <stripes:link href="/attributes">Back to attributes</stripes:link>
                 </li>
-                <c:if test="${ddfn:userHasPermission(actionBean.user.userName, '/attributes/', 'u')}">
+                <c:if test="${ddfn:userHasPermission(actionBean.user, '/attributes/', 'u')}">
                     <li class="edit">
                         <stripes:link beanclass="eionet.web.action.AttributeActionBean" event="edit">
                             <stripes:param name="attribute.id" value="${actionBean.attribute.id}"/>

@@ -679,7 +679,7 @@ else if (mode.equals("add"))
                            <li class="subscribe"><a href="<%=request.getContextPath()%>/tables/<%=tableID%>/subscribe">Subscribe</a></li><%
                     }
                     // display the link about cache
-                    boolean dispCache = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dsIdf, "u");
+                    boolean dispCache = user!=null && SecurityUtil.hasPerm(user, "/datasets/" + dsIdf, "u");
                     if (editDstPrm || dispCache) {%>
                         <li class="doc"><a rel="nofollow" href="<%=request.getContextPath()%>/cache?objectId=<%=tableID%>&amp;objectTypeKey=tbl">Open cache</a></li>
                     <%}%>
@@ -709,7 +709,7 @@ else if (mode.equals("add"))
                                 boolean dispXLS = dataset!=null && dataset.displayCreateLink("XLS");
                                 boolean dispODS = dataset!=null && dataset.displayCreateLink("ODS");
                                 boolean dispXmlSchema = dataset!=null && dataset.displayCreateLink("XMLSCHEMA");
-                                boolean dispXmlInstance = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/", "xmli");
+                                boolean dispXmlInstance = user!=null && SecurityUtil.hasPerm(user, "/", "xmli");
 
                                 if (dispAll || dispXLS || dispXmlSchema || dispXmlInstance || dispODS){
                                     %>

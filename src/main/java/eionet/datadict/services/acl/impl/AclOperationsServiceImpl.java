@@ -31,10 +31,16 @@ public class AclOperationsServiceImpl implements AclOperationsService {
         this.configurationPropertyResolver = configurationPropertyResolver;
     }
 
-    @Override
-    public Hashtable<String, Vector<String>> getGroupsAndUsersHashTable() throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException {
+    public Hashtable<String, Vector<String>> getRefreshedGroupsAndUsersHashTable(boolean init) throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException {
         try {
             AccessController accessController = this.getAclLibraryAccessControllerInstance(this.getAclProperties());
+            if (init) {
+                Method initAcls = null;
+                initAcls = AccessController.class.getDeclaredMethod("initAcls");
+                initAcls.setAccessible(true);
+                initAcls.invoke(accessController);
+                initAcls.setAccessible(false);
+            }
             Method getGroupsMethod = null;
             getGroupsMethod = AccessController.class.getDeclaredMethod("getGroups");
             getGroupsMethod.setAccessible(true);
@@ -42,7 +48,7 @@ public class AclOperationsServiceImpl implements AclOperationsService {
             getGroupsMethod.setAccessible(false);
             return usersAndGroups;
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | AclAccessControllerInitializationException e) {
-            throw new AclLibraryAccessControllerModifiedException("eionet.acl library AccessController.class method:getGroups is modified. Can not retrieve hashtable with users and their groups",e.getCause());
+            throw new AclLibraryAccessControllerModifiedException("Can not retrieve hashtable with users and their groups",e.getCause());
         }
     }
 
