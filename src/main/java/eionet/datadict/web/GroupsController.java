@@ -116,7 +116,7 @@ public class GroupsController {
         DDUser user = session == null ? null : (DDUser) session.getAttribute(REMOTEUSER);
         if (user!=null && user.isAuthentic()) {
             UserUtils userUtils = new UserUtils();
-            ArrayList<String> results = userUtils.getUserOrGroup(user.getUserName(), true);
+            ArrayList<String> results = userUtils.getUserOrGroup(user.getUserName(), true, session);
             user.setGroupResults(results);
             session.setAttribute(REMOTEUSER, user);
         }

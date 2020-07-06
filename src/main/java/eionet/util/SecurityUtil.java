@@ -82,7 +82,7 @@ public final class SecurityUtil {
             String casUserName = session == null ? null : (String) session.getAttribute(CASFilter.CAS_FILTER_USER);
             if (casUserName != null) {
                 user = DDCASUser.create(casUserName);
-                setUserGroupResults(user);
+                setUserGroupResults(user, session);
                 session.setAttribute(REMOTEUSER, user);
             }
         } else if (user instanceof DDCASUser) {
@@ -94,7 +94,7 @@ public final class SecurityUtil {
             } else if (!casUserName.equals(user.getUserName())) {
                 user.invalidate();
                 user = DDCASUser.create(casUserName);
-                setUserGroupResults(user);
+                setUserGroupResults(user, session);
                 session.setAttribute(REMOTEUSER, user);
             }
         }
@@ -106,10 +106,10 @@ public final class SecurityUtil {
         }
     }
 
-    protected static void setUserGroupResults(DDUser user) {
+    protected static void setUserGroupResults(DDUser user, HttpSession session) {
         try {
             UserUtils userUtils = new UserUtils();
-            ArrayList<String> results = userUtils.getUserOrGroup(user.getUserName(), false);
+            ArrayList<String> results = userUtils.getUserOrGroup(user.getUserName(), false, session);
             user.setGroupResults(results);
         } catch (AclLibraryAccessControllerModifiedException | AclPropertiesInitializationException | LdapDaoException e) {
             LOGGER.error(e.getMessage(), e);

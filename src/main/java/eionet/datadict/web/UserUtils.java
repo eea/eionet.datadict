@@ -11,11 +11,13 @@ import eionet.meta.spring.SpringApplicationContext;
 import eionet.util.SecurityUtil;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.*;
 
 public class UserUtils {
 
     private static Hashtable<String, Vector<String>> ddGroupsAndUsers;
+    public static final String REMOTEUSER = "eionet.util.SecurityUtil.user";
 
     public UserUtils() {
     }
@@ -70,7 +72,7 @@ public class UserUtils {
      * @throws AclLibraryAccessControllerModifiedException
      * @throws AclPropertiesInitializationException
      */
-    public ArrayList<String> getUserOrGroup(String userName, boolean init) throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException, LdapDaoException {
+    public ArrayList<String> getUserOrGroup(String userName, boolean init, HttpSession session) throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException, LdapDaoException {
         ArrayList<String> userGroupResults = new ArrayList<>();
         Hashtable<String, Vector<String>> results;
         if (init) {
@@ -85,8 +87,11 @@ public class UserUtils {
                 userGroupResults.add(userName);
             }
         }
-        List<LdapRole> rolesList = this.getLdapService().getUserLdapRoles(userName);
-        rolesList.forEach(role -> userGroupResults.add(role.getName()));
+        DDUser user = session == null ? null : (DDUser) session.getAttribute(REMOTEUSER);
+        if (!user.isLocalUser()) {
+            List<LdapRole> rolesList = this.getLdapService().getUserLdapRoles(userName);
+            rolesList.forEach(role -> userGroupResults.add(role.getName()));
+        }
         return userGroupResults;
     }
 
