@@ -82,6 +82,8 @@ public final class SecurityUtil {
             String casUserName = session == null ? null : (String) session.getAttribute(CASFilter.CAS_FILTER_USER);
             if (casUserName != null) {
                 user = DDCASUser.create(casUserName);
+                user.setLocalUser(false);
+                session.setAttribute(REMOTEUSER, user);
                 setUserGroupResults(user, session);
                 session.setAttribute(REMOTEUSER, user);
             }
@@ -94,6 +96,8 @@ public final class SecurityUtil {
             } else if (!casUserName.equals(user.getUserName())) {
                 user.invalidate();
                 user = DDCASUser.create(casUserName);
+                user.setLocalUser(false);
+                session.setAttribute(REMOTEUSER, user);
                 setUserGroupResults(user, session);
                 session.setAttribute(REMOTEUSER, user);
             }

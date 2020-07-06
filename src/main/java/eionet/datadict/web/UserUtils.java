@@ -88,7 +88,7 @@ public class UserUtils {
             }
         }
         DDUser user = session == null ? null : (DDUser) session.getAttribute(REMOTEUSER);
-        if (!user.isLocalUser()) {
+        if (user!=null && !user.isLocalUser()) {
             List<LdapRole> rolesList = this.getLdapService().getUserLdapRoles(userName);
             rolesList.forEach(role -> userGroupResults.add(role.getName()));
         }
