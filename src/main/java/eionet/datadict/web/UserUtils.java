@@ -74,11 +74,7 @@ public class UserUtils {
      */
     public ArrayList<String> getUserOrGroup(String userName, boolean init, HttpSession session) throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException, LdapDaoException {
         ArrayList<String> userGroupResults = new ArrayList<>();
-        Hashtable<String, Vector<String>> results;
-        if (init) {
-            results = getAclOperationsService().getRefreshedGroupsAndUsersHashTable(true);
-        }
-        results = getAclOperationsService().getRefreshedGroupsAndUsersHashTable(false);
+        Hashtable<String, Vector<String>> results = fetchGroupsAndUsers(init);
         setDdGroupsAndUsers(results);
         Set<String> ddGroups = getDdGroupsAndUsers().keySet();
         for (String ddGroup : ddGroups) {
@@ -93,6 +89,15 @@ public class UserUtils {
             rolesList.forEach(role -> userGroupResults.add(role.getName()));
         }
         return userGroupResults;
+    }
+
+    public static Hashtable<String, Vector<String>> fetchGroupsAndUsers(boolean init) throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException {
+        Hashtable<String, Vector<String>> results;
+        if (init) {
+            results = getAclOperationsService().getRefreshedGroupsAndUsersHashTable(true);
+        }
+        results = getAclOperationsService().getRefreshedGroupsAndUsersHashTable(false);
+        return results;
     }
 
     public static AclOperationsService getAclOperationsService() {

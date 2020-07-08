@@ -40,7 +40,7 @@ public class GroupsController {
     }
 
     @GetMapping("/list")
-    public String getGroupsAndUsers(Model model, HttpServletRequest request) throws LdapDaoException {
+    public String getGroupsAndUsers(Model model, HttpServletRequest request) throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException {
         if(!UserUtils.isUserLoggedIn(request)) {
             model.addAttribute("msgOne", PageErrorConstants.NOT_AUTHENTICATED + " Admin tools");
             return "message";
@@ -49,7 +49,13 @@ public class GroupsController {
             model.addAttribute("msgOne", PageErrorConstants.FORBIDDEN_ACCESS + " Admin tools");
             return "message";
         }
-        Hashtable<String, Vector<String>> ddGroupsAndUsers = UserUtils.getDdGroupsAndUsers();
+        Hashtable<String, Vector<String>> ddGroupsAndUsers = new Hashtable<>();
+        if (UserUtils.getDdGroupsAndUsers()!=null) {
+            ddGroupsAndUsers = UserUtils.getDdGroupsAndUsers();
+        } else {
+            ddGroupsAndUsers = UserUtils.fetchGroupsAndUsers(false);
+            UserUtils.setDdGroupsAndUsers(ddGroupsAndUsers);
+        }
         Set<String> ddGroups = ddGroupsAndUsers.keySet();
         model.addAttribute("ddGroups", ddGroups);
         model.addAttribute("ddGroupsAndUsers", ddGroupsAndUsers);
