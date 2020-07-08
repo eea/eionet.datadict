@@ -28,10 +28,10 @@ import java.util.Enumeration;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import com.mysql.cj.jdbc.AbandonedConnectionCleanupThread;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.mysql.jdbc.AbandonedConnectionCleanupThread;
 
 /**
  * Class to close database connections to prevent memory leaks.
@@ -73,8 +73,9 @@ public class ContainerContextClosedHandler implements ServletContextListener {
 
         // MySQL driver leaves around a thread. This static method cleans it up.
         try {
-            AbandonedConnectionCleanupThread.checkedShutdown();
-        } catch (Exception ex) {
+            // throw new InterruptedException();
+            AbandonedConnectionCleanupThread.shutdown();
+        } catch (InterruptedException ex) {
             // again failure
             LOGGER.warn(ex.getMessage());
         }
