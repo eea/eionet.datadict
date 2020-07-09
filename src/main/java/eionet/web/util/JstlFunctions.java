@@ -21,17 +21,17 @@
 package eionet.web.util;
 
 import eionet.util.Props;
+import eionet.util.SecurityUtil;
+import eionet.util.Util;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.Collection;
-
-import org.apache.commons.lang.StringUtils;
-
-import eionet.util.SecurityUtil;
-import eionet.util.Util;
-import java.lang.reflect.InvocationTargetException;
-import java.util.List;
 
 /**
  * JSTL functions to be used in JSP.
@@ -45,6 +45,7 @@ public final class JstlFunctions {
     private static final String INPUT_CHECKED_STRING = "checked=\"checked\"";
     private static final String INPUT_SELECTED_STRING = "selected=\"selected\"";
     private static final String INPUT_DISABLED_STRING = "disabled=\"disabled\"";
+    private static final Logger LOGGER = LoggerFactory.getLogger(JstlFunctions.class);
 
     /**
      * Prevent initialization.
@@ -54,14 +55,14 @@ public final class JstlFunctions {
     }
 
     /**
-     * Returns the value of {@link CRUser#hasPermission(HttpSession, String, String)}, using the given inputs.
-     *
-     * @param session
+     * Checks if user has permission based on given inputs.
+     * @param usr
      * @param aclPath
-     * @param permission
+     * @param prm
      * @return
+     * @throws Exception
      */
-    public static boolean userHasPermission(java.lang.String usr, java.lang.String aclPath, java.lang.String prm) throws Exception {
+    public static boolean userHasPermission(eionet.meta.DDUser usr, java.lang.String aclPath, java.lang.String prm) throws Exception {
         return SecurityUtil.hasPerm(usr, aclPath, prm);
     }
 

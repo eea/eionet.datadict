@@ -85,7 +85,7 @@ public class Import extends HttpServlet {
         DDUser user = SecurityUtil.getUser(req);
         try {
             AccessControlListIF acl = AccessController.getAcl("/import");
-            if (user == null || !SecurityUtil.hasPerm(user.getUserName(), "/import", "x")) {
+            if (user == null || !SecurityUtil.hasPerm(user, "/import", "x")) {
                 responseText.append("<h1>Not allowed!</h1><br/>");
                 bException = true;
             }

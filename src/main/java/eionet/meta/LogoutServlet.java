@@ -32,6 +32,10 @@ public class LogoutServlet extends LoginLogoutServlet {
         if (user != null)
             freeSession(req);
 
-        res.sendRedirect(SecurityUtil.getLogoutURL(req));
+        if(user!=null && user.isLocalUser()){
+            res.sendRedirect(SecurityUtil.getLogoutURLForLocalUserAccount(req));
+        }else {
+            res.sendRedirect(SecurityUtil.getLogoutURL(req));
+        }
     }
 }

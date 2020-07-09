@@ -12,5 +12,5 @@ import java.util.Vector;
 
 public interface AclOperationsService {
 
-    Hashtable<String, Vector<String>> getGroupsAndUsersHashTable() throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException;
+    Hashtable<String, Vector<String>> getRefreshedGroupsAndUsersHashTable(boolean init) throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException;
 }

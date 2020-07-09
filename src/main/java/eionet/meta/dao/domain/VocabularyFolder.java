@@ -345,7 +345,7 @@ public class VocabularyFolder {
     }
 
     /**
-     * @return the folderId
+     * @return the `folderI`d
      */
     public int getFolderId() {
         VocabularySet vocabularySet = this.getVocabularySet();

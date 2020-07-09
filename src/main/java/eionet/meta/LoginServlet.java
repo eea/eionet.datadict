@@ -32,12 +32,13 @@ public class LoginServlet extends LoginLogoutServlet {
 
         DDUser user = new DDUser();
         if (user.authenticate(username, password) == true) {
-
+            user.setLocalUser(true);
             allocSession(req, user);
 
             String afterLogin = (String) req.getSession().getAttribute(AfterCASLoginServlet.AFTER_LOGIN_ATTR_NAME);
             if (afterLogin != null) {
-                res.sendRedirect(afterLogin);
+                String targetUrl = this.getServletContext().getContextPath();
+                res.sendRedirect(targetUrl);
             } else {
                 req.getRequestDispatcher("/").forward(req, res);
             }

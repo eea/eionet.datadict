@@ -23,30 +23,27 @@
 
 package eionet.util;
 
+import edu.yale.its.tp.cas.client.filter.CASFilter;
+import eionet.acl.AccessControlListIF;
+import eionet.acl.AccessController;
+import eionet.datadict.errors.AclLibraryAccessControllerModifiedException;
+import eionet.datadict.errors.AclPropertiesInitializationException;
+import eionet.datadict.web.UserUtils;
+import eionet.meta.*;
+import eionet.meta.dao.LdapDaoException;
+import eionet.meta.filters.CASFilterConfig;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
-import org.apache.commons.lang.StringUtils;
-
-import eionet.acl.AccessControlListIF;
-import eionet.acl.AccessController;
-
-import edu.yale.its.tp.cas.client.filter.CASFilter;
-import eionet.meta.AfterCASLoginServlet;
-import eionet.meta.DDCASUser;
-import eionet.meta.DDRuntimeException;
-import eionet.meta.DDUser;
-import eionet.meta.LoginServlet;
-import eionet.meta.filters.CASFilterConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * This is a class containing several utility methods for keeping security.
@@ -85,6 +82,9 @@ public final class SecurityUtil {
             String casUserName = session == null ? null : (String) session.getAttribute(CASFilter.CAS_FILTER_USER);
             if (casUserName != null) {
                 user = DDCASUser.create(casUserName);
+                user.setLocalUser(false);
+                session.setAttribute(REMOTEUSER, user);
+                setUserGroupResults(user, session);
                 session.setAttribute(REMOTEUSER, user);
             }
         } else if (user instanceof DDCASUser) {
@@ -96,6 +96,9 @@ public final class SecurityUtil {
             } else if (!casUserName.equals(user.getUserName())) {
                 user.invalidate();
                 user = DDCASUser.create(casUserName);
+                user.setLocalUser(false);
+                session.setAttribute(REMOTEUSER, user);
+                setUserGroupResults(user, session);
                 session.setAttribute(REMOTEUSER, user);
             }
         }
@@ -104,6 +107,16 @@ public final class SecurityUtil {
             return user.isAuthentic() ? user : null;
         } else {
             return null;
+        }
+    }
+
+    protected static void setUserGroupResults(DDUser user, HttpSession session) {
+        try {
+            UserUtils userUtils = new UserUtils();
+            ArrayList<String> results = userUtils.getUserOrGroup(user.getUserName(), false, session);
+            user.setGroupResults(results);
+        } catch (AclLibraryAccessControllerModifiedException | AclPropertiesInitializationException | LdapDaoException e) {
+            LOGGER.error(e.getMessage(), e);
         }
     }
 
@@ -116,22 +129,38 @@ public final class SecurityUtil {
      * @throws Exception
      */
     public static boolean userHasPerm(HttpServletRequest request, String aclPath, String prm) throws Exception {
-
         DDUser user = SecurityUtil.getUser(request);
-        return SecurityUtil.hasPerm(user == null ? null : user.getUserName(), aclPath, prm);
+        if (user != null) {
+            return SecurityUtil.hasPerm(user, aclPath, prm);
+        }
+        return SecurityUtil.groupHasPerm(null, aclPath, prm);
     }
 
     /**
      * Checks if the user has permission for the ACl.
      * NB If user has permission to the parent ACL *and parent ACL is not root ACL* - no children ACL is checked!
-     *
-     * @param usr user name
-     * @param aclPath full acl path
-     * @param prm permission
-     * @return true if user has permission
-     * @throws Exception if check fails
+     * @param user
+     * @param aclPath
+     * @param prm
+     * @return
+     * @throws Exception
      */
-    public static boolean hasPerm(String usr, String aclPath, String prm) throws Exception {
+    public static boolean hasPerm(DDUser user, String aclPath, String prm) throws Exception {
+        if (user!=null && user.isAuthentic()) {
+            if (user.getGroupResults() != null) {
+                for (String result : user.getGroupResults()) {
+                    if (SecurityUtil.groupHasPerm(result, aclPath, prm)) {
+                        return true;
+                    }
+                }
+            } else {
+                return SecurityUtil.groupHasPerm(user.getUserName(),aclPath,prm);
+            }
+        }
+        return false;
+    }
+
+    public static boolean groupHasPerm(String usr, String aclPath, String prm) throws Exception {
         if (!aclPath.startsWith("/")) {
             return false;
         }
@@ -290,7 +319,10 @@ public final class SecurityUtil {
 
         return result;
     }
-
+    public static String getLogoutURLForLocalUserAccount(HttpServletRequest request) {
+        String result = request.getContextPath();
+        return result;
+    }
     /**
      *
      * @return

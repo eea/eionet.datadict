@@ -33,7 +33,7 @@
         String[] ds_ids = request.getParameterValues("ds_id");
         for (int i=0; ds_ids!=null && i < ds_ids.length; i++){
             String dsIdf = request.getParameter("ds_idf_" + ds_ids[i]);
-            if (dsIdf==null || !SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dsIdf, "d")){ %>
+            if (dsIdf==null || !SecurityUtil.hasPerm(user, "/datasets/" + dsIdf, "d")){ %>
                 <b>Not allowed!</b><%
             }
         }
@@ -187,7 +187,7 @@
                         dsFullName = dsFullName.substring(0,60) + " ...";
                     }
 
-                    boolean delPrm = user!=null && SecurityUtil.hasPerm(user.getUserName(), "/datasets/" + dataset.getIdentifier(), "u");
+                    boolean delPrm = user!=null && SecurityUtil.hasPerm(user, "/datasets/" + dataset.getIdentifier(), "u");
                     if (delPrm) {
                         wasDelPrm = true;
                     }
