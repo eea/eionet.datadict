@@ -532,6 +532,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
     }
 
     public void deleteVocabularyConcepts(int vocabularyFolderId) {
+        LOGGER.info("Deleting all concepts from vocabulary folder: " + vocabularyFolderId);
         vocabularyConceptDAO.deleteVocabularyConcepts(vocabularyFolderId);
     }
 
