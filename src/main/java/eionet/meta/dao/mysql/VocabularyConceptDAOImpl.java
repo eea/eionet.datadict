@@ -319,7 +319,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         String sql = "delete from VOCABULARY_CONCEPT where VOCABULARY_CONCEPT_ID in (:ids)";
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("ids", ids);
-
+        LOGGER.info("Deleting concepts with ids: " + ids);
         getNamedParameterJdbcTemplate().update(sql.toString(), parameters);
     }
 
@@ -366,7 +366,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         String sql = "delete from VOCABULARY_CONCEPT where VOCABULARY_ID = :vocabularyFolderId";
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("vocabularyFolderId", vocabularyFolderId);
-
+        LOGGER.info("Deleting all concepts from vocabulary folder: " + vocabularyFolderId);
         getNamedParameterJdbcTemplate().update(sql.toString(), parameters);
     }
 

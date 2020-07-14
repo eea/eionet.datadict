@@ -24,6 +24,9 @@ import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.StandardGenericStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.web.action.AbstractActionBean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
@@ -40,6 +43,8 @@ import java.util.Set;
 public abstract class VocabularyImportServiceBaseImpl implements IVocabularyImportService {
 
     private static final int BATCH_SIZE = 1000;
+
+    protected static final Logger LOGGER = LoggerFactory.getLogger(VocabularyImportServiceBaseImpl.class);
 
     /**
      * Vocabulary service.
@@ -77,6 +82,7 @@ public abstract class VocabularyImportServiceBaseImpl implements IVocabularyImpo
             for (VocabularyConcept vc : concepts) {
                 conceptIds.add(vc.getId());
             }
+            LOGGER.info("Purging concepts with ids: " + conceptIds);
             this.vocabularyService.deleteVocabularyConcepts(conceptIds);
         }
     }

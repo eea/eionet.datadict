@@ -890,6 +890,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      *             if an error occurs
      */
     public Resolution deleteConcepts() throws ServiceException {
+        LOGGER.info("Deleting concepts with ids: " + conceptIds);
         vocabularyService.deleteVocabularyConcepts(conceptIds);
         addSystemMessage("Vocabulary concepts deleted successfully");
         RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class, "edit");
