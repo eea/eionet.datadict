@@ -321,6 +321,9 @@ public final class SecurityUtil {
     }
     public static String getLogoutURLForLocalUserAccount(HttpServletRequest request) {
         String result = request.getContextPath();
+        if(result.isEmpty()){
+            result = "/";
+        }
         return result;
     }
     /**
