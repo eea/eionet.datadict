@@ -38,6 +38,9 @@ public class LoginServlet extends LoginLogoutServlet {
             String afterLogin = (String) req.getSession().getAttribute(AfterCASLoginServlet.AFTER_LOGIN_ATTR_NAME);
             if (afterLogin != null) {
                 String targetUrl = this.getServletContext().getContextPath();
+                if(targetUrl.isEmpty()){
+                    targetUrl="/";
+                }
                 res.sendRedirect(targetUrl);
             } else {
                 req.getRequestDispatcher("/").forward(req, res);
