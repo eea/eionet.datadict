@@ -22,22 +22,17 @@ public class CleanMySqlLoggingTableDaoImpl extends JdbcDaoBase implements CleanM
     @Override
     public void delete() {
         String sql1 = "SET GLOBAL general_log = 'OFF';";
-        Map<String, Object> params1 = new HashMap<>();
-        getNamedParameterJdbcTemplate().update(sql1, params1);
+        Map<String, Object> params = new HashMap<>();
+        getNamedParameterJdbcTemplate().update(sql1, params);
         String sql2 = "RENAME TABLE general_log TO general_log_temp";
-        Map<String, Object> params2 = new HashMap<>();
-        getNamedParameterJdbcTemplate().update(sql2, params2);
+        getNamedParameterJdbcTemplate().update(sql2, params);
         String sql3 = "delete from general_log_temp where event_time < now() - interval 30 DAY";
-        Map<String, Object> params3 = new HashMap<>();
-        getNamedParameterJdbcTemplate().update(sql3, params3);
+        getNamedParameterJdbcTemplate().update(sql3, params);
         String sql4 = "RENAME TABLE general_log_temp TO general_log;";
-        Map<String, Object> params4 = new HashMap<>();
-        getNamedParameterJdbcTemplate().update(sql4, params4);
+        getNamedParameterJdbcTemplate().update(sql4, params);
         String sql5 = "SET GLOBAL log_output = 'table'";
-        Map<String, Object> params5 = new HashMap<>();
-        getNamedParameterJdbcTemplate().update(sql5, params5);
+        getNamedParameterJdbcTemplate().update(sql5, params);
         String sql6 = "SET GLOBAL general_log = 'ON'";
-        Map<String, Object> params6 = new HashMap<>();
-        getNamedParameterJdbcTemplate().update(sql6, params6);
+        getNamedParameterJdbcTemplate().update(sql6, params);
     }
 }
