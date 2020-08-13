@@ -129,7 +129,7 @@
     <bean id="mySqlSystemDataSource" class="org.apache.commons.dbcp.BasicDataSource"
           destroy-method="close">
         <property name="driverClassName" value="${db.drv}"/>
-        <property name="url" value="jdbc:mysql://localhost:3311/mysql"/>
+        <property name="url" value="${mysql.db}"/>
         <property name="username" value="${db.usr}"/>
         <property name="password" value="${db.psw}"/>
         <!-- The following two properties required because MySQL kills idle
