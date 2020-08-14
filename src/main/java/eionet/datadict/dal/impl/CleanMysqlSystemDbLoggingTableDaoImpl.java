@@ -1,21 +1,24 @@
 package eionet.datadict.dal.impl;
 
-import eionet.datadict.dal.CleanMySqlLoggingTableDao;
+import eionet.datadict.dal.CleanMysqlSystemDbLoggingTableDao;
+import eionet.datadict.model.GeneralLogEntry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
 @Repository
-public class CleanMySqlLoggingTableDaoImpl extends JdbcDaoBase implements CleanMySqlLoggingTableDao {
+public class CleanMysqlSystemDbLoggingTableDaoImpl extends JdbcDaoBase implements CleanMysqlSystemDbLoggingTableDao {
 
 
     @Autowired
-    public CleanMySqlLoggingTableDaoImpl(@Qualifier("mySqlSystemDataSource") DataSource mySqlSystemDataSource) {
+    public CleanMysqlSystemDbLoggingTableDaoImpl(@Qualifier("mysqlSystemDatabase") DataSource mySqlSystemDataSource) {
         super(mySqlSystemDataSource);
     }
 

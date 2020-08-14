@@ -126,7 +126,7 @@
         <property name="testOnBorrow" value="true"/>
     </bean>
 
-    <bean id="mySqlSystemDataSource" class="org.apache.commons.dbcp.BasicDataSource"
+    <bean id="mysqlSystemDatabase" class="org.apache.commons.dbcp.BasicDataSource"
           destroy-method="close">
         <property name="driverClassName" value="${db.drv}"/>
         <property name="url" value="${mysql.db}"/>

@@ -1,7 +1,7 @@
 package eionet.datadict.infrastructure.scheduling;
 
 import eionet.datadict.dal.AsyncTaskHistoryDao;
-import eionet.datadict.dal.CleanMySqlLoggingTableDao;
+import eionet.datadict.dal.CleanMysqlSystemDbLoggingTableDao;
 import eionet.datadict.model.AsyncTaskExecutionEntryHistory;
 import java.util.List;
 
@@ -20,10 +20,10 @@ public class FixedTimeScheduledTasks {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FixedTimeScheduledTasks.class);
     private final AsyncTaskHistoryDao asyncTaskHistoryDao;
-    private final CleanMySqlLoggingTableDao cleanMySqlLoggingTableDao;
+    private final CleanMysqlSystemDbLoggingTableDao cleanMySqlLoggingTableDao;
 
     @Autowired
-    public FixedTimeScheduledTasks(AsyncTaskHistoryDao asyncTaskHistoryDao, CleanMySqlLoggingTableDao cleanMySqlLoggingTableDao) {
+    public FixedTimeScheduledTasks(AsyncTaskHistoryDao asyncTaskHistoryDao, CleanMysqlSystemDbLoggingTableDao cleanMySqlLoggingTableDao) {
         this.asyncTaskHistoryDao = asyncTaskHistoryDao;
         this.cleanMySqlLoggingTableDao = cleanMySqlLoggingTableDao;
     }

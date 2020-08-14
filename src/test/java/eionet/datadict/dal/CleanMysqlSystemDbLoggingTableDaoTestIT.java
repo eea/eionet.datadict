@@ -27,12 +27,12 @@ import java.util.Map;
 @TestExecutionListeners({DependencyInjectionTestExecutionListener.class,
         TransactionalTestExecutionListener.class,
         DbUnitTestExecutionListener.class})
-public class CleanMySqlLoggingTableDaoTestIT {
+public class CleanMysqlSystemDbLoggingTableDaoTestIT {
 
     @Autowired
-    private CleanMySqlLoggingTableDao cleanMySqlLoggingTableDao;
+    private CleanMysqlSystemDbLoggingTableDao cleanMySqlLoggingTableDao;
     @Autowired
-    @Qualifier("mySqlSystemDataSource")
+    @Qualifier("mysqlSystemDatabase")
     private DataSource mySqlSystemDataSource;
 
     private TestLogAssistanceDao testLogAssistanceDao;
@@ -67,7 +67,7 @@ public class CleanMySqlLoggingTableDaoTestIT {
 
     private static class TestLogAssistanceDao extends JdbcDaoBase {
 
-        public TestLogAssistanceDao(@Qualifier("mySqlSystemDataSource") DataSource mySqlSystemDataSource) {
+        public TestLogAssistanceDao(@Qualifier("mysqlSystemDatabase") DataSource mySqlSystemDataSource) {
             super(mySqlSystemDataSource);
         }
 

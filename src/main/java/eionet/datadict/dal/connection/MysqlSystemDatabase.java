@@ -4,6 +4,6 @@ import org.apache.commons.dbcp.BasicDataSource;
 import org.springframework.stereotype.Component;
 
 @Component
-public class MySqlSystemDataSource extends BasicDataSource {
+public class MysqlSystemDatabase extends BasicDataSource {
 
 }
