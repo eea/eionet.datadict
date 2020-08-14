@@ -37,7 +37,7 @@ public class CleanMySqlLoggingTableDaoTestIT {
 
     private TestLogAssistanceDao testLogAssistanceDao;
     private GeneralLogEntry generalLogEntry;
-    private static Date entryDate = Date.from(ZonedDateTime.now().minusMonths(1).toInstant());
+    private static Date entryDate = Date.from(ZonedDateTime.now().minusMonths(2).toInstant());
 
     @Before
     public void setup() {
