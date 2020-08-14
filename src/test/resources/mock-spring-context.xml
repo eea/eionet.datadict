@@ -107,6 +107,18 @@
         <property name="testOnBorrow" value="true"/>
     </bean>
 
+    <bean id="mySqlSystemDataSource" class="org.apache.commons.dbcp.BasicDataSource"
+          destroy-method="close">
+        <property name="driverClassName" value="${db.drv}"/>
+        <property name="url" value="${mysql.db}"/>
+        <property name="username" value="${db.usr}"/>
+        <property name="password" value="${db.psw}"/>
+        <!-- The following two properties required because MySQL kills idle
+        connections after 8 hours. -->
+        <property name="validationQuery" value="SELECT 1"/>
+        <property name="testOnBorrow" value="true"/>
+    </bean>
+
     <!-- enable the configuration of transactional behavior based on annotations -->
     <tx:annotation-driven transaction-manager="txManager" />
 
