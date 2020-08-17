@@ -42,8 +42,6 @@ public class CleanMysqlSystemDbLoggingTableDaoTestIT {
     @Before
     public void setup() {
         this.testLogAssistanceDao = new TestLogAssistanceDao(mySqlSystemDataSource);
-        testLogAssistanceDao.enableTableLogging();
-//        testLogAssistanceDao.createGeneralLogTable();
         generalLogEntry = createGeneralLogEntry();
         testLogAssistanceDao.insertLoggingEntries(generalLogEntry);
     }
@@ -71,39 +69,29 @@ public class CleanMysqlSystemDbLoggingTableDaoTestIT {
             super(mySqlSystemDataSource);
         }
 
-        public void createGeneralLogTable() {
-            String sql = "CREATE TABLE `general_log`" +
-                    "   `event_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP" +
-                    "                          ON UPDATE CURRENT_TIMESTAMP," +
-                    "   `user_host` mediumtext NOT NULL," +
-                    "   `thread_id` int(10) unsigned NOT NULL," +
-                    "   `server_id` int(10) unsigned NOT NULL," +
-                    "   `command_type` varchar(64) NOT NULL," +
-                    "   `argument` mediumtext NOT NULL" +
-                    "  ) ENGINE=CSV DEFAULT CHARSET=utf8 COMMENT='General log'";
-            Map<String, Object> params = new HashMap<>();
-            getNamedParameterJdbcTemplate().update(sql, params);
-        }
-
-        public void enableTableLogging() {
-            String sql1 = "SET GLOBAL log_output = 'table'";
+        public void insertLoggingEntries(GeneralLogEntry entry){
+            String sql1 = "SET GLOBAL general_log = 'OFF';";
             Map<String, Object> params = new HashMap<>();
             getNamedParameterJdbcTemplate().update(sql1, params);
-            String sql2 = "SET GLOBAL general_log = 'ON'";
+            String sql2 = "RENAME TABLE general_log TO general_log_temp";
             getNamedParameterJdbcTemplate().update(sql2, params);
-        }
+            String sql3 = "insert into general_log_temp(event_time, user_host, thread_id, server_id, command_type, argument) "
+                    + "values (:event_time, :user_host, :thread_id, :server_id, :command_type, :argument)";
+            Map<String, Object> params1 = new HashMap<>();
+            params1.put("event_time", entry.getEvent_time());
+            params1.put("user_host", entry.getUser_host());
+            params1.put("thread_id", entry.getThread_id());
+            params1.put("server_id", entry.getServer_id());
+            params1.put("command_type", entry.getCommand_type());
+            params1.put("argument", entry.getArgument());
+            getNamedParameterJdbcTemplate().update(sql3, params1);
+            String sql4 = "RENAME TABLE general_log_temp TO general_log";
+            getNamedParameterJdbcTemplate().update(sql4, params);
+            String sql5 = "SET GLOBAL log_output = 'table'";
+            getNamedParameterJdbcTemplate().update(sql5, params);
+            String sql6 = "SET GLOBAL general_log = 'ON'";
+            getNamedParameterJdbcTemplate().update(sql6, params);
 
-        public void insertLoggingEntries(GeneralLogEntry entry){
-            String sql = "insert into general_log(event_time, user_host, thread_id, server_id, command_type, argument) "
-                       + "values (:event_time, :user_host, :thread_id, :server_id, :command_type, :argument)";
-            Map<String, Object> params = new HashMap<>();
-            params.put("event_time", entry.getEvent_time());
-            params.put("user_host", entry.getUser_host());
-            params.put("thread_id", entry.getThread_id());
-            params.put("server_id", entry.getServer_id());
-            params.put("command_type", entry.getCommand_type());
-            params.put("argument", entry.getArgument());
-            getNamedParameterJdbcTemplate().update(sql, params);
         }
 
     }
