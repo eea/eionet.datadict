@@ -1,15 +1,12 @@
 package eionet.datadict.dal.impl;
 
 import eionet.datadict.dal.CleanMysqlSystemDbLoggingTableDao;
-import eionet.datadict.model.GeneralLogEntry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 
