@@ -27,6 +27,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import eionet.meta.dao.domain.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.slf4j.Logger;
@@ -46,15 +47,6 @@ import eionet.meta.dao.IRdfNamespaceDAO;
 import eionet.meta.dao.ISiteCodeDAO;
 import eionet.meta.dao.IVocabularyConceptDAO;
 import eionet.meta.dao.IVocabularyFolderDAO;
-import eionet.meta.dao.domain.DataElement;
-import eionet.meta.dao.domain.Folder;
-import eionet.meta.dao.domain.RdfNamespace;
-import eionet.meta.dao.domain.RegStatus;
-import eionet.meta.dao.domain.SimpleAttribute;
-import eionet.meta.dao.domain.SiteCodeStatus;
-import eionet.meta.dao.domain.StandardGenericStatus;
-import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.data.VocabularyConceptBoundElementFilter;
 import eionet.meta.service.data.VocabularyConceptData;
 import eionet.meta.service.data.VocabularyConceptFilter;
@@ -260,6 +252,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
             } else {
                 Folder folder = folderDAO.getFolder(vocabularyFolder.getFolderId());
                 vocabularyFolder.setFolderName(folder.getIdentifier());
+                vocabularyFolder.setType(VocabularyType.COMMON);
             }
 
             String baseUri = vocabularyFolder.getBaseUri();
