@@ -92,10 +92,10 @@ public class SearchSchemaSetsActionBean extends AbstractActionBean {
     private List<String> regStatuses;
 
 
-    private static final Set<Object> VALID_COLUMNS_FOR_ORDER_BY
-            = Collections.unmodifiableSet((Set<?>) Stream
-            .of(SortOrderEnum.ASCENDING,SortOrderEnum.DESCENDING)
-            .collect(Collectors.toCollection(HashSet::new)));
+    private static final Set<String> VALID_SORT_BY_COLUMNS
+                    = Collections.unmodifiableSet((Set<? extends String>)Stream
+                    .of("reg_status", "NAME_ATTR")
+                    .collect(Collectors.toCollection(HashSet::new)));
 
     /**
      *
@@ -132,9 +132,8 @@ public class SearchSchemaSetsActionBean extends AbstractActionBean {
 
     @ValidationMethod(on = {"search"})
     public void validateSearch() throws ServiceException {
-        if (this.sort!=null &&(!this.sort.equals(SortOrderEnum.ASCENDING) && !this.sort.equals(SortOrderEnum.DESCENDING))) {
-            throw new ServiceException("Wrong Search parameters.Please try again");
-
+        if (this.sort != null && !VALID_SORT_BY_COLUMNS.contains(this.sort)) {
+            throw new ServiceException("Wrong Search parameters. Please try again");
         }
     }
 
