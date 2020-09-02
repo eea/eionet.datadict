@@ -21,10 +21,9 @@
 
 package eionet.web.action;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.ForwardResolution;
@@ -33,6 +32,7 @@ import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.integration.spring.SpringBean;
 
+import net.sourceforge.stripes.validation.ValidationMethod;
 import org.apache.commons.lang.StringUtils;
 import org.displaytag.properties.SortOrderEnum;
 
@@ -91,6 +91,12 @@ public class SearchSchemaSetsActionBean extends AbstractActionBean {
     /** Possible registration statuses. */
     private List<String> regStatuses;
 
+
+    private static final Set<String> VALID_SORT_BY_COLUMNS
+                    = Collections.unmodifiableSet((Set<? extends String>)Stream
+                    .of("reg_status", "NAME_ATTR")
+                    .collect(Collectors.toCollection(HashSet::new)));
+
     /**
      *
      * @return
@@ -98,6 +104,7 @@ public class SearchSchemaSetsActionBean extends AbstractActionBean {
      */
     @DefaultHandler
     public Resolution search() throws ServiceException {
+
         if (searchFilter == null) {
             searchFilter = new SchemaSetFilter();
             searchFilter.setAttributes(schemaService.getSchemaSetAttributes());
@@ -120,6 +127,14 @@ public class SearchSchemaSetsActionBean extends AbstractActionBean {
         searchFilter.setSearchingUser(getUserName());
         schemaSetsResult = schemaService.searchSchemaSets(searchFilter);
         return new ForwardResolution(SEARCH_SCHEMA_SETS_JSP);
+    }
+
+
+    @ValidationMethod(on = {"search"})
+    public void validateSearch() throws ServiceException {
+        if (this.sort != null && !VALID_SORT_BY_COLUMNS.contains(this.sort)) {
+            throw new ServiceException("Wrong Search parameters. Please try again");
+        }
     }
 
     /**
