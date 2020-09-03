@@ -104,7 +104,7 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         sql.append("from VOCABULARY v inner join VOCABULARY_CONCEPT vc on v.VOCABULARY_ID=vc.VOCABULARY_ID ");
 
         StringBuilder sqlWhereClause = new StringBuilder();
-        sqlWhereClause.append("where v.VOCABULARY_TYPE = :siteCodeType  ");
+        sqlWhereClause.append("where v.VOCABULARY_TYPE = :siteCodeType and v.WORKING_COPY = 0 ");
         params.put("siteCodeType", VocabularyType.SITE_CODE.name());
 
         if (StringUtils.isNotEmpty(filter.getSiteName())) {
@@ -541,6 +541,7 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         sql.append("inner join VOCABULARY_CONCEPT_ELEMENT vce on vc.VOCABULARY_CONCEPT_ID=vce.VOCABULARY_CONCEPT_ID ");
         sql.append("where v.VOCABULARY_TYPE = :siteCodeType " );
         sql.append("and vce.DATAELEM_ID = :statusElementId and vce.ELEMENT_VALUE = :status ");
+        sql.append("and v.WORKING_COPY = 0 ");
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("status", SiteCodeStatus.AVAILABLE.name());
@@ -570,7 +571,7 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         sql.append("from VOCABULARY v inner join VOCABULARY_CONCEPT vc on v.VOCABULARY_ID=vc.VOCABULARY_ID ");
         sql.append("inner join VOCABULARY_CONCEPT_ELEMENT vce1 on vc.VOCABULARY_CONCEPT_ID=vce1.VOCABULARY_CONCEPT_ID ");
         sql.append("inner join VOCABULARY_CONCEPT_ELEMENT vce2 on vce1.VOCABULARY_CONCEPT_ID=vce2.VOCABULARY_CONCEPT_ID ");
-        sql.append("where v.VOCABULARY_TYPE = :siteCodeType and vce1.ID != vce2.ID " );
+        sql.append("where v.VOCABULARY_TYPE = :siteCodeType and v.WORKING_COPY = 0 and vce1.ID != vce2.ID " );
         sql.append("and vce1.DATAELEM_ID = :statusElementId and vce1.ELEMENT_VALUE in (:statuses) ");
         sql.append("and vce2.DATAELEM_ID = :countryCodeElementId and vce2.ELEMENT_VALUE = :countryCode ");
 
@@ -611,7 +612,7 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         sql.append("from VOCABULARY v inner join VOCABULARY_CONCEPT vc on v.VOCABULARY_ID=vc.VOCABULARY_ID ");
         sql.append("inner join VOCABULARY_CONCEPT_ELEMENT vce1 on vc.VOCABULARY_CONCEPT_ID=vce1.VOCABULARY_CONCEPT_ID ");
         sql.append("inner join VOCABULARY_CONCEPT_ELEMENT vce2 on vce1.VOCABULARY_CONCEPT_ID=vce2.VOCABULARY_CONCEPT_ID ");
-        sql.append("where v.VOCABULARY_TYPE = :siteCodeType and vce1.ID != vce2.ID " );
+        sql.append("where v.VOCABULARY_TYPE = :siteCodeType and v.WORKING_COPY = 0 and vce1.ID != vce2.ID " );
         sql.append("and vce1.DATAELEM_ID = :statusElementId and vce1.ELEMENT_VALUE in (:statuses) ");
         sql.append("and vce2.DATAELEM_ID = :countryCodeElementId and vce2.ELEMENT_VALUE = :countryCode");
 
