@@ -285,4 +285,6 @@ public interface IVocabularyConceptDAO {
 
     void updateVocabularyConceptLabelStatusModifiedDate(List<Integer> vocabularyConceptIds, String label, Integer status);
 
+    String getIdentifierOfRelatedConcept(Integer conceptId, Integer elementId);
+
 }
