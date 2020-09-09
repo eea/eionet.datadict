@@ -160,7 +160,8 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
                 throw new Exception(exMsg);
             }
             sql.append("inner join VOCABULARY_CONCEPT_ELEMENT vce4 on vc.VOCABULARY_CONCEPT_ID=vce4.VOCABULARY_CONCEPT_ID ");
-            sqlWhereClause.append("and vce4.DATAELEM_ID = :countryCodeElemId and vce4.ELEMENT_VALUE like :countryCode ");
+            sql.append("inner join VOCABULARY_CONCEPT vc2 on vc2.VOCABULARY_CONCEPT_ID=vce4.RELATED_CONCEPT_ID ");
+            sqlWhereClause.append("and vce4.DATAELEM_ID = :countryCodeElemId and (vce4.ELEMENT_VALUE like :countryCode or vc2.IDENTIFIER like :countryCode) ");
             params.put("countryCodeElemId", elementMap.get(SiteCodeBoundElementIdentifiers.COUNTRY_CODE.getIdentifier()));
             /* The symbol '%' is inserted in the beggining of the country code in order to retrieve all country codes without taking into consideration the url (rdf resource)*/
             StringBuilder countryCode = new StringBuilder(filter.getCountryCode());
@@ -227,7 +228,7 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
      * @return a list of site codes
      */
     public List<SiteCode> getSiteCodeList(String query, Map<String, Object> params, Map<String, Integer> elementMap) {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         List<SiteCode> resultList = getNamedParameterJdbcTemplate().query(query, params, new RowMapper<SiteCode>() {
             @Override
             public SiteCode mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -251,7 +252,21 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
                         /*map the identifier to the field that the data should be stored in*/
                         String identifier = elementIdentifierSet.iterator().next();
                         if (identifier.equals(SiteCodeBoundElementIdentifiers.COUNTRY_CODE.getIdentifier())) {
-                            sc.setCountryCode(entry.getValue());
+                            if(entry.getValue() != null) {
+                                sc.setCountryCode(entry.getValue());
+                            }
+                            else{
+                                //get identifier of related concept
+                                String countryCode = vocabularyConceptDAO.getIdentifierOfRelatedConcept(sc.getId(), entry.getKey());
+                                if(countryCode != null) {
+                                    //insert country code information
+                                    StringBuilder countryCodeSb = new StringBuilder();
+                                    countryCodeSb.append(Props.getRequiredProperty(PropsIF.DD_URL));
+                                    countryCodeSb.append("/vocabulary/common/countries/");
+                                    countryCodeSb.append(countryCode);
+                                    sc.setCountryCode(countryCodeSb.toString());
+                                }
+                            }
                         } else if (identifier.equals(SiteCodeBoundElementIdentifiers.INITIAL_SITE_NAME.getIdentifier())) {
                             sc.setInitialSiteName(entry.getValue());
                         } else if (identifier.equals(SiteCodeBoundElementIdentifiers.STATUS.getIdentifier())) {
