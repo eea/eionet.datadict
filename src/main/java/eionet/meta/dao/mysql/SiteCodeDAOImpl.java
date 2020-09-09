@@ -160,7 +160,7 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
                 throw new Exception(exMsg);
             }
             sql.append("inner join VOCABULARY_CONCEPT_ELEMENT vce4 on vc.VOCABULARY_CONCEPT_ID=vce4.VOCABULARY_CONCEPT_ID ");
-            sql.append("inner join VOCABULARY_CONCEPT vc2 on vc2.VOCABULARY_CONCEPT_ID=vce4.RELATED_CONCEPT_ID ");
+            sql.append("left join VOCABULARY_CONCEPT vc2 on vc2.VOCABULARY_CONCEPT_ID=vce4.RELATED_CONCEPT_ID ");
             sqlWhereClause.append("and vce4.DATAELEM_ID = :countryCodeElemId and (vce4.ELEMENT_VALUE like :countryCode or vc2.IDENTIFIER like :countryCode) ");
             params.put("countryCodeElemId", elementMap.get(SiteCodeBoundElementIdentifiers.COUNTRY_CODE.getIdentifier()));
             /* The symbol '%' is inserted in the beggining of the country code in order to retrieve all country codes without taking into consideration the url (rdf resource)*/
@@ -253,19 +253,18 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
                         String identifier = elementIdentifierSet.iterator().next();
                         if (identifier.equals(SiteCodeBoundElementIdentifiers.COUNTRY_CODE.getIdentifier())) {
                             if(entry.getValue() != null) {
-                                sc.setCountryCode(entry.getValue());
+                                String countryCode = entry.getValue();
+                                StringBuilder countryCodeSb = new StringBuilder();
+                                countryCodeSb.append(Props.getRequiredProperty(PropsIF.DD_URL));
+                                countryCodeSb.append("/vocabulary/common/countries/");
+                                if(countryCode.contains(countryCodeSb.toString())) {
+                                    countryCode = countryCode.replaceAll(countryCodeSb.toString(), "");
+                                }
+                                sc.setCountryCode(countryCode);
                             }
                             else{
                                 //get identifier of related concept
-                                String countryCode = vocabularyConceptDAO.getIdentifierOfRelatedConcept(sc.getId(), entry.getKey());
-                                if(countryCode != null) {
-                                    //insert country code information
-                                    StringBuilder countryCodeSb = new StringBuilder();
-                                    countryCodeSb.append(Props.getRequiredProperty(PropsIF.DD_URL));
-                                    countryCodeSb.append("/vocabulary/common/countries/");
-                                    countryCodeSb.append(countryCode);
-                                    sc.setCountryCode(countryCodeSb.toString());
-                                }
+                                sc.setCountryCode(vocabularyConceptDAO.getIdentifierOfRelatedConcept(sc.getId(), entry.getKey()));
                             }
                         } else if (identifier.equals(SiteCodeBoundElementIdentifiers.INITIAL_SITE_NAME.getIdentifier())) {
                             sc.setInitialSiteName(entry.getValue());
