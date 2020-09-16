@@ -104,7 +104,7 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         sql.append("from VOCABULARY v inner join VOCABULARY_CONCEPT vc on v.VOCABULARY_ID=vc.VOCABULARY_ID ");
 
         StringBuilder sqlWhereClause = new StringBuilder();
-        sqlWhereClause.append("where v.VOCABULARY_TYPE = :siteCodeType  ");
+        sqlWhereClause.append("where v.VOCABULARY_TYPE = :siteCodeType and v.WORKING_COPY = 0 ");
         params.put("siteCodeType", VocabularyType.SITE_CODE.name());
 
         if (StringUtils.isNotEmpty(filter.getSiteName())) {
@@ -160,7 +160,8 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
                 throw new Exception(exMsg);
             }
             sql.append("inner join VOCABULARY_CONCEPT_ELEMENT vce4 on vc.VOCABULARY_CONCEPT_ID=vce4.VOCABULARY_CONCEPT_ID ");
-            sqlWhereClause.append("and vce4.DATAELEM_ID = :countryCodeElemId and vce4.ELEMENT_VALUE like :countryCode ");
+            sql.append("left join VOCABULARY_CONCEPT vc2 on vc2.VOCABULARY_CONCEPT_ID=vce4.RELATED_CONCEPT_ID ");
+            sqlWhereClause.append("and vce4.DATAELEM_ID = :countryCodeElemId and (vce4.ELEMENT_VALUE like :countryCode or vc2.IDENTIFIER like :countryCode) ");
             params.put("countryCodeElemId", elementMap.get(SiteCodeBoundElementIdentifiers.COUNTRY_CODE.getIdentifier()));
             /* The symbol '%' is inserted in the beggining of the country code in order to retrieve all country codes without taking into consideration the url (rdf resource)*/
             StringBuilder countryCode = new StringBuilder(filter.getCountryCode());
@@ -227,7 +228,7 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
      * @return a list of site codes
      */
     public List<SiteCode> getSiteCodeList(String query, Map<String, Object> params, Map<String, Integer> elementMap) {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         List<SiteCode> resultList = getNamedParameterJdbcTemplate().query(query, params, new RowMapper<SiteCode>() {
             @Override
             public SiteCode mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -251,7 +252,20 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
                         /*map the identifier to the field that the data should be stored in*/
                         String identifier = elementIdentifierSet.iterator().next();
                         if (identifier.equals(SiteCodeBoundElementIdentifiers.COUNTRY_CODE.getIdentifier())) {
-                            sc.setCountryCode(entry.getValue());
+                            if(entry.getValue() != null) {
+                                String countryCode = entry.getValue();
+                                StringBuilder countryCodeSb = new StringBuilder();
+                                countryCodeSb.append(Props.getRequiredProperty(PropsIF.DD_URL));
+                                countryCodeSb.append("/vocabulary/common/countries/");
+                                if(countryCode.contains(countryCodeSb.toString())) {
+                                    countryCode = countryCode.replaceAll(countryCodeSb.toString(), "");
+                                }
+                                sc.setCountryCode(countryCode);
+                            }
+                            else{
+                                //get identifier of related concept
+                                sc.setCountryCode(vocabularyConceptDAO.getIdentifierOfRelatedConcept(sc.getId(), entry.getKey()));
+                            }
                         } else if (identifier.equals(SiteCodeBoundElementIdentifiers.INITIAL_SITE_NAME.getIdentifier())) {
                             sc.setInitialSiteName(entry.getValue());
                         } else if (identifier.equals(SiteCodeBoundElementIdentifiers.STATUS.getIdentifier())) {
@@ -541,6 +555,7 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         sql.append("inner join VOCABULARY_CONCEPT_ELEMENT vce on vc.VOCABULARY_CONCEPT_ID=vce.VOCABULARY_CONCEPT_ID ");
         sql.append("where v.VOCABULARY_TYPE = :siteCodeType " );
         sql.append("and vce.DATAELEM_ID = :statusElementId and vce.ELEMENT_VALUE = :status ");
+        sql.append("and v.WORKING_COPY = 0 ");
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("status", SiteCodeStatus.AVAILABLE.name());
@@ -570,7 +585,7 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         sql.append("from VOCABULARY v inner join VOCABULARY_CONCEPT vc on v.VOCABULARY_ID=vc.VOCABULARY_ID ");
         sql.append("inner join VOCABULARY_CONCEPT_ELEMENT vce1 on vc.VOCABULARY_CONCEPT_ID=vce1.VOCABULARY_CONCEPT_ID ");
         sql.append("inner join VOCABULARY_CONCEPT_ELEMENT vce2 on vce1.VOCABULARY_CONCEPT_ID=vce2.VOCABULARY_CONCEPT_ID ");
-        sql.append("where v.VOCABULARY_TYPE = :siteCodeType and vce1.ID != vce2.ID " );
+        sql.append("where v.VOCABULARY_TYPE = :siteCodeType and v.WORKING_COPY = 0 and vce1.ID != vce2.ID " );
         sql.append("and vce1.DATAELEM_ID = :statusElementId and vce1.ELEMENT_VALUE in (:statuses) ");
         sql.append("and vce2.DATAELEM_ID = :countryCodeElementId and vce2.ELEMENT_VALUE = :countryCode ");
 
@@ -611,7 +626,7 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         sql.append("from VOCABULARY v inner join VOCABULARY_CONCEPT vc on v.VOCABULARY_ID=vc.VOCABULARY_ID ");
         sql.append("inner join VOCABULARY_CONCEPT_ELEMENT vce1 on vc.VOCABULARY_CONCEPT_ID=vce1.VOCABULARY_CONCEPT_ID ");
         sql.append("inner join VOCABULARY_CONCEPT_ELEMENT vce2 on vce1.VOCABULARY_CONCEPT_ID=vce2.VOCABULARY_CONCEPT_ID ");
-        sql.append("where v.VOCABULARY_TYPE = :siteCodeType and vce1.ID != vce2.ID " );
+        sql.append("where v.VOCABULARY_TYPE = :siteCodeType and v.WORKING_COPY = 0 and vce1.ID != vce2.ID " );
         sql.append("and vce1.DATAELEM_ID = :statusElementId and vce1.ELEMENT_VALUE in (:statuses) ");
         sql.append("and vce2.DATAELEM_ID = :countryCodeElementId and vce2.ELEMENT_VALUE = :countryCode");
 

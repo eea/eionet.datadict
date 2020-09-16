@@ -1065,4 +1065,25 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         getNamedParameterJdbcTemplate().update(sql.toString(), parameters);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String getIdentifierOfRelatedConcept(Integer conceptId, Integer elementId){
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("elementId", elementId);
+        parameters.put("conceptId", conceptId);
+
+        StringBuilder sql = new StringBuilder();
+        sql.append("select vc.IDENTIFIER from VOCABULARY_CONCEPT vc inner join VOCABULARY_CONCEPT_ELEMENT vce on vc.VOCABULARY_CONCEPT_ID = vce.RELATED_CONCEPT_ID ");
+        sql.append("where vce.DATAELEM_ID = :elementId and vce.VOCABULARY_CONCEPT_ID = :conceptId and vc.ORIGINAL_CONCEPT_ID is null");
+
+        String result = null;
+        try {
+            result = getNamedParameterJdbcTemplate().queryForObject(sql.toString(), parameters, String.class);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+        return result;
+    }
 }
