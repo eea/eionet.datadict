@@ -245,4 +245,6 @@ public interface PropsIF {
     String LDAP_ROLE_DIR = "ldap.role.dir";
 
     String LDAP_USER_DIR = "ldap.user.dir";
+
+    String EXCLUDED_COUNTY_CODES = "env.dd.countryCodes.excluded";
 }

@@ -128,7 +128,7 @@ public class DataServiceImpl implements IDataService {
     @Override
     public List<FixedValue> getDataElementFixedValues(int dataElementId) throws ServiceException {
         try{
-            return dataElementDao.getFixedValues(dataElementId);
+            return dataElementDao.getFixedValues(dataElementId, false);
         }
         catch(Exception e){
             throw new ServiceException("Failed to get data element's fixed values: " + e.getMessage(), e);
