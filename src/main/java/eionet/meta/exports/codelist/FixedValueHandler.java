@@ -28,7 +28,7 @@ public class FixedValueHandler extends CodeValueHandler {
         }
         int elementID = this.element.getId();
 
-        List<FixedValue> values = this.elementDAO.getFixedValues(elementID);
+        List<FixedValue> values = this.elementDAO.getFixedValues(elementID, false);
 
         List<CodeItem> items = new ArrayList<CodeItem>();
 

@@ -33,6 +33,8 @@ import eionet.meta.dao.domain.RegStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.mysql.valueconverters.BooleanToYesNoConverter;
 import eionet.meta.service.data.DataElementsFilter;
+import eionet.util.Props;
+import eionet.util.PropsIF;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -343,12 +345,22 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
      * {@inheritDoc}
      */
     @Override
-    public List<FixedValue> getFixedValues(int dataElementId) {
-        String sql = "select * from FXV where OWNER_ID=:ownerId and OWNER_TYPE=:ownerType order by FXV_ID";
-
+    public List<FixedValue> getFixedValues(int dataElementId, Boolean countryCode) {
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("ownerId", dataElementId);
         params.put("ownerType", "elem");
+
+        String sql = "select * from FXV where OWNER_ID=:ownerId and OWNER_TYPE=:ownerType ";
+        if(countryCode == true){
+            String excludedCountryCodes = Props.getProperty(PropsIF.EXCLUDED_COUNTY_CODES);
+            String[] excludedCountryCodesList = excludedCountryCodes.split("," );
+            sql+=" and VALUE not in (:excludedCountryCodes) ";
+            params.put("excludedCountryCodes", Arrays.asList(excludedCountryCodesList));
+        }
+
+        sql+= " order by FXV_ID ";
+
+
 
         List<FixedValue> result = getNamedParameterJdbcTemplate().query(sql, params, new RowMapper<FixedValue>() {
             @Override
@@ -551,7 +563,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         });
 
         for (DataElement elem : result) {
-            List<FixedValue> fxvs = getFixedValues(elem.getId());
+            List<FixedValue> fxvs = getFixedValues(elem.getId(), false);
             elem.setFixedValues(fxvs);
         }
         return result;
@@ -702,7 +714,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
                 de.setRelatedVocabularyStatus(rs.getString("rcv.REG_STATUS"));
                 de.setRelatedVocabularyWorkingCopy(rs.getInt("rcv.WORKING_COPY") == 1);
                 de.setValueId(rs.getInt("v.ID"));
-                List<FixedValue> fxvs = getFixedValues(de.getId());
+                List<FixedValue> fxvs = getFixedValues(de.getId(), false);
                 de.setFixedValues(fxvs);
                 de.setElemAttributeValues(getDataElementAttributeValues(dataElemId));
 
@@ -939,7 +951,7 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         });
 
         for (DataElement elem : result) {
-            List<FixedValue> fxvs = getFixedValues(elem.getId());
+            List<FixedValue> fxvs = getFixedValues(elem.getId(), false);
             elem.setFixedValues(fxvs);
         }
         return result;

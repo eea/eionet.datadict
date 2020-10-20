@@ -96,12 +96,12 @@ public class FixedValueDaoTestIT extends UnitilsJUnit4 {
     public void testDeleteAll() {
         final int ownerId = 8880;
         
-        List<FixedValue> valuesBefore = this.dataElementDao.getFixedValues(ownerId);
+        List<FixedValue> valuesBefore = this.dataElementDao.getFixedValues(ownerId, false);
         assertFalse(valuesBefore.isEmpty());
         
         this.fixedValueDao.deleteAll(FixedValue.OwnerType.DATA_ELEMENT, ownerId);
         
-        List<FixedValue> valuesAfter = this.dataElementDao.getFixedValues(ownerId);
+        List<FixedValue> valuesAfter = this.dataElementDao.getFixedValues(ownerId, false);
         assertTrue(valuesAfter.isEmpty());
     }
     

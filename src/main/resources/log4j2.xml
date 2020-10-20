@@ -17,7 +17,7 @@
         <logger name="net.sourceforge.stripes" level="warn"/>
         <Root level="info">
             <AppenderRef ref="console" />
-            <AppenderRef ref="Sentry" level="warn" />
+           <!-- <AppenderRef ref="Sentry" level="warn" />-->
         </Root>
     </Loggers>
 </Configuration>

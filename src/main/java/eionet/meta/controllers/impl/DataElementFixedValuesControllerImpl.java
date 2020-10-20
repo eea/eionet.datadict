@@ -81,7 +81,7 @@ public class DataElementFixedValuesControllerImpl implements DataElementFixedVal
     public CompoundDataObject getAllValuesModel(int ownerDataElementId) 
             throws ResourceNotFoundException, ConflictException {
         DataElement ownerElement = this.getOwnerDataElement(ownerDataElementId);
-        List<FixedValue> fixedValues = this.dataElementDao.getFixedValues(ownerElement.getId());
+        List<FixedValue> fixedValues = this.dataElementDao.getFixedValues(ownerElement.getId(), false);
         
         return this.packageDataResult(ownerElement, fixedValues);
     }
@@ -90,7 +90,7 @@ public class DataElementFixedValuesControllerImpl implements DataElementFixedVal
     public CompoundDataObject getEditableAllValuesModel(AppContextProvider contextProvider, int ownerDataElementId) 
             throws UserAuthenticationException, ResourceNotFoundException, ConflictException, UserAuthorizationException {
         DataElement ownerElement = this.getEditableOwnerDataElement(contextProvider, ownerDataElementId);
-        List<FixedValue> fixedValues = this.dataElementDao.getFixedValues(ownerElement.getId());
+        List<FixedValue> fixedValues = this.dataElementDao.getFixedValues(ownerElement.getId(), false);
         
         return this.packageDataResult(ownerElement, fixedValues);
     }
