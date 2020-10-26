@@ -81,7 +81,7 @@ public class SiteCodeServiceImpl implements ISiteCodeService {
     public List<FixedValue> getAllCountries() throws ServiceException {
         try {
             int countryElementId = dataElementDao.getCommonDataElementId(SITE_CODE_IDENTIFIER);
-            return dataElementDao.getFixedValues(countryElementId);
+            return dataElementDao.getFixedValues(countryElementId, true);
         } catch (Exception e) {
             throw new ServiceException("Failed to get countries: " + e.getMessage(), e);
         }

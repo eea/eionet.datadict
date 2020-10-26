@@ -140,7 +140,7 @@ public class DataElementFixedValuesControllerTest {
         List<FixedValue> expectedValues = new ArrayList<FixedValue>();
         expectedValues.add(this.createFixedValue(12, expectedOwner, "val"));
         when(dataElementsService.getDataElement(ownerId)).thenReturn(expectedOwner);
-        when(dataElementDao.getFixedValues(ownerId)).thenReturn(expectedValues);
+        when(dataElementDao.getFixedValues(ownerId, false)).thenReturn(expectedValues);
         CompoundDataObject result = this.controller.getAllValuesModel(ownerId);
         DataElement actualOwner = result.get(DataElementFixedValuesController.PROPERTY_OWNER_DATA_ELEMENT);
         assertEquals(expectedOwner, actualOwner);
@@ -173,7 +173,7 @@ public class DataElementFixedValuesControllerTest {
         List<FixedValue> expectedValues = new ArrayList<FixedValue>();
         expectedValues.add(this.createFixedValue(12, expectedOwner, "val"));
         when(dataElementsService.getEditableDataElement(contextProvider, ownerId)).thenReturn(expectedOwner);
-        when(dataElementDao.getFixedValues(ownerId)).thenReturn(expectedValues);
+        when(dataElementDao.getFixedValues(ownerId, false)).thenReturn(expectedValues);
         CompoundDataObject result = this.controller.getEditableAllValuesModel(contextProvider, ownerId);
         DataElement actualOwner = result.get(DataElementFixedValuesController.PROPERTY_OWNER_DATA_ELEMENT);
         assertEquals(expectedOwner, actualOwner);

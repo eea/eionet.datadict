@@ -67,9 +67,11 @@ public interface IDataElementDAO {
      *
      * @param dataElementId
      *            dataelem id
+     * @param countryCode
+     *            true if the fixed values are related to the countryCode
      * @return list of fixed values
      */
-    List<FixedValue> getFixedValues(int dataElementId);
+    List<FixedValue> getFixedValues(int dataElementId, Boolean countryCode);
 
     /**
      * Returns data element by id.
