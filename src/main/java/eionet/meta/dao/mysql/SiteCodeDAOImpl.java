@@ -38,6 +38,7 @@ import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.Util;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.StopWatch;
 import org.apache.commons.lang3.EnumUtils;
 import org.displaytag.properties.SortOrderEnum;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,6 +74,8 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
 
     @Override
     public SiteCodeResult searchSiteCodes(SiteCodeFilter filter) throws Exception {
+        StopWatch timer = new StopWatch();
+        timer.start();
 
         /* Retrieve the elements' identifiers from the enumeration*/
         List<String> elementIdentifiers = Enumerations.SiteCodeBoundElementIdentifiers.getEnumValuesAsList();
@@ -85,6 +88,8 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         Pair<Integer, List<SiteCode>> siteCodesPair = createQueryAndRetrieveSiteCodes(filter, elementMap);
         LOGGER.info(String.format("Retrieved site code list"));
         SiteCodeResult result = new SiteCodeResult(siteCodesPair.getRight(), siteCodesPair.getLeft(), filter);
+        timer.stop();
+        LOGGER.info("Method searchSiteCodes lasted: " + timer.toString());
         return result;
     }
 
@@ -96,6 +101,8 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
      * @return a pair where left is the total number of site codes and right is the site code list
      */
     public Pair<Integer, List<SiteCode>> createQueryAndRetrieveSiteCodes(SiteCodeFilter filter, Map<String, Integer> elementMap) throws Exception {
+        StopWatch timer = new StopWatch();
+        timer.start();
 
         Map<String, Object> params = new HashMap<>();
         StringBuilder sqlBeggining = new StringBuilder();
@@ -216,6 +223,8 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         LOGGER.info(String.format("The total number of results is: %d", totalItems));
 
         Pair<Integer, List<SiteCode>> scPair= new Pair<>(totalItems, scList);
+        timer.stop();
+        LOGGER.info("Method createQueryAndRetrieveSiteCodes lasted: " + timer.toString());
         return scPair;
     }
 
@@ -228,6 +237,8 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
      * @return a list of site codes
      */
     public List<SiteCode> getSiteCodeList(String query, Map<String, Object> params, Map<String, Integer> elementMap) {
+        StopWatch timer = new StopWatch();
+        timer.start();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         List<SiteCode> resultList = getNamedParameterJdbcTemplate().query(query, params, new RowMapper<SiteCode>() {
             @Override
@@ -301,6 +312,8 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
                 return sc;
             }
         });
+        timer.stop();
+        LOGGER.info("Method getSiteCodeList lasted: " + timer.toString());
         return resultList;
     }
 
@@ -313,6 +326,9 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
      */
     @Override
     public Map<Integer, String> getBoundElementIdAndValue(Integer vcId, List<Integer> dataElementIds) {
+        StopWatch timer = new StopWatch();
+        timer.start();
+
         StringBuilder sqlForElementValue = new StringBuilder();
         sqlForElementValue.append("select vce.DATAELEM_ID, vce.ELEMENT_VALUE from VOCABULARY_CONCEPT_ELEMENT vce inner join VOCABULARY_CONCEPT vc on " +
                 " vce.VOCABULARY_CONCEPT_ID = vc.VOCABULARY_CONCEPT_ID inner join VOCABULARY v on v.VOCABULARY_ID = vc.VOCABULARY_ID " +
@@ -340,6 +356,8 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
                 elementInfo.put(key, singleLineMap.get(key));
             }
         }
+        timer.stop();
+        LOGGER.info("Method getBoundElementIdAndValue lasted: " + timer.toString());
         return elementInfo;
     }
 
@@ -348,6 +366,8 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
      */
     @Override
     public void insertAvailableSiteCodes(List<VocabularyConcept> vocabularyConcepts, String userName) throws Exception {
+        StopWatch timer = new StopWatch();
+        timer.start();
         StringBuilder sql = new StringBuilder();
         sql.append("insert into VOCABULARY_CONCEPT_ELEMENT (VOCABULARY_CONCEPT_ID, DATAELEM_ID, ELEMENT_VALUE) ");
         sql.append("values (:vocabularyConceptId, :dataElemId, :elementValue)");
@@ -415,6 +435,8 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
             batchValuesCounter++;
         }
         getNamedParameterJdbcTemplate().batchUpdate(sql.toString(), batchValues);
+        timer.stop();
+        LOGGER.info("Method insertAvailableSiteCodes lasted: " + timer.toString());
     }
 
     /**
@@ -427,6 +449,8 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         if(freeSiteCodes == null || freeSiteCodes.size() == 0){
             throw new Exception("No site codes were allocated");
         }
+        StopWatch timer = new StopWatch();
+        timer.start();
 
         StringBuilder sql = new StringBuilder();
         sql.append("insert into VOCABULARY_CONCEPT_ELEMENT (VOCABULARY_CONCEPT_ID, DATAELEM_ID, ELEMENT_VALUE) ");
@@ -504,6 +528,8 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         }
 
         getNamedParameterJdbcTemplate().batchUpdate(sql.toString(), batchValues);
+        timer.stop();
+        LOGGER.info("Method allocateSiteCodes lasted: " + timer.toString());
     }
 
     @Override
@@ -512,6 +538,8 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         if(vcIds == null || vcIds.size() == 0){
             throw new Exception("No site codes were given for status update");
         }
+        StopWatch timer = new StopWatch();
+        timer.start();
 
         StringBuilder sql = new StringBuilder();
         sql.append("update VOCABULARY_CONCEPT_ELEMENT set ELEMENT_VALUE = :elementValue ");
@@ -524,6 +552,8 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
 
         getNamedParameterJdbcTemplate().update(sql.toString(), params);
         LOGGER.info(String.format("Status for site codes with ids %s was successfully updated to %s",vcIds.toString(), status));
+        timer.stop();
+        LOGGER.info("Method updateSiteCodeStatus lasted: " + timer.toString());
     }
 
     /**
@@ -532,12 +562,16 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
     @Override
     public int getSiteCodeVocabularyFolderId() {
 
+        StopWatch timer = new StopWatch();
+        timer.start();
         StringBuilder sql = new StringBuilder();
         sql.append("select min(VOCABULARY_ID) from VOCABULARY where VOCABULARY_TYPE = :type");
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("type", VocabularyType.SITE_CODE.name());
 
+        timer.stop();
+        LOGGER.info("Method getSiteCodeVocabularyFolderId lasted: " + timer.toString());
         return getNamedParameterJdbcTemplate().queryForObject(sql.toString(), params,Integer.class);
     }
 
@@ -546,6 +580,8 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
      */
     @Override
     public int getFeeSiteCodeAmount() {
+        StopWatch timer = new StopWatch();
+        timer.start();
         String statusIdentifier = SiteCodeBoundElementIdentifiers.STATUS.getIdentifier();
         int statusElementId = dataElementDAO.getCommonDataElementId(statusIdentifier);
 
@@ -562,6 +598,8 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         params.put("siteCodeType", VocabularyType.SITE_CODE.name());
         params.put("statusElementId", statusElementId);
 
+        timer.stop();
+        LOGGER.info("Method getFeeSiteCodeAmount lasted: " + timer.toString());
         return getNamedParameterJdbcTemplate().queryForObject(sql.toString(), params,Integer.class);
     }
 
@@ -570,6 +608,9 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
      */
     @Override
     public int getCountryUnusedAllocations(String countryCode, boolean withoutInitialName) {
+
+        StopWatch timer = new StopWatch();
+        timer.start();
 
         /* Create a list for the identifiers needed*/
         List<String> elementIdentifiers = new ArrayList<>();
@@ -605,6 +646,9 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
             params.put("initialNameElementId", elementMap.get(SiteCodeBoundElementIdentifiers.INITIAL_SITE_NAME.getIdentifier()));
         }
 
+        timer.stop();
+        LOGGER.info("Method getCountryUnusedAllocations lasted: " + timer.toString());
+
         return getNamedParameterJdbcTemplate().queryForObject(sql.toString(), params,Integer.class);
     }
 
@@ -613,6 +657,10 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
      */
     @Override
     public int getCountryUsedAllocations(String countryCode) {
+
+        StopWatch timer = new StopWatch();
+        timer.start();
+
         /* Create a list for the identifiers needed*/
         List<String> elementIdentifiers = new ArrayList<>();
         elementIdentifiers.add(SiteCodeBoundElementIdentifiers.STATUS.getIdentifier());
@@ -637,6 +685,9 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         params.put("statusElementId", elementMap.get(SiteCodeBoundElementIdentifiers.STATUS.getIdentifier()));
         params.put("countryCodeElementId",elementMap.get(SiteCodeBoundElementIdentifiers.COUNTRY_CODE.getIdentifier()));
 
+        timer.stop();
+        LOGGER.info("Method getCountryUsedAllocations lasted: " + timer.toString());
+
         return getNamedParameterJdbcTemplate().queryForObject(sql.toString(), params,Integer.class);
     }
 
@@ -645,11 +696,18 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
      */
     @Override
     public boolean siteCodeFolderExists() {
+
+        StopWatch timer = new StopWatch();
+        timer.start();
+
         StringBuilder sql = new StringBuilder();
         sql.append("select count(VOCABULARY_ID) from VOCABULARY where VOCABULARY_TYPE = :type");
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("type", VocabularyType.SITE_CODE.name());
+
+        timer.stop();
+        LOGGER.info("Method siteCodeFolderExists lasted: " + timer.toString());
 
         return getNamedParameterJdbcTemplate().queryForObject(sql.toString(), params,Integer.class) > 0;
     }
