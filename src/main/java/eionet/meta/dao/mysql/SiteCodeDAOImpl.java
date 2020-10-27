@@ -108,18 +108,20 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         StringBuilder sqlBeggining = new StringBuilder();
         StringBuilder sql = new StringBuilder();
         sqlBeggining.append("select vc.* ");
-        sql.append("from VOCABULARY v inner join VOCABULARY_CONCEPT vc on v.VOCABULARY_ID=vc.VOCABULARY_ID ");
+        sql.append("from VOCABULARY_CONCEPT vc ");
+
+        int vocabularyFolderId = this.getSiteCodeVocabularyFolderId();
 
         StringBuilder sqlWhereClause = new StringBuilder();
-        sqlWhereClause.append("where v.VOCABULARY_TYPE = :siteCodeType and v.WORKING_COPY = 0 ");
-        params.put("siteCodeType", VocabularyType.SITE_CODE.name());
+        sqlWhereClause.append(" where vc.VOCABULARY_ID = :siteCodesVocabularyId ");
+        params.put("siteCodesVocabularyId", vocabularyFolderId);
 
         if (StringUtils.isNotEmpty(filter.getSiteName())) {
-            sqlWhereClause.append("and vc.LABEL like :text ");
+            sqlWhereClause.append(" and vc.LABEL like :text ");
             params.put("text", "%" + filter.getSiteName() + "%");
         }
         if (StringUtils.isNotEmpty(filter.getIdentifier())) {
-            sql.append("and vc.IDENTIFIER like :identifier ");
+            sqlWhereClause.append("and vc.IDENTIFIER like :identifier ");
             params.put("identifier", filter.getIdentifier());
         }
         if (StringUtils.isNotEmpty(filter.getUserAllocated())) {
@@ -243,6 +245,8 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         List<SiteCode> resultList = getNamedParameterJdbcTemplate().query(query, params, new RowMapper<SiteCode>() {
             @Override
             public SiteCode mapRow(ResultSet rs, int rowNum) throws SQLException {
+                StopWatch timer = new StopWatch();
+                timer.start();
                 SiteCode sc = new SiteCode();
                 sc.setId(rs.getInt("vc.VOCABULARY_CONCEPT_ID"));
                 sc.setIdentifier(rs.getString("vc.IDENTIFIER"));
@@ -309,6 +313,8 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
                         }
                     }
                 }
+                timer.stop();
+                LOGGER.info("Method getSiteCodeList (creating the site codes list) lasted: " + timer.toString());
                 return sc;
             }
         });
