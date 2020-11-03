@@ -26,8 +26,10 @@ public class LdapServiceTest {
 
     private List<LdapRole> ldapRoleList;
     private LdapRole ldapRole;
+    private List<String> users;
     private static final String USER = "maria";
     private static final String ACL_GROUP = "dd_admin";
+    private static final String ROLE_NAME = "testRole";
 
     @Before
     public void setUp() {
@@ -36,6 +38,8 @@ public class LdapServiceTest {
         ldapRole = new LdapRole();
         ldapRole.setName(ACL_GROUP);
         ldapRoleList.add(ldapRole);
+        users = new ArrayList<>();
+        users.add(USER);
     }
 
     @Test
@@ -62,5 +66,12 @@ public class LdapServiceTest {
     public void testGetAllLdapRolesException() throws LdapDaoException {
         when(ldapRoleDao.findAllRoles()).thenThrow(LdapDaoException.class);
         List<LdapRole> results = ldapServiceImpl.getAllLdapRoles();
+    }
+
+    @Test
+    public void testGetRoleUsersSuccess() throws LdapDaoException {
+        when(ldapRoleDao.findRoleUsers(anyString())).thenReturn(users);
+        List<String> results = ldapServiceImpl.getRoleUsers(ROLE_NAME);
+        Assert.assertEquals(users, results);
     }
 }

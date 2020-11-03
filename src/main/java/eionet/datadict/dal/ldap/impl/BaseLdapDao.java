@@ -52,7 +52,7 @@ public class BaseLdapDao {
             try {
                 ctx.close();
             } catch (NamingException e) {
-                // do nothing
+                e.printStackTrace();
             }
         }
     }
