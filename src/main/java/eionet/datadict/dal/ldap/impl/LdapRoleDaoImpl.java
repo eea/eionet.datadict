@@ -15,8 +15,7 @@ import javax.naming.ldap.LdapContext;
 import javax.naming.ldap.PagedResultsControl;
 import javax.naming.ldap.PagedResultsResponseControl;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Repository
 public class LdapRoleDaoImpl extends BaseLdapDao implements LdapRoleDao {
@@ -34,18 +33,16 @@ public class LdapRoleDaoImpl extends BaseLdapDao implements LdapRoleDao {
         List<LdapRole> result = new ArrayList<>();
         DirContext ctx = null;
         try {
-            ctx = getDirContext();
             String myFilter = "(&(objectClass=groupOfUniqueNames)(uniqueMember=uid=" + user + "," + usersDn + "))";
-            SearchControls sc = new SearchControls();
-            sc.setSearchScope(SearchControls.SUBTREE_SCOPE);
-            NamingEnumeration results = ctx.search(rolesDn, myFilter, sc);
+            NamingEnumeration results = getResults(myFilter);
             while (results != null && results.hasMore()) {
                 SearchResult sr = (SearchResult) results.next();
                 String dn = sr.getName();
                 if (dn != null && dn.length() > 0){
+                    String cn = (String)sr.getAttributes().get(Props.getProperty(PropsIF.LDAP_ROLE_NAME)).get();
                     LdapRole r = new LdapRole();
                     r.setFullDn(dn + "," + rolesDn);
-                    r.setName(dn);
+                    r.setName("cn=" + cn);
                     result.add(r);
                 }
             }
@@ -78,9 +75,10 @@ public class LdapRoleDaoImpl extends BaseLdapDao implements LdapRoleDao {
                     SearchResult sr = (SearchResult) results.next();
                     String dn = sr.getName();
                     if (dn != null && dn.length() > 0) {
+                        String cn = (String)sr.getAttributes().get(Props.getProperty(PropsIF.LDAP_ROLE_NAME)).get();
                         LdapRole r = new LdapRole();
                         r.setFullDn(dn + "," + baseDn);
-                        r.setName(dn);
+                        r.setName("cn=" + cn);
                         result.add(r);
                     }
                 }
@@ -112,22 +110,14 @@ public class LdapRoleDaoImpl extends BaseLdapDao implements LdapRoleDao {
         List<String> result = new ArrayList<>();
         DirContext ctx = null;
         try {
-            ctx = getDirContext();
             String myFilter = "(&(objectClass=groupOfUniqueNames)(" + roleName + "))";
-            SearchControls sc = new SearchControls();
-            sc.setSearchScope(SearchControls.SUBTREE_SCOPE);
-            NamingEnumeration results = ctx.search(rolesDn, myFilter, sc);
+            NamingEnumeration results = getResults(myFilter);
             while (results != null && results.hasMore()) {
                 SearchResult sr = (SearchResult) results.next();
                 Attributes attrs = sr.getAttributes();
                 Attribute usersAttr = attrs.get("uniquemember");
                 if (usersAttr != null && usersAttr.get() != null){
-                    for (int i=0; i<usersAttr.size(); i++) {
-                        String user = (String) usersAttr.get(i);
-                        int pos = user.indexOf("ou=");
-                        String userName = user.substring(4, pos-1);
-                        result.add(userName);
-                    }
+                    result = parseUsersAttr(usersAttr);
                 }
             }
         } catch (NamingException e) {
@@ -137,4 +127,97 @@ public class LdapRoleDaoImpl extends BaseLdapDao implements LdapRoleDao {
         }
         return result;
     }
+
+    protected List<String> parseUsersAttr(Attribute usersAttr) throws NamingException {
+        List<String> result = new ArrayList<>();
+        for (int i=0; i<usersAttr.size(); i++) {
+            String user = (String) usersAttr.get(i);
+            int pos = user.indexOf("ou=");
+            String userName = user.substring(4, pos-1);
+            result.add(userName);
+        }
+        return result;
+    }
+
+    protected NamingEnumeration getResults(String myFilter) throws NamingException {
+        DirContext ctx = getDirContext();
+        SearchControls sc = new SearchControls();
+        sc.setSearchScope(SearchControls.SUBTREE_SCOPE);
+        return ctx.search(rolesDn, myFilter, sc);
+    }
+
+    @Override
+    public Hashtable<String, Object> getRoleInfo(String roleName) throws LdapDaoException {
+        Hashtable<String, Object> result = new Hashtable<>();
+        DirContext ctx = null;
+        try {
+            String myFilter = "(&(objectClass=groupOfUniqueNames)(cn=" + roleName + "))";
+            NamingEnumeration results = getResults(myFilter);
+            if (results == null || !results.hasMore()) {
+                throw new LdapDaoException("Unable to find role " + roleName);
+            }
+            while (results != null && results.hasMore()) {
+                SearchResult sr = (SearchResult) results.next();
+                String cn = (String)sr.getAttributes().get(Props.getProperty(PropsIF.LDAP_ROLE_NAME)).get();
+                String description = "";
+                String mail = "";
+                Attributes attrs = sr.getAttributes();
+                try {
+                    description = getDescription(description, attrs);
+                    mail = getMailAttr(mail, attrs);
+                } catch (NullPointerException e) {
+
+                }
+                Vector<String> occupants = getOccupants(roleName, attrs);
+
+                result.put("ID", roleName);
+                result.put("NAME", cn);
+                result.put("MAIL", mail);
+                result.put("DESCRIPTION", description);
+                result.put("OCCUPANTS", occupants);
+            }
+        } catch (NoSuchElementException e1) {
+
+        } catch (NamingException e2) {
+            throw new LdapDaoException(e2);
+        } catch (Exception e3) {
+            throw new LdapDaoException("Getting role information for role " + roleName + " failed: " + e3.toString());
+        }
+        finally {
+            closeContext(ctx);
+        }
+        return result;
+    }
+
+    protected String getDescription(String description, Attributes attrs) throws NamingException {
+        Attribute uniqueMember = attrs.get(Props.getProperty(PropsIF.LDAP_DESCRIPTION));
+        if (uniqueMember != null) {
+            description = (String) uniqueMember.get();
+        }
+        return description;
+    }
+
+    protected String getMailAttr(String mail, Attributes attrs) throws NamingException {
+        Attribute mAttr = attrs.get(Props.getProperty(PropsIF.LDAP_ATTR_MAIL));
+        if (mAttr != null) {
+            mail = (String) mAttr.get();
+        }
+        return mail;
+    }
+
+    protected Vector<String> getOccupants(String roleName, Attributes attrs) throws LdapDaoException, NamingException {
+        Attribute uniqueMember = null;
+        Vector<String> occupants = new Vector();
+        try {
+           uniqueMember = attrs.get("uniquemember");
+        } catch (Exception e) {
+            throw new LdapDaoException("Error getting occupants for role : " + roleName);
+        }
+
+        if (uniqueMember != null && uniqueMember.get() != null){
+            occupants = new Vector<>(parseUsersAttr(uniqueMember));
+        }
+        return occupants;
+    }
+
 }
