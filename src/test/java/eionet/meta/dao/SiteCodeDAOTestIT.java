@@ -198,7 +198,7 @@ public class SiteCodeDAOTestIT extends UnitilsJUnit4 {
         boundElementIds.add(3);
         Map<Integer, String> elementMap = siteCodeDAO.getBoundElementIdAndValue(6, boundElementIds);
         Assert.assertThat(elementMap.size(), is(3));
-        Assert.assertThat(elementMap.get(1), is("testCountryCode"));
+        Assert.assertThat(elementMap.get(1), is("http://dd.eionet.europa.eu/vocabulary/common/countries/testCountryCode"));
         Assert.assertThat(elementMap.get(2), is("ALLOCATED"));
         Assert.assertThat(elementMap.get(3), is(nullValue()));
     }
@@ -366,7 +366,7 @@ public class SiteCodeDAOTestIT extends UnitilsJUnit4 {
                 " order by vc.VOCABULARY_CONCEPT_ID limit 3 ";
         Map<String, Object> params = new HashMap<>();
         params.put("siteCodeType", VocabularyType.SITE_CODE.name());
-        params.put("countryCode", "testCountryCode");
+        params.put("countryCode", "http://dd.eionet.europa.eu/vocabulary/common/countries/testCountryCode");
         params.put("status", "ALLOCATED");
         params.put("countryCodeElemId", 1);
         params.put("statusElemId", 2);
