@@ -486,15 +486,11 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         int batchValuesCounter = 0;
         for (int i = 0; i < freeSiteCodes.size(); i++) {
 
-            //insert country code information
-            StringBuilder countryCodeSb = new StringBuilder();
-            countryCodeSb.append(Props.getRequiredProperty(PropsIF.DD_URL));
-            countryCodeSb.append("/vocabulary/common/countries/");
-            countryCodeSb.append(countryCode);
+            String countryUrl = getFullCountryUrl(countryCode);
             Map<String, Object> params = new HashMap<String, Object>();
             params.put("vocabularyConceptId", freeSiteCodes.get(i).getId());
             params.put("dataElemId", elementMap.get(SiteCodeBoundElementIdentifiers.COUNTRY_CODE.getIdentifier()));
-            params.put("elementValue", countryCodeSb.toString());
+            params.put("elementValue", countryUrl);
             batchValues[batchValuesCounter] = params;
             batchValuesCounter++;
 
@@ -634,9 +630,9 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
             sql.append("and vc.VOCABULARY_CONCEPT_ID not in (select vce3.VOCABULARY_CONCEPT_ID from VOCABULARY_CONCEPT_ELEMENT vce3 ");
             sql.append("where vce3.DATAELEM_ID = :initialNameElementId and vce3.ELEMENT_VALUE is not null and vce3.ELEMENT_VALUE != '') ");
         }
-
+        String countryUrl = getFullCountryUrl(countryCode);
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put("countryCode", countryCode);
+        params.put("countryCode", countryUrl);
         params.put("statuses", SiteCodeStatus.ALLOCATED.name());
         params.put("siteCodeType", VocabularyType.SITE_CODE.name());
         params.put("statusElementId", elementMap.get(SiteCodeBoundElementIdentifiers.STATUS.getIdentifier()));
@@ -678,8 +674,9 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         sql.append("and vce1.DATAELEM_ID = :statusElementId and vce1.ELEMENT_VALUE in (:statuses) ");
         sql.append("and vce2.DATAELEM_ID = :countryCodeElementId and vce2.ELEMENT_VALUE = :countryCode");
 
+        String countryUrl = getFullCountryUrl(countryCode);
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put("countryCode", countryCode);
+        params.put("countryCode", countryUrl);
         params.put("statuses", Arrays.asList(SiteCodeFilter.ALLOCATED_USED_STATUSES));
         params.put("siteCodeType", VocabularyType.SITE_CODE.name());
         params.put("statusElementId", elementMap.get(SiteCodeBoundElementIdentifiers.STATUS.getIdentifier()));
@@ -710,6 +707,14 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         LOGGER.info("Method siteCodeFolderExists lasted: " + timer.toString());
 
         return getNamedParameterJdbcTemplate().queryForObject(sql.toString(), params,Integer.class) > 0;
+    }
+
+    private String getFullCountryUrl(String countryCode){
+        StringBuilder countryCodeSb = new StringBuilder();
+        countryCodeSb.append(Props.getRequiredProperty(PropsIF.DD_URL));
+        countryCodeSb.append("/vocabulary/common/countries/");
+        countryCodeSb.append(countryCode);
+        return countryCodeSb.toString();
     }
 
 }
