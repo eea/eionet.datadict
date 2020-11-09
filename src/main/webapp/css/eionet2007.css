@@ -969,7 +969,6 @@
 
 	.tip-msg,
 	.note-msg,
-	.important-msg,
 	.caution-msg,
 	.warning-msg,
 	.error-msg,
@@ -979,6 +978,14 @@
 		font-size: 100%;
 		position: relative;
 		padding: 1.5em 2.8em 1.5em 5em;
+		clear: both;
+	}
+
+	.important-msg {
+		margin: 0.5em 0;
+		border: 1px solid;
+		font-size: 100%;
+		position: relative;
 		clear: both;
 	}
 
