@@ -24,7 +24,10 @@
 package eionet.meta;
 
 import eionet.acl.*;
+import eionet.datadict.model.LdapRole;
+import eionet.datadict.services.LdapService;
 import eionet.directory.DirectoryService;
+import eionet.meta.spring.SpringApplicationContext;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.SecurityUtil;
@@ -38,6 +41,7 @@ import javax.servlet.http.HttpSession;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Vector;
 
 /**
@@ -181,12 +185,14 @@ public class DDUser {
 
         if (roles == null) {
             try {
+                List<String> ldRoles = new ArrayList<>();
+                List<LdapRole> ldapRoles = this.getLdapService().getUserLdapRoles(username);
 
-                Vector v = DirectoryService.getRoles(username);
-                roles = new String[v.size()];
-                for (int i = 0; i < v.size(); i++) {
-                    roles[i] = (String) v.elementAt(i);
+                for (LdapRole ldapRole : ldapRoles) {
+                    ldRoles.add(ldapRole.getName().substring(3));
                 }
+
+                roles = ldRoles.toArray(new String[ldRoles.size()]);
                 LOGGER.debug("Found " + roles.length + " roles for user (" + username + ")");
             } catch (Exception e) {
                 LOGGER.error("Unable to get any role for loggedin user (" + username + "). DirServiceException: " + e.getMessage());
@@ -195,6 +201,10 @@ public class DDUser {
         }
 
         return roles;
+    }
+
+    public LdapService getLdapService() {
+        return SpringApplicationContext.getBean(LdapService.class);
     }
 
     /**

@@ -21,28 +21,10 @@
 
 package eionet.meta.service;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.Map;
-
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.mail.javamail.MimeMessagePreparator;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
+import eionet.datadict.services.LdapService;
 import eionet.directory.DirServiceException;
-import eionet.directory.DirectoryService;
 import eionet.meta.dao.ISiteCodeDAO;
+import eionet.meta.dao.LdapDaoException;
 import eionet.meta.notif.SiteCodeAddedNotification;
 import eionet.meta.notif.SiteCodeAllocationNotification;
 import eionet.meta.service.data.AllocationResult;
@@ -53,6 +35,23 @@ import eionet.util.PropsIF;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.mail.javamail.MimeMessagePreparator;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
 
 /**
  * E-mail service.
@@ -90,6 +89,9 @@ public class EmailServiceImpl implements IEmailService {
     /** Site Code DAO. */
     @Autowired
     private ISiteCodeDAO siteCodeDao;
+
+    @Autowired
+    private LdapService ldapService;
 
     /**
      * {@inheritDoc}
@@ -214,7 +216,7 @@ public class EmailServiceImpl implements IEmailService {
      * @return
      * @throws DirServiceException
      */
-    private String[] parseRoleAddresses(String country) throws DirServiceException {
+    private String[] parseRoleAddresses(String country) {
         String recipients = Props.getRequiredProperty(PropsIF.SITE_CODE_ALLOCATE_NOTIFICATION_TO);
         recipients = StringUtils.replace(recipients, COUNTRY_CODE_PLACEHOLDER, country.toLowerCase());
         String[] to = StringUtils.split(recipients, ",");
@@ -255,13 +257,13 @@ public class EmailServiceImpl implements IEmailService {
      */
     private boolean roleExists(String roleId) {
         try {
-            Hashtable<String, Object> role = DirectoryService.getRole(roleId);
+            Hashtable<String, Object> role = ldapService.getRoleInfo(roleId);
             if (role != null) {
                 return true;
             } else {
                 return false;
             }
-        } catch (DirServiceException e) {
+        } catch (LdapDaoException e) {
             // role does not exist
             return false;
         }
