@@ -627,11 +627,11 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
 
         StringBuilder sql = new StringBuilder();
         sql.append("select count(distinct vc.VOCABULARY_CONCEPT_ID) ");
-        sql.append(" VOCABULARY_CONCEPT vc ");
+        sql.append("from VOCABULARY_CONCEPT vc ");
         sql.append("inner join VOCABULARY_CONCEPT_ELEMENT vce1 on vc.VOCABULARY_CONCEPT_ID=vce1.VOCABULARY_CONCEPT_ID ");
         sql.append("inner join VOCABULARY_CONCEPT_ELEMENT vce2 on vce1.VOCABULARY_CONCEPT_ID=vce2.VOCABULARY_CONCEPT_ID ");
         sql.append("left join VOCABULARY_CONCEPT vc2 on vc2.VOCABULARY_CONCEPT_ID=vce2.RELATED_CONCEPT_ID ");
-        sql.append("where v.VOCABULARY_ID = :siteCodesVocabularyId and vce1.ID != vce2.ID " );
+        sql.append("where vc.VOCABULARY_ID = :siteCodesVocabularyId and vce1.ID != vce2.ID " );
         sql.append("and vce1.DATAELEM_ID = :statusElementId and vce1.ELEMENT_VALUE in (:statuses) ");
         sql.append("and vce2.DATAELEM_ID = :countryCodeElementId and (vce2.ELEMENT_VALUE = :countryCode or vc2.IDENTIFIER = :countryCode)");
 
@@ -678,11 +678,11 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
 
         StringBuilder sql = new StringBuilder();
         sql.append("select count(distinct vc.VOCABULARY_CONCEPT_ID) ");
-        sql.append(" VOCABULARY_CONCEPT vc ");
+        sql.append("from VOCABULARY_CONCEPT vc ");
         sql.append("inner join VOCABULARY_CONCEPT_ELEMENT vce1 on vc.VOCABULARY_CONCEPT_ID=vce1.VOCABULARY_CONCEPT_ID ");
         sql.append("inner join VOCABULARY_CONCEPT_ELEMENT vce2 on vce1.VOCABULARY_CONCEPT_ID=vce2.VOCABULARY_CONCEPT_ID ");
         sql.append("left join VOCABULARY_CONCEPT vc2 on vc2.VOCABULARY_CONCEPT_ID=vce2.RELATED_CONCEPT_ID ");
-        sql.append("where v.VOCABULARY_ID = :siteCodesVocabularyId and vce1.ID != vce2.ID " );
+        sql.append("where vc.VOCABULARY_ID = :siteCodesVocabularyId and vce1.ID != vce2.ID " );
         sql.append("and vce1.DATAELEM_ID = :statusElementId and vce1.ELEMENT_VALUE in (:statuses) ");
         sql.append("and vce2.DATAELEM_ID = :countryCodeElementId and (vce2.ELEMENT_VALUE = :countryCode or vc2.IDENTIFIER = :countryCode)");
 
