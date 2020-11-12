@@ -60,10 +60,10 @@ public class SiteCodeDAOTestIT extends UnitilsJUnit4 {
     }
 
     /* Test case: There are allocated site codes for a specific country */
-    @Test
+    @Test(expected = Exception.class)
     public void testGetCountryUsedAllocationsCountryNoSiteCodeFolder() throws Exception {
         DBUnitHelper.loadData("seed-sitecode-folder-not-exists.xml");
-        Assert.assertThat(siteCodeDAO.getCountryUsedAllocations("testCountryCode"), is(0));
+        siteCodeDAO.getCountryUsedAllocations("testCountryCode");
     }
 
     /* Test case: There are allocated site codes for a specific country */
@@ -88,10 +88,10 @@ public class SiteCodeDAOTestIT extends UnitilsJUnit4 {
     }
 
     /* Test case: There are allocated site codes for a specific country */
-    @Test
+    @Test(expected = Exception.class)
     public void testGetCountryUnusedAllocationsCountryNoSiteCodeFolder() throws Exception {
         DBUnitHelper.loadData("seed-sitecode-folder-not-exists.xml");
-        Assert.assertThat(siteCodeDAO.getCountryUnusedAllocations("testCountryCode", false), is(0));
+        siteCodeDAO.getCountryUnusedAllocations("testCountryCode", false);
     }
 
     /* Test case: Search for pairs with country code: otherCountryCode, status: allocated but the site name element must be empty or null (there are no rows for otherCountryCode with site name element)*/
