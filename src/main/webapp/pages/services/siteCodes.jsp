@@ -306,8 +306,8 @@
                         <table class="datatable">
                             <colgroup>
                                 <col style="width:1%" />
-                                <col style="width:26%"/>
-                                <col />
+                                <col style="width:1%"/>
+                                <col style="width:98%"/>
                             </colgroup>
                             <tr>
                                 <td>&nbsp;</td>
@@ -380,8 +380,8 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td colspan="2">&nbsp;</td>
-                                <td>
+                                <td >&nbsp;</td>
+                                <td colspan="2" style="text-align:center">
                                     <stripes:submit name="allocate" value="OK" id="allocateButton" class="siteCodeOkButton" />
                                     <button type="button" id="closeAllocateLink">Cancel</button>
                                 </td>
