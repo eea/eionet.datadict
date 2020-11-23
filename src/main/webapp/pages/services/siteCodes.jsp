@@ -322,7 +322,7 @@
                             </tr>
                             <tr>
                                 <td style="position:relative;">
-                                    <div style="position:absolute;top:0px;left:0px;right:0px;bottom:0px;">
+                                    <div style="position:absolute;top:0px;left:0px;right:0px;bottom:0px;margin-top:8px">
                                         <stripes:radio name="choice" value="amount" id="choiceAmount" checked="checked"/>
                                     </div>
                                 </td>
@@ -357,7 +357,7 @@
                             <tr><td colspan="4" style="padding-left: 10%;">Or</td></tr>
                             <tr>
                                 <td style="position:relative;min-width:20px">
-                                    <div style="position:absolute;top:0px;left:0px;right:0px;bottom:0px;">
+                                    <div style="position:absolute;top:0px;left:0px;right:0px;bottom:0px;margin-top:3px;">
                                         <stripes:radio name="choice" value="label" id="choiceLabel"/>
                                     </div>
                                 </td>
