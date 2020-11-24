@@ -306,8 +306,8 @@
                         <table class="datatable">
                             <colgroup>
                                 <col style="width:1%" />
-                                <col style="width:26%"/>
-                                <col />
+                                <col style="width:1%"/>
+                                <col style="width:98%"/>
                             </colgroup>
                             <tr>
                                 <td>&nbsp;</td>
@@ -321,14 +321,18 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td><stripes:radio name="choice" value="amount" id="choiceAmount" checked="checked"/></td>
+                                <td style="position:relative;">
+                                    <div style="position:absolute;top:0px;left:0px;right:0px;bottom:0px;margin-top:8px">
+                                        <stripes:radio name="choice" value="amount" id="choiceAmount" checked="checked"/>
+                                    </div>
+                                </td>
                                 <td class="simple_attr_title" title="Number of site codes to allocate" colspan="2">
                                     <label for="choiceAmount">Enter the number of new site codes and press OK button</label>
                                     <stripes:text class="smalltext" size="5" name="amount" id="amountText"/>
                                     <c:if test="${actionBean.allocateRightAsCountry && fn:length(actionBean.allocations) > 0}">
                                         <c:choose>
                                             <c:when test="${actionBean.allocations[0].unusedCodesWithoutSiteNames < actionBean.maxAllocateAmountWithoutNames}">
-                                                <p>Allocation limit for this option is <c:out value="${actionBean.maxAllocateAmountWithoutNames}"/> codes.
+                                                <p style="margin-bottom:0px;">Allocation limit for this option is <c:out value="${actionBean.maxAllocateAmountWithoutNames}"/> codes.
                                                 You can still allocate up to <span style="color:red;">
                                                 <c:choose>
                                                     <c:when test="${(actionBean.maxAllocateAmount - actionBean.allocations[0].unusedCodes) < (actionBean.maxAllocateAmountWithoutNames - actionBean.allocations[0].unusedCodesWithoutSiteNames)}">
@@ -342,7 +346,7 @@
                                                 site codes by this option. Please use the second option if you need more.</p>
                                             </c:when>
                                             <c:otherwise>
-                                                <p>This option can’t be used! Its allocation limit is <c:out value="${actionBean.maxAllocateAmountWithoutNames}"/> codes.
+                                                <p style="margin-bottom:0px;">This option can’t be used! Its allocation limit is <c:out value="${actionBean.maxAllocateAmountWithoutNames}"/> codes.
                                                 <span style="color:red;"><c:out value="${actionBean.allocations[0].unusedCodesWithoutSiteNames}"/></span>
                                                 site codes have already been allocated by this option. Please use the second option if you need to allocate more.</p>
                                             </c:otherwise>
@@ -350,9 +354,13 @@
                                     </c:if>
                                 </td>
                             </tr>
-                            <tr><td colspan="4" style="padding-left: 10%">Or</td></tr>
+                            <tr><td colspan="4" style="padding-left: 10%;">Or</td></tr>
                             <tr>
-                                <td><stripes:radio name="choice" value="label" id="choiceLabel"/></td>
+                                <td style="position:relative;min-width:20px">
+                                    <div style="position:absolute;top:0px;left:0px;right:0px;bottom:0px;margin-top:3px;">
+                                        <stripes:radio name="choice" value="label" id="choiceLabel"/>
+                                    </div>
+                                </td>
                                 <td class="simple_attr_title" title="List of new site code names separated by new line" colspan="2">
                                     <label for="choiceLabel">Copy a list of new sites (their names, national codes or other identifiers
                                     of your choice, or their combinations - anything that help you to remember which sites you have
@@ -372,8 +380,8 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td colspan="2">&nbsp;</td>
-                                <td>
+                                <td >&nbsp;</td>
+                                <td colspan="2" style="text-align:center">
                                     <stripes:submit name="allocate" value="OK" id="allocateButton" class="siteCodeOkButton" />
                                     <button type="button" id="closeAllocateLink">Cancel</button>
                                 </td>
