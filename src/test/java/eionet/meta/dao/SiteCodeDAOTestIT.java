@@ -60,10 +60,10 @@ public class SiteCodeDAOTestIT extends UnitilsJUnit4 {
     }
 
     /* Test case: There are allocated site codes for a specific country */
-    @Test
+    @Test(expected = Exception.class)
     public void testGetCountryUsedAllocationsCountryNoSiteCodeFolder() throws Exception {
         DBUnitHelper.loadData("seed-sitecode-folder-not-exists.xml");
-        Assert.assertThat(siteCodeDAO.getCountryUsedAllocations("testCountryCode"), is(0));
+        siteCodeDAO.getCountryUsedAllocations("testCountryCode");
     }
 
     /* Test case: There are allocated site codes for a specific country */
@@ -88,10 +88,10 @@ public class SiteCodeDAOTestIT extends UnitilsJUnit4 {
     }
 
     /* Test case: There are allocated site codes for a specific country */
-    @Test
+    @Test(expected = Exception.class)
     public void testGetCountryUnusedAllocationsCountryNoSiteCodeFolder() throws Exception {
         DBUnitHelper.loadData("seed-sitecode-folder-not-exists.xml");
-        Assert.assertThat(siteCodeDAO.getCountryUnusedAllocations("testCountryCode", false), is(0));
+        siteCodeDAO.getCountryUnusedAllocations("testCountryCode", false);
     }
 
     /* Test case: Search for pairs with country code: otherCountryCode, status: allocated but the site name element must be empty or null (there are no rows for otherCountryCode with site name element)*/
@@ -198,7 +198,7 @@ public class SiteCodeDAOTestIT extends UnitilsJUnit4 {
         boundElementIds.add(3);
         Map<Integer, String> elementMap = siteCodeDAO.getBoundElementIdAndValue(6, boundElementIds);
         Assert.assertThat(elementMap.size(), is(3));
-        Assert.assertThat(elementMap.get(1), is("testCountryCode"));
+        Assert.assertThat(elementMap.get(1), is("http://dd.eionet.europa.eu/vocabulary/common/countries/testCountryCode"));
         Assert.assertThat(elementMap.get(2), is("ALLOCATED"));
         Assert.assertThat(elementMap.get(3), is(nullValue()));
     }
@@ -366,7 +366,7 @@ public class SiteCodeDAOTestIT extends UnitilsJUnit4 {
                 " order by vc.VOCABULARY_CONCEPT_ID limit 3 ";
         Map<String, Object> params = new HashMap<>();
         params.put("siteCodeType", VocabularyType.SITE_CODE.name());
-        params.put("countryCode", "testCountryCode");
+        params.put("countryCode", "http://dd.eionet.europa.eu/vocabulary/common/countries/testCountryCode");
         params.put("status", "ALLOCATED");
         params.put("countryCodeElemId", 1);
         params.put("statusElemId", 2);

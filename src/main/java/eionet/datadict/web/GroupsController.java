@@ -131,16 +131,9 @@ public class GroupsController {
     @PostMapping(value ="/roleUsers/{ldapGroup}")
     @ResponseBody
     public String getLdapRoleUsers(@PathVariable String ldapGroup) {
-        int pos = ldapGroup.indexOf("cn=", ldapGroup.indexOf("cn=") + 1);
-        String group = null;
         List<String> users;
         try {
-            if (pos != -1) {
-                group = ldapGroup.substring(0, pos-1);
-                users = ldapService.getRoleUsers(group);
-            } else {
-                users = ldapService.getRoleUsers(ldapGroup);
-            }
+            users = ldapService.getRoleUsers(ldapGroup);
         } catch (LdapDaoException e) {
             return "Unable to retrieve users of ldap role " + ldapGroup;
         }

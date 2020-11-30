@@ -38,6 +38,7 @@ import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.Util;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.StopWatch;
 import org.apache.commons.lang3.EnumUtils;
 import org.displaytag.properties.SortOrderEnum;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,6 +74,8 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
 
     @Override
     public SiteCodeResult searchSiteCodes(SiteCodeFilter filter) throws Exception {
+        StopWatch timer = new StopWatch();
+        timer.start();
 
         /* Retrieve the elements' identifiers from the enumeration*/
         List<String> elementIdentifiers = Enumerations.SiteCodeBoundElementIdentifiers.getEnumValuesAsList();
@@ -85,6 +88,8 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         Pair<Integer, List<SiteCode>> siteCodesPair = createQueryAndRetrieveSiteCodes(filter, elementMap);
         LOGGER.info(String.format("Retrieved site code list"));
         SiteCodeResult result = new SiteCodeResult(siteCodesPair.getRight(), siteCodesPair.getLeft(), filter);
+        timer.stop();
+        LOGGER.info("Method searchSiteCodes lasted: " + timer.toString());
         return result;
     }
 
@@ -96,23 +101,27 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
      * @return a pair where left is the total number of site codes and right is the site code list
      */
     public Pair<Integer, List<SiteCode>> createQueryAndRetrieveSiteCodes(SiteCodeFilter filter, Map<String, Integer> elementMap) throws Exception {
+        StopWatch timer = new StopWatch();
+        timer.start();
 
         Map<String, Object> params = new HashMap<>();
         StringBuilder sqlBeggining = new StringBuilder();
         StringBuilder sql = new StringBuilder();
         sqlBeggining.append("select vc.* ");
-        sql.append("from VOCABULARY v inner join VOCABULARY_CONCEPT vc on v.VOCABULARY_ID=vc.VOCABULARY_ID ");
+        sql.append("from VOCABULARY_CONCEPT vc ");
+
+        int vocabularyFolderId = this.getSiteCodeVocabularyFolderId();
 
         StringBuilder sqlWhereClause = new StringBuilder();
-        sqlWhereClause.append("where v.VOCABULARY_TYPE = :siteCodeType and v.WORKING_COPY = 0 ");
-        params.put("siteCodeType", VocabularyType.SITE_CODE.name());
+        sqlWhereClause.append(" where vc.VOCABULARY_ID = :siteCodesVocabularyId ");
+        params.put("siteCodesVocabularyId", vocabularyFolderId);
 
         if (StringUtils.isNotEmpty(filter.getSiteName())) {
-            sqlWhereClause.append("and vc.LABEL like :text ");
+            sqlWhereClause.append(" and vc.LABEL like :text ");
             params.put("text", "%" + filter.getSiteName() + "%");
         }
         if (StringUtils.isNotEmpty(filter.getIdentifier())) {
-            sql.append("and vc.IDENTIFIER like :identifier ");
+            sqlWhereClause.append("and vc.IDENTIFIER like :identifier ");
             params.put("identifier", filter.getIdentifier());
         }
         if (StringUtils.isNotEmpty(filter.getUserAllocated())) {
@@ -216,6 +225,8 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         LOGGER.info(String.format("The total number of results is: %d", totalItems));
 
         Pair<Integer, List<SiteCode>> scPair= new Pair<>(totalItems, scList);
+        timer.stop();
+        LOGGER.info("Method createQueryAndRetrieveSiteCodes lasted: " + timer.toString());
         return scPair;
     }
 
@@ -228,10 +239,14 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
      * @return a list of site codes
      */
     public List<SiteCode> getSiteCodeList(String query, Map<String, Object> params, Map<String, Integer> elementMap) {
+        StopWatch timer = new StopWatch();
+        timer.start();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
         List<SiteCode> resultList = getNamedParameterJdbcTemplate().query(query, params, new RowMapper<SiteCode>() {
             @Override
             public SiteCode mapRow(ResultSet rs, int rowNum) throws SQLException {
+                StopWatch timer = new StopWatch();
+                timer.start();
                 SiteCode sc = new SiteCode();
                 sc.setId(rs.getInt("vc.VOCABULARY_CONCEPT_ID"));
                 sc.setIdentifier(rs.getString("vc.IDENTIFIER"));
@@ -298,9 +313,13 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
                         }
                     }
                 }
+                timer.stop();
+                LOGGER.info("Method getSiteCodeList (creating the site codes list) lasted: " + timer.toString());
                 return sc;
             }
         });
+        timer.stop();
+        LOGGER.info("Method getSiteCodeList lasted: " + timer.toString());
         return resultList;
     }
 
@@ -313,6 +332,9 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
      */
     @Override
     public Map<Integer, String> getBoundElementIdAndValue(Integer vcId, List<Integer> dataElementIds) {
+        StopWatch timer = new StopWatch();
+        timer.start();
+
         StringBuilder sqlForElementValue = new StringBuilder();
         sqlForElementValue.append("select vce.DATAELEM_ID, vce.ELEMENT_VALUE from VOCABULARY_CONCEPT_ELEMENT vce inner join VOCABULARY_CONCEPT vc on " +
                 " vce.VOCABULARY_CONCEPT_ID = vc.VOCABULARY_CONCEPT_ID inner join VOCABULARY v on v.VOCABULARY_ID = vc.VOCABULARY_ID " +
@@ -340,6 +362,8 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
                 elementInfo.put(key, singleLineMap.get(key));
             }
         }
+        timer.stop();
+        LOGGER.info("Method getBoundElementIdAndValue lasted: " + timer.toString());
         return elementInfo;
     }
 
@@ -348,6 +372,8 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
      */
     @Override
     public void insertAvailableSiteCodes(List<VocabularyConcept> vocabularyConcepts, String userName) throws Exception {
+        StopWatch timer = new StopWatch();
+        timer.start();
         StringBuilder sql = new StringBuilder();
         sql.append("insert into VOCABULARY_CONCEPT_ELEMENT (VOCABULARY_CONCEPT_ID, DATAELEM_ID, ELEMENT_VALUE) ");
         sql.append("values (:vocabularyConceptId, :dataElemId, :elementValue)");
@@ -415,6 +441,8 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
             batchValuesCounter++;
         }
         getNamedParameterJdbcTemplate().batchUpdate(sql.toString(), batchValues);
+        timer.stop();
+        LOGGER.info("Method insertAvailableSiteCodes lasted: " + timer.toString());
     }
 
     /**
@@ -427,6 +455,8 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         if(freeSiteCodes == null || freeSiteCodes.size() == 0){
             throw new Exception("No site codes were allocated");
         }
+        StopWatch timer = new StopWatch();
+        timer.start();
 
         StringBuilder sql = new StringBuilder();
         sql.append("insert into VOCABULARY_CONCEPT_ELEMENT (VOCABULARY_CONCEPT_ID, DATAELEM_ID, ELEMENT_VALUE) ");
@@ -462,15 +492,11 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         int batchValuesCounter = 0;
         for (int i = 0; i < freeSiteCodes.size(); i++) {
 
-            //insert country code information
-            StringBuilder countryCodeSb = new StringBuilder();
-            countryCodeSb.append(Props.getRequiredProperty(PropsIF.DD_URL));
-            countryCodeSb.append("/vocabulary/common/countries/");
-            countryCodeSb.append(countryCode);
+            String countryUrl = getFullCountryUrl(countryCode);
             Map<String, Object> params = new HashMap<String, Object>();
             params.put("vocabularyConceptId", freeSiteCodes.get(i).getId());
             params.put("dataElemId", elementMap.get(SiteCodeBoundElementIdentifiers.COUNTRY_CODE.getIdentifier()));
-            params.put("elementValue", countryCodeSb.toString());
+            params.put("elementValue", countryUrl);
             batchValues[batchValuesCounter] = params;
             batchValuesCounter++;
 
@@ -504,6 +530,8 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         }
 
         getNamedParameterJdbcTemplate().batchUpdate(sql.toString(), batchValues);
+        timer.stop();
+        LOGGER.info("Method allocateSiteCodes lasted: " + timer.toString());
     }
 
     @Override
@@ -512,6 +540,8 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         if(vcIds == null || vcIds.size() == 0){
             throw new Exception("No site codes were given for status update");
         }
+        StopWatch timer = new StopWatch();
+        timer.start();
 
         StringBuilder sql = new StringBuilder();
         sql.append("update VOCABULARY_CONCEPT_ELEMENT set ELEMENT_VALUE = :elementValue ");
@@ -524,6 +554,8 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
 
         getNamedParameterJdbcTemplate().update(sql.toString(), params);
         LOGGER.info(String.format("Status for site codes with ids %s was successfully updated to %s",vcIds.toString(), status));
+        timer.stop();
+        LOGGER.info("Method updateSiteCodeStatus lasted: " + timer.toString());
     }
 
     /**
@@ -532,12 +564,16 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
     @Override
     public int getSiteCodeVocabularyFolderId() {
 
+        StopWatch timer = new StopWatch();
+        timer.start();
         StringBuilder sql = new StringBuilder();
         sql.append("select min(VOCABULARY_ID) from VOCABULARY where VOCABULARY_TYPE = :type");
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("type", VocabularyType.SITE_CODE.name());
 
+        timer.stop();
+        LOGGER.info("Method getSiteCodeVocabularyFolderId lasted: " + timer.toString());
         return getNamedParameterJdbcTemplate().queryForObject(sql.toString(), params,Integer.class);
     }
 
@@ -546,6 +582,8 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
      */
     @Override
     public int getFeeSiteCodeAmount() {
+        StopWatch timer = new StopWatch();
+        timer.start();
         String statusIdentifier = SiteCodeBoundElementIdentifiers.STATUS.getIdentifier();
         int statusElementId = dataElementDAO.getCommonDataElementId(statusIdentifier);
 
@@ -562,6 +600,8 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         params.put("siteCodeType", VocabularyType.SITE_CODE.name());
         params.put("statusElementId", statusElementId);
 
+        timer.stop();
+        LOGGER.info("Method getFeeSiteCodeAmount lasted: " + timer.toString());
         return getNamedParameterJdbcTemplate().queryForObject(sql.toString(), params,Integer.class);
     }
 
@@ -570,6 +610,9 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
      */
     @Override
     public int getCountryUnusedAllocations(String countryCode, boolean withoutInitialName) {
+
+        StopWatch timer = new StopWatch();
+        timer.start();
 
         /* Create a list for the identifiers needed*/
         List<String> elementIdentifiers = new ArrayList<>();
@@ -580,30 +623,35 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         /* Create a hashmap with key being the identifier and value being the id of the element*/
         Map<String, Integer> elementMap = dataElementDAO.getMultipleCommonDataElementIds(elementIdentifiers);
 
+        int vocabularyFolderId = this.getSiteCodeVocabularyFolderId();
+
         StringBuilder sql = new StringBuilder();
         sql.append("select count(distinct vc.VOCABULARY_CONCEPT_ID) ");
-        sql.append("from VOCABULARY v inner join VOCABULARY_CONCEPT vc on v.VOCABULARY_ID=vc.VOCABULARY_ID ");
+        sql.append("from VOCABULARY_CONCEPT vc ");
         sql.append("inner join VOCABULARY_CONCEPT_ELEMENT vce1 on vc.VOCABULARY_CONCEPT_ID=vce1.VOCABULARY_CONCEPT_ID ");
         sql.append("inner join VOCABULARY_CONCEPT_ELEMENT vce2 on vce1.VOCABULARY_CONCEPT_ID=vce2.VOCABULARY_CONCEPT_ID ");
-        sql.append("where v.VOCABULARY_TYPE = :siteCodeType and v.WORKING_COPY = 0 and vce1.ID != vce2.ID " );
+        sql.append("left join VOCABULARY_CONCEPT vc2 on vc2.VOCABULARY_CONCEPT_ID=vce2.RELATED_CONCEPT_ID ");
+        sql.append("where vc.VOCABULARY_ID = :siteCodesVocabularyId and vce1.ID != vce2.ID " );
         sql.append("and vce1.DATAELEM_ID = :statusElementId and vce1.ELEMENT_VALUE in (:statuses) ");
-        sql.append("and vce2.DATAELEM_ID = :countryCodeElementId and vce2.ELEMENT_VALUE = :countryCode ");
+        sql.append("and vce2.DATAELEM_ID = :countryCodeElementId and (vce2.ELEMENT_VALUE like :countryCode or vc2.IDENTIFIER like :countryCode)");
 
         if(withoutInitialName) {
             sql.append("and vc.VOCABULARY_CONCEPT_ID not in (select vce3.VOCABULARY_CONCEPT_ID from VOCABULARY_CONCEPT_ELEMENT vce3 ");
             sql.append("where vce3.DATAELEM_ID = :initialNameElementId and vce3.ELEMENT_VALUE is not null and vce3.ELEMENT_VALUE != '') ");
         }
-
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put("countryCode", countryCode);
+        params.put("countryCode", "%" + countryCode);
         params.put("statuses", SiteCodeStatus.ALLOCATED.name());
-        params.put("siteCodeType", VocabularyType.SITE_CODE.name());
+        params.put("siteCodesVocabularyId", vocabularyFolderId);
         params.put("statusElementId", elementMap.get(SiteCodeBoundElementIdentifiers.STATUS.getIdentifier()));
         params.put("countryCodeElementId", elementMap.get(SiteCodeBoundElementIdentifiers.COUNTRY_CODE.getIdentifier()));
 
         if (withoutInitialName){
             params.put("initialNameElementId", elementMap.get(SiteCodeBoundElementIdentifiers.INITIAL_SITE_NAME.getIdentifier()));
         }
+
+        timer.stop();
+        LOGGER.info("Method getCountryUnusedAllocations lasted: " + timer.toString());
 
         return getNamedParameterJdbcTemplate().queryForObject(sql.toString(), params,Integer.class);
     }
@@ -613,6 +661,10 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
      */
     @Override
     public int getCountryUsedAllocations(String countryCode) {
+
+        StopWatch timer = new StopWatch();
+        timer.start();
+
         /* Create a list for the identifiers needed*/
         List<String> elementIdentifiers = new ArrayList<>();
         elementIdentifiers.add(SiteCodeBoundElementIdentifiers.STATUS.getIdentifier());
@@ -621,21 +673,27 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         /* Create a hashmap with key being the identifier and value being the id of the element*/
         Map<String, Integer> elementMap = dataElementDAO.getMultipleCommonDataElementIds(elementIdentifiers);
 
+        int vocabularyFolderId = this.getSiteCodeVocabularyFolderId();
+
         StringBuilder sql = new StringBuilder();
         sql.append("select count(distinct vc.VOCABULARY_CONCEPT_ID) ");
-        sql.append("from VOCABULARY v inner join VOCABULARY_CONCEPT vc on v.VOCABULARY_ID=vc.VOCABULARY_ID ");
+        sql.append("from VOCABULARY_CONCEPT vc ");
         sql.append("inner join VOCABULARY_CONCEPT_ELEMENT vce1 on vc.VOCABULARY_CONCEPT_ID=vce1.VOCABULARY_CONCEPT_ID ");
         sql.append("inner join VOCABULARY_CONCEPT_ELEMENT vce2 on vce1.VOCABULARY_CONCEPT_ID=vce2.VOCABULARY_CONCEPT_ID ");
-        sql.append("where v.VOCABULARY_TYPE = :siteCodeType and v.WORKING_COPY = 0 and vce1.ID != vce2.ID " );
+        sql.append("left join VOCABULARY_CONCEPT vc2 on vc2.VOCABULARY_CONCEPT_ID=vce2.RELATED_CONCEPT_ID ");
+        sql.append("where vc.VOCABULARY_ID = :siteCodesVocabularyId and vce1.ID != vce2.ID " );
         sql.append("and vce1.DATAELEM_ID = :statusElementId and vce1.ELEMENT_VALUE in (:statuses) ");
-        sql.append("and vce2.DATAELEM_ID = :countryCodeElementId and vce2.ELEMENT_VALUE = :countryCode");
+        sql.append("and vce2.DATAELEM_ID = :countryCodeElementId and (vce2.ELEMENT_VALUE like :countryCode or vc2.IDENTIFIER like :countryCode)");
 
         Map<String, Object> params = new HashMap<String, Object>();
-        params.put("countryCode", countryCode);
+        params.put("countryCode", "%" + countryCode);
         params.put("statuses", Arrays.asList(SiteCodeFilter.ALLOCATED_USED_STATUSES));
-        params.put("siteCodeType", VocabularyType.SITE_CODE.name());
+        params.put("siteCodesVocabularyId", vocabularyFolderId);
         params.put("statusElementId", elementMap.get(SiteCodeBoundElementIdentifiers.STATUS.getIdentifier()));
         params.put("countryCodeElementId",elementMap.get(SiteCodeBoundElementIdentifiers.COUNTRY_CODE.getIdentifier()));
+
+        timer.stop();
+        LOGGER.info("Method getCountryUsedAllocations lasted: " + timer.toString());
 
         return getNamedParameterJdbcTemplate().queryForObject(sql.toString(), params,Integer.class);
     }
@@ -645,13 +703,28 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
      */
     @Override
     public boolean siteCodeFolderExists() {
+
+        StopWatch timer = new StopWatch();
+        timer.start();
+
         StringBuilder sql = new StringBuilder();
         sql.append("select count(VOCABULARY_ID) from VOCABULARY where VOCABULARY_TYPE = :type");
 
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("type", VocabularyType.SITE_CODE.name());
 
+        timer.stop();
+        LOGGER.info("Method siteCodeFolderExists lasted: " + timer.toString());
+
         return getNamedParameterJdbcTemplate().queryForObject(sql.toString(), params,Integer.class) > 0;
+    }
+
+    private String getFullCountryUrl(String countryCode){
+        StringBuilder countryCodeSb = new StringBuilder();
+        countryCodeSb.append(Props.getRequiredProperty(PropsIF.DD_URL));
+        countryCodeSb.append("/vocabulary/common/countries/");
+        countryCodeSb.append(countryCode);
+        return countryCodeSb.toString();
     }
 
 }

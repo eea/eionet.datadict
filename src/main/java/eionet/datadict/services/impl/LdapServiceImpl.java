@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 
 @Service
@@ -37,5 +38,10 @@ public class LdapServiceImpl implements LdapService {
     @Override
     public List<String> getRoleUsers(String roleName) throws LdapDaoException {
         return ldapRoleDao.findRoleUsers(roleName);
+    }
+
+    @Override
+    public Hashtable<String, Object> getRoleInfo(String roleName) throws LdapDaoException {
+        return ldapRoleDao.getRoleInfo(roleName);
     }
 }

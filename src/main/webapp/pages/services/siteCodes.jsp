@@ -104,6 +104,93 @@
     <stripes:layout-component name="contents">
         <h1>Site codes</h1>
 
+        <%-- Info text --%>
+        <c:if test="${actionBean.userLoggedIn and not actionBean.allocateRight}">
+        <div class="system-msg">
+            <strong>Note</strong>
+            <p>
+              You are not authorized to allocate site codes. Please contact responsible NRC or NFP if this is needed.
+            </p>
+        </div>
+        </c:if>
+        <p>
+        Site code is a unique identifier of site records in the
+        <a href="https://dd.eionet.europa.eu/datasets/latest/CDDA">Common database of designated areas (CDDA)</a>
+        which is annually updated in one of the EEA's priority dataflows.
+        </p>
+
+        <p>
+        CDDA is main European inventory of nationally designated protected areas and it provides data for
+        <a href="https://www.wdpa.org/">World Database on Protected Areas (WDPA)</a>.
+        In order to keep identification of the CDDA site records compatible with the WDPA,
+        the EEA agreed to use the site identifier code list maintained by the WDPA.
+        Whenever it is needed the WDPA provides free codes from the codelist to the EEA.
+        These free codes are then distributed to the individual countries on demand.
+        The countries then assign the codes to their new national sites during the update of the CDDA data.
+        </p>
+
+        <p>
+        In the past the distribution of the free codes, as well as maintenance of the European codelist,
+        has been performed manually by the ETC/BD. This service automates the process of the code distribution.
+        </p>
+
+        <p>
+        Appointed Reportnet users, which are all Eionet <a href="https://www.eionet.europa.eu/ldap-roles/?role_id=eionet-nfp">NFPs</a>
+        and <a href="https://www.eionet.europa.eu/ldap-roles/?role_id=eionet-nrc-biodivdata">NRCs for Biodiversity data and information</a>,
+        can reserve a set of new site codes for their new sites after logging into the service. The process is called allocation of site codes.
+        </p>
+
+        <p>
+            Detailed instructions on how to use the site code allocation service can be found in this <a href="<%=request.getContextPath()%>/documentation/service_cdda_sitecode_guide.doc">User guide</a>.
+        </p>
+
+        <div class="advice-msg">
+            Number of available Site codes in the system: <strong><c:out value="${actionBean.unallocatedSiteCodes}" /></strong>
+        </div>
+
+        <c:if test="${empty actionBean.user}">
+        <div class="system-msg">
+            <strong>Note</strong>
+            <p>
+            Please <a href="https://sso.eionet.europa.eu/login?service=http%3A%2F%2Fdd.eionet.europa.eu%2Flogin">log-in</a> with your Eionet
+            user name and password in order to allocate new site codes or see the list of codes already allocated.
+            </p>
+        </div>
+        </c:if>
+        <%--Allocated user countries --%>
+        <c:if test="${not empty actionBean.allocations}">
+            <c:forEach items="${actionBean.allocations}" var="allocations">
+                <div class="important-msg">
+                    <strong>Country: ${allocations.country.definition}</strong>
+                    <p>Number of allocated, used codes: <strong>${allocations.usedCodes}</strong>
+                            <stripes:link beanclass="${actionBean['class'].name}" event="search">
+                                <stripes:param name="filter.countryCode" value="${allocations.country.value}" />
+                                <stripes:param name="filter.allocatedUsedStatuses" value="true" />
+                                See the list
+                            </stripes:link>
+                    </p>
+                    <c:choose>
+                        <c:when test="${allocations.unusedCodes > 0}">
+                            <p style="color:red">Number of allocated, unused codes: <strong>${allocations.unusedCodes}</strong>
+                            <stripes:link beanclass="${actionBean['class'].name}" event="search">
+                                <stripes:param name="filter.countryCode" value="${allocations.country.value}" />
+                                <stripes:param name="filter.status" value="${actionBean.allocatedStatus}" />
+                                See the list
+                            </stripes:link>
+                            </p>
+                            <p style="color:red">Please check the list and consider using the codes before requesting any new ones.</p>
+                        </c:when>
+                        <c:otherwise>
+                            <p>Number of allocated, unused codes: <strong>${allocations.unusedCodes}</strong>
+                        </c:otherwise>
+                    </c:choose>
+                    <c:if test="${actionBean.allocateRight}">
+                        <p><input type="button" name="allocateCodes" value="Allocate site codes"  id="allocateSiteCodesLink2"/></p>
+                    </c:if>
+                </div>
+            </c:forEach>
+        </c:if>
+
         <div id="drop-operations">
             <ul>
                 <li class="search open"><a class="searchSection" href="#" title="Search site codes">Search</a></li>
@@ -176,95 +263,6 @@
             </div>
         </stripes:form>
 
-        <%-- Info text --%>
-        <c:if test="${actionBean.context.eventName == 'view'}">
-            <c:if test="${actionBean.userLoggedIn and not actionBean.allocateRight}">
-            <div class="system-msg">
-                <strong>Note</strong>
-                <p>
-                  You are not authorized to allocate site codes. Please contact responsible NRC or NFP if this is needed.
-                </p>
-            </div>
-            </c:if>
-            <p>
-            Site code is a unique identifier of site records in the
-            <a href="https://dd.eionet.europa.eu/datasets/latest/CDDA">Common database of designated areas (CDDA)</a>
-            which is annually updated in one of the EEA's priority dataflows.
-            </p>
-
-            <p>
-            CDDA is main European inventory of nationally designated protected areas and it provides data for
-            <a href="https://www.wdpa.org/">World Database on Protected Areas (WDPA)</a>.
-            In order to keep identification of the CDDA site records compatible with the WDPA,
-            the EEA agreed to use the site identifier code list maintained by the WDPA.
-            Whenever it is needed the WDPA provides free codes from the codelist to the EEA.
-            These free codes are then distributed to the individual countries on demand.
-            The countries then assign the codes to their new national sites during the update of the CDDA data.
-            </p>
-
-            <p>
-            In the past the distribution of the free codes, as well as maintenance of the European codelist,
-            has been performed manually by the ETC/BD. This service automates the process of the code distribution.
-            </p>
-
-            <p>
-            Appointed Reportnet users, which are all Eionet <a href="https://www.eionet.europa.eu/ldap-roles/?role_id=eionet-nfp">NFPs</a>
-            and <a href="https://www.eionet.europa.eu/ldap-roles/?role_id=eionet-nrc-biodivdata">NRCs for Biodiversity data and information</a>,
-            can reserve a set of new site codes for their new sites after logging into the service. The process is called allocation of site codes.
-            </p>
-
-            <p>
-                Detailed instructions on how to use the site code allocation service can be found in this <a href="<%=request.getContextPath()%>/documentation/service_cdda_sitecode_guide.doc">User guide</a>.
-            </p>
-
-            <div class="advice-msg">
-                Number of available Site codes in the system: <strong><c:out value="${actionBean.unallocatedSiteCodes}" /></strong>
-            </div>
-
-            <c:if test="${empty actionBean.user}">
-            <div class="system-msg">
-                <strong>Note</strong>
-                <p>
-                Please <a href="https://sso.eionet.europa.eu/login?service=http%3A%2F%2Fdd.eionet.europa.eu%2Flogin">log-in</a> with your Eionet
-                user name and password in order to allocate new site codes or see the list of codes already allocated.
-                </p>
-            </div>
-            </c:if>
-        </c:if>
-        <%--Allocated user countries --%>
-        <c:if test="${not empty actionBean.allocations}">
-            <c:forEach items="${actionBean.allocations}" var="allocations">
-                <div class="important-msg">
-                    <strong>Country: ${allocations.country.definition}</strong>
-                    <p>Number of allocated, used codes: <strong>${allocations.usedCodes}</strong>
-                            <stripes:link beanclass="${actionBean['class'].name}" event="search">
-                                <stripes:param name="filter.countryCode" value="${allocations.country.value}" />
-                                <stripes:param name="filter.allocatedUsedStatuses" value="true" />
-                                See the list
-                            </stripes:link>
-                    </p>
-                    <c:choose>
-                        <c:when test="${allocations.unusedCodes > 0}">
-                            <p style="color:red">Number of allocated, unused codes: <strong>${allocations.unusedCodes}</strong>
-                            <stripes:link beanclass="${actionBean['class'].name}" event="search">
-                                <stripes:param name="filter.countryCode" value="${allocations.country.value}" />
-                                <stripes:param name="filter.status" value="${actionBean.allocatedStatus}" />
-                                See the list
-                            </stripes:link>
-                            </p>
-                            <p style="color:red">Please check the list and consider using the codes before requesting any new ones.</p>
-                        </c:when>
-                        <c:otherwise>
-                            <p>Number of allocated, unused codes: <strong>${allocations.unusedCodes}</strong>
-                        </c:otherwise>
-                    </c:choose>
-                    <c:if test="${actionBean.allocateRight}">
-                        <p><input type="button" name="allocateCodes" value="Allocate site codes"  id="allocateSiteCodesLink2"/></p>
-                    </c:if>
-                </div>
-            </c:forEach>
-        </c:if>
-
         <%-- Site codes table --%>
         <c:if test="${actionBean.context.eventName == 'search'}">
         <c:set var="exporttext"><div class="exportlinks"> Download all results as: {0} </div></c:set>
@@ -308,8 +306,8 @@
                         <table class="datatable">
                             <colgroup>
                                 <col style="width:1%" />
-                                <col style="width:26%"/>
-                                <col />
+                                <col style="width:1%"/>
+                                <col style="width:98%"/>
                             </colgroup>
                             <tr>
                                 <td>&nbsp;</td>
@@ -323,14 +321,18 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td><stripes:radio name="choice" value="amount" id="choiceAmount" checked="checked"/></td>
+                                <td style="position:relative;">
+                                    <div style="position:absolute;top:0px;left:0px;right:0px;bottom:0px;margin-top:8px">
+                                        <stripes:radio name="choice" value="amount" id="choiceAmount" checked="checked"/>
+                                    </div>
+                                </td>
                                 <td class="simple_attr_title" title="Number of site codes to allocate" colspan="2">
                                     <label for="choiceAmount">Enter the number of new site codes and press OK button</label>
                                     <stripes:text class="smalltext" size="5" name="amount" id="amountText"/>
                                     <c:if test="${actionBean.allocateRightAsCountry && fn:length(actionBean.allocations) > 0}">
                                         <c:choose>
                                             <c:when test="${actionBean.allocations[0].unusedCodesWithoutSiteNames < actionBean.maxAllocateAmountWithoutNames}">
-                                                <p>Allocation limit for this option is <c:out value="${actionBean.maxAllocateAmountWithoutNames}"/> codes.
+                                                <p style="margin-bottom:0px;">Allocation limit for this option is <c:out value="${actionBean.maxAllocateAmountWithoutNames}"/> codes.
                                                 You can still allocate up to <span style="color:red;">
                                                 <c:choose>
                                                     <c:when test="${(actionBean.maxAllocateAmount - actionBean.allocations[0].unusedCodes) < (actionBean.maxAllocateAmountWithoutNames - actionBean.allocations[0].unusedCodesWithoutSiteNames)}">
@@ -344,7 +346,7 @@
                                                 site codes by this option. Please use the second option if you need more.</p>
                                             </c:when>
                                             <c:otherwise>
-                                                <p>This option can’t be used! Its allocation limit is <c:out value="${actionBean.maxAllocateAmountWithoutNames}"/> codes.
+                                                <p style="margin-bottom:0px;">This option can’t be used! Its allocation limit is <c:out value="${actionBean.maxAllocateAmountWithoutNames}"/> codes.
                                                 <span style="color:red;"><c:out value="${actionBean.allocations[0].unusedCodesWithoutSiteNames}"/></span>
                                                 site codes have already been allocated by this option. Please use the second option if you need to allocate more.</p>
                                             </c:otherwise>
@@ -352,9 +354,13 @@
                                     </c:if>
                                 </td>
                             </tr>
-                            <tr><td colspan="4" style="padding-left: 10%">Or</td></tr>
+                            <tr><td colspan="4" style="padding-left: 10%;">Or</td></tr>
                             <tr>
-                                <td><stripes:radio name="choice" value="label" id="choiceLabel"/></td>
+                                <td style="position:relative;min-width:20px">
+                                    <div style="position:absolute;top:0px;left:0px;right:0px;bottom:0px;margin-top:3px;">
+                                        <stripes:radio name="choice" value="label" id="choiceLabel"/>
+                                    </div>
+                                </td>
                                 <td class="simple_attr_title" title="List of new site code names separated by new line" colspan="2">
                                     <label for="choiceLabel">Copy a list of new sites (their names, national codes or other identifiers
                                     of your choice, or their combinations - anything that help you to remember which sites you have
@@ -374,8 +380,8 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td colspan="2">&nbsp;</td>
-                                <td>
+                                <td >&nbsp;</td>
+                                <td colspan="2" style="text-align:center">
                                     <stripes:submit name="allocate" value="OK" id="allocateButton" class="siteCodeOkButton" />
                                     <button type="button" id="closeAllocateLink">Cancel</button>
                                 </td>

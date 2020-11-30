@@ -190,6 +190,7 @@ public class SiteCodesActionBean extends AbstractActionBean {
             filter.setUsePaging(false);
         }
         siteCodeResult = siteCodeService.searchSiteCodes(filter);
+        unallocatedSiteCodes = siteCodeService.getFeeSiteCodeAmount();
         return new ForwardResolution(VIEW_SITE_CODES_JSP);
     }
 
