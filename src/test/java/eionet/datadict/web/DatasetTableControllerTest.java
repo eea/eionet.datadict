@@ -11,6 +11,8 @@ import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
+
+import eionet.meta.outservices.OutService;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -36,12 +38,15 @@ public class DatasetTableControllerTest {
     @Mock
     private DatasetTableDataService datasetTableDataService;
 
+    @Mock
+    private OutService outService;
+
      DatasetTableController datasetTableController;
 
     @Before
     public void setup() throws Exception {
         MockitoAnnotations.initMocks(this);
-        this.datasetTableController = new DatasetTableController(dataSetTableService, datasetTableDataService);
+        this.datasetTableController = new DatasetTableController(dataSetTableService, datasetTableDataService, outService);
         mockMvc = MockMvcBuilders.standaloneSetup(datasetTableController).build();
     }
 

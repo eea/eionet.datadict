@@ -5,6 +5,8 @@ import eionet.meta.Dataset;
 import eionet.meta.DsTable;
 import eionet.util.Util;
 import eionet.util.sql.ConnectionUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -19,6 +21,7 @@ import java.util.Vector;
  * Every public method in this class should be callable by outer XML-RPC clients, but only
  * if it's registered in the DataDictService.xml file located in webapp root.
  */
+@Service
 public class OutService {
 
     /** SQL connection to be used by this class. It is forwarded to method executors from other classes. */
@@ -27,6 +30,7 @@ public class OutService {
     /**
      * Default constructor.
      */
+    @Autowired
     public OutService() {
         // Do nothing here.
     }
@@ -122,6 +126,7 @@ public class OutService {
         try {
             if (conn != null) {
                 conn.close();
+                conn = null;
             }
         } catch (SQLException e) {
             // Ignore deliberately.
