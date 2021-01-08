@@ -11,6 +11,8 @@ import eionet.util.SecurityUtil;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URLEncoder;
+import java.util.Hashtable;
+import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.servlet.ServletException;
@@ -40,6 +42,7 @@ import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.vocabulary.*;
+import eionet.meta.outservices.OutService;
 /**
  *
  * @author Vasilis Skiadas<vs@eworx.gr>
@@ -50,6 +53,7 @@ public class DataSetController {
 
     private final DataSetService dataSetService;
     private final DataSetTableService dataSetTableService;
+    private OutService outService;
     private static final Logger LOGGER = Logger.getLogger(DataSetController.class);
     private static final String GENERIC_DD_ERROR_PAGE_URL = "/error.action?type=INTERNAL_SERVER_ERROR&message=";
     private static final String SCHEMA_DATASET_TABLE_FILE_NAME_PREFIX = "schema-tbl-";
@@ -57,9 +61,10 @@ public class DataSetController {
     private static final String DATASET_INSTANCE_FILE_NAME = "dataset-instance";
 
     @Autowired
-    public DataSetController(DataSetService dataSetService, DataSetTableService dataSetTableService) {
+    public DataSetController(DataSetService dataSetService, DataSetTableService dataSetTableService, OutService outService) {
         this.dataSetService = dataSetService;
         this.dataSetTableService = dataSetTableService;
+        this.outService = outService;
     }
 
     @RequestMapping(value = "/{id}/schema", method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
@@ -219,6 +224,13 @@ public class DataSetController {
     public void HandleFatalExceptions(Exception exception, HttpServletRequest request, HttpServletResponse response) throws IOException {
         LOGGER.log(Level.ERROR, null, exception);
         response.sendRedirect(request.getContextPath() + GENERIC_DD_ERROR_PAGE_URL  +URLEncoder.encode(exception.getMessage(), "UTF-8"));
+    }
+
+    @RequestMapping(value = "releaseInfo/{type}/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Hashtable getDatasetReleaseInfo(@PathVariable String type, @PathVariable String id) throws Exception {
+        Hashtable releaseInfo = outService.getDatasetWithReleaseInfo(type, id);
+        return releaseInfo;
     }
 
 }
