@@ -154,7 +154,7 @@ public class DatasetTableController {
 
     @RequestMapping(value = "all", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Vector getDataSetTables() throws Exception {
+    public Vector getDSTablesinRecorderOrReleasedStatus() throws Exception {
         Vector dsTables = outService.getDSTables();
         return dsTables;
     }
