@@ -1355,7 +1355,7 @@
                 <h1><%=verb%> <%=strCommon%> element definition</h1>
                 <%
                     // set up fixed values
-                    fixedValues = mode.equals("add") ? null : searchEngine.getFixedValuesOrderedByValue(delem_id, "elem");
+                    fixedValues = mode.equals("add") ? null : searchEngine.getFixedValuesOrderedByValue(delem_id, "elem",true);
 
                     // set up foreign key relations (if non-common element)
                     Vector fKeys = null;
@@ -2106,7 +2106,7 @@
                                                                                             Vector allPossibleValues = null;
                                                                                             if (dispType.equals("select"))
                                                                                                 allPossibleValues = searchEngine
-                                                                                                        .getFixedValues(attrID, "attr");
+                                                                                                        .getDataElementAcceptedOrValidFixedValues(attrID, "attr");
                                                                                             else if (dispType.equals("text"))
                                                                                                 allPossibleValues = searchEngine
                                                                                                         .getSimpleAttributeValues(attrID);
@@ -2185,7 +2185,7 @@
                                                                         %>
                                                                     <select <%=disabled%> class="small" name="attr_<%=attrID%>"<%=onchange%>>
                                                                         <%
-                                                                            Vector fxValues = searchEngine.getFixedValues(
+                                                                            Vector fxValues = searchEngine.getDataElementAcceptedOrValidFixedValues(
                                                                                                         attrID, "attr");
                                                                                                 if (fxValues == null || fxValues.size() == 0) {
                                                                         %>
@@ -2319,7 +2319,7 @@
                                                         <%
                                                             }
                                                         %>
-                                                            All accepted concepts from the vocabulary
+                                                            All valid concepts concepts from the vocabulary
                                                             <a href="<%=vocabularyUri%>"><%=vocabulary.getLabel()%></a>
                                                             in the <em><%=vocabulary.getFolderName()%></em> set <br/> (Code = Notation)
                                                         <%
@@ -2336,7 +2336,7 @@
                                                         <%
                                                             }
                                                         %>
-                                                            Only concepts accepted before the release of the data element are used from the vocabulary
+                                                            Only valid concepts  accepted before the release of the data element are used from the vocabulary
                                                             <a href="<%=vocabularyUri%>"><%=vocabulary.getLabel()%></a>
                                                             in the <em><%=vocabulary.getFolderName()%></em> set
                                                         <%

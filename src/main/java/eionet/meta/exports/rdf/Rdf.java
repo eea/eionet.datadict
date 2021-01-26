@@ -173,7 +173,7 @@ public class Rdf {
         List<eionet.meta.dao.domain.FixedValue> fixedValues = new Vector();
          
         if(searchEngine.isFixedValuesVocElement(String.valueOf(id), "elem")){ 
-          List<eionet.meta.FixedValue> metaFixedValues  = searchEngine.getFixedValuesOrderedByValue(String.valueOf(id), "elem");
+          List<eionet.meta.FixedValue> metaFixedValues  = searchEngine.getFixedValuesOrderedByValue(String.valueOf(id), "elem",false);
             for (eionet.meta.FixedValue metaFixedValue : metaFixedValues) {
                 FixedValue val = new FixedValue();
                 val.setDefaultValue(metaFixedValue.getDefault());
