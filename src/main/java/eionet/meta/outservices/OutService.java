@@ -5,6 +5,9 @@ import eionet.meta.Dataset;
 import eionet.meta.DsTable;
 import eionet.util.Util;
 import eionet.util.sql.ConnectionUtil;
+import eionet.web.action.AbstractActionBean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,8 +27,9 @@ import java.util.Vector;
 @Service
 public class OutService {
 
-    /** SQL connection to be used by this class. It is forwarded to method executors from other classes. */
-    Connection conn = null;
+    protected static final Logger LOGGER = LoggerFactory.getLogger(OutService.class);
+
+    public static String springOutServiceSingleton = null;
 
     /**
      * Default constructor.
@@ -39,7 +43,7 @@ public class OutService {
      * Returns a vector of parameters by reporting obligation id (aka reporting activity id).
      * This method is called by ROD (Reporting Obligations Database) when the ROD user wants to see all data elements in DD
      * that have been associated with the particular reporting obligation.
-     *
+     * <p>
      * NB! This method and the whole association of DD elements with ROD obligations is deprecated.
      *
      * @param activityId The reporting obligation id (aka reporting activity id).
@@ -57,7 +61,7 @@ public class OutService {
     /**
      * Created by Dusko Kolundzija(ED).
      * Modified by Jaanus Heinlaid (<a href="mailto:jaanus.heinlaid@tietoenator.com">jaanus.heinlaid@tietoenator.com</a>)
-     *
+     * <p>
      * Returns all tables of all released datasets, including historic versions.
      * Return type is s a Vector of Hashtables where each Hashtable represents one table and has the following keys:
      * - tblId the table's numeric identifier
@@ -65,7 +69,7 @@ public class OutService {
      * - shortName the table's short name
      * - dataSet the short name of the dataset where this table belongs to
      * - dateReleased the release date of the dataset where this table belongs to
-     *
+     * <p>
      * The caller should know that each of the above keys may be missing.
      *
      * @return Vector of Hashtables
@@ -74,10 +78,9 @@ public class OutService {
     @SuppressWarnings({"rawtypes", "unchecked"})
     public Vector getDSTables() throws Exception {
 
+        Connection conn = null;
         try {
-            if (conn == null) {
-                getConnection();
-            }
+            conn = ConnectionUtil.getConnection();
             DDSearchEngine searchEngine = new DDSearchEngine(conn);
 
             HashSet dstStatuses = new HashSet();
@@ -105,40 +108,18 @@ public class OutService {
             return ret;
 
         } finally {
-            closeConnection();
+            conn.close();
         }
 
     }
 
-    /**
-     * Initiate the database connection.
-     *
-     * @throws Exception When any sort of error happens.
-     */
-    private void getConnection() throws Exception {
-        conn = ConnectionUtil.getConnection();
-    }
-
-    /**
-     * Close the database connection. Null-safe and throws no exceptions.
-     */
-    private void closeConnection() {
-        try {
-            if (conn != null) {
-                conn.close();
-                conn = null;
-            }
-        } catch (SQLException e) {
-            // Ignore deliberately.
-        }
-    }
 
     /**
      * Returns dataset release info for the given object id and object type. The latter may be one of "tbl" or "dst", representing
      * tables or datasets respectively.
      *
      * @param objType Object type.
-     * @param objId Object id.
+     * @param objId   Object id.
      * @return A hashtable with the dataset release info.
      * @throws Exception When any sort of error happens
      */
@@ -154,13 +135,12 @@ public class OutService {
         if (objId == null || objId.trim().length() == 0 || !Util.isNumericID(objId)) {
             throw new IllegalArgumentException("Missing or invalid objId!");
         }
+        Connection conn = null;
 
         ReplyGetDataset reply = new ReplyGetDataset();
         try {
             // initiate the connection
-            if (conn == null) {
-                getConnection();
-            }
+            conn = ConnectionUtil.getConnection();
 
             // get the dataset object
             DDSearchEngine searchEngine = new DDSearchEngine(conn);
@@ -213,7 +193,7 @@ public class OutService {
                 }
             }
         } finally {
-            closeConnection();
+            conn.close();
         }
 
         return reply.getHashTable();
