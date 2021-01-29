@@ -17,6 +17,7 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.*;
 
+import eionet.meta.dao.domain.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -24,11 +25,6 @@ import org.springframework.context.ApplicationContext;
 import eionet.meta.dao.DAOException;
 import eionet.meta.dao.IAttributeDAO;
 import eionet.meta.dao.IVocabularyFolderDAO;
-import eionet.meta.dao.domain.RdfNamespace;
-import eionet.meta.dao.domain.Schema;
-import eionet.meta.dao.domain.SchemaSet;
-import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.IDataService;
 import eionet.meta.service.ISchemaService;
 import eionet.meta.service.IVocabularyService;
@@ -1519,7 +1515,12 @@ public class DDSearchEngine {
      * @throws SQLException
      *             if database query fails
      */
-    public Vector<FixedValue> getFixedValues(String delemId, String parentType) throws SQLException, DDException {
+
+    public Vector<FixedValue> getDataElementAcceptedOrValidFixedValues(String delemId, String parentType) throws SQLException, DDException {
+        return this.getVocabularyFixedValuesWithValidOrAcceptedStatus(delemId);
+    }
+
+        public Vector<FixedValue> getFixedValues(String delemId, String parentType) throws SQLException, DDException {
 
         if (isFixedValuesVocElement(delemId, parentType)) {
             return getVocabularyFixedValues(delemId);
@@ -1566,8 +1567,15 @@ public class DDSearchEngine {
         return v;
     }
 
-    public Vector<FixedValue> getFixedValuesOrderedByValue(String delemId, String parentType) throws SQLException, DDException {
-        Vector<FixedValue> fixedValuesOrderedByValue = getFixedValues(delemId, parentType);
+
+    public Vector<FixedValue> getFixedValuesOrderedByValue(String delemId, String parentType,boolean validOrAcceptedStatusOnly) throws SQLException, DDException {
+        Vector<FixedValue> fixedValuesOrderedByValue = null;
+        if(validOrAcceptedStatusOnly){
+            fixedValuesOrderedByValue = getDataElementAcceptedOrValidFixedValues(delemId, parentType);
+        }else{
+            fixedValuesOrderedByValue = getFixedValues(delemId, parentType);
+
+        }
         Collections.sort(fixedValuesOrderedByValue, new Comparator<FixedValue>() {
 
             private StringOrdinalComparator cmp = new StringOrdinalComparator();
@@ -1596,6 +1604,30 @@ public class DDSearchEngine {
 
         return false;
     }
+
+
+
+    private Vector getVocabularyFixedValuesWithValidOrAcceptedStatus(String elementId) throws ServiceException {
+
+        IDataService dataService = springContext.getBean(IDataService.class);
+
+        List<VocabularyConcept> concepts = dataService.getElementVocabularyConcepts(Integer.valueOf(elementId));
+        Vector<FixedValue> result = new Vector<FixedValue>();
+        for (VocabularyConcept concept : concepts) {
+            if(concept.getStatus().equals(StandardGenericStatus.VALID) || concept.getStatus().equals(StandardGenericStatus.ACCEPTED)
+                    || concept.getStatus().equals(StandardGenericStatus.VALID_EXPERIMENTAL) ||
+                    concept.getStatus().equals(StandardGenericStatus.VALID_STABLE)){
+                FixedValue fxv = new FixedValue(String.valueOf(concept.getId()), elementId, concept.getNotation());
+                fxv.setDefinition(concept.getDefinition());
+                fxv.setShortDesc(concept.getLabel());
+                fxv.setCsID(concept.getIdentifier());
+                result.add(fxv);
+            }
+        }
+
+        return result;
+    }
+
 
     private Vector getVocabularyFixedValues(String elementId) throws ServiceException {
         //get concepts from the dataservice
@@ -3831,7 +3863,7 @@ public class DDSearchEngine {
 
     /**
      *
-     * @param elmID
+     * @param elmIdfier
      * @return
      * @throws SQLException
      *             if database query fails
@@ -3901,7 +3933,6 @@ public class DDSearchEngine {
      *
      * @param objectId
      * @param objectType
-     * @param attributeType
      * @return
      * @throws DAOException
      */

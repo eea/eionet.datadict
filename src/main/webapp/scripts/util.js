@@ -110,6 +110,11 @@ function toggleSelectAllForField(formId, fieldName) {
             e.preventDefault();
             window.location.href = replaceURICharacters(this.href).toString();
         });
+
+        jQuery('a[href*="vocabulary"]').click(function(e) {
+            e.preventDefault();
+            window.location.href = replaceURICharacters(this.href).toString();
+        });
     });
 })(jQuery);
 
