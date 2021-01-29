@@ -492,13 +492,14 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         int batchValuesCounter = 0;
         for (int i = 0; i < freeSiteCodes.size(); i++) {
 
-            String countryUrl = getFullCountryUrl(countryCode);
-            Map<String, Object> params = new HashMap<String, Object>();
+            Integer countryDataElemId = elementMap.get(SiteCodeBoundElementIdentifiers.COUNTRY_CODE.getIdentifier());
+            updateCountryRelatedConcept(freeSiteCodes.get(i).getId(), countryDataElemId, countryCode);
+            /*Map<String, Object> params = new HashMap<String, Object>();
             params.put("vocabularyConceptId", freeSiteCodes.get(i).getId());
             params.put("dataElemId", elementMap.get(SiteCodeBoundElementIdentifiers.COUNTRY_CODE.getIdentifier()));
             params.put("elementValue", countryUrl);
             batchValues[batchValuesCounter] = params;
-            batchValuesCounter++;
+            batchValuesCounter++;*/
 
             //insert initial site name information
             Map<String, Object> params1 = new HashMap<String, Object>();
@@ -532,6 +533,27 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
         getNamedParameterJdbcTemplate().batchUpdate(sql.toString(), batchValues);
         timer.stop();
         LOGGER.info("Method allocateSiteCodes lasted: " + timer.toString());
+    }
+
+    @Override
+    public void updateCountryRelatedConcept(Integer vocabularyConceptId, Integer dataElementId, String countryCode){
+        StopWatch timer = new StopWatch();
+        timer.start();
+
+        Integer relatedConceptId = vocabularyConceptDAO.getCountryConceptIdCountryCode(countryCode);
+
+        StringBuilder sql = new StringBuilder();
+        sql.append("insert into VOCABULARY_CONCEPT_ELEMENT (VOCABULARY_CONCEPT_ID, DATAELEM_ID, RELATED_CONCEPT_ID) ");
+        sql.append("values (:vocabularyConceptId, :dataElemId, :relatedConceptId)");
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("vocabularyConceptId", vocabularyConceptId);
+        params.put("dataElemId",dataElementId);
+        params.put("relatedConceptId", relatedConceptId);
+
+        getNamedParameterJdbcTemplate().update(sql.toString(), params);
+        timer.stop();
+        LOGGER.info("Method updateCountryRelatedConcept lasted: " + timer.toString());
     }
 
     @Override
