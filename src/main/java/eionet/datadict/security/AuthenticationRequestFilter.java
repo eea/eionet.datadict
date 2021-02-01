@@ -1,6 +1,11 @@
 package eionet.datadict.security;
 
+import eionet.datadict.services.VerifyJWTTokenService;
+import eionet.datadict.services.impl.VerifyJWTTokenServiceImpl;
 import eionet.meta.DDUser;
+import eionet.meta.service.Auth0JWTServiceImpl;
+import eionet.meta.service.IJWTService;
+import eionet.meta.service.ServiceException;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.SecurityUtil;
@@ -14,6 +19,10 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import eionet.web.action.ErrorActionBean;
+import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpStatus;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.GenericFilterBean;
 
@@ -24,7 +33,16 @@ import org.springframework.web.filter.GenericFilterBean;
 public class AuthenticationRequestFilter extends GenericFilterBean {
 
     private static final List<String> INTERCEPTED_URL_PATTERNS;
+    private static final List<String> JWT_AUTHENTICATION_REQUESTED_URL_PATTERNS;
     private static final String BASE_URL = Props.getRequiredProperty(PropsIF.DD_URL);
+    private VerifyJWTTokenService jwtServiceForVerification = new VerifyJWTTokenServiceImpl();
+
+    static {
+        List<String> authenticationRequestedPatterns = new ArrayList<String>();
+        authenticationRequestedPatterns.add("v2/datasetTable/all");
+        authenticationRequestedPatterns.add("v2/dataset/releaseInfo/");
+        JWT_AUTHENTICATION_REQUESTED_URL_PATTERNS = Collections.unmodifiableList(authenticationRequestedPatterns);
+    }
 
     static {
         List<String> interceptedUrlPatterns = new ArrayList<String>();
@@ -58,7 +76,17 @@ public class AuthenticationRequestFilter extends GenericFilterBean {
         HttpServletResponse httpServletResponse = (HttpServletResponse) response;
         if (getUser(httpRequest) == null && isAuthenticationRequired(getFullURL(httpRequest))) {
             httpServletResponse.sendRedirect(SecurityUtil.getLoginURL(httpRequest));
-        } else {
+        }
+        else if (getUser(httpRequest) == null && isJWTAuthenticationRequired(getFullURL(httpRequest))) {
+            String token = ((HttpServletRequest) request).getHeader(Props.getProperty(PropsIF.DD_JWT_HEADER));
+            if(StringUtils.isNotBlank(token) && jwtServiceForVerification.verifyToken(token)){
+                chain.doFilter(request, response);
+            }
+            else{
+                httpServletResponse.sendError(HttpStatus.SC_UNAUTHORIZED);
+            }
+        }
+        else {
             chain.doFilter(request, response);
         }
     }
@@ -75,6 +103,24 @@ public class AuthenticationRequestFilter extends GenericFilterBean {
         }
         return false;
     }
+
+    private boolean isJWTAuthenticationRequired(String url) {
+        AntPathMatcher urlMatcher = new AntPathMatcher();
+        for (String interceptedUrlPattern : JWT_AUTHENTICATION_REQUESTED_URL_PATTERNS) {
+            if (url.startsWith(BASE_URL + interceptedUrlPattern)) {
+                return true;
+            }
+            if(urlMatcher.match(interceptedUrlPattern, url)){
+                return true;
+            }
+
+            if(url.contains(interceptedUrlPattern)){
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     private DDUser getUser(HttpServletRequest request) {
         return SecurityUtil.getUser(request);
