@@ -464,8 +464,8 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
 
         Date dateCreated = new Date();
         @SuppressWarnings("unchecked")
-        /*The size of the map will be the site codes size * 5 because of the 4 bound elements*/
-        Map<String, Object>[] batchValues = new HashMap[freeSiteCodes.size() * 4];
+        /*The size of the map will be the site codes size * 3 because of the bound elements*/
+        Map<String, Object>[] batchValues = new HashMap[freeSiteCodes.size() * 3];
 
         /* Create a list for the identifiers needed*/
         List<String> elementIdentifiers = new ArrayList<>();
@@ -494,12 +494,6 @@ public class SiteCodeDAOImpl extends GeneralDAOImpl implements ISiteCodeDAO {
 
             Integer countryDataElemId = elementMap.get(SiteCodeBoundElementIdentifiers.COUNTRY_CODE.getIdentifier());
             updateCountryRelatedConcept(freeSiteCodes.get(i).getId(), countryDataElemId, countryCode);
-            /*Map<String, Object> params = new HashMap<String, Object>();
-            params.put("vocabularyConceptId", freeSiteCodes.get(i).getId());
-            params.put("dataElemId", elementMap.get(SiteCodeBoundElementIdentifiers.COUNTRY_CODE.getIdentifier()));
-            params.put("elementValue", countryUrl);
-            batchValues[batchValuesCounter] = params;
-            batchValuesCounter++;*/
 
             //insert initial site name information
             Map<String, Object> params1 = new HashMap<String, Object>();
