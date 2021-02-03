@@ -219,6 +219,8 @@ public interface PropsIF {
      */
     String DD_VOCABULARY_ADI_JWT_ALGORITHM_DEFAULT_VALUE = "HS512";
 
+    String DD_JWT_HEADER = "env.dd.jwt.header";
+
     /** Name of the folder of DD's own vocabularies. */
     String DD_OWN_VOCABULARIES_FOLDER_NAME = "dd.ownVocabulariesFolderName";
 

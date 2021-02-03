@@ -8,6 +8,7 @@ import eionet.datadict.model.DatasetTable;
 import eionet.datadict.services.DataSetTableService;
 import eionet.datadict.services.data.DatasetTableDataService;
 import java.io.IOException;
+import java.util.Vector;
 import java.util.regex.Pattern;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -20,6 +21,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import eionet.meta.outservices.OutService;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,14 +45,16 @@ public class DatasetTableController {
 
     private final DataSetTableService dataSetTableService;
     private final DatasetTableDataService datasetTableDataService;
+    private OutService outService;
     private static final Logger LOGGER = Logger.getLogger(DatasetTableController.class);
     private static final String GENERIC_DD_ERROR_PAGE_URL = "/error.action?type=INTERNAL_SERVER_ERROR&message=";
     private static final String SCHEMA_DATASET_TABLE_FILE_NAME_PREFIX = "schema-tbl-";
 
     @Autowired
-    public DatasetTableController(DataSetTableService dataSetTableService, DatasetTableDataService datasetTableDataService) {
+    public DatasetTableController(DataSetTableService dataSetTableService, DatasetTableDataService datasetTableDataService, OutService outService) {
         this.dataSetTableService = dataSetTableService;
         this.datasetTableDataService = datasetTableDataService;
+        this.outService = outService;
     }
 
     @RequestMapping(value = "/{id}/schema", method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
@@ -148,4 +152,10 @@ public class DatasetTableController {
         response.sendRedirect(request.getContextPath() + GENERIC_DD_ERROR_PAGE_URL + "error exporting XML. " + exception.getMessage());
     }
 
+    @RequestMapping(value = "all", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Vector getDSTablesinRecorderOrReleasedStatus() throws Exception {
+        Vector dsTables = outService.getDSTables();
+        return dsTables;
+    }
 }
