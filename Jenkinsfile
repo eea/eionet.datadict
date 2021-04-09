@@ -1,55 +1,67 @@
 pipeline {
-  agent { node { label 'docker-1.13' } }
+  agent {
+            node { label "docker-host" }
+  }
+
+  environment {
+    GIT_NAME = "eionet.datadict"
+    SONARQUBE_TAGS = "dd.eionet.europa.eu"
+    registry = "eeacms/datadict"
+    availableport = sh(script: 'echo $(python3 -c \'import socket; s=socket.socket(); s.bind(("", 0)); print(s.getsockname()[1], end = ""); s.close()\');', returnStdout: true).trim();
+    availableport2 = sh(script: 'echo $(python3 -c \'import socket; s=socket.socket(); s.bind(("", 0)); print(s.getsockname()[1], end = ""); s.close()\');', returnStdout: true).trim();
+    availableport3 = sh(script: 'echo $(python3 -c \'import socket; s=socket.socket(); s.bind(("", 0)); print(s.getsockname()[1], end = ""); s.close()\');', returnStdout: true).trim();
+
+  }
+
+
   tools {
     maven 'maven3'
     jdk 'Java8'
   }
-  options {
-    buildDiscarder(logRotator(numToKeepStr: '4', artifactNumToKeepStr: '2'))
-    timeout(time: 60, unit: 'MINUTES')
-  }
+
   stages {
     stage('Project Build') {
-        steps {
-            sh 'mvn clean -B -V verify'
-        }
-        post {
-            success {
-                archive 'target/*.war'
-            }
-        }
+      steps {
+          sh 'mvn clean -B -V verify  -Dmaven.test.skip=true'
+      }
+      post {
+          success {
+          archiveArtifacts artifacts: 'target/*.war', fingerprint: true
+                    }
+      }
     }
-    stage('Docker push') {
+
+        stage ('Docker build and push') {
       when {
-          branch 'master'
-          beforeAgent true
+          environment name: 'CHANGE_ID', value: ''
       }
       steps {
-        script {
-          def date = sh(returnStdout: true, script: 'echo $(date "+%Y-%m-%dT%H%M")').trim()
-          image = docker.build("eworxeea/datadict:latest")
-          docker.withRegistry('https://index.docker.io/v1/', 'sofiageo-hub') {
-            image.push()
-            image.push(date)
-          }
-        }
-      }
-    }
-    stage('Static analysis') {
-      steps {
-        sh 'mvn clean -B -V -Pcobertura verify cobertura:cobertura pmd:pmd pmd:cpd findbugs:findbugs checkstyle:checkstyle'
+        script{
+
+                 if (env.BRANCH_NAME == 'master') {
+                         tagName = 'latest'
+                 } else {
+                         tagName = "$BRANCH_NAME"
+                 }
+                 def date = sh(returnStdout: true, script: 'echo $(date "+%Y-%m-%dT%H%M")').trim()
+                 dockerImage = docker.build("$registry:$tagName", "--no-cache .")
+                 docker.withRegistry( '', 'eeajenkins' ) {
+                          dockerImage.push()
+                           dockerImage.push(date)
+                 }
+            }
       }
       post {
         always {
-            junit '**/target/failsafe-reports/*.xml'
-            pmd canComputeNew: false
-            dry canComputeNew: false
-            checkstyle canComputeNew: false
-            findbugs pattern: '**/target/findbugsXml.xml'
-            openTasks canComputeNew: false
-            cobertura coberturaReportFile: '**/target/site/cobertura/coverage.xml', failNoReports: true
+                           sh "docker rmi $registry:$tagName | docker images $registry:$tagName"
         }
-      }
+
+        }
     }
+
+
+
   }
+
+
 }
