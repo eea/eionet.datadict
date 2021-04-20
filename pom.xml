@@ -1173,6 +1173,15 @@
             <artifactId>unboundid-ldapsdk</artifactId>
             <version>3.0.0</version>
         </dependency>
+
+
+        <dependency>
+            <groupId>org.sonarsource.scanner.maven</groupId>
+            <artifactId>sonar-maven-plugin</artifactId>
+            <version>3.6.0.1398</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
     <reporting>
