@@ -146,4 +146,14 @@ public interface ISiteCodeDAO {
      * @return
      */
     void updateSiteCodeStatus(List<Integer> vcIds, Integer statusId, String status) throws Exception;
+
+    /**
+     * Updates the related concept id for the country
+     *
+     * @param vocabularyConceptId
+     * @param dataElementId
+     * @param countryUrl
+     * @return
+     */
+     void updateCountryRelatedConcept(Integer vocabularyConceptId, Integer dataElementId, String countryCode);
 }

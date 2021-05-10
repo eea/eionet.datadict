@@ -1086,4 +1086,16 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         }
         return result;
     }
+
+    @Override
+    public Integer getCountryConceptIdCountryCode(String countryCode){
+        StringBuilder sql = new StringBuilder();
+        sql.append("select vc.VOCABULARY_CONCEPT_ID from VOCABULARY_SET vs INNER JOIN VOCABULARY v ON vs.ID=v.FOLDER_ID INNER JOIN VOCABULARY_CONCEPT vc ON v.VOCABULARY_ID=vc.VOCABULARY_ID ");
+        sql.append("where vs.IDENTIFIER='common' and v.IDENTIFIER='countries' and v.WORKING_COPY=0 and vc.IDENTIFIER=:countryCode ");
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("countryCode", countryCode);
+
+        return getNamedParameterJdbcTemplate().queryForObject(sql.toString(), params, Integer.class);
+    }
 }

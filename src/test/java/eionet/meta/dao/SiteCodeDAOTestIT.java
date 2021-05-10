@@ -503,7 +503,7 @@ public class SiteCodeDAOTestIT extends UnitilsJUnit4 {
 
         Map<Integer, String> elementMap1 = siteCodeDAO.getBoundElementIdAndValue(1, boundElementIds);
         Assert.assertThat(elementMap1.size(), is(5));
-        Assert.assertThat(elementMap1.get(1), is(countryBaseUrl + countryCode));
+        Assert.assertThat(elementMap1.get(1), is(nullValue()));
         Assert.assertThat(elementMap1.get(2), is(SiteCodeStatus.ALLOCATED.name()));
         Assert.assertThat(elementMap1.get(3), is("a"));
         Assert.assertThat(elementMap1.get(6), is(expectedTime));
@@ -511,14 +511,14 @@ public class SiteCodeDAOTestIT extends UnitilsJUnit4 {
 
         Map<Integer, String> elementMap2 = siteCodeDAO.getBoundElementIdAndValue(2, boundElementIds);
         Assert.assertThat(elementMap2.size(), is(4));
-        Assert.assertThat(elementMap2.get(1), is(countryBaseUrl + countryCode));
+        Assert.assertThat(elementMap2.get(1), is(nullValue()));
         Assert.assertThat(elementMap2.get(3), is("b"));
         Assert.assertThat(elementMap2.get(6), is(expectedTime));
         Assert.assertThat(elementMap2.get(7), is(username));
 
         Map<Integer, String> elementMap3 = siteCodeDAO.getBoundElementIdAndValue(5, boundElementIds);
         Assert.assertThat(elementMap3.size(), is(4));
-        Assert.assertThat(elementMap3.get(1), is(countryBaseUrl + countryCode));
+        Assert.assertThat(elementMap3.get(1), is(nullValue()));
         Assert.assertThat(elementMap3.get(3), is("c"));
         Assert.assertThat(elementMap3.get(6), is(expectedTime));
         Assert.assertThat(elementMap3.get(7), is(username));
@@ -561,7 +561,7 @@ public class SiteCodeDAOTestIT extends UnitilsJUnit4 {
 
         Map<Integer, String> elementMap1 = siteCodeDAO.getBoundElementIdAndValue(1, boundElementIds);
         Assert.assertThat(elementMap1.size(), is(5));
-        Assert.assertThat(elementMap1.get(1), is(countryBaseUrl + countryCode));
+        Assert.assertThat(elementMap1.get(1), is(nullValue()));
         Assert.assertThat(elementMap1.get(2), is(SiteCodeStatus.ALLOCATED.name()));
         Assert.assertThat(elementMap1.get(3), is("a"));
         Assert.assertThat(elementMap1.get(6), is(expectedTime));
@@ -569,14 +569,14 @@ public class SiteCodeDAOTestIT extends UnitilsJUnit4 {
 
         Map<Integer, String> elementMap2 = siteCodeDAO.getBoundElementIdAndValue(2, boundElementIds);
         Assert.assertThat(elementMap2.size(), is(4));
-        Assert.assertThat(elementMap2.get(1), is(countryBaseUrl + countryCode));
+        Assert.assertThat(elementMap2.get(1), is(nullValue()));
         Assert.assertThat(elementMap2.get(3), is(""));
         Assert.assertThat(elementMap2.get(6), is(expectedTime));
         Assert.assertThat(elementMap2.get(7), is(username));
 
         Map<Integer, String> elementMap3 = siteCodeDAO.getBoundElementIdAndValue(5, boundElementIds);
         Assert.assertThat(elementMap3.size(), is(4));
-        Assert.assertThat(elementMap3.get(1), is(countryBaseUrl + countryCode));
+        Assert.assertThat(elementMap3.get(1), is(nullValue()));
         Assert.assertThat(elementMap3.get(3), is(""));
         Assert.assertThat(elementMap3.get(6), is(expectedTime));
         Assert.assertThat(elementMap3.get(7), is(username));
