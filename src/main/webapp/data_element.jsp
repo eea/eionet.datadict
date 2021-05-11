@@ -1355,7 +1355,7 @@
                 <h1><%=verb%> <%=strCommon%> element definition</h1>
                 <%
                     // set up fixed values
-                    fixedValues = mode.equals("add") ? null : searchEngine.getFixedValuesOrderedByValue(delem_id, "elem",true);
+                    fixedValues = mode.equals("add") ? null : searchEngine.getFixedValuesOrderedByValue(delem_id, "elem");
 
                     // set up foreign key relations (if non-common element)
                     Vector fKeys = null;
@@ -2106,7 +2106,7 @@
                                                                                             Vector allPossibleValues = null;
                                                                                             if (dispType.equals("select"))
                                                                                                 allPossibleValues = searchEngine
-                                                                                                        .getDataElementAcceptedOrValidFixedValues(attrID, "attr");
+                                                                                                        .getFixedValues(attrID, "attr");
                                                                                             else if (dispType.equals("text"))
                                                                                                 allPossibleValues = searchEngine
                                                                                                         .getSimpleAttributeValues(attrID);
@@ -2185,7 +2185,7 @@
                                                                         %>
                                                                     <select <%=disabled%> class="small" name="attr_<%=attrID%>"<%=onchange%>>
                                                                         <%
-                                                                            Vector fxValues = searchEngine.getDataElementAcceptedOrValidFixedValues(
+                                                                            Vector fxValues = searchEngine.getFixedValues(
                                                                                                         attrID, "attr");
                                                                                                 if (fxValues == null || fxValues.size() == 0) {
                                                                         %>

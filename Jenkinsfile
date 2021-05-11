@@ -31,6 +31,26 @@ pipeline {
       }
     }
 
+
+    stage ('Unit Tests and Sonarqube') {
+          when {
+            not { buildingTag() }
+          }
+          steps {
+                    withSonarQubeEnv('Sonarqube') {
+                        sh '''mvn clean -B -V  verify  '''
+
+                    }
+          }
+          post {
+            always {
+                junit 'target/failsafe-reports/*.xml'
+            }
+          }
+        }
+
+
+
         stage ('Docker build and push') {
       when {
           environment name: 'CHANGE_ID', value: ''
