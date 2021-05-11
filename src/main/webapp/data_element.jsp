@@ -1355,7 +1355,7 @@
                 <h1><%=verb%> <%=strCommon%> element definition</h1>
                 <%
                     // set up fixed values
-                    fixedValues = mode.equals("add") ? null : searchEngine.getFixedValuesOrderedByValue(delem_id, "elem",false);
+                    fixedValues = mode.equals("add") ? null : searchEngine.getFixedValuesOrderedByValue(delem_id, "elem");
 
                     // set up foreign key relations (if non-common element)
                     Vector fKeys = null;
@@ -1560,6 +1560,7 @@
                                             DATA ELEMENT WITH QUANTITATIVE VALUES<%
                                         }
                                         %>
+                                        <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=element&amp;area=type"></a>
                                     </h2>
                                     <%
                                     }
@@ -2104,9 +2105,8 @@
 
                                                                                             Vector allPossibleValues = null;
                                                                                             if (dispType.equals("select"))
-                                                                                                //maybe change this one too ?
                                                                                                 allPossibleValues = searchEngine
-                                                                                                        .getDataElementAcceptedOrValidFixedValues(attrID, "attr");
+                                                                                                        .getFixedValues(attrID, "attr");
                                                                                             else if (dispType.equals("text"))
                                                                                                 allPossibleValues = searchEngine
                                                                                                         .getSimpleAttributeValues(attrID);

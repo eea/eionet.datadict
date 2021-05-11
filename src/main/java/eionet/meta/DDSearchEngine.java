@@ -1507,20 +1507,7 @@ public class DDSearchEngine {
         return getFixedValues(delemId, "elem");
     }
 
-    /**
-     *
-     * @param delemId
-     * @param parentType
-     * @return
-     * @throws SQLException
-     *             if database query fails
-     */
-
-    public Vector<FixedValue> getDataElementAcceptedOrValidFixedValues(String delemId, String parentType) throws SQLException, DDException {
-        return this.getVocabularyFixedValuesWithValidOrAcceptedStatus(delemId);
-    }
-
-        public Vector<FixedValue> getFixedValues(String delemId, String parentType) throws SQLException, DDException {
+    public Vector<FixedValue> getFixedValues(String delemId, String parentType) throws SQLException, DDException {
 
         if (isFixedValuesVocElement(delemId, parentType)) {
             return getVocabularyFixedValues(delemId);
@@ -1568,14 +1555,10 @@ public class DDSearchEngine {
     }
 
 
-    public Vector<FixedValue> getFixedValuesOrderedByValue(String delemId, String parentType,boolean validOrAcceptedStatusOnly) throws SQLException, DDException {
+    public Vector<FixedValue> getFixedValuesOrderedByValue(String delemId, String parentType) throws SQLException, DDException {
         Vector<FixedValue> fixedValuesOrderedByValue = null;
-        if(validOrAcceptedStatusOnly){
-            fixedValuesOrderedByValue = getDataElementAcceptedOrValidFixedValues(delemId, parentType);
-        }else{
-            fixedValuesOrderedByValue = getFixedValues(delemId, parentType);
+        fixedValuesOrderedByValue = getFixedValues(delemId, parentType);
 
-        }
         Collections.sort(fixedValuesOrderedByValue, new Comparator<FixedValue>() {
 
             private StringOrdinalComparator cmp = new StringOrdinalComparator();
@@ -1604,30 +1587,6 @@ public class DDSearchEngine {
 
         return false;
     }
-
-
-
-    private Vector getVocabularyFixedValuesWithValidOrAcceptedStatus(String elementId) throws ServiceException {
-
-        IDataService dataService = springContext.getBean(IDataService.class);
-
-        List<VocabularyConcept> concepts = dataService.getElementVocabularyConcepts(Integer.valueOf(elementId));
-        Vector<FixedValue> result = new Vector<FixedValue>();
-        for (VocabularyConcept concept : concepts) {
-            if(concept.getStatus().equals(StandardGenericStatus.VALID) || concept.getStatus().equals(StandardGenericStatus.ACCEPTED)
-                    || concept.getStatus().equals(StandardGenericStatus.VALID_EXPERIMENTAL) ||
-                    concept.getStatus().equals(StandardGenericStatus.VALID_STABLE)){
-                FixedValue fxv = new FixedValue(String.valueOf(concept.getId()), elementId, concept.getNotation());
-                fxv.setDefinition(concept.getDefinition());
-                fxv.setShortDesc(concept.getLabel());
-                fxv.setCsID(concept.getIdentifier());
-                result.add(fxv);
-            }
-        }
-
-        return result;
-    }
-
 
     private Vector getVocabularyFixedValues(String elementId) throws ServiceException {
         //get concepts from the dataservice
