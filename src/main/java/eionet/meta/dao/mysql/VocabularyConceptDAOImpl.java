@@ -1098,4 +1098,42 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
 
         return getNamedParameterJdbcTemplate().queryForObject(sql.toString(), params, Integer.class);
     }
+
+    @Override
+    public VocabularyConcept getVocabularyConceptByIdentifiers(String vocabularySetIdentifier,  String vocabularyIdentifier, String vocabularyConceptIdentifier) {
+
+        StringBuilder sql = new StringBuilder();
+        sql.append("select VC.* from VOCABULARY_SET VS inner join VOCABULARY V on VS.ID = V.FOLDER_ID inner join VOCABULARY_CONCEPT VC on V.VOCABULARY_ID = VC.VOCABULARY_ID ");
+        sql.append("where VS.IDENTIFIER = :vocabularySetIdentifier and V.IDENTIFIER = :vocabularyIdentifier and VC.IDENTIFIER = :vocabularyConceptIdentifier order by VC.VOCABULARY_CONCEPT_ID desc  ");
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("vocabularySetIdentifier", vocabularySetIdentifier);
+        params.put("vocabularyIdentifier", vocabularyIdentifier);
+        params.put("vocabularyConceptIdentifier", vocabularyConceptIdentifier);
+
+        List<VocabularyConcept> resultList =
+                getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<VocabularyConcept>() {
+                    @Override
+                    public VocabularyConcept mapRow(ResultSet rs, int rowNum) throws SQLException {
+                        VocabularyConcept vc = new VocabularyConcept();
+                        vc.setId(rs.getInt("VOCABULARY_CONCEPT_ID"));
+                        vc.setIdentifier(rs.getString("IDENTIFIER"));
+                        vc.setLabel(rs.getString("LABEL"));
+                        vc.setDefinition(rs.getString("DEFINITION"));
+                        vc.setNotation(rs.getString("NOTATION"));
+                        vc.setStatus(rs.getInt("STATUS"));
+                        vc.setAcceptedDate(rs.getDate("ACCEPTED_DATE"));
+                        vc.setNotAcceptedDate(rs.getDate("NOT_ACCEPTED_DATE"));
+                        vc.setStatusModified(rs.getDate("STATUS_MODIFIED"));
+                        return vc;
+                    }
+                });
+
+        if(resultList == null || resultList.size() == 0) {
+            return null;
+        }
+
+        return resultList.get(0);
+    }
+
 }

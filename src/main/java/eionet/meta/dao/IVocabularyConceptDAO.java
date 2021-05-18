@@ -289,4 +289,6 @@ public interface IVocabularyConceptDAO {
 
     Integer getCountryConceptIdCountryCode(String countryCode);
 
+    VocabularyConcept getVocabularyConceptByIdentifiers(String vocabularySetIdentifier,  String vocabularyIdentifier, String vocabularyConceptIdentifier);
+
 }
