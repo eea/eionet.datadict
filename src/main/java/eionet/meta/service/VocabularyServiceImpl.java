@@ -27,6 +27,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import eionet.datadict.model.Vocabulary;
 import eionet.meta.dao.domain.*;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.StopWatch;
@@ -380,6 +381,25 @@ public class VocabularyServiceImpl implements IVocabularyService {
                         // @formatter:off
                         if (value != null && (StringUtils.isNotEmpty(value.getAttributeValue())
                                 || (value.getRelatedConceptId() != null && value.getRelatedConceptId() != 0))) {
+
+                            //The following code checks if a vocabulary concept url is stored in the ELEMENT_VALUE column and if it exists in the dd db stores it into RELATED_CONCEPT_ID instead
+                            // Refs #100490
+                            if(StringUtils.isNotEmpty(value.getAttributeValue()) && value.getAttributeValue().startsWith(Props.getProperty(Props.DD_URL) + "/")){
+                                String attrValueWithoutDomain = value.getAttributeValue().replace(Props.getProperty(Props.DD_URL) + "/", "");
+                                String[] splittedValue = attrValueWithoutDomain.split("/");
+                                if(splittedValue.length ==  4 && splittedValue[0].equals("vocabularyconcept")){
+                                    String vocabularySetIdentifier = splittedValue[1];
+                                    String vocabularyIdentifier = splittedValue[2];
+                                    String vocabularyConceptIdentifier = splittedValue[3];
+
+                                    VocabularyConcept vc = vocabularyConceptDAO.getVocabularyConceptByIdentifiers(vocabularySetIdentifier, vocabularyIdentifier, vocabularyConceptIdentifier);
+                                    if(vc != null){
+                                        value.setRelatedConceptId(vc.getId());
+                                        value.setAttributeValue(null);
+                                    }
+                                }
+                            }
+
                             dataElementValues.add(value);
                         }
                         // @formatter:on
