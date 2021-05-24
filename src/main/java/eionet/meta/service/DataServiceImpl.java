@@ -253,14 +253,9 @@ public class DataServiceImpl implements IDataService {
             List<VocabularyConcept> concepts = vocabularyConceptDao.getVocabularyConcepts(vocabularyId);
 
             for (VocabularyConcept concept : concepts) {
-                boolean conceptDateValid = true;
-                if (!elem.getAllConceptsValid()) {
-                    conceptDateValid = concept.getStatus().isValid();
-                }
-                if (conceptDateValid) {
+                if(concept.getStatus().isValid()){
                     result.add(concept);
                 }
-
             }
 
         }
