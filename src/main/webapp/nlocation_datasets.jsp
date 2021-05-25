@@ -19,7 +19,7 @@ ServletContext ctx = getServletContext();
             %>
             <a id="loginlink" href="<%=SecurityUtil.getLoginURL(request)%>" title="Login">Login</a><%
         }
-
+        %>
 <%--        String helpScreen = request.getParameter("helpscreen");--%>
 <%--        if (helpScreen!=null){--%>
 <%--            %>--%>

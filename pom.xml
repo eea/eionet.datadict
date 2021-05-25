@@ -180,6 +180,7 @@
                     <excludes>
                         <exclude>**/*IT.java</exclude>
                     </excludes>
+                    <argLine>${unitCoverAgent}</argLine>
                     <skipTests>${skipUTs}</skipTests>
                 </configuration>
 
@@ -201,6 +202,7 @@
                         <include>**/*IT.java</include>
                         <!--include>**/*.java</include-->
                     </includes>
+                    <argLine>${itCoverAgent}</argLine>
                     <skipTests>${skipITs}</skipTests>
                 </configuration>
                 <executions>
@@ -321,16 +323,6 @@
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
-                <artifactId>cobertura-maven-plugin</artifactId>
-                <version>2.7</version>
-                <configuration>
-                    <formats>
-                        <format>xml</format>
-                    </formats>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
                 <artifactId>aspectj-maven-plugin</artifactId>
                 <version>1.8</version>
                 <configuration>
@@ -353,30 +345,128 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- FindBugs Static Analysis
-                 Find Security Bugs: https://github.com/h3xstream/find-sec-bugs/wiki/Maven-configuration
-                 To only find security bugs, add these filters
-                 <includeFilterFile>${session.executionRootDirectory}/doc/findbugs-security-include.xml</includeFilterFile>
-                 <excludeFilterFile>${session.executionRootDirectory}/doc/findbugs-security-exclude.xml</excludeFilterFile>
-            -->
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>findbugs-maven-plugin</artifactId>
-                <version>3.0.0</version>
-                <configuration>
-                    <!-- <effort>Max</effort> -->
-                    <threshold>Medium</threshold>
-                    <failOnError>true</failOnError>
-                    <!--
-                    <plugins>
-                        <plugin>
-                            <groupId>com.h3xstream.findsecbugs</groupId>
-                            <artifactId>findsecbugs-plugin</artifactId>
-                            <version>1.2.0</version>
-                        </plugin>
-                    </plugins>
-                    -->
-                </configuration>
+                <groupId>io.leonard.maven.plugins</groupId>
+                <artifactId>jspc-maven-plugin</artifactId>
+                <version>2.0.0</version>
+                <executions>
+                    <execution>
+                        <id>jspc</id>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                        <configuration>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.7</version>
+                <executions>
+                    <!-- Surefire -->
+                    <execution>
+                        <id>before-unit-test-execution</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                        <configuration>
+                            <destFile>${project.build.directory}/jacoco-output/jacoco-unit-tests.exec</destFile>
+                            <propertyName>unitCoverAgent</propertyName>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>after-unit-test-execution</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                        <configuration>
+                            <dataFile>${project.build.directory}/jacoco-output/jacoco-unit-tests.exec</dataFile>
+                            <outputDirectory>${project.reporting.outputDirectory}/jacoco-unit-test-coverage-report</outputDirectory>
+                            <includes>
+                                <include>eionet/datadict/**/*.class</include>
+                                <include>eionet/meta/**/*.class</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+
+                    <!-- Failsafe -->
+                    <execution>
+                        <id>before-integration-test-execution</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                        <configuration>
+                            <destFile>${project.build.directory}/jacoco-output/jacoco-integration-tests.exec</destFile>
+                            <propertyName>itCoverAgent</propertyName>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>after-integration-test-execution</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                        <configuration>
+                            <dataFile>${project.build.directory}/jacoco-output/jacoco-integration-tests.exec</dataFile>
+                            <outputDirectory>${project.reporting.outputDirectory}/jacoco-integration-test-coverage-report</outputDirectory>
+                            <includes>
+                                <include>eionet/datadict/**/*.class</include>
+                                <include>eionet/meta/**/*.class</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+
+                    <!-- Merged test coverage report -->
+                    <execution>
+                        <id>merge-unit-and-integration</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>merge</goal>
+                        </goals>
+                        <configuration>
+                            <fileSets>
+                                <fileSet>
+                                    <directory>${project.build.directory}/jacoco-output/</directory>
+                                    <includes>
+                                        <include>*.exec</include>
+                                    </includes>
+                                </fileSet>
+                            </fileSets>
+                            <destFile>${project.build.directory}/jacoco-output/merged.exec</destFile>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>create-merged-report</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                        <configuration>
+                            <dataFile>${project.build.directory}/jacoco-output/merged.exec</dataFile>
+                            <outputDirectory>${project.reporting.outputDirectory}/jacoco-merged-coverage-report</outputDirectory>
+                            <includes>
+                                <include>eionet/**/*.class</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-maven-plugin</artifactId>
+                <version>4.2.3</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.sonarsource.scanner.maven</groupId>
+                <artifactId>sonar-maven-plugin</artifactId>
+                <version>3.9.0.2155</version>
             </plugin>
         </plugins>
 
@@ -1174,14 +1264,6 @@
             <version>3.0.0</version>
         </dependency>
 
-
-        <dependency>
-            <groupId>org.sonarsource.scanner.maven</groupId>
-            <artifactId>sonar-maven-plugin</artifactId>
-            <version>3.6.0.1398</version>
-            <scope>test</scope>
-        </dependency>
-
     </dependencies>
 
     <reporting>
@@ -1200,7 +1282,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>2.6</version>
+                <version>3.1.2</version>
                 <configuration>
                     <configLocation>${checkstyle.config.location}</configLocation>
                 </configuration>
