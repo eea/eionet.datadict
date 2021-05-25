@@ -57,14 +57,14 @@ pipeline {
                     classPattern: 'target/classes',
                     sourcePattern: 'src/main/java',
                     exclusionPattern: 'src/test*',
-                    reportName: 'Unit Coverage Report'
+                    name: 'Unit Coverage Report'
                 )
                 jacoco(
                     execPattern: 'target/jacoco-it.exec',
                     classPattern: 'target/classes',
                     sourcePattern: 'src/main/java',
                     exclusionPattern: 'src/test*',
-                    reportName: 'IT Coverage Report'
+                    name: 'IT Coverage Report'
                 )
                 publishHTML target:[
                     allowMissing: false,
