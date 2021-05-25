@@ -57,7 +57,6 @@ pipeline {
                     classPattern: 'target/classes',
                     sourcePattern: 'src/main/java',
                     exclusionPattern: 'src/test*',
-                    name: 'Unit Coverage Report'
                 )
                 publishHTML target:[
                     allowMissing: false,
