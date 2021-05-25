@@ -387,8 +387,9 @@
                             <dataFile>${project.build.directory}/jacoco-output/jacoco-unit-tests.exec</dataFile>
                             <outputDirectory>${project.reporting.outputDirectory}/jacoco-unit-test-coverage-report</outputDirectory>
                             <includes>
-                                <include>eionet/datadict/**/*.class</include>
-                                <include>eionet/meta/**/*.class</include>
+                                <includes>
+                                    <include>eionet/**/*.class</include>
+                                </includes>
                             </includes>
                         </configuration>
                     </execution>
@@ -415,8 +416,9 @@
                             <dataFile>${project.build.directory}/jacoco-output/jacoco-integration-tests.exec</dataFile>
                             <outputDirectory>${project.reporting.outputDirectory}/jacoco-integration-test-coverage-report</outputDirectory>
                             <includes>
-                                <include>eionet/datadict/**/*.class</include>
-                                <include>eionet/meta/**/*.class</include>
+                                <includes>
+                                    <include>eionet/**/*.class</include>
+                                </includes>
                             </includes>
                         </configuration>
                     </execution>
