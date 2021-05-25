@@ -53,18 +53,11 @@ pipeline {
             always {
                 junit 'target/failsafe-reports/*.xml'
                 jacoco(
-                    execPattern: 'target/jacoco.exec',
+                    execPattern: 'target/*.exec',
                     classPattern: 'target/classes',
                     sourcePattern: 'src/main/java',
                     exclusionPattern: 'src/test*',
                     name: 'Unit Coverage Report'
-                )
-                jacoco(
-                    execPattern: 'target/jacoco-it.exec',
-                    classPattern: 'target/classes',
-                    sourcePattern: 'src/main/java',
-                    exclusionPattern: 'src/test*',
-                    name: 'IT Coverage Report'
                 )
                 publishHTML target:[
                     allowMissing: false,
