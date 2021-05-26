@@ -24,9 +24,6 @@ pipeline {
 
   stages {
     stage('Project Build') {
-      when {
-          branch 'master'
-      }
       steps {
           sh 'mvn clean -B -V verify  -Dmaven.test.skip=true'
       }
@@ -40,7 +37,6 @@ pipeline {
 
     stage ('Unit Tests and Sonarqube') {
           when {
-            branch 'master'
             not { buildingTag() }
           }
           steps {
@@ -90,7 +86,6 @@ pipeline {
 
     stage ('Docker build and push') {
       when {
-          branch 'master'
           environment name: 'CHANGE_ID', value: ''
       }
       steps {
@@ -136,8 +131,6 @@ post {
       cleanWs(cleanWhenAborted: true, cleanWhenFailure: true, cleanWhenNotBuilt: true, cleanWhenSuccess: true, cleanWhenUnstable: true, deleteDirs: true)
 
       script {
-
-        if (env.BRANCH_NAME == 'master') {
                 def url = "${env.BUILD_URL}/display/redirect"
                 def status = currentBuild.currentResult
                 def subject = "${status}: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'"
@@ -153,7 +146,6 @@ post {
                   color = '#FF0000'
                 }
 
-
                 withCredentials([string(credentialsId: 'eworx-email-list', variable: 'EMAIL_LIST')]) {
                           emailext(
                           to: "$EMAIL_LIST",
@@ -163,7 +155,6 @@ post {
                           compressLog: true,
                           )
                 }
-        }
       }
     }
   }
