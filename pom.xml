@@ -371,6 +371,9 @@
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
+                        <configuration>
+                            <destFile>${project.build.directory}/jacoco-unit.exec</destFile>
+                        </configuration>
                     </execution>
                     <execution>
                         <id>after-unit-test-execution</id>
@@ -379,6 +382,10 @@
                             <goal>report</goal>
                         </goals>
                         <configuration>
+                            <dataFile>${project.build.directory}/jacoco-unit.exec</dataFile>
+                            <outputDirectory>
+                                ${project.reporting.outputDirectory}/jacoco-unit-cov-report
+                            </outputDirectory>
                             <includes>
                                 <include>eionet/**/*.class</include>
                             </includes>
@@ -441,7 +448,7 @@
                         </goals>
                         <configuration>
                             <dataFile>${project.build.directory}/merged.exec</dataFile>
-                            <outputDirectory>${project.reporting.outputDirectory}/jacoco-merged-coverage-report
+                            <outputDirectory>${project.reporting.outputDirectory}/jacoco-merged-cov-report
                             </outputDirectory>
                             <includes>
                                 <include>eionet/**/*.class</include>
