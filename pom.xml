@@ -177,6 +177,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.20.1</version>
                 <configuration>
+                    <reportsDirectory>${project.build.directory}/reports/surefire-reports</reportsDirectory>
                     <excludes>
                         <exclude>**/*IT.java</exclude>
                     </excludes>
@@ -191,6 +192,8 @@
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>2.19.1</version>
                 <configuration>
+                    <summaryFile>${project.build.directory}/reports/failsafe-reports/failsafe-summary</summaryFile>
+                    <reportsDirectory>${project.build.directory}/reports/failsafe-reports</reportsDirectory>
                     <reportFormat>xml</reportFormat>
                     <trimStackTrace>false</trimStackTrace>
                     <systemPropertyVariables>
