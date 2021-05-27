@@ -177,7 +177,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.20.1</version>
                 <configuration>
-                    <reportsDirectory>${project.build.directory}/reports/surefire-reports</reportsDirectory>
+                    <reportFormat>xml</reportFormat>
                     <excludes>
                         <exclude>**/*IT.java</exclude>
                     </excludes>
@@ -192,8 +192,6 @@
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>2.19.1</version>
                 <configuration>
-                    <summaryFile>${project.build.directory}/reports/failsafe-reports/failsafe-summary</summaryFile>
-                    <reportsDirectory>${project.build.directory}/reports/failsafe-reports</reportsDirectory>
                     <reportFormat>xml</reportFormat>
                     <trimStackTrace>false</trimStackTrace>
                     <systemPropertyVariables>
@@ -374,6 +372,9 @@
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
+                        <configuration>
+                            <destFile>${project.build.directory}/jacoco-unit.exec</destFile>
+                        </configuration>
                     </execution>
                     <execution>
                         <id>after-unit-test-execution</id>
@@ -382,6 +383,7 @@
                             <goal>report</goal>
                         </goals>
                         <configuration>
+                            <dataFile>${project.build.directory}/jacoco-unit.exec</dataFile>
                             <outputDirectory>
                                 ${project.reporting.outputDirectory}/jacoco-unit-cov-report
                             </outputDirectory>
@@ -436,7 +438,7 @@
                                     </includes>
                                 </fileSet>
                             </fileSets>
-                            <destFile>${project.build.directory}/merged.exec</destFile>
+                            <destFile>${project.build.directory}/jacoco.exec</destFile>
                         </configuration>
                     </execution>
                     <execution>
@@ -446,7 +448,7 @@
                             <goal>report</goal>
                         </goals>
                         <configuration>
-                            <dataFile>${project.build.directory}/merged.exec</dataFile>
+                            <dataFile>${project.build.directory}/jacoco.exec</dataFile>
                             <outputDirectory>${project.reporting.outputDirectory}/jacoco-merged-cov-report
                             </outputDirectory>
                             <includes>

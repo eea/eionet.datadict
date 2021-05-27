@@ -47,7 +47,7 @@ pipeline {
           }
           post {
             always {
-                junit 'target/reports/**/*.xml'
+                junit 'target/failsafe-reports/*.xml, target/surefire-reports/*.xml'
                 jacoco(
                     execPattern: 'target/*.exec',
                     classPattern: 'target/classes',
