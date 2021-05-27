@@ -74,7 +74,7 @@ pipeline {
                     allowMissing: false,
                     alwaysLinkToLastBuild: false,
                     keepAll: true,
-                    reportDir: 'target/site/jacoco-merged-coverage-report',
+                    reportDir: 'target/site/jacoco-merged-cov-report',
                     reportFiles: 'index.html',
                     reportName: "Detailed Merged Coverage Report"
                 ]
