@@ -335,8 +335,8 @@ public class UNSEventSender {
             }
 
             String channelName = Props.getProperty(Subscriber.PROP_UNS_CHANNEL_NAME);
-            String userName = Props.getProperty(Subscriber.PROP_UNS_USERNAME);
-            String password = Props.getProperty(Subscriber.PROP_UNS_PASSWORD);
+            String userName = Props.getProperty(PropsIF.UNS_REST_USERNAME);
+            String password = Props.getProperty(PropsIF.UNS_REST_PASSWORD);
 
             String url = Props.getProperty(PropsIF.UNS_URL) + Props.getProperty(PropsIF.UNS_SEND_NOTIFICATION_METHOD) + channelName;
             HttpGet request = new HttpGet(url);
