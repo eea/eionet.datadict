@@ -276,8 +276,7 @@ public class Subscriber extends HttpServlet {
      * @throws Exception
      */
     @SuppressWarnings("deprecation")
-    public static void subscribeViaRestCall(Collection<String> users, Collection<Hashtable<String, String>> filters)
-    {
+    public static void subscribeViaRestCall(Collection<String> users, Collection<Hashtable<String, String>> filters) throws Exception {
 
         try {
             // Don't send notifications on Windows platform, because this is most likely a developer machine.
@@ -296,8 +295,8 @@ public class Subscriber extends HttpServlet {
             }
 
             String channelName = Props.getProperty(Subscriber.PROP_UNS_CHANNEL_NAME);
-            String userName = Props.getProperty(Subscriber.PROP_UNS_USERNAME);
-            String password = Props.getProperty(Subscriber.PROP_UNS_PASSWORD);
+            String userName = Props.getProperty(PropsIF.UNS_REST_USERNAME);
+            String password = Props.getProperty(PropsIF.UNS_REST_PASSWORD);
 
 
             // Make subscription per each user.
@@ -322,19 +321,24 @@ public class Subscriber extends HttpServlet {
                 byte[] encoding = Base64.getEncoder().encode(usernamePassword.getBytes());
                 request.addHeader("Authorization", "Basic " + new String(encoding));
 
-                CloseableHttpClient httpClient = HttpClients.createDefault();
-                CloseableHttpResponse response = httpClient.execute(request);
-                if(response.getStatusLine().getStatusCode() != HttpStatus.SC_OK){
-                    String errorMsg = "Received status code " + response.getStatusLine().getStatusCode();
-                    throw new Exception(errorMsg);
+                try (CloseableHttpClient httpClient = HttpClients.createDefault();
+                     CloseableHttpResponse response = httpClient.execute(request)) {
+
+                    if(response.getStatusLine().getStatusCode() != HttpStatus.SC_OK){
+                        String errorMsg = "Received status code " + response.getStatusLine().getStatusCode();
+                        throw new Exception(errorMsg);
+                    }
                 }
-                httpClient.close();
+                catch (Exception e){
+                    throw (e);
+                }
 
             }
 
         }
         catch(Exception e){
             LOGGER.error("Could not subscribe to uns channel " + channelName + " : " + e.getMessage());
+            throw new Exception("Could not subscribe to uns channel " + channelName + " : " + e.getMessage());
         }
 
     }
