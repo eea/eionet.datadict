@@ -6,16 +6,30 @@
  */
 package eionet.meta.notif;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.GeneralSecurityException;
+import java.util.Base64;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.apache.xmlrpc.XmlRpcClient;
 
 import eionet.meta.DDRuntimeException;
@@ -227,7 +241,8 @@ public class UNSEventSender {
 
         Vector rdfTriples = prepareTriples(predicateObjects, eventIDTrailer);
         logTriples(rdfTriples);
-        makeCall(rdfTriples);
+       // makeCall(rdfTriples);
+        makeRestCall(rdfTriples);
     }
 
     /**
@@ -282,6 +297,7 @@ public class UNSEventSender {
      *
      * @param rdfTriples
      */
+    //TODO The following method will be removed
     protected void makeCall(Object rdfTriples) {
 
         if (isSendingDisabled()) {
@@ -309,6 +325,54 @@ public class UNSEventSender {
             XmlRpcCallThread.execute(client, functionName, params);
         } catch (IOException e) {
             LOGGER.error("Sending UNS notification failed: " + e.toString(), e);
+        }
+    }
+
+    protected void makeRestCall(Object rdfTriples) {
+        try {
+            if (isSendingDisabled()) {
+                return;
+            }
+
+            String channelName = Props.getProperty(Subscriber.PROP_UNS_CHANNEL_NAME);
+            String userName = Props.getProperty(PropsIF.UNS_REST_USERNAME);
+            String password = Props.getProperty(PropsIF.UNS_REST_PASSWORD);
+
+            String url = Props.getProperty(PropsIF.UNS_URL) + Props.getProperty(PropsIF.UNS_SEND_NOTIFICATION_METHOD) + channelName;
+            HttpGet request = new HttpGet(url);
+
+            // serialize triples
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            new ObjectOutputStream(out).writeObject(rdfTriples);
+
+            // your string
+            String rdfTriplesStr = new String(Hex.encodeHex(out.toByteArray()));
+
+            URI uri = new URIBuilder(request.getURI())
+                    .addParameter("triples", rdfTriplesStr)
+                    .build();
+
+            ((HttpRequestBase) request).setURI(uri);
+
+            String usernamePassword = userName + ":" + password;
+            byte[] encoding = Base64.getEncoder().encode(usernamePassword.getBytes());
+            request.addHeader("Authorization", "Basic " + new String(encoding));
+
+            try (CloseableHttpClient httpClient = HttpClients.createDefault();
+                 CloseableHttpResponse response = httpClient.execute(request)) {
+
+                if(response.getStatusLine().getStatusCode() != HttpStatus.SC_OK){
+                    String errorMsg = "Received status code " + response.getStatusLine().getStatusCode();
+                    throw new Exception(errorMsg);
+                }
+            }
+            catch (Exception e) {
+                throw (e);
+            }
+
+        }
+        catch(Exception e){
+            LOGGER.error("Could not send notification to uns: " + e.getMessage());
         }
     }
 
