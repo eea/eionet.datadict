@@ -5,10 +5,7 @@ import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.DataSet;
 import eionet.meta.dao.domain.InferenceRule.RuleType;
 import eionet.meta.dao.domain.VocabularyConcept;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.unitils.UnitilsJUnit4;
 import org.unitils.spring.annotation.SpringApplicationContext;
 import org.unitils.spring.annotation.SpringBeanByType;
@@ -143,6 +140,8 @@ public class DataServiceTestIT extends UnitilsJUnit4 {
      * @throws Exception
      *             if error
      */
+    //this has been ignored due to #132022
+    @Ignore
     @Test
     public void testElementConcepts() throws Exception {
         List<VocabularyConcept> concepts1 = dataService.getElementVocabularyConcepts(301);
