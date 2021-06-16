@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import eionet.meta.DataElement;
@@ -30,6 +31,7 @@ import org.unitils.spring.annotation.SpringBeanByType;
  * @author jaanus
  */
 @org.unitils.spring.annotation.SpringApplicationContext("mock-spring-context.xml")
+@Ignore
 public class UNSEventSenderTestIT extends UnitilsJUnit4{
 
     /**

@@ -255,4 +255,14 @@ public interface PropsIF {
     String LDAP_ATTR_MAIL = "ldap.attr.mail";
 
     String EXCLUDED_COUNTY_CODES = "env.dd.countryCodes.excluded";
+
+    String UNS_URL = "env.uns.url";
+
+    String UNS_SEND_NOTIFICATION_METHOD = "uns.sendNotification.method";
+
+    String UNS_MAKE_SUBSCRIPTION_METHOD = "uns.makeSubscription.method";
+
+    String UNS_REST_USERNAME = "env.uns.rest.username";
+
+    String UNS_REST_PASSWORD = "env.uns.rest.password";
 }

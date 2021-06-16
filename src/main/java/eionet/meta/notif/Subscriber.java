@@ -4,19 +4,27 @@
  */
 package eionet.meta.notif;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Vector;
+import java.io.ObjectOutputStream;
+import java.net.URI;
+import java.util.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import eionet.util.PropsIF;
+import org.apache.commons.codec.binary.Hex;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.apache.xmlrpc.XmlRpcClient;
 import org.apache.xmlrpc.XmlRpcException;
 
@@ -169,7 +177,7 @@ public class Subscriber extends HttpServlet {
 
             // call RPC method
             if (filters.size() > 0) {
-                subscribe(Collections.singleton(username), filters);
+                subscribeViaRestCall(Collections.singleton(username), filters);
             }
 
             req.getSession().setAttribute("SUCCESS", "");
@@ -223,6 +231,7 @@ public class Subscriber extends HttpServlet {
      * @throws XmlRpcException
      * @throws Exception
      */
+    //TODO The following method will be removed
     @SuppressWarnings("deprecation")
     public static void subscribe(Collection<String> users, Collection<Hashtable<String, String>> filters)
     throws IOException, XmlRpcException {
@@ -261,6 +270,82 @@ public class Subscriber extends HttpServlet {
     /**
      *
      * @param users
+     * @param filters
+     * @throws IOException
+     * @throws XmlRpcException
+     * @throws Exception
+     */
+    @SuppressWarnings("deprecation")
+    public static void subscribeViaRestCall(Collection<String> users, Collection<Hashtable<String, String>> filters) throws Exception {
+
+        try {
+            // Don't send notifications on Windows platform, because this is most likely a developer machine.
+            if (File.separatorChar == '\\') {
+                return;
+            }
+
+            // If no users and no filters given, then nothing to do here.
+            if (users == null || users.isEmpty() || filters == null || filters.isEmpty()) {
+                return;
+            }
+
+            // Make sure initialization has been done.
+            if (initialized == false) {
+                initialize();
+            }
+
+            String channelName = Props.getProperty(Subscriber.PROP_UNS_CHANNEL_NAME);
+            String userName = Props.getProperty(PropsIF.UNS_REST_USERNAME);
+            String password = Props.getProperty(PropsIF.UNS_REST_PASSWORD);
+
+
+            // Make subscription per each user.
+            for (Object subscriber : users) {
+                String url = Props.getProperty(PropsIF.UNS_URL) + Props.getProperty(PropsIF.UNS_MAKE_SUBSCRIPTION_METHOD) + channelName + "/" + subscriber;
+                HttpGet request = new HttpGet(url);
+
+                // serialize triples
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                new ObjectOutputStream(out).writeObject(filters);
+
+                // your string
+                String filtersStr = new String(Hex.encodeHex(out.toByteArray()));
+
+                URI uri = new URIBuilder(request.getURI())
+                        .addParameter("filters", filtersStr)
+                        .build();
+
+                ((HttpRequestBase) request).setURI(uri);
+
+                String usernamePassword = userName + ":" + password;
+                byte[] encoding = Base64.getEncoder().encode(usernamePassword.getBytes());
+                request.addHeader("Authorization", "Basic " + new String(encoding));
+
+                try (CloseableHttpClient httpClient = HttpClients.createDefault();
+                     CloseableHttpResponse response = httpClient.execute(request)) {
+
+                    if(response.getStatusLine().getStatusCode() != HttpStatus.SC_OK){
+                        String errorMsg = "Received status code " + response.getStatusLine().getStatusCode();
+                        throw new Exception(errorMsg);
+                    }
+                }
+                catch (Exception e){
+                    throw (e);
+                }
+
+            }
+
+        }
+        catch(Exception e){
+            LOGGER.error("Could not subscribe to uns channel " + channelName + " : " + e.getMessage());
+            throw new Exception("Could not subscribe to uns channel " + channelName + " : " + e.getMessage());
+        }
+
+    }
+
+    /**
+     *
+     * @param users
      * @param elmIdentifier
      * @throws SubscribeException
      */
@@ -284,7 +369,7 @@ public class Subscriber extends HttpServlet {
             filter.put(predicate, elmIdentifier);
             filters.add(filter);
             try {
-                subscribe(users, filters);
+                subscribeViaRestCall(users, filters);
             } catch (Exception e) {
                 throw new SubscribeException("Subscription failed!", e);
             }
@@ -319,7 +404,7 @@ public class Subscriber extends HttpServlet {
             filter.put(predicate, dstIdentifier);
             filters.add(filter);
             try {
-                subscribe(users, filters);
+                subscribeViaRestCall(users, filters);
             } catch (Exception e) {
                 throw new SubscribeException("Subscription failed!", e);
             }
@@ -355,7 +440,7 @@ public class Subscriber extends HttpServlet {
             filter.put(predicate, dstIdentifier + "/" + tblIdentifier);
             filters.add(filter);
             try {
-                subscribe(users, filters);
+                subscribeViaRestCall(users, filters);
             } catch (Exception e) {
                 throw new SubscribeException("Subscription failed!", e);
             }
