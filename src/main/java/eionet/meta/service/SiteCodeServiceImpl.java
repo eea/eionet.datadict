@@ -27,6 +27,7 @@ import java.util.Date;
 import java.util.List;
 
 import eionet.meta.dao.IVocabularyConceptDAO;
+import eionet.meta.dao.IVocabularyFolderDAO;
 import eionet.meta.dao.domain.StandardGenericStatus;
 import eionet.meta.service.data.*;
 import org.displaytag.properties.SortOrderEnum;
@@ -73,6 +74,9 @@ public class SiteCodeServiceImpl implements ISiteCodeService {
      */
     @Autowired
     private IVocabularyConceptDAO vocabularyConceptDAO;
+
+    @Autowired
+    private IVocabularyFolderDAO vocabularyFolderDAO;
 
     /**
      * {@inheritDoc}
@@ -166,6 +170,10 @@ public class SiteCodeServiceImpl implements ISiteCodeService {
             LOGGER.info("Updated status, label and status moodified for concepts: "+ vocabularyConceptIds.toString());
 
             siteCodeDao.allocateSiteCodes(freeSiteCodes.getList(), countryCode, userName, siteNames, allocationTime);
+
+            Integer vocabularyFolderId = siteCodeDao.getSiteCodeVocabularyFolderId();
+            vocabularyFolderDAO.updateDateAndUserModified(allocationTime, userName, vocabularyFolderId);
+            LOGGER.info("Updated dateModified field for vocabulary " + vocabularyFolderId);
 
             AllocationResult result = new AllocationResult();
             result.setAmount(amount);
