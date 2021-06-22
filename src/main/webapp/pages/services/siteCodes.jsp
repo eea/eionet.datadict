@@ -269,7 +269,12 @@
         <display:table name="actionBean.siteCodeResult" class="datatable results" id="siteCode" style="width:100%" requestURI="/services/siteCodes/search" export="true">
             <display:setProperty name="basic.msg.empty_list" value="<p class='not-found'>No site codes found.</p>" />
 
-            <display:column title="Site code" property="identifier" escapeXml="true" class="number" sortable="true" sortProperty="identifier" />
+            <display:column title="Site code" class="number" sortable="true" sortProperty="identifier">
+                <stripes:link href="/vocabularyconcept/cdda/cddasites/${siteCode.identifier}/view" title="${siteCode.identifier}">
+                    <stripes:param name="facet" value="HTML Representation"/> <!-- Discourage people from copy-paste of the link -->
+                    <dd:attributeValue attrValue="${siteCode.identifier}"/>
+                </stripes:link>
+            </display:column>
             <display:column title="Site name" escapeXml="true" property="label" sortable="true" sortProperty="label" />
             <display:column title="Status" sortable="true" sortProperty="status">
                 <c:out value="${siteCode.siteCodeStatus.label}" />
