@@ -147,6 +147,9 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
      */
     private String newSitePrefix = null;
 
+    /** Popup div id to alert user regarding vocabulary deletion */
+    private String deleteVocabularyAlertDivId;
+
     /**
      * View vocabulary folders list action.
      *
@@ -330,17 +333,6 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
         if (!isDeleteRight()) {
             addGlobalValidationError("No permission to delete vocabulary!");
         }
-
-        // if vocabulary is used in CH3 element - cannot delete
-        List<DataElement> elementsAsSoruce = dataService.getVocabularySourceElements(folderIds);
-        if (elementsAsSoruce.size() > 0) {
-            addGlobalValidationError("Deleted vocabularies are used as values source for data elements: "
-                    + StringUtils.join(elementsAsSoruce, ","));
-        }
-
-        if (isValidationErrors()) {
-            folders = vocabularyService.getFolders(getUserName(), null);
-        }
     }
 
     /**
@@ -414,10 +406,26 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
      *             if operation fails
      */
     public Resolution delete() throws ServiceException {
+        List<DataElement> elements = dataService.getVocabularySourceElements(folderIds);
+        List<Integer> dataElementIds = new ArrayList<>();
+        for(DataElement elem: elements){
+            dataElementIds.add(elem.getId());
+        }
+        if(dataElementIds.size() > 0) {
+            dataService.removeVocabularyIdFromElements(dataElementIds);
+            String logMsg = "The vocabulary id field of the elements: " + StringUtils.join(elements, ",") + " will be removed";
+            LOGGER.info(logMsg);
+        }
+
         vocabularyService.deleteVocabularyFolders(folderIds, keepRelationsOnDelete);
-        addSystemMessage("Vocabularies deleted successfully");
+        String systemMsg = "Vocabularies deleted successfully. ";
+        if(dataElementIds.size() > 0) {
+            systemMsg += "The vocabulary id field of the elements: " + StringUtils.join(elements, ",") + " have been removed";
+        }
+        addSystemMessage(systemMsg);
         RedirectResolution resolution = new RedirectResolution(VocabularyFoldersActionBean.class);
         return resolution;
+
     }
 
     /**
@@ -742,4 +750,11 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
         return new ForwardResolution(VIEW_VOCABULARY_FOR_SELECTION_JSP);
     }
 
+    public String getDeleteVocabularyAlertDivId() {
+        return deleteVocabularyAlertDivId;
+    }
+
+    public void setDeleteVocabularyAlertDivId(String deleteVocabularyAlertDivId) {
+        this.deleteVocabularyAlertDivId = deleteVocabularyAlertDivId;
+    }
 }

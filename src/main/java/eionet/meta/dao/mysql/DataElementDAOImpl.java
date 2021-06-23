@@ -1506,4 +1506,14 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         return elementMap;
     }
 
+    @Override
+    public void removeVocabularyId(List<Integer> dataElementIds) {
+        String sql = "update DATAELEM set VOCABULARY_ID=null WHERE DATAELEM_ID in (:dataElementIds)";
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("dataElementIds", dataElementIds);
+        getNamedParameterJdbcTemplate().update(sql, params);
+    }
+
+
 }
