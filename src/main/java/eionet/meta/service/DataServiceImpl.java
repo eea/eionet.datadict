@@ -463,4 +463,14 @@ public class DataServiceImpl implements IDataService {
             throw new ServiceException(e.getMessage(), e);
         }
     }
+
+    @Override
+    public void removeVocabularyIdFromElements(List<Integer> dataElementIds) {
+        dataElementDao.removeVocabularyId(dataElementIds);
+    }
+
+    @Override
+    public void changeMultipleDataElemType(List<Integer> dataElementIds, String newType){
+        dataElementDao.changeMultipleDataElemType(dataElementIds, newType);
+    }
 }

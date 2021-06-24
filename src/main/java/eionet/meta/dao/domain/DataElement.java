@@ -52,6 +52,10 @@ public class DataElement {
             return title;
         }
 
+        public String getValue() {
+            return value;
+        }
+
         public boolean isMatch(String value) {
             return this.value.equalsIgnoreCase(value);
         }

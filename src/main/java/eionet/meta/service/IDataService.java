@@ -277,5 +277,18 @@ public interface IDataService {
      * @throws ServiceException if changing data fails
      */
     void handleElementTypeChange(String elementId, String checkedOutCopyId) throws ServiceException;
+
+    /**
+     * Removes the vocabualryId field of data elements
+     * @param dataElementIds the data element ids
+     */
+    void removeVocabularyIdFromElements(List<Integer> dataElementIds);
+
+    /**
+     * Updates data element type for multiple elements
+     * @param dataElementIds the data element ids
+     * @param newType the new type
+     */
+    void changeMultipleDataElemType(List<Integer> dataElementIds, String newType);
     
 }

@@ -466,4 +466,8 @@ public interface IDataElementDAO {
 
     Map<String, Integer> getMultipleCommonDataElementIds(List<String> identifiers);
 
+    void removeVocabularyId(List<Integer> dataElementIds);
+
+    void changeMultipleDataElemType(List<Integer> dataElementIds, String newType);
+
 }
