@@ -24,6 +24,7 @@ package eionet.web.action;
 import java.util.ArrayList;
 import java.util.List;
 
+import eionet.util.Props;
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.RedirectResolution;
@@ -408,20 +409,22 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
     public Resolution delete() throws ServiceException {
         List<DataElement> elements = dataService.getVocabularySourceElements(folderIds);
         List<Integer> dataElementIds = new ArrayList<>();
-        for(DataElement elem: elements){
-            dataElementIds.add(elem.getId());
-        }
-        if(dataElementIds.size() > 0) {
+        String systemMsg = "Vocabularies deleted successfully. <br>";
+        if(elements.size() > 0) {
+            systemMsg += "The following data elements' types were changed to CH1: <br>";
+            for (DataElement elem : elements) {
+                dataElementIds.add(elem.getId());
+                String dataElemUrl = Props.getProperty(Props.DD_URL) + "/dataelements/" + elem.getId();
+                systemMsg += "Element " + elem.getIdentifier() + ": " + dataElemUrl + "<br>";
+            }
             dataService.removeVocabularyIdFromElements(dataElementIds);
-            String logMsg = "The vocabulary id field of the elements: " + StringUtils.join(elements, ",") + " will be removed";
+            dataService.changeMultipleDataElemType(dataElementIds, DataElement.DataElementValueType.FIXED.getValue());
+            String logMsg = "The vocabulary id field of the elements: " + StringUtils.join(elements, ",") + " was removed and their type was changed to CH1";
             LOGGER.info(logMsg);
+
         }
 
         vocabularyService.deleteVocabularyFolders(folderIds, keepRelationsOnDelete);
-        String systemMsg = "Vocabularies deleted successfully. ";
-        if(dataElementIds.size() > 0) {
-            systemMsg += "The vocabulary id field of the elements: " + StringUtils.join(elements, ",") + " have been removed";
-        }
         addSystemMessage(systemMsg);
         RedirectResolution resolution = new RedirectResolution(VocabularyFoldersActionBean.class);
         return resolution;
@@ -532,6 +535,36 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
             addGlobalValidationError("Old and New Site Prefixes are the same.");
         }
     } // end of method validateChangeSitePrefix
+
+    /**
+     * Checks if there are linked data elements to the vocabularies
+     *
+     * @return resolution
+     * @throws ServiceException
+     *             if operation fails
+     */
+    public Resolution checkForElementsLinkedToVocabulary() throws ServiceException {
+        List<DataElement> elements = dataService.getVocabularySourceElements(folderIds);
+        List<Integer> dataElementIds = new ArrayList<>();
+        String systemMsg;
+        if(elements.size() > 0) {
+            systemMsg = "The following data elements are linked to the vocabularies: <br>";
+            for (DataElement elem : elements) {
+                dataElementIds.add(elem.getId());
+                String dataElemUrl = Props.getProperty(Props.DD_URL) + "/dataelements/" + elem.getId();
+                systemMsg += "Element " + elem.getIdentifier() + ": " + dataElemUrl + "<br>";
+            }
+
+        }
+        else{
+            systemMsg = "No data elements are linked to the vocabulary.";
+        }
+
+        addSystemMessage(systemMsg);
+        RedirectResolution resolution = new RedirectResolution(VocabularyFoldersActionBean.class);
+        return resolution;
+
+    }
 
     /**
      * @return the folderIds

@@ -34,8 +34,8 @@
                             $( "#vocabulariesForm" ).attr('action', 'vocabularies/delete').submit();
                         },
                         "Cancel the vocabulary deletion": function() {
-                            document.getElementById("txtKeepRelations").value = false;
                             $(this).dialog("close");
+                            $( "#vocabulariesForm" ).attr('action', 'vocabularies/checkForElementsLinkedToVocabulary').submit();
                         }
                     }
 
@@ -273,7 +273,7 @@
             <p>Some of the selected vocabularies have base URI entered.</p>
             <p>Some data elements may also have links pointing to the selected vocabularies. </p>
             <p>Do you want to replace relations in other vocabularies that are pointing to the deletable vocabulary with fully
-                qualified URI's and remove the data elements' links pointing to the vocabularies?</p>
+                qualified URI's and remove the data elements' links pointing to the vocabularies as well as change their type to Fixed Values with empty codelist (CH1)?</p>
         </div>
         <jsp:include page="searchVocabulariesInc.jsp" />
     </stripes:layout-component>

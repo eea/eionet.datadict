@@ -283,5 +283,12 @@ public interface IDataService {
      * @param dataElementIds the data element ids
      */
     void removeVocabularyIdFromElements(List<Integer> dataElementIds);
+
+    /**
+     * Updates data element type for multiple elements
+     * @param dataElementIds the data element ids
+     * @param newType the new type
+     */
+    void changeMultipleDataElemType(List<Integer> dataElementIds, String newType);
     
 }

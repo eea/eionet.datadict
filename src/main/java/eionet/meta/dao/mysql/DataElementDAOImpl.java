@@ -1515,5 +1515,17 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         getNamedParameterJdbcTemplate().update(sql, params);
     }
 
+    @Override
+    public void changeMultipleDataElemType(List<Integer> dataElementIds, String newType) {
+
+        String sql = "update DATAELEM set TYPE = :newType WHERE DATAELEM_ID in (:dataElementIds)";
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("newType", newType);
+        params.put("dataElementIds", dataElementIds);
+
+        getNamedParameterJdbcTemplate().update(sql, params);
+    }
+
 
 }
