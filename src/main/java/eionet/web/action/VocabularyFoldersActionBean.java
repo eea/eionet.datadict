@@ -24,6 +24,8 @@ package eionet.web.action;
 import java.util.ArrayList;
 import java.util.List;
 
+import eionet.meta.dao.IAttributeDAO;
+import eionet.meta.dao.domain.*;
 import eionet.util.Props;
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.ForwardResolution;
@@ -36,10 +38,6 @@ import net.sourceforge.stripes.validation.ValidationMethod;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 
-import eionet.meta.dao.domain.DataElement;
-import eionet.meta.dao.domain.Folder;
-import eionet.meta.dao.domain.RegStatus;
-import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.IDataService;
 import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.ServiceException;
@@ -48,6 +46,7 @@ import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyFilter;
 import eionet.meta.service.data.VocabularyResult;
 import eionet.util.Util;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Action bean for listing vocabulary folders.
@@ -78,6 +77,10 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
     /** data service. */
     @SpringBean
     private IDataService dataService;
+
+    /** Attribute DAO. */
+    @SpringBean
+    private IAttributeDAO attributeDao;
 
     /** Folders. */
     private List<Folder> folders;
@@ -415,10 +418,16 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
             for (DataElement elem : elements) {
                 dataElementIds.add(elem.getId());
                 String dataElemUrl = Props.getProperty(Props.DD_URL) + "/dataelements/" + elem.getId();
-                systemMsg += "Element " + elem.getIdentifier() + ": " + dataElemUrl + "<br>";
+                systemMsg += "Element " + elem.getIdentifier() + ": <a href=\"" + dataElemUrl + "\">" + dataElemUrl + "</a><br>";
             }
             dataService.removeVocabularyIdFromElements(dataElementIds);
             dataService.changeMultipleDataElemType(dataElementIds, DataElement.DataElementValueType.FIXED.getValue());
+            //change the datatype of the element
+            Attribute attribute = dataService.getAttributeByName("Datatype");
+            for(Integer elemId: dataElementIds){
+                attributeDao.updateSimpleAttributeValue("Datatype", elemId, "E", "string");
+            }
+
             String logMsg = "The vocabulary id field of the elements: " + StringUtils.join(elements, ",") + " was removed and their type was changed to CH1";
             LOGGER.info(logMsg);
 
@@ -552,7 +561,7 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
             for (DataElement elem : elements) {
                 dataElementIds.add(elem.getId());
                 String dataElemUrl = Props.getProperty(Props.DD_URL) + "/dataelements/" + elem.getId();
-                systemMsg += "Element " + elem.getIdentifier() + ": " + dataElemUrl + "<br>";
+                systemMsg += "Element " + elem.getIdentifier() + ": <a href=\"" + dataElemUrl + "\">" + dataElemUrl + "</a><br>";
             }
 
         }
