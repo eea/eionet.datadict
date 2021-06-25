@@ -21,11 +21,7 @@
 
 package eionet.meta.service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import eionet.datadict.model.Vocabulary;
 import eionet.meta.dao.domain.*;
@@ -64,11 +60,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+
 import org.apache.commons.lang.ArrayUtils;
 import org.springframework.context.annotation.DependsOn;
 
@@ -1127,6 +1119,12 @@ public class VocabularyServiceImpl implements IVocabularyService {
             // Insert values for bound elements user and date created for Site code records
             siteCodeDAO.insertAvailableSiteCodes(newConceptsResult.getList(), userName);
             LOGGER.info(userName + " created " + amount + " new site codes.");
+
+            Calendar c = Calendar.getInstance();
+            c.set(Calendar.MILLISECOND, 0);
+            Date allocationTime = c.getTime();
+            vocabularyFolderDAO.updateDateAndUserModified(allocationTime, userName, vocabularyFolderId);
+            LOGGER.info("Updated dateModified field for vocabulary " + vocabularyFolderId);
 
         } catch (Exception e) {
             throw new ServiceException("Failed to reserve empty site codes: " + e.getMessage(), e);
