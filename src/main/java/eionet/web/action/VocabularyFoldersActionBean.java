@@ -24,6 +24,9 @@ package eionet.web.action;
 import java.util.ArrayList;
 import java.util.List;
 
+import eionet.meta.dao.IAttributeDAO;
+import eionet.meta.dao.domain.*;
+import eionet.util.Props;
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.RedirectResolution;
@@ -35,10 +38,6 @@ import net.sourceforge.stripes.validation.ValidationMethod;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 
-import eionet.meta.dao.domain.DataElement;
-import eionet.meta.dao.domain.Folder;
-import eionet.meta.dao.domain.RegStatus;
-import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.IDataService;
 import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.ServiceException;
@@ -47,6 +46,7 @@ import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyFilter;
 import eionet.meta.service.data.VocabularyResult;
 import eionet.util.Util;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Action bean for listing vocabulary folders.
@@ -77,6 +77,10 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
     /** data service. */
     @SpringBean
     private IDataService dataService;
+
+    /** Attribute DAO. */
+    @SpringBean
+    private IAttributeDAO attributeDao;
 
     /** Folders. */
     private List<Folder> folders;
@@ -146,6 +150,9 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
      * New site prefix.
      */
     private String newSitePrefix = null;
+
+    /** Popup div id to alert user regarding vocabulary deletion */
+    private String deleteVocabularyAlertDivId;
 
     /**
      * View vocabulary folders list action.
@@ -330,17 +337,6 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
         if (!isDeleteRight()) {
             addGlobalValidationError("No permission to delete vocabulary!");
         }
-
-        // if vocabulary is used in CH3 element - cannot delete
-        List<DataElement> elementsAsSoruce = dataService.getVocabularySourceElements(folderIds);
-        if (elementsAsSoruce.size() > 0) {
-            addGlobalValidationError("Deleted vocabularies are used as values source for data elements: "
-                    + StringUtils.join(elementsAsSoruce, ","));
-        }
-
-        if (isValidationErrors()) {
-            folders = vocabularyService.getFolders(getUserName(), null);
-        }
     }
 
     /**
@@ -414,10 +410,34 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
      *             if operation fails
      */
     public Resolution delete() throws ServiceException {
+        List<DataElement> elements = dataService.getVocabularySourceElements(folderIds);
+        List<Integer> dataElementIds = new ArrayList<>();
+        String systemMsg = "Vocabularies deleted successfully. <br>";
+        if(elements.size() > 0) {
+            systemMsg += "The following data elements' types were changed to CH1: <br>";
+            for (DataElement elem : elements) {
+                dataElementIds.add(elem.getId());
+                String dataElemUrl = Props.getProperty(Props.DD_URL) + "/dataelements/" + elem.getId();
+                systemMsg += "Element " + elem.getIdentifier() + ": <a href=\"" + dataElemUrl + "\">" + dataElemUrl + "</a><br>";
+            }
+            dataService.removeVocabularyIdFromElements(dataElementIds);
+            dataService.changeMultipleDataElemType(dataElementIds, DataElement.DataElementValueType.FIXED.getValue());
+            //change the datatype of the element
+            Attribute attribute = dataService.getAttributeByName("Datatype");
+            for(Integer elemId: dataElementIds){
+                attributeDao.updateSimpleAttributeValue("Datatype", elemId, "E", "string");
+            }
+
+            String logMsg = "The vocabulary id field of the elements: " + StringUtils.join(elements, ",") + " was removed and their type was changed to CH1";
+            LOGGER.info(logMsg);
+
+        }
+
         vocabularyService.deleteVocabularyFolders(folderIds, keepRelationsOnDelete);
-        addSystemMessage("Vocabularies deleted successfully");
+        addSystemMessage(systemMsg);
         RedirectResolution resolution = new RedirectResolution(VocabularyFoldersActionBean.class);
         return resolution;
+
     }
 
     /**
@@ -524,6 +544,36 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
             addGlobalValidationError("Old and New Site Prefixes are the same.");
         }
     } // end of method validateChangeSitePrefix
+
+    /**
+     * Checks if there are linked data elements to the vocabularies
+     *
+     * @return resolution
+     * @throws ServiceException
+     *             if operation fails
+     */
+    public Resolution checkForElementsLinkedToVocabulary() throws ServiceException {
+        List<DataElement> elements = dataService.getVocabularySourceElements(folderIds);
+        List<Integer> dataElementIds = new ArrayList<>();
+        String systemMsg;
+        if(elements.size() > 0) {
+            systemMsg = "The following data elements are linked to the vocabularies: <br>";
+            for (DataElement elem : elements) {
+                dataElementIds.add(elem.getId());
+                String dataElemUrl = Props.getProperty(Props.DD_URL) + "/dataelements/" + elem.getId();
+                systemMsg += "Element " + elem.getIdentifier() + ": <a href=\"" + dataElemUrl + "\">" + dataElemUrl + "</a><br>";
+            }
+
+        }
+        else{
+            systemMsg = "No data elements are linked to the vocabulary.";
+        }
+
+        addSystemMessage(systemMsg);
+        RedirectResolution resolution = new RedirectResolution(VocabularyFoldersActionBean.class);
+        return resolution;
+
+    }
 
     /**
      * @return the folderIds
@@ -742,4 +792,11 @@ public class VocabularyFoldersActionBean extends AbstractActionBean {
         return new ForwardResolution(VIEW_VOCABULARY_FOR_SELECTION_JSP);
     }
 
+    public String getDeleteVocabularyAlertDivId() {
+        return deleteVocabularyAlertDivId;
+    }
+
+    public void setDeleteVocabularyAlertDivId(String deleteVocabularyAlertDivId) {
+        this.deleteVocabularyAlertDivId = deleteVocabularyAlertDivId;
+    }
 }

@@ -22,16 +22,20 @@
                         width: 500,
                         modal: true,
                     buttons: {
-                        "Yes, replace the relations with URI's" : function() {
+                        "Replace the relations with URI's and remove the links in data elements" : function() {
                             document.getElementById("txtKeepRelations").value = true;
                             $(this).dialog("close");
                             $( "#vocabulariesForm" ).attr('action', 'vocabularies/delete').submit();
 
                         },
-                        "No, delete the relations completely": function() {
+                        "Delete the relations completely and remove the links in data elements": function() {
                           document.getElementById("txtKeepRelations").value = false;
                           $(this).dialog("close");
-                           $( "#vocabulariesForm" ).attr('action', 'vocabularies/delete').submit();
+                            $( "#vocabulariesForm" ).attr('action', 'vocabularies/delete').submit();
+                        },
+                        "Cancel the vocabulary deletion": function() {
+                            $(this).dialog("close");
+                            $( "#vocabulariesForm" ).attr('action', 'vocabularies/checkForElementsLinkedToVocabulary').submit();
                         }
                     }
 
@@ -91,6 +95,7 @@
                 <c:if test="${not empty actionBean.editDivId}">
                     $("#${actionBean.editDivId}").dialog('open');
                 </c:if>
+
             });
 
         })(jQuery);
@@ -265,9 +270,10 @@
           </c:if>
         </c:forEach>
         <div id="keep-relations" title="Handle relations" style="display:none">
-            <p>Some of the selected vocabularies have base URI entered</p>
+            <p>Some of the selected vocabularies have base URI entered.</p>
+            <p>Some data elements may also have links pointing to the selected vocabularies. </p>
             <p>Do you want to replace relations in other vocabularies that are pointing to the deletable vocabulary with fully
-                qualified URI's?</p>
+                qualified URI's and remove the data elements' links pointing to the vocabularies as well as change their type to Fixed Values with empty codelist (CH1)?</p>
         </div>
         <jsp:include page="searchVocabulariesInc.jsp" />
     </stripes:layout-component>

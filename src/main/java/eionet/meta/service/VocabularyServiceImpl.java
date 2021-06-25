@@ -147,12 +147,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
         }
     }
 
-   
-    
-    
-    
-    
-    
+
     /**
      * {@inheritDoc}
      */
