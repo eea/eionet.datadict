@@ -27,6 +27,7 @@ import eionet.meta.dao.mysql.concepts.util.ConceptsWithAttributesQueryBuilder;
 import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyConceptFilter.BoundElementFilterResult;
 import eionet.meta.service.data.VocabularyConceptResult;
+import eionet.util.Util;
 import eionet.util.sql.SQL;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -1134,6 +1135,29 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         }
 
         return resultList.get(0);
+    }
+
+    @Override
+    public Boolean checkIfConceptsWithoutNotationExist(int vocabularyFolderId) {
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("vocabularyFolderId", vocabularyFolderId);
+
+        StringBuilder sql = new StringBuilder();
+        sql.append("select VOCABULARY_CONCEPT_ID ");
+        sql.append(" from VOCABULARY_CONCEPT where VOCABULARY_ID=:vocabularyFolderId and NOTATION IS NULL ");
+
+        List<Integer> resultList =
+            getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<Integer>() {
+                @Override
+                public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    return new Integer(rs.getInt("VOCABULARY_CONCEPT_ID"));
+                }
+            });
+
+        if(Util.isEmpty(resultList)){
+            return true;
+        }
+        return false;
     }
 
 }

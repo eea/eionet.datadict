@@ -58,6 +58,7 @@ public class VocabularyFolder {
     private String baseUri;
     private VocabularyType type;
     private boolean notationsEqualIdentifiers;
+    private boolean canBeBoundToElements;
     
     private VocabularySet vocabularySet;
 
@@ -434,4 +435,11 @@ public class VocabularyFolder {
         return VALID_REG_STATUS;
     }
 
+    public boolean isCanBeBoundToElements() {
+        return canBeBoundToElements;
+    }
+
+    public void setCanBeBoundToElements(boolean canBeBoundToElements) {
+        this.canBeBoundToElements = canBeBoundToElements;
+    }
 }
