@@ -291,4 +291,6 @@ public interface IVocabularyConceptDAO {
 
     VocabularyConcept getVocabularyConceptByIdentifiers(String vocabularySetIdentifier,  String vocabularyIdentifier, String vocabularyConceptIdentifier);
 
+    Boolean checkIfConceptsWithoutNotationExist(int vocabularyFolderId);
+
 }

@@ -1472,6 +1472,25 @@ public class VocabularyServiceImpl implements IVocabularyService {
     }
 
     @Override
+    public VocabularyResult checkIfVocabulariesCanBeBoundToElements(VocabularyResult vocabularyResult) throws ServiceException {
+        try {
+            List<VocabularyFolder> vocabularies = vocabularyResult.getList();
+            for(VocabularyFolder vocabulary: vocabularies){
+                if(vocabulary.isNotationsEqualIdentifiers() == true){
+                    vocabulary.setCanBeBoundToElements(true);
+                }
+                else{
+                    Boolean result = vocabularyConceptDAO.checkIfConceptsWithoutNotationExist(vocabulary.getId());
+                    vocabulary.setCanBeBoundToElements(result);
+                }
+            }
+            return vocabularyResult;
+        } catch (Exception e) {
+            throw new ServiceException("Failed to check if vocabularies can be bound to elements: " + e.getMessage(), e);
+        }
+    }
+
+    @Override
     public List<VocabularyConceptData> searchAllVocabularyConcept(VocabularyConceptFilter filter) throws ServiceException {
         try {
             VocabularyConceptResult vocabularyConceptResult = vocabularyConceptDAO.searchVocabularyConcepts(filter);

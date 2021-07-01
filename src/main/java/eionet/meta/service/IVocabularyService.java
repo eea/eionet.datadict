@@ -692,4 +692,6 @@ public interface IVocabularyService {
     *Check if a Vocabulary is in working Copy Status. 
     **/
     boolean hasVocabularyWorkingCopy(String folderName, String identifier);
+
+    VocabularyResult checkIfVocabulariesCanBeBoundToElements(VocabularyResult vocabularyResult) throws ServiceException;
 }
