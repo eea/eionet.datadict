@@ -55,6 +55,7 @@ public class BindVocabularyActionBean extends AbstractActionBean {
         vocabularyFilter.setStatus(RegStatus.RELEASED);
 
         vocabularies = vocabularyService.searchVocabularies(vocabularyFilter);
+        vocabularies = vocabularyService.checkIfVocabulariesCanBeBoundToElements(vocabularies);
 
         return new ForwardResolution(SEARCH_RESULTS_JSP);
 

@@ -43,13 +43,22 @@
             <display:column title="Status" sortable="true" sortProperty="regStatus">
                 ${item.regStatus.label}
             </display:column>
-            <display:column title="Select" sortable="false">
-                <stripes:link beanclass="${actionBean['class'].name}" event="bind" title="Click to select the vocabulary as the source for the element values">
-                    <stripes:param name="elementId" value="${actionBean.elementId}" />
-                    <stripes:param name="vocabularyId" value="${item.id}" />
-                    [Select]
-                </stripes:link>
-            </display:column>
+            <c:choose>
+                <c:when test="${item.canBeBoundToElements}">
+                    <display:column title="Select" sortable="false">
+                        <stripes:link beanclass="${actionBean['class'].name}" event="bind" title="Click to select the vocabulary as the source for the element values">
+                            <stripes:param name="elementId" value="${actionBean.elementId}" />
+                            <stripes:param name="vocabularyId" value="${item.id}" />
+                            [Select]
+                        </stripes:link>
+                    </display:column>
+                </c:when>
+                <c:otherwise>
+                    <display:column title="Select" sortable="false">
+                        Concepts without notation detected
+                    </display:column>
+                </c:otherwise>
+            </c:choose>
         </display:table>
 
     </stripes:layout-component>
