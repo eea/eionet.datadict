@@ -1727,4 +1727,16 @@ public class VocabularyServiceImpl implements IVocabularyService {
         VocabularyFolder vocabulary = vocabularyFolderDAO.getVocabularyFolder(folderName, identifier, true);
         return (vocabulary != null) ? true : false;
     }
+
+    @Override
+    public Boolean checkIfVocabularyIsBoundToElement(Integer vocabularyId) {
+        return vocabularyFolderDAO.isVocabularyBoundToElement(vocabularyId);
+    }
+
+    @Override
+    public Integer getCheckedOutCopyIdForVocabulary(Integer vocabularyId) {
+        return vocabularyFolderDAO.getWorkingCopyByVocabularyId(vocabularyId);
+    }
+
+
 }

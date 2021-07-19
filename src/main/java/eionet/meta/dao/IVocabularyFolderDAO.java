@@ -295,5 +295,8 @@ public interface IVocabularyFolderDAO {
      */
     void updateDateAndUserModified(Date dateModified, String username, Integer vocabularyId);
 
+    Boolean isVocabularyBoundToElement(Integer vocabularyId);
+
+    Integer getWorkingCopyByVocabularyId(Integer vocabularyId);
 
 }

@@ -26,6 +26,7 @@ import com.google.gson.JsonSyntaxException;
 import eionet.datadict.dal.AsyncTaskDao;
 import eionet.datadict.dal.AsyncTaskHistoryDao;
 import eionet.datadict.errors.BadFormatException;
+import eionet.datadict.errors.ConceptWithoutNotationException;
 import eionet.datadict.errors.EmptyParameterException;
 import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.infrastructure.asynctasks.AsyncTaskDataSerializer;
@@ -814,32 +815,49 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      *             if an error occurs
      */
     public Resolution saveConcept() throws ServiceException {
-
         RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class, "edit");
         resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());
         resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
         resolution.addParameter("vocabularyFolder.workingCopy", vocabularyFolder.isWorkingCopy());
 
-        if (vocabularyConcept != null) {
-            // Save new concept
-            vocabularyService.createVocabularyConcept(vocabularyFolder.getId(), vocabularyConcept);
-        } else {
-            // Update existing concept
-            VocabularyConcept fromForm = getEditableConcept();
-            VocabularyConcept toUpdate = vocabularyService.getVocabularyConcept(fromForm.getId());
-            toUpdate.setIdentifier(fromForm.getIdentifier());
-            toUpdate.setLabel(fromForm.getLabel());
-            toUpdate.setDefinition(fromForm.getDefinition());
-            vocabularyService.quickUpdateVocabularyConcept(toUpdate);
-            initFilter();
-            resolution.addParameter("page", page);
-            if (StringUtils.isNotEmpty(filter.getText())) {
-                resolution.addParameter("filter.text", filter.getText());
+        try {
+            if (vocabularyConcept != null) {
+                //find original VOCABULARY
+                Integer checkedOutCopyId = vocabularyService.getCheckedOutCopyIdForVocabulary(vocabularyFolder.getId());
+                if(checkedOutCopyId == 0){
+                    checkedOutCopyId = vocabularyFolder.getId();
+                }
+                //check if vocabulary is bound to element and the concept does not have notation
+                if (vocabularyService.checkIfVocabularyIsBoundToElement(checkedOutCopyId)) {
+                    if (Util.isEmpty(vocabularyConcept.getNotation())) {
+                        String errorMsg = "Concept without notation can not be created for vocabulary " + checkedOutCopyId + " because it is bound to data elements";
+                        throw new ConceptWithoutNotationException(errorMsg);
+                    }
+                }
+                // Save new concept
+                vocabularyService.createVocabularyConcept(vocabularyFolder.getId(), vocabularyConcept);
+            } else {
+                // Update existing concept
+                VocabularyConcept fromForm = getEditableConcept();
+                VocabularyConcept toUpdate = vocabularyService.getVocabularyConcept(fromForm.getId());
+                toUpdate.setIdentifier(fromForm.getIdentifier());
+                toUpdate.setLabel(fromForm.getLabel());
+                toUpdate.setDefinition(fromForm.getDefinition());
+                vocabularyService.quickUpdateVocabularyConcept(toUpdate);
+                initFilter();
+                resolution.addParameter("page", page);
+                if (StringUtils.isNotEmpty(filter.getText())) {
+                    resolution.addParameter("filter.text", filter.getText());
+                }
             }
-        }
 
-        addSystemMessage("Vocabulary concept saved successfully");
-        return resolution;
+            addSystemMessage("Vocabulary concept saved successfully");
+            return resolution;
+        }
+        catch(ConceptWithoutNotationException cwne){
+            addSystemMessage(cwne.getMessage());
+            return resolution;
+        }
     }
 
     /**
