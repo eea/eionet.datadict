@@ -698,4 +698,6 @@ public interface IVocabularyService {
     Boolean checkIfVocabularyIsBoundToElement(Integer vocabularyId);
 
     Integer getCheckedOutCopyIdForVocabulary(Integer vocabularyId);
+
+    Boolean checkIfConceptShouldBeAddedWhenBoundToElement(Integer newVocabularyId, String notation);
 }

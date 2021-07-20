@@ -23,6 +23,7 @@ package eionet.meta.service;
 
 import java.util.*;
 
+import eionet.datadict.errors.ConceptWithoutNotationException;
 import eionet.datadict.model.Vocabulary;
 import eionet.meta.dao.domain.*;
 import org.apache.commons.lang.StringUtils;
@@ -420,6 +421,10 @@ public class VocabularyServiceImpl implements IVocabularyService {
             VocabularyFolder vocFolder = vocabularyFolderDAO.getVocabularyFolderOfConcept(vocabularyConcept.getId());
             if (vocFolder != null && vocFolder.isNotationsEqualIdentifiers()) {
                 vocabularyConcept.setNotation(vocabularyConcept.getIdentifier());
+            }
+            if(!checkIfConceptShouldBeAddedWhenBoundToElement(vocFolder.getId(), vocabularyConcept.getNotation())){
+                String errorMsg = "Concept without notation can not exist for vocabulary " + vocFolder.getId() + " because it is bound to data elements";
+                throw new ConceptWithoutNotationException(errorMsg);
             }
             vocabularyConceptDAO.updateVocabularyConcept(vocabularyConcept);
         } catch (Exception e) {
@@ -1738,5 +1743,24 @@ public class VocabularyServiceImpl implements IVocabularyService {
         return vocabularyFolderDAO.getWorkingCopyByVocabularyId(vocabularyId);
     }
 
+    @Override
+    public Boolean checkIfConceptShouldBeAddedWhenBoundToElement(Integer newVocabularyId, String notation) {
+
+        VocabularyFolder vocabulary = vocabularyFolderDAO.getVocabularyFolder(newVocabularyId);
+        if(!vocabulary.isNotationsEqualIdentifiers()) {
+            //find original VOCABULARY id
+            Integer originalVocabularyId = getCheckedOutCopyIdForVocabulary(newVocabularyId);
+            if (originalVocabularyId == 0) {
+                originalVocabularyId = newVocabularyId;
+            }
+            //check if vocabulary is bound to element and the concept does not have notation
+            if (checkIfVocabularyIsBoundToElement(originalVocabularyId)) {
+                if (Util.isEmpty(notation)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 
 }

@@ -822,18 +822,11 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
         try {
             if (vocabularyConcept != null) {
-                //find original VOCABULARY
-                Integer checkedOutCopyId = vocabularyService.getCheckedOutCopyIdForVocabulary(vocabularyFolder.getId());
-                if(checkedOutCopyId == 0){
-                    checkedOutCopyId = vocabularyFolder.getId();
+                if(vocabularyService.checkIfConceptShouldBeAddedWhenBoundToElement(vocabularyFolder.getId(), vocabularyConcept.getNotation()) == false){
+                    String errorMsg = "Concept without notation can not be created for vocabulary " + vocabularyFolder.getId() + " because it is bound to data elements";
+                    throw new ConceptWithoutNotationException(errorMsg);
                 }
-                //check if vocabulary is bound to element and the concept does not have notation
-                if (vocabularyService.checkIfVocabularyIsBoundToElement(checkedOutCopyId)) {
-                    if (Util.isEmpty(vocabularyConcept.getNotation())) {
-                        String errorMsg = "Concept without notation can not be created for vocabulary " + checkedOutCopyId + " because it is bound to data elements";
-                        throw new ConceptWithoutNotationException(errorMsg);
-                    }
-                }
+
                 // Save new concept
                 vocabularyService.createVocabularyConcept(vocabularyFolder.getId(), vocabularyConcept);
             } else {
