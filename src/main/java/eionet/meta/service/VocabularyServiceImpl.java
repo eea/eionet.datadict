@@ -1750,7 +1750,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
         if(!vocabulary.isNotationsEqualIdentifiers()) {
             //find original VOCABULARY id
             Integer originalVocabularyId = getCheckedOutCopyIdForVocabulary(newVocabularyId);
-            if (originalVocabularyId == 0) {
+            if (originalVocabularyId == null || originalVocabularyId == 0 ) {
                 originalVocabularyId = newVocabularyId;
             }
             //check if vocabulary is bound to element and the concept does not have notation
