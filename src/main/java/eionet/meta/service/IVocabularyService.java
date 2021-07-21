@@ -694,4 +694,10 @@ public interface IVocabularyService {
     boolean hasVocabularyWorkingCopy(String folderName, String identifier);
 
     VocabularyResult checkIfVocabulariesCanBeBoundToElements(VocabularyResult vocabularyResult) throws ServiceException;
+
+    Boolean checkIfVocabularyIsBoundToElement(Integer vocabularyId);
+
+    Integer getCheckedOutCopyIdForVocabulary(Integer vocabularyId);
+
+    Boolean checkIfConceptShouldBeAddedWhenBoundToElement(Integer newVocabularyId, String notation);
 }
