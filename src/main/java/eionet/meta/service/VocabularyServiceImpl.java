@@ -418,12 +418,12 @@ public class VocabularyServiceImpl implements IVocabularyService {
                 vocabularyConcept.setNotation(vocabularyConcept.getIdentifier());
             }
             if(!checkIfConceptShouldBeAddedWhenBoundToElement(vocFolder.getId(), vocabularyConcept.getNotation())){
-                String errorMsg = "Concept without notation can not exist for vocabulary " + vocFolder.getId() + " because it is bound to data elements";
+                String errorMsg = "Concept without notation can not exist for this vocabulary because it is bound to data elements";
                 throw new ConceptWithoutNotationException(errorMsg);
             }
             vocabularyConceptDAO.updateVocabularyConcept(vocabularyConcept);
         } catch (Exception e) {
-            throw new ServiceException("Failed to update vocabulary concept: " + e.getMessage(), e);
+            throw new ServiceException(e.getMessage(), e);
         }
     }
 
