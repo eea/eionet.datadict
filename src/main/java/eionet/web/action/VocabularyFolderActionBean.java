@@ -823,7 +823,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         try {
             if (vocabularyConcept != null) {
                 if(vocabularyService.checkIfConceptShouldBeAddedWhenBoundToElement(vocabularyFolder.getId(), vocabularyConcept.getNotation()) == false){
-                    String errorMsg = "Concept without notation can not be created for vocabulary " + vocabularyFolder.getId() + " because it is bound to data elements";
+                    String errorMsg = "Concept without notation can not be created for vocabulary " + vocabularyFolder.getIdentifier() + " because it is bound to data elements";
                     throw new ConceptWithoutNotationException(errorMsg);
                 }
 
@@ -848,8 +848,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             return resolution;
         }
         catch(ConceptWithoutNotationException cwne){
-            addSystemMessage(cwne.getMessage());
-            return resolution;
+            throw new ServiceException(cwne.getMessage(), cwne);
         }
     }
 

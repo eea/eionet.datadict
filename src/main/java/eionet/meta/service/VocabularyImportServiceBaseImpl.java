@@ -135,9 +135,8 @@ public abstract class VocabularyImportServiceBaseImpl implements IVocabularyImpo
             }
 
             if(vocabularyService.checkIfConceptShouldBeAddedWhenBoundToElement(vocabularyFolder.getId(), vocabularyConcept.getNotation()) == false){
-                //this concept should be ignored
-                vocabularyConcept.setId(-1);
-                continue;
+                //abort upload
+                throw new ServiceException("Upload aborted. Found concepts without notation for vocabulary bound to element");
             }
 
             // new concepts
