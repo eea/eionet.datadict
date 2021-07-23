@@ -301,6 +301,21 @@ public final class VocabularyJSONOutputHelper {
                         generator.writeEndArray();
                     }
                 }
+
+                //write attribute elements values
+                for(List<DataElement> elementAttributeList: concept.getElementAttributes()){
+                    for(DataElement elementAttribute: elementAttributeList){
+                        if(elementAttribute.getAttributeValue() != null){
+                            generator.writeStringField(elementAttribute.getIdentifier(), elementAttribute.getAttributeValue());
+                        }
+                        else{
+                            if(elementAttribute.getRelatedConceptBaseURI() != null && elementAttribute.getRelatedConceptIdentifier() != null ){
+                                String url = elementAttribute.getRelatedConceptBaseURI() + elementAttribute.getRelatedConceptIdentifier();
+                                generator.writeStringField(elementAttribute.getIdentifier(), url);
+                            }
+                        }
+                    }
+                }
             }
             // end writing concept
             generator.writeEndObject();
