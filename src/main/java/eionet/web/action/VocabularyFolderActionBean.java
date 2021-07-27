@@ -823,7 +823,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         try {
             if (vocabularyConcept != null) {
                 if(vocabularyService.checkIfConceptShouldBeAddedWhenBoundToElement(vocabularyFolder.getId(), vocabularyConcept.getNotation()) == false){
-                    String errorMsg = "Concept without notation can not be created for vocabulary " + vocabularyFolder.getIdentifier() + " because it is bound to data elements";
+                    String errorMsg = "Concept without notation can not be created for vocabulary " + vocabularyFolder.getIdentifier() + " because it is referenced by data elements";
                     throw new ConceptWithoutNotationException(errorMsg);
                 }
 
