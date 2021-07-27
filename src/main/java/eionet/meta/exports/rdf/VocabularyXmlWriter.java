@@ -29,6 +29,7 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import eionet.util.Util;
 import org.apache.commons.lang.StringUtils;
 
 import eionet.meta.dao.domain.DataElement;
@@ -106,8 +107,6 @@ public class VocabularyXmlWriter {
     /**
      * Writes start of XML.
      *
-     * @param siteCodeType
-     *            if true it is a site code vocabulary
      * @param commonElemsUri
      *            uri for common elements
      * @param contextRoot
@@ -265,6 +264,27 @@ public class VocabularyXmlWriter {
                 writer.writeEmptyElement(VocabularyOutputHelper.LinkedDataNamespaces.ADMS_NS, "status");
                 writer.writeAttribute("rdf", VocabularyOutputHelper.LinkedDataNamespaces.RDF_NS, "resource",
                         StringEncoder.encodeToIRI(OWN_STATUS_VOCABULARY_URI + "/" + conceptStatus.getIdentifier()));
+            }
+
+            if (vc.getStatusModified() != null) {
+                writer.writeCharacters("\n");
+                writer.writeStartElement("statusMofified");
+                writer.writeCharacters(vc.getStatusModified().toString());
+                writer.writeEndElement();
+            }
+
+            if (vc.getAcceptedDate() != null) {
+                writer.writeCharacters("\n");
+                writer.writeStartElement("acceptedDate");
+                writer.writeCharacters(vc.getAcceptedDate().toString());
+                writer.writeEndElement();
+            }
+
+            if (vc.getNotAcceptedDate() != null) {
+                writer.writeCharacters("\n");
+                writer.writeStartElement("notAcceptedDate");
+                writer.writeCharacters(vc.getNotAcceptedDate().toString());
+                writer.writeEndElement();
             }
 
             writer.writeCharacters("\n");
