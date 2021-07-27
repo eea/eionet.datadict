@@ -65,7 +65,7 @@
     </display:column>
     <c:if test="${param.editMode eq 'true'}">
         <display:column>
-            <stripes:link beanclass="${actionBean['class'].name}" event="removeDataElement">
+            <stripes:link beanclass="${actionBean['class'].name}" event="removeDataElement" onclick="return confirm('Are you sure you want to remove the bound element?');" >
                 <stripes:param name="elementId" value="${item.id}" />
                 <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />
                 <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
