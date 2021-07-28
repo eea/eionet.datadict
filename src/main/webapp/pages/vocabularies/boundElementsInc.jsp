@@ -65,14 +65,14 @@
     </display:column>
     <c:if test="${param.editMode eq 'true'}">
         <display:column>
-            <stripes:link beanclass="${actionBean['class'].name}" event="removeDataElement">
+            <stripes:form beanclass="${actionBean['class'].name}" onclick="return confirm('Are you sure you want to remove the bound element?');" >
                 <stripes:param name="elementId" value="${item.id}" />
                 <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />
                 <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
                 <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
                 <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
-                <img src="<c:url value='/images/delete.gif'/>" alt="Remove" border="0" />
-            </stripes:link>
+                <stripes:submit name="removeDataElement" style="color:red;background:none;border:none;font-weight:bold;font-size:large;" value="X" />
+            </stripes:form>
         </display:column>
     </c:if>
 </display:table>

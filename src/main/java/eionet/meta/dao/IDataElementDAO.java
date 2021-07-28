@@ -169,6 +169,13 @@ public interface IDataElementDAO {
     void deleteVocabularyConceptDataElementValues(int vocabularyConceptId);
 
     /**
+     *
+     * @param vocabularyConceptId
+     * @param dataElementId
+     */
+    void deleteVocabularyConceptDataElementValues(int vocabularyConceptId, int dataElementId);
+
+    /**
      * Inserts data element values.
      *
      * @param vocabularyConceptId

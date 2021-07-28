@@ -92,6 +92,7 @@ public class RDFVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
         SUPPORTED_ACTION = new ArrayList<UploadAction>();
         SUPPORTED_ACTION.add(UploadAction.add);
         SUPPORTED_ACTION.add(UploadAction.delete);
+        SUPPORTED_ACTION.add(UploadAction.add_and_purge_per_predicate_basis);
 
         SUPPORTED_MISSING_CONCEPTS_ACTION = new ArrayList<MissingConceptsAction>();
         SUPPORTED_MISSING_CONCEPTS_ACTION.add(MissingConceptsAction.keep);
