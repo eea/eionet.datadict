@@ -71,10 +71,7 @@
                 <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
                 <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
                 <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
-
-                <stripes:submit name="removeDataElement" value="Remove Data Element"  class="mediumbuttonb"/>
-
-
+                <stripes:submit name="removeDataElement" style="color:red;background:none;border:none;font-weight:bold;font-size:large;" value="X" />
             </stripes:form>
         </display:column>
     </c:if>
