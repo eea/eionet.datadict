@@ -20,6 +20,7 @@
  */
 package eionet.meta.service;
 
+import eionet.datadict.errors.ConceptWithoutNotationException;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.StandardGenericStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
@@ -132,6 +133,12 @@ public abstract class VocabularyImportServiceBaseImpl implements IVocabularyImpo
             if (notationsEqualIdentifiers) {
                 vocabularyConcept.setNotation(vocabularyConcept.getIdentifier());
             }
+
+            if(vocabularyService.checkIfConceptShouldBeAddedWhenBoundToElement(vocabularyFolder.getId(), vocabularyConcept.getNotation()) == false){
+                //abort upload
+                throw new ServiceException("Upload aborted. Found concepts without notation for vocabulary referenced by data elements");
+            }
+
             // new concepts
             if (vocabularyConcept.getId() <= 0) {
                 if (vocabularyConcept.getStatus() == null) {
