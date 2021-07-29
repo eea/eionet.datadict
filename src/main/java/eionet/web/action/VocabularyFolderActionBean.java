@@ -43,74 +43,31 @@ import eionet.datadict.services.AttributeService;
 import eionet.datadict.services.data.AttributeDataService;
 import eionet.datadict.services.stripes.FileBeanDecompressor;
 import eionet.datadict.util.ScheduledTaskResolver;
-import eionet.datadict.web.asynctasks.VocabularyRdfImportFromUrlTask;
-import eionet.datadict.web.asynctasks.VocabularyCheckInTask;
-import eionet.datadict.web.asynctasks.VocabularyCheckOutTask;
-import eionet.datadict.web.asynctasks.VocabularyCsvImportTask;
-import eionet.datadict.web.asynctasks.VocabularyRdfImportTask;
-import eionet.datadict.web.asynctasks.VocabularyUndoCheckOutTask;
+import eionet.datadict.web.asynctasks.*;
 import eionet.datadict.web.viewmodel.ScheduledTaskView;
-import java.net.HttpURLConnection;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import net.sourceforge.stripes.action.DefaultHandler;
-import net.sourceforge.stripes.action.ErrorResolution;
-import net.sourceforge.stripes.action.FileBean;
-import net.sourceforge.stripes.action.ForwardResolution;
-import net.sourceforge.stripes.action.RedirectResolution;
-import net.sourceforge.stripes.action.Resolution;
-import net.sourceforge.stripes.action.StreamingResolution;
-import net.sourceforge.stripes.action.UrlBinding;
-import net.sourceforge.stripes.integration.spring.SpringBean;
-import net.sourceforge.stripes.validation.ValidationMethod;
-
-import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
-
-import eionet.meta.dao.domain.DataElement;
-import eionet.meta.dao.domain.Folder;
-import eionet.meta.dao.domain.RdfNamespace;
-import eionet.meta.dao.domain.SimpleAttribute;
-import eionet.meta.dao.domain.StandardGenericStatus;
-import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.dao.IDataElementDAO;
+import eionet.meta.dao.IVocabularyConceptDAO;
+import eionet.meta.dao.domain.*;
 import eionet.meta.exports.json.VocabularyJSONOutputHelper;
 import eionet.meta.exports.rdf.InspireCodelistXmlWriter;
 import eionet.meta.exports.rdf.VocabularyXmlWriter;
-import eionet.meta.service.ICSVVocabularyImportService;
-import eionet.meta.service.IDataService;
-import eionet.meta.service.IRDFVocabularyImportService;
-import eionet.meta.service.ISiteCodeService;
-import eionet.meta.service.IVocabularyImportService;
-import eionet.meta.service.IVocabularyService;
-import eionet.meta.service.ServiceException;
-import eionet.meta.service.data.DataElementsFilter;
-import eionet.meta.service.data.DataElementsResult;
-import eionet.meta.service.data.SiteCodeFilter;
-import eionet.meta.service.data.VocabularyConceptBoundElementFilter;
-import eionet.meta.service.data.VocabularyConceptFilter;
-import eionet.meta.service.data.VocabularyConceptResult;
-import eionet.util.Props;
-import eionet.util.PropsIF;
-import eionet.util.SecurityUtil;
-import eionet.util.StringEncoder;
-import eionet.util.Triple;
-import eionet.util.Util;
-import eionet.util.VocabularyCSVOutputHelper;
+import eionet.meta.service.*;
+import eionet.meta.service.data.*;
+import eionet.util.*;
+import net.sourceforge.stripes.action.*;
+import net.sourceforge.stripes.integration.spring.SpringBean;
+import net.sourceforge.stripes.validation.ValidationMethod;
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.validator.routines.EmailValidator;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
-
-import org.apache.commons.validator.routines.EmailValidator;
+import java.net.HttpURLConnection;
+import java.util.*;
 
 /**
  * Edit vocabulary folder action bean.
@@ -298,6 +255,12 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     
     @SpringBean
     private AsyncTaskDataSerializer asyncTaskDataSerializer;
+
+    @SpringBean
+    private DataElementsService dataElementsService;
+
+    @SpringBean
+    private VocabularyConceptService vocabularyConceptService;
 
     /**
      * Other versions of the same vocabulary folder.
@@ -718,6 +681,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         resolution.addParameter("vocabularyFolder.workingCopy", vocabularyFolder.isWorkingCopy());
 
         vocabularyService.removeDataElement(vocabularyFolder.getId(), elementId);
+        List<VocabularyConcept> concepts = vocabularyConceptService.getVocabularyConcepts(vocabularyFolder.getId());
+        concepts.forEach(concept -> dataElementsService.deleteVocabularyConceptDataElementValues(concept.getId(), elementId));
         addSystemMessage("Data element removed");
 
         return resolution;
@@ -1169,41 +1134,6 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             Resolution resolution = new ForwardResolution(EDIT_VOCABULARY_FOLDER_JSP);
             getContext().setSourcePageResolution(resolution);
         }
-    }
-
-    /**
-     * validates removing data elements. Elements which have values in any concepts cannot be removed.
-     *
-     * @throws ServiceException
-     *             if checking fails
-     */
-    @ValidationMethod(on = {"removeDataElement"})
-    public void validaRemoveDataElement() throws ServiceException {
-
-        // if this element binding has valued in any concept - do not remove it
-        List<VocabularyConcept> conceptsWithValue =
-                vocabularyService.getConceptsWithElementValue(elementId, vocabularyFolder.getId());
-
-        if (!conceptsWithValue.isEmpty()) {
-            String ids = StringUtils.join(conceptsWithValue, ",");
-            addGlobalValidationError("This element has value in Concepts: " + ids + '\n'
-                    + "Please delete the values before removing the element binding.");
-        }
-
-        if (isValidationErrors()) {
-            vocabularyFolder =
-                    vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
-                            vocabularyFolder.isWorkingCopy());
-            initFilter();
-            vocabularyConcepts = vocabularyService.searchVocabularyConcepts(filter);
-            folders = vocabularyService.getFolders(getUserName(), null);
-            folderChoice = FOLDER_CHOICE_EXISTING;
-
-            boundElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
-            Resolution resolution = new ForwardResolution(EDIT_VOCABULARY_FOLDER_JSP);
-            getContext().setSourcePageResolution(resolution);
-        }
-
     }
 
     /**

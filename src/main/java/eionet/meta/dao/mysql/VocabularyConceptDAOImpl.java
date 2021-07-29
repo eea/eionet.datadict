@@ -819,9 +819,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
                 conceptAttributeValue.setAttributeLanguage(rs.getString("AttributeLanguage"));
 
                 if (!conceptAttributes.containsKey(conceptAttributeValue.getId())) {
-                    String msgFormat = "Could not find vocabulary concept attribute definition; vocabulary id: %d; concept id: %d; bound element id: %d";
-                    String msg = String.format(msgFormat, queryBuilder.getVocabularyId(), conceptId, conceptAttributeValue.getId());
-                    throw new IllegalStateException(msg);
+                    return;
                 }
                 
                 DataElement conceptAttribute = conceptAttributes.get(conceptAttributeValue.getId());

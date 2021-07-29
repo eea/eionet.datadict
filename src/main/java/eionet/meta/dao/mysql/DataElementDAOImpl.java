@@ -596,6 +596,17 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         getNamedParameterJdbcTemplate().update(sql, params);
     }
 
+    @Override
+    public void deleteVocabularyConceptDataElementValues(int vocabularyConceptId, int dataElementId) {
+        String sql = "delete from VOCABULARY_CONCEPT_ELEMENT where VOCABULARY_CONCEPT_ID = :vocabularyConceptId and DATAELEM_ID = :dataElementId";
+
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("vocabularyConceptId", vocabularyConceptId);
+        params.put("dataElementId", dataElementId);
+
+        getNamedParameterJdbcTemplate().update(sql, params);
+    }
+
     /**
      * {@inheritDoc}
      */

@@ -19,4 +19,11 @@ public interface DataElementsService {
     DataElement getEditableDataElement(AppContextProvider contextProvider, int dataElementId)
             throws UserAuthenticationException, ResourceNotFoundException, ConflictException, UserAuthorizationException;
 
+    /**
+     *
+     * @param vocabularyConceptId
+     * @param dataElementId
+     */
+    void deleteVocabularyConceptDataElementValues(int vocabularyConceptId, int dataElementId);
+
 }
