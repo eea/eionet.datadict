@@ -326,6 +326,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
     @Override
     @Transactional(rollbackFor = ServiceException.class)
     public void updateVocabularyConcept(VocabularyConcept vocabularyConcept) throws ServiceException {
+        this.updateVocabularyConceptStatusModifiedIfRequired(vocabularyConcept);
         updateVocabularyConceptNonTransactional(vocabularyConcept, true);
     }
 
@@ -424,6 +425,13 @@ public class VocabularyServiceImpl implements IVocabularyService {
             vocabularyConceptDAO.updateVocabularyConcept(vocabularyConcept);
         } catch (Exception e) {
             throw new ServiceException(e.getMessage(), e);
+        }
+    }
+
+    protected void updateVocabularyConceptStatusModifiedIfRequired(VocabularyConcept vocabularyConcept) throws ServiceException{
+        VocabularyConcept existingVocabularyConcept = this.getVocabularyConcept(vocabularyConcept.getId());
+        if(existingVocabularyConcept.getStatus()!= vocabularyConcept.getStatus()){
+            vocabularyConcept.setStatusModified(new Date());
         }
     }
 
@@ -1670,6 +1678,10 @@ public class VocabularyServiceImpl implements IVocabularyService {
     @Override
     public int[][] batchUpdateVocabularyConcepts(List<VocabularyConcept> vocabularyConcepts, int batchSize) throws ServiceException {
         try {
+            for (VocabularyConcept vocConcept: vocabularyConcepts
+                 ) {
+                this.updateVocabularyConceptStatusModifiedIfRequired(vocConcept);
+            }
             return vocabularyConceptDAO.batchUpdateVocabularyConcepts(vocabularyConcepts, batchSize);
         } catch (Exception e) {
             throw new ServiceException("Failed to batch update vocabulary concepts: " + e.getMessage(), e);
