@@ -1673,6 +1673,10 @@ public class VocabularyServiceImpl implements IVocabularyService {
     @Override
     public int[][] batchUpdateVocabularyConcepts(List<VocabularyConcept> vocabularyConcepts, int batchSize) throws ServiceException {
         try {
+            for (VocabularyConcept vocConcept: vocabularyConcepts
+                 ) {
+                this.updateVocabularyConceptStatusModifiedIfRequired(vocConcept);
+            }
             return vocabularyConceptDAO.batchUpdateVocabularyConcepts(vocabularyConcepts, batchSize);
         } catch (Exception e) {
             throw new ServiceException("Failed to batch update vocabulary concepts: " + e.getMessage(), e);
