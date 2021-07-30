@@ -46,7 +46,7 @@ public final class VocabularyCSVOutputHelper {
     /**
      * how many values are taken from vocabulary concept.
      */
-    public static final int CONCEPT_ENTRIES_COUNT = 8;
+    public static final int CONCEPT_ENTRIES_COUNT = 6;
     /**
      * index of URI in header list.
      */
@@ -71,14 +71,6 @@ public final class VocabularyCSVOutputHelper {
      * index of end date in header list.
      */
     public static final int ACCEPTED_DATE_INDEX = 5;
-    /**
-     * index of not accepted date in header list.
-     */
-    public static final int NOT_ACCEPTED_DATE_INDEX = 6;
-    /**
-     * index of status modified date in header list.
-     */
-    public static final int STATUS_MODIFIED_INDEX = 7;
 
 
     /**
@@ -141,8 +133,6 @@ public final class VocabularyCSVOutputHelper {
             entries[NOTATION_INDEX] = c.getNotation();
             entries[STATUS_INDEX] = c.getStatus() == null ? "" : c.getStatus().getNotation();
             entries[ACCEPTED_DATE_INDEX] = c.getAcceptedDate() != null ? dateFormatter.format(c.getAcceptedDate()) : "";
-            entries[NOT_ACCEPTED_DATE_INDEX] = c.getNotAcceptedDate() != null ? dateFormatter.format(c.getNotAcceptedDate()) : "";
-            entries[STATUS_MODIFIED_INDEX] = c.getStatusModified() != null ? dateFormatter.format(c.getStatusModified()) : "";
 
             // add extra fields
             for (Triple<String, String, Integer> row : attributesMeta) {
@@ -207,8 +197,6 @@ public final class VocabularyCSVOutputHelper {
         entries[NOTATION_INDEX] = "Notation";
         entries[STATUS_INDEX] = "Status";
         entries[ACCEPTED_DATE_INDEX] = "AcceptedDate";
-        entries[NOT_ACCEPTED_DATE_INDEX] = "NotAcceptedDate";
-        entries[STATUS_MODIFIED_INDEX] = "StatusModified";
     }
 
 }
