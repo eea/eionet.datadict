@@ -23,7 +23,9 @@ package eionet.meta.exports.json;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
+import eionet.datadict.model.Attribute;
 import eionet.meta.dao.domain.DataElement;
+import eionet.meta.dao.domain.SimpleAttribute;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.exports.VocabularyOutputHelper;
@@ -198,6 +200,18 @@ public final class VocabularyJSONOutputHelper {
             generator.writeStringField("FolderName", vocabulary.getFolderName());
             generator.writeStringField("FolderLabel", vocabulary.getFolderLabel());
             generator.writeStringField("IsNotationsEqualIdentifiers", String.valueOf(vocabulary.isNotationsEqualIdentifiers()));
+
+            if(vocabulary.getAttributes() != null) {
+                for (List<SimpleAttribute> attributeList : vocabulary.getAttributes()) {
+                    for (SimpleAttribute attribute : attributeList) {
+                        if (attribute.getIdentifier().equals("Definition")) {
+                            generator.writeStringField("Definition", String.valueOf(attribute.getValue()));
+                        } else if (attribute.getIdentifier().equals("Version")) {
+                            generator.writeStringField("Version", String.valueOf(attribute.getValue()));
+                        }
+                    }
+                }
+            }
         }
         generator.writeEndObject();
         // start writing concepts...
@@ -300,6 +314,26 @@ public final class VocabularyJSONOutputHelper {
                         // end writing element values
                         generator.writeEndArray();
                     }
+                }
+
+                //write attribute elements values
+                for(List<DataElement> elementAttributeList: concept.getElementAttributes()){
+                    if(elementAttributeList.size() == 0){
+                        continue;
+                    }
+                    generator.writeArrayFieldStart(elementAttributeList.get(0).getIdentifier());
+                    for(DataElement elementAttribute: elementAttributeList){
+                        if(elementAttribute.getAttributeValue() != null){
+                            generator.writeString(elementAttribute.getAttributeValue());
+                        }
+                        else{
+                            if(elementAttribute.getRelatedConceptBaseURI() != null && elementAttribute.getRelatedConceptIdentifier() != null ){
+                                String url = elementAttribute.getRelatedConceptBaseURI() + elementAttribute.getRelatedConceptIdentifier();
+                                generator.writeString(url);
+                            }
+                        }
+                    }
+                    generator.writeEndArray();
                 }
             }
             // end writing concept

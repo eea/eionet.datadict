@@ -72,6 +72,7 @@ public final class VocabularyCSVOutputHelper {
      */
     public static final int ACCEPTED_DATE_INDEX = 5;
 
+
     /**
      * Prevent public initialization.
      */

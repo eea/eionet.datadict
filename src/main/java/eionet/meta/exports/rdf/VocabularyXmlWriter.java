@@ -29,14 +29,10 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import eionet.meta.dao.domain.*;
+import eionet.util.Util;
 import org.apache.commons.lang.StringUtils;
 
-import eionet.meta.dao.domain.DataElement;
-import eionet.meta.dao.domain.Folder;
-import eionet.meta.dao.domain.RdfNamespace;
-import eionet.meta.dao.domain.StandardGenericStatus;
-import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.exports.VocabularyOutputHelper;
 import eionet.meta.service.data.SiteCode;
 import eionet.util.Props;
@@ -106,8 +102,6 @@ public class VocabularyXmlWriter {
     /**
      * Writes start of XML.
      *
-     * @param siteCodeType
-     *            if true it is a site code vocabulary
      * @param commonElemsUri
      *            uri for common elements
      * @param contextRoot
@@ -229,6 +223,66 @@ public class VocabularyXmlWriter {
         writer.writeEmptyElement(VocabularyOutputHelper.LinkedDataNamespaces.DCTERMS_NS, "isPartOf");
         writer.writeAttribute("rdf", VocabularyOutputHelper.LinkedDataNamespaces.RDF_NS, "resource", StringEncoder.encodeToIRI(folderContextRoot));
 
+        if(vocabularyFolder.getRegStatus() != null) {
+            writer.writeCharacters("\n");
+            writer.writeStartElement("registrationStatus");
+            writer.writeCharacters(vocabularyFolder.getRegStatus().getLabel());
+            writer.writeEndElement();
+        }
+
+        if(vocabularyFolder.getUserModified() != null) {
+            writer.writeCharacters("\n");
+            writer.writeStartElement("userModified");
+            writer.writeCharacters(vocabularyFolder.getUserModified());
+            writer.writeEndElement();
+        }
+
+        if(vocabularyFolder.getDateModified() != null) {
+            writer.writeCharacters("\n");
+            writer.writeStartElement("dateModified");
+            writer.writeCharacters(vocabularyFolder.getDateModified().toString());
+            writer.writeEndElement();
+        }
+
+        if(vocabularyFolder.getType() != null) {
+            writer.writeCharacters("\n");
+            writer.writeStartElement("vocabularyType");
+            writer.writeCharacters(vocabularyFolder.getType().getLabel());
+            writer.writeEndElement();
+        }
+
+        if(vocabularyFolder.getAttributes() != null) {
+            for (List<SimpleAttribute> attributeList : vocabularyFolder.getAttributes()) {
+                for (SimpleAttribute attribute : attributeList) {
+                    if (attribute.getIdentifier().equals("Version")) {
+                        writer.writeCharacters("\n");
+                        writer.writeStartElement("version");
+                        writer.writeCharacters(attribute.getValue());
+                        writer.writeEndElement();
+                    }
+                }
+            }
+        }
+
+        if(vocabularyFolder.getWorkingUser() != null) {
+            writer.writeCharacters("\n");
+            writer.writeStartElement("workingUser");
+            writer.writeCharacters(vocabularyFolder.getWorkingUser());
+            writer.writeEndElement();
+        }
+
+        writer.writeCharacters("\n");
+        writer.writeStartElement("isNumericConceptIdentifiers");
+        writer.writeCharacters(Boolean.toString(vocabularyFolder.isNumericConceptIdentifiers()));
+        writer.writeEndElement();
+
+
+        writer.writeCharacters("\n");
+        writer.writeStartElement("isNotationsEqualIdentifiers");
+        writer.writeCharacters(Boolean.toString(vocabularyFolder.isNotationsEqualIdentifiers()));
+        writer.writeEndElement();
+
+
         writer.writeCharacters("\n");
         writer.writeEndElement(); // End ConceptScheme
 
@@ -265,6 +319,27 @@ public class VocabularyXmlWriter {
                 writer.writeEmptyElement(VocabularyOutputHelper.LinkedDataNamespaces.ADMS_NS, "status");
                 writer.writeAttribute("rdf", VocabularyOutputHelper.LinkedDataNamespaces.RDF_NS, "resource",
                         StringEncoder.encodeToIRI(OWN_STATUS_VOCABULARY_URI + "/" + conceptStatus.getIdentifier()));
+            }
+
+            if (vc.getStatusModified() != null) {
+                writer.writeCharacters("\n");
+                writer.writeStartElement("statusMofified");
+                writer.writeCharacters(vc.getStatusModified().toString());
+                writer.writeEndElement();
+            }
+
+            if (vc.getAcceptedDate() != null) {
+                writer.writeCharacters("\n");
+                writer.writeStartElement("acceptedDate");
+                writer.writeCharacters(vc.getAcceptedDate().toString());
+                writer.writeEndElement();
+            }
+
+            if (vc.getNotAcceptedDate() != null) {
+                writer.writeCharacters("\n");
+                writer.writeStartElement("notAcceptedDate");
+                writer.writeCharacters(vc.getNotAcceptedDate().toString());
+                writer.writeEndElement();
             }
 
             writer.writeCharacters("\n");
