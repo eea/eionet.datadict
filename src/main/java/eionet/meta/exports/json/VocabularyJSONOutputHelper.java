@@ -24,14 +24,25 @@ package eionet.meta.exports.json;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import eionet.datadict.model.Attribute;
+import eionet.meta.dao.IDataElementDAO;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.SimpleAttribute;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.dao.mysql.DataElementDAOImpl;
+import eionet.meta.dao.mysql.VocabularyFolderDAOImpl;
 import eionet.meta.exports.VocabularyOutputHelper;
+import eionet.meta.service.IVocabularyService;
+import eionet.meta.service.ServiceException;
+import eionet.meta.service.VocabularyServiceImpl;
+import eionet.meta.spring.SpringApplicationContext;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -47,6 +58,9 @@ import java.util.Map;
  * @author enver
  */
 public final class VocabularyJSONOutputHelper {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(VocabularyJSONOutputHelper.class);
+
     /**
      * Context keyword.
      */
@@ -123,6 +137,8 @@ public final class VocabularyJSONOutputHelper {
         DATA_ELEM_MAP.put(NARROWER, SKOS_NARROWER);
     }
 
+    private static ApplicationContext springContext = SpringApplicationContext.getContext();
+
     /**
      * Prevent public initialization.
      */
@@ -148,6 +164,15 @@ public final class VocabularyJSONOutputHelper {
      */
     public static void writeJSON(OutputStream out, VocabularyFolder vocabulary, List<VocabularyConcept> concepts, String language)
             throws IOException {
+
+        //get bound data elements
+        IVocabularyService vocabularyService = springContext.getBean(IVocabularyService.class);
+        List<DataElement> boundDataElements = null;
+        try {
+            boundDataElements = vocabularyService.getVocabularyDataElements(vocabulary.getId());
+        } catch (ServiceException e) {
+            LOGGER.error("Could not retrieve bound elements for vocabulary " + vocabulary.getId());
+        }
 
         OutputStreamWriter osw = new OutputStreamWriter(out, "UTF-8");
 
@@ -317,23 +342,31 @@ public final class VocabularyJSONOutputHelper {
                 }
 
                 //write attribute elements values
-                for(List<DataElement> elementAttributeList: concept.getElementAttributes()){
-                    if(elementAttributeList.size() == 0){
-                        continue;
-                    }
-                    generator.writeArrayFieldStart(elementAttributeList.get(0).getIdentifier());
-                    for(DataElement elementAttribute: elementAttributeList){
-                        if(elementAttribute.getAttributeValue() != null){
-                            generator.writeString(elementAttribute.getAttributeValue());
-                        }
-                        else{
-                            if(elementAttribute.getRelatedConceptBaseURI() != null && elementAttribute.getRelatedConceptIdentifier() != null ){
-                                String url = elementAttribute.getRelatedConceptBaseURI() + elementAttribute.getRelatedConceptIdentifier();
-                                generator.writeString(url);
+                if(boundDataElements != null){
+                    for(DataElement dataElement: boundDataElements){
+                        generator.writeArrayFieldStart(dataElement.getIdentifier());
+                        //get same element from elementAttributeList and print its value
+                        for(List<DataElement> elementAttributeList: concept.getElementAttributes()) {
+                            if(elementAttributeList.size() == 0){
+                                continue;
+                            }
+                            for(DataElement elementAttribute: elementAttributeList){
+                                if(!elementAttribute.getIdentifier().equals(dataElement.getIdentifier())){
+                                    continue;
+                                }
+                                if(elementAttribute.getAttributeValue() != null){
+                                    generator.writeString(elementAttribute.getAttributeValue());
+                                }
+                                else{
+                                    if(elementAttribute.getRelatedConceptBaseURI() != null && elementAttribute.getRelatedConceptIdentifier() != null ){
+                                        String url = elementAttribute.getRelatedConceptBaseURI() + elementAttribute.getRelatedConceptIdentifier();
+                                        generator.writeString(url);
+                                    }
+                                }
                             }
                         }
+                        generator.writeEndArray();
                     }
-                    generator.writeEndArray();
                 }
             }
             // end writing concept

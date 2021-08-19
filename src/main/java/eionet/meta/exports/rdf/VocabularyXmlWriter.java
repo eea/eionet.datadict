@@ -323,7 +323,7 @@ public class VocabularyXmlWriter {
 
             if (vc.getStatusModified() != null) {
                 writer.writeCharacters("\n");
-                writer.writeStartElement("statusMofified");
+                writer.writeStartElement("statusModified");
                 writer.writeCharacters(vc.getStatusModified().toString());
                 writer.writeEndElement();
             }
