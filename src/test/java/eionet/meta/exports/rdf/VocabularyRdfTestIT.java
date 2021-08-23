@@ -66,7 +66,7 @@ public class VocabularyRdfTestIT extends DDDatabaseTestCase   {
 
         assertTrue(StringUtils.countMatches(output, ddSchema) == 1);
         assertTrue(StringUtils.countMatches(output, skosSchema) == 1);
-        assertTrue(StringUtils.countMatches(output, anotherCodeElem) == 2);
+        assertTrue(StringUtils.countMatches(output, anotherCodeElem) == 4);
     }
 
     /**

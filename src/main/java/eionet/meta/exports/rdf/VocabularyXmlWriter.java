@@ -30,6 +30,9 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
 import eionet.meta.dao.domain.*;
+import eionet.meta.service.IVocabularyService;
+import eionet.meta.service.ServiceException;
+import eionet.meta.spring.SpringApplicationContext;
 import eionet.util.Util;
 import org.apache.commons.lang.StringUtils;
 
@@ -38,6 +41,9 @@ import eionet.meta.service.data.SiteCode;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.StringEncoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 
 /**
  * Vocabulary RDF-XML writer.
@@ -55,6 +61,10 @@ public class VocabularyXmlWriter {
 
     /** XMLWriter to write XML to. */
     private XMLStreamWriter writer;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(VocabularyXmlWriter.class);
+
+    private static ApplicationContext springContext = SpringApplicationContext.getContext();
 
     /**
      * Default constructor.
@@ -205,6 +215,17 @@ public class VocabularyXmlWriter {
      */
     public void writeVocabularyFolderXml(String folderContextRoot, String vocabularyContextRoot, VocabularyFolder vocabularyFolder,
             List<? extends VocabularyConcept> vocabularyConcepts) throws XMLStreamException {
+
+        //get bound data elements
+        IVocabularyService vocabularyService = springContext.getBean(IVocabularyService.class);
+        List<DataElement> boundDataElements = null;
+        try {
+            boundDataElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
+        } catch (ServiceException e) {
+            LOGGER.error("Could not retrieve bound elements for vocabulary " + vocabularyFolder.getId());
+        }
+
+
         writer.writeCharacters("\n");
         writer.writeStartElement(VocabularyOutputHelper.LinkedDataNamespaces.SKOS_NS, "ConceptScheme");
         writer.writeAttribute("rdf", VocabularyOutputHelper.LinkedDataNamespaces.RDF_NS, "about", StringEncoder.encodeToIRI(vocabularyContextRoot));
@@ -348,7 +369,7 @@ public class VocabularyXmlWriter {
                     StringEncoder.encodeToIRI(vocabularyContextRoot));
 
             // Write bound elements as last block.
-            writeBoundElements(vocabularyContextRoot, vc.getElementAttributes());
+            writeBoundElements(vocabularyContextRoot, vc.getElementAttributes(), boundDataElements);
 
             writer.writeCharacters("\n");
             writer.writeEndElement();
@@ -362,40 +383,58 @@ public class VocabularyXmlWriter {
      *            contex root
      * @param elements
      *            elements list
+     *@param boundDataElements
+     *      bound elements list
      * @throws XMLStreamException
      *             if writing fails
      */
-    private void writeBoundElements(String contextRoot, List<List<DataElement>> elements) throws XMLStreamException {
-        if (elements != null) {
-            for (List<DataElement> elems : elements) {
-                if (elems != null) {
-                    for (DataElement elem : elems) {
-                        writer.writeCharacters("\n");
-                        if (elem.isRelationalElement()) {
-                            writer.writeEmptyElement(elem.getIdentifier());
-                            writer.writeAttribute("rdf", VocabularyOutputHelper.LinkedDataNamespaces.RDF_NS, "resource",
-                                    StringEncoder.encodeToIRI(elem.getRelatedConceptUri()));
-                        } else if (StringUtils.isNotEmpty(elem.getAttributeValue())) {
-                            if (StringUtils.isNotEmpty(elem.getRelatedConceptUri()) && StringUtils.isNotEmpty(elem.getDatatype())
-                                    && elem.getDatatype().equalsIgnoreCase("reference")) {
-                                writer.writeEmptyElement(elem.getIdentifier());
-                                writer.writeAttribute("rdf", VocabularyOutputHelper.LinkedDataNamespaces.RDF_NS, "resource",
-                                        elem.getRelatedConceptUri());
-                            } else {
-                                writer.writeStartElement(elem.getIdentifier());
-                                if (StringUtils.isNotEmpty(elem.getAttributeLanguage())) {
-                                    writer.writeAttribute("xml", VocabularyOutputHelper.LinkedDataNamespaces.XML_NS, "lang",
-                                            elem.getAttributeLanguage());
+    private void writeBoundElements(String contextRoot, List<List<DataElement>> elements, List<DataElement> boundDataElements) throws XMLStreamException {
+        if(boundDataElements != null) {
+            for (DataElement boundDataElement : boundDataElements) {
+                Boolean printedBoundElement = false;
+                if (elements != null) {
+                    for (List<DataElement> elems : elements) {
+                        if (elems != null) {
+                            for (DataElement elem : elems) {
+                                if(!boundDataElement.getIdentifier().equals(elem.getIdentifier())){
+                                    continue;
                                 }
-                                if (StringUtils.isNotEmpty(elem.getDatatype()) && !elem.getDatatype().equalsIgnoreCase("string")) {
-                                    writer.writeAttribute("rdf", VocabularyOutputHelper.LinkedDataNamespaces.RDF_NS, "datatype",
-                                            Rdf.getXmlType(elem.getDatatype()));
+                                writer.writeCharacters("\n");
+
+                                if (elem.isRelationalElement()) {
+                                    writer.writeEmptyElement(elem.getIdentifier());
+                                    writer.writeAttribute("rdf", VocabularyOutputHelper.LinkedDataNamespaces.RDF_NS, "resource",
+                                            StringEncoder.encodeToIRI(elem.getRelatedConceptUri()));
+                                    printedBoundElement = true;
+                                } else if (StringUtils.isNotEmpty(elem.getAttributeValue())) {
+                                    if (StringUtils.isNotEmpty(elem.getRelatedConceptUri()) && StringUtils.isNotEmpty(elem.getDatatype())
+                                            && elem.getDatatype().equalsIgnoreCase("reference")) {
+                                        writer.writeEmptyElement(elem.getIdentifier());
+                                        writer.writeAttribute("rdf", VocabularyOutputHelper.LinkedDataNamespaces.RDF_NS, "resource",
+                                                elem.getRelatedConceptUri());
+                                    } else {
+                                        writer.writeStartElement(elem.getIdentifier());
+                                        if (StringUtils.isNotEmpty(elem.getAttributeLanguage())) {
+                                            writer.writeAttribute("xml", VocabularyOutputHelper.LinkedDataNamespaces.XML_NS, "lang",
+                                                    elem.getAttributeLanguage());
+                                        }
+                                        if (StringUtils.isNotEmpty(elem.getDatatype()) && !elem.getDatatype().equalsIgnoreCase("string")) {
+                                            writer.writeAttribute("rdf", VocabularyOutputHelper.LinkedDataNamespaces.RDF_NS, "datatype",
+                                                    Rdf.getXmlType(elem.getDatatype()));
+                                        }
+                                        writer.writeCharacters(elem.getAttributeValue());
+                                        writer.writeEndElement();
+                                    }
+                                    printedBoundElement = true;
                                 }
-                                writer.writeCharacters(elem.getAttributeValue());
-                                writer.writeEndElement();
                             }
                         }
                     }
+                }
+                if(!printedBoundElement){   //write empty elements
+                    writer.writeCharacters("\n");
+                    writer.writeStartElement(boundDataElement.getIdentifier());
+                    writer.writeEndElement();
                 }
             }
         }

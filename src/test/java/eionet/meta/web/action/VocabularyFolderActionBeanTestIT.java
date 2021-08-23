@@ -3113,7 +3113,7 @@ public class VocabularyFolderActionBeanTestIT extends DDDatabaseTestCase {
                 // move to data elements
                 parser.nextToken();
                 val = parser.getCurrentName();
-                Assert.assertEquals("Data Element 1", "skos:narrower", val);
+                Assert.assertEquals("Data Element 10", "skos:narrower", val);
                 Assert.assertEquals(JsonToken.START_ARRAY, parser.nextToken()); // JsonToken.START_ARRAY
                 if(i==0){ //vocabularyConceptId = 20
                     parser.nextToken(); // move to value
@@ -3126,7 +3126,7 @@ public class VocabularyFolderActionBeanTestIT extends DDDatabaseTestCase {
 
                 parser.nextToken();
                 val = parser.getCurrentName();
-                Assert.assertEquals("Data Element 2", "skos:broader", val);
+                Assert.assertEquals("Data Element 11", "skos:broader", val);
                 Assert.assertEquals(JsonToken.START_ARRAY, parser.nextToken()); // JsonToken.START_ARRAY
                 if(i==1 || i==2 || i==3 || i==6){ //vocabularyConceptId = 21 or vocabularyConceptId = 22 or vocabularyConceptId = 23 or vocabularyConceptId = 26
                     parser.nextToken(); // move to value
