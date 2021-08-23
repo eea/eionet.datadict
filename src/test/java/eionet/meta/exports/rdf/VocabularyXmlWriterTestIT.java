@@ -61,19 +61,6 @@ public class VocabularyXmlWriterTestIT {
 		Assert.assertTrue(StringUtils.contains(output, "<skos:notation>Notation1</skos:notation>"));
 		Assert.assertTrue(StringUtils.contains(output, "<skos:prefLabel>Label1</skos:prefLabel>"));
 		Assert.assertTrue(StringUtils.contains(output, "<skos:inScheme rdf:resource=\"" + BASE_URL + "/vocabulary/folder/test/\"/>"));
-
-		Assert.assertTrue(StringUtils.contains(output, "<DataElemId1 rdf:resource=\"" + BASE_URL + "/vocabulary/folder/related/RelatedConcept1\"/>"));
-		Assert.assertTrue(StringUtils
-				.contains(output, "<DataElemId2 xml:lang=\"et\" rdf:datatype=\"http://www.w3.org/2001/XMLSchema#string\">AttributeValue2</DataElemId2>"));
-                Assert.assertTrue(
-                    StringUtils.contains(
-                        output, 
-                        "<DataElemId3 rdf:resource=\"" + BASE_URL + "/vocabulary/folder/related2/" + StringEncoder.encodeToIRI("mg{N}.L-1") +"\"/>"
-                    )
-                );
-                Assert.assertTrue(StringUtils.contains(output, "<DataElemId4>http://some.extenal.url/value%20with%20whitespace%20and%7Bcurly%7D</DataElemId4>"));
-                Assert.assertTrue(StringUtils.contains(output, "<DataElemId5>{value}||^</DataElemId5>"));
-                Assert.assertTrue(StringUtils.contains(output, "<DataElemId6 rdf:resource=\"http://some.extenal.url/value%20with%20whitespace%20and%7Bcurly%7D\"/>"));
                 
 		// test if output is valid RDF
 		Reader reader = new StringReader(output);
@@ -82,48 +69,6 @@ public class VocabularyXmlWriterTestIT {
 		reader.close();
         }
 
-    //The following test will be commented since the SiteCodes vocabulary will have the same functionality as all other vocabularies
-	/*@Test
-	public void writeSiteCodesXml() throws Exception {
-
-		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-		VocabularyXmlWriter writer = new VocabularyXmlWriter(outputStream);
-
-		String rootContext = BASE_URL + "/vocabulary/folder/";
-		String vocabularyContext = BASE_URL + "/vocabulary/folder/sitecodes/";
-		String commonElemsUri = BASE_URL + "/datadict/property/";
-
-		VocabularyFolder testVocabulary = prepareVocabularyFolder(VocabularyType.SITE_CODE);
-		List<SiteCode> siteCodes = prepareSiteCodes();
-
-		writer.writeRDFXml(commonElemsUri, rootContext, vocabularyContext, testVocabulary, siteCodes, new ArrayList<RdfNamespace>());
-		outputStream.close();
-		String output = new String(outputStream.toByteArray(), "UTF-8");
-
-		// test output
-		Assert.assertTrue(StringUtils.contains(output, "<skos:Concept rdf:about=\"" + BASE_URL + "/vocabulary/folder/sitecodes/1111\">"));
-		Assert.assertTrue(StringUtils.contains(output, "<skos:notation>SiteCodeNotation1</skos:notation>"));
-		Assert.assertTrue(StringUtils.contains(output, "<skos:prefLabel>SiteCodeLabel1</skos:prefLabel>"));
-		Assert.assertTrue(StringUtils.contains(output, "<skos:inScheme rdf:resource=\"" + BASE_URL + "/vocabulary/folder/sitecodes/\"/>"));
-
-		Assert.assertTrue(StringUtils.contains(output, "<dd:siteCode rdf:datatype=\"http://www.w3.org/2001/XMLSchema#int\">1111</dd:siteCode>"));
-		Assert.assertTrue(StringUtils.contains(output, "<dd:siteName>SiteCodeLabel1</dd:siteName>"));
-		Assert.assertTrue(StringUtils.contains(output, "<dd:status>ALLOCATED</dd:status>"));
-		Assert.assertTrue(StringUtils.contains(output, "<dd:status>DELETED</dd:status>"));
-		Assert.assertTrue(StringUtils.contains(output, "<dd:countryAllocated rdf:resource=\"http://rdfdata.eionet.europa.eu/eea/countries/EE\"/>"));
-		Assert.assertTrue(StringUtils.contains(output, "<dd:yearCreated rdf:datatype=\"http://www.w3.org/2001/XMLSchema#gYear\">2009</dd:yearCreated>"));
-		Assert.assertTrue(StringUtils.contains(output, "<dd:status>DELETED</dd:status>"));
-		Assert.assertTrue(StringUtils.contains(output, "<dd:yearsDeleted>2011</dd:yearsDeleted>"));
-		Assert.assertTrue(StringUtils.contains(output, "<dd:yearsDisappeared>2012</dd:yearsDisappeared>"));
-		Assert.assertTrue(StringUtils.contains(output, "<rdf:type rdf:resource=\"http://dd.eionet.europa.eu/schema.rdf#SiteCode\"/>"));
-
-		// test if output is valid RDF
-		Reader reader = new StringReader(output);
-		RDFParser parser = new RDFXMLParser();
-		parser.parse(reader, vocabularyContext);
-		reader.close();
-
-	}*/
 
 	private VocabularyFolder prepareVocabularyFolder(VocabularyType vocabularyType) {
 		VocabularyFolder vocabulary = new VocabularyFolder();
@@ -149,82 +94,8 @@ public class VocabularyXmlWriterTestIT {
 		concept2.setLabel("Label2");
 		concept2.setDefinition("Definition2");
 
-		List<List<DataElement>> elements = new ArrayList<List<DataElement>>();
-		List<DataElement> elems = new ArrayList<DataElement>();
-		DataElement elem1 = new DataElement();
-		elem1.setIdentifier("DataElemId1");
-		elem1.setRelatedConceptId(1);
-		elem1.setRelatedConceptIdentifier("RelatedConcept1");
-		elem1.setRelatedConceptBaseURI(BASE_URL + "/vocabulary/folder/related/");
-		elems.add(elem1);
-
-		DataElement elem2 = new DataElement();
-		elem2.setIdentifier("DataElemId2");
-		elem2.setAttributeValue("AttributeValue2");
-		elem2.setAttributeLanguage("et");
-		Map<String, List<String>> elemAttributeValues = new HashMap<String, List<String>>();
-		elemAttributeValues.put("Datatype", Arrays.asList(new String[] {"int"}));
-		elem2.setElemAttributeValues(elemAttributeValues);
-		elems.add(elem2);
-                
-                DataElement elem3 = new DataElement();
-		elem3.setIdentifier("DataElemId3");
-		elem3.setRelatedConceptId(3);
-		elem3.setRelatedConceptIdentifier("mg{N}.L-1");
-		elem3.setRelatedConceptBaseURI(BASE_URL + "/vocabulary/folder/related2/");
-		elems.add(elem3);
-
-                DataElement elem4 = new DataElement();
-		elem4.setIdentifier("DataElemId4");
-		elem4.setAttributeValue("http://some.extenal.url/value%20with%20whitespace%20and%7Bcurly%7D");
-		elems.add(elem4);
-                
-                DataElement elem5 = new DataElement();
-		elem5.setIdentifier("DataElemId5");
-		elem5.setAttributeValue("{value}||^");
-		elems.add(elem5);
-                
-                DataElement elem6 = new DataElement();
-                elem6.setIdentifier("DataElemId6");
-                elem6.setAttributeValue("http://some.extenal.url/value%20with%20whitespace%20and%7Bcurly%7D");
-                Map<String, List<String>> elem6AttributeValues = new HashMap<String, List<String>>();
-                elem6AttributeValues.put("Datatype", Arrays.asList(new String[] { "reference" }));
-                elem6.setElemAttributeValues(elem6AttributeValues);
-                elems.add(elem6);
-		
-                elements.add(elems);
-                
-		concept2.setElementAttributes(elements);
 		concepts.add(concept2);
 
 		return concepts;
-	}
-
-	private List<SiteCode> prepareSiteCodes() {
-		List<SiteCode> siteCodes = new ArrayList<SiteCode>();
-		SiteCode siteCode1 = new SiteCode();
-		siteCode1.setIdentifier("1111");
-		siteCode1.setNotation("SiteCodeNotation1");
-		siteCode1.setLabel("SiteCodeLabel1");
-		siteCode1.setDefinition("SiteCodeDefinition1");
-		siteCode1.setSiteCodeStatus(SiteCodeStatus.ALLOCATED);
-		siteCode1.setCountryCode("EE");
-		Calendar created = Calendar.getInstance();
-		created.set(Calendar.YEAR, 2009);
-		siteCode1.setDateCreated(created.getTime());
-		siteCodes.add(siteCode1);
-
-		SiteCode siteCode2 = new SiteCode();
-		siteCode2.setIdentifier("2222");
-		siteCode2.setNotation("SiteCodeNotation2");
-		siteCode2.setLabel("SiteCodeLabel2");
-		siteCode2.setDefinition("SiteCodeDefinition2");
-		siteCode2.setSiteCodeStatus(SiteCodeStatus.DELETED);
-		siteCode2.setCountryCode("FR");
-		siteCode2.setYearsDeleted("2011");
-		siteCode2.setYearsDisappeared("2012");
-		siteCodes.add(siteCode2);
-
-		return siteCodes;
 	}
 }
