@@ -432,6 +432,9 @@ public class VocabularyXmlWriter {
                     }
                 }
                 if(!printedBoundElement){   //write empty elements
+                    if(boundDataElement.getIdentifier().equals("adms:status")){ //#136451 ignore adms:status because an entry for it has already been inserted
+                        continue;
+                    }
                     writer.writeCharacters("\n");
                     writer.writeStartElement(boundDataElement.getIdentifier());
                     writer.writeEndElement();
