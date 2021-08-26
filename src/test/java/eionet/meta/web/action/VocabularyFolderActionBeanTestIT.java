@@ -1112,6 +1112,73 @@ public class VocabularyFolderActionBeanTestIT extends DDDatabaseTestCase {
                 val = parser.getCurrentName();
                 Assert.assertEquals("Status", "Status", val);
                 parser.nextToken(); // move to value
+
+                //Changes for #136471
+                //in seed-vocabularycsv.xml which is the used xml there are no StatusModifiedDate and AcceptedDate values for all concepts so we move on to data elements
+
+                // move to data elements
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Data Element 1", "CountryCode", val);
+                Assert.assertEquals(JsonToken.START_ARRAY, parser.nextToken()); // JsonToken.START_ARRAY
+                Assert.assertEquals(JsonToken.END_ARRAY, parser.nextToken()); // JsonToken.END_ARRAY
+
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Data Element 2", "AnotherCode", val);
+                Assert.assertEquals(JsonToken.START_ARRAY, parser.nextToken()); // JsonToken.START_ARRAY
+                Assert.assertEquals(JsonToken.END_ARRAY, parser.nextToken()); // JsonToken.END_ARRAY
+
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Data Element 3", "skos:definition", val);
+                Assert.assertEquals(JsonToken.START_ARRAY, parser.nextToken()); // JsonToken.START_ARRAY
+                Assert.assertEquals(JsonToken.END_ARRAY, parser.nextToken()); // JsonToken.END_ARRAY
+
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Data Element 4", "geo:long", val);
+                Assert.assertEquals(JsonToken.START_ARRAY, parser.nextToken()); // JsonToken.START_ARRAY
+                if(i==0 || i==2){ //vocabularyConceptId = 5 or vocabularyConceptId = 7
+                    parser.nextToken(); // move to value
+                }
+                Assert.assertEquals(JsonToken.END_ARRAY, parser.nextToken()); // JsonToken.END_ARRAY
+
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Data Element 5", "geo:lat", val);
+                Assert.assertEquals(JsonToken.START_ARRAY, parser.nextToken()); // JsonToken.START_ARRAY
+               if(i==0){ //vocabularyConceptId = 5
+                   parser.nextToken(); // move to value
+                   parser.nextToken(); // move to next value
+                   parser.nextToken(); // move to next value
+                   parser.nextToken(); // move to next value
+                }
+                Assert.assertEquals(JsonToken.END_ARRAY, parser.nextToken()); // JsonToken.END_ARRAY
+
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Data Element 6", "skos:relatedMatch", val);
+                Assert.assertEquals(JsonToken.START_ARRAY, parser.nextToken()); // JsonToken.START_ARRAY
+                if(i==0){ //vocabularyConceptId = 5
+                    parser.nextToken(); // move to value
+                    parser.nextToken(); // move to next value
+                }
+                else if(i==1){ //vocabularyConceptId = 6
+                    parser.nextToken(); // move to value
+                    parser.nextToken(); // move to next value
+                    parser.nextToken(); // move to next value
+                }
+                Assert.assertEquals(JsonToken.END_ARRAY, parser.nextToken()); // JsonToken.END_ARRAY
+
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Data Element 7", "skos:related", val);
+                Assert.assertEquals(JsonToken.START_ARRAY, parser.nextToken()); // JsonToken.START_ARRAY
+                if(i==2){ //vocabularyConceptId = 7
+                    parser.nextToken(); // move to value
+                }
+                Assert.assertEquals(JsonToken.END_ARRAY, parser.nextToken()); // JsonToken.END_ARRAY
                 Assert.assertEquals(JsonToken.END_OBJECT, parser.nextToken()); // JsonToken.END_OBJECT
             }
             Assert.assertEquals(JsonToken.END_ARRAY, parser.nextToken()); // JsonToken.END_ARRAY
@@ -1424,6 +1491,62 @@ public class VocabularyFolderActionBeanTestIT extends DDDatabaseTestCase {
                 val = parser.getCurrentName();
                 Assert.assertEquals("Status", "Status", val);
                 parser.nextToken(); // move to value
+
+                //Changes for #136471
+                //in seed-vocabularycsv.xml which is the used xml there are no StatusModifiedDate and AcceptedDate values for all concepts so we move on to data elements
+
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Data Element 2", "AnotherCode", val);
+                Assert.assertEquals(JsonToken.START_ARRAY, parser.nextToken()); // JsonToken.START_ARRAY
+                if(i==2){ //vocabularyConceptId = 10
+                    parser.nextToken(); // move to value
+                    parser.nextToken(); // move to next value
+                }
+                Assert.assertEquals(JsonToken.END_ARRAY, parser.nextToken()); // JsonToken.END_ARRAY
+
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Data Element 5", "geo:lat", val);
+                Assert.assertEquals(JsonToken.START_ARRAY, parser.nextToken()); // JsonToken.START_ARRAY
+                if(i==2){ //vocabularyConceptId = 10
+                    parser.nextToken(); // move to value
+                }
+                Assert.assertEquals(JsonToken.END_ARRAY, parser.nextToken()); // JsonToken.END_ARRAY
+
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Data Element 8", "skos:prefLabel", val);
+                Assert.assertEquals(JsonToken.START_ARRAY, parser.nextToken()); // JsonToken.START_ARRAY
+                if(i==0){ //vocabularyConceptId = 8
+                    parser.nextToken(); // move to value
+                    parser.nextToken(); // move to next value
+                    parser.nextToken(); // move to next value
+                    parser.nextToken(); // move to next value
+                }
+                else if(i==2){ //vocabularyConceptId = 10
+                    parser.nextToken(); // move to value
+                    parser.nextToken(); // move to next value
+                    parser.nextToken(); // move to next value
+                }
+                Assert.assertEquals(JsonToken.END_ARRAY, parser.nextToken()); // JsonToken.END_ARRAY
+
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Data Element 9", "skos:definition", val);
+                Assert.assertEquals(JsonToken.START_ARRAY, parser.nextToken()); // JsonToken.START_ARRAY
+                if(i==1){ //vocabularyConceptId = 9
+                    parser.nextToken(); // move to value
+                    parser.nextToken(); // move to next value
+                }
+                else if(i==2){ //vocabularyConceptId = 10
+                    parser.nextToken(); // move to value
+                    parser.nextToken(); // move to next value
+                    parser.nextToken(); // move to next value
+                }
+                Assert.assertEquals(JsonToken.END_ARRAY, parser.nextToken()); // JsonToken.END_ARRAY
+
+
                 Assert.assertEquals(JsonToken.END_OBJECT, parser.nextToken()); // JsonToken.END_OBJECT
             }
             Assert.assertEquals(JsonToken.END_ARRAY, parser.nextToken()); // JsonToken.END_ARRAY
@@ -1712,6 +1835,63 @@ public class VocabularyFolderActionBeanTestIT extends DDDatabaseTestCase {
                 val = parser.getCurrentName();
                 Assert.assertEquals("Status", "Status", val);
                 parser.nextToken(); // move to value
+
+                //Changes for #136471
+                //in seed-vocabularycsv.xml which is the used xml there are no StatusModifiedDate and AcceptedDate values for all concepts so we move on to data elements
+
+                // move to data elements
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Data Element 1", "CountryCode", val);
+                Assert.assertEquals(JsonToken.START_ARRAY, parser.nextToken()); // JsonToken.START_ARRAY
+                Assert.assertEquals(JsonToken.END_ARRAY, parser.nextToken()); // JsonToken.END_ARRAY
+
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Data Element 2", "AnotherCode", val);
+                Assert.assertEquals(JsonToken.START_ARRAY, parser.nextToken()); // JsonToken.START_ARRAY
+                Assert.assertEquals(JsonToken.END_ARRAY, parser.nextToken()); // JsonToken.END_ARRAY
+
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Data Element 3", "skos:definition", val);
+                Assert.assertEquals(JsonToken.START_ARRAY, parser.nextToken()); // JsonToken.START_ARRAY
+                Assert.assertEquals(JsonToken.END_ARRAY, parser.nextToken()); // JsonToken.END_ARRAY
+
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Data Element 4", "geo:long", val);
+                Assert.assertEquals(JsonToken.START_ARRAY, parser.nextToken()); // JsonToken.START_ARRAY
+                if(i==1){
+                    parser.nextToken(); // move to value
+                }
+                Assert.assertEquals(JsonToken.END_ARRAY, parser.nextToken()); // JsonToken.END_ARRAY
+
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Data Element 5", "geo:lat", val);
+                Assert.assertEquals(JsonToken.START_ARRAY, parser.nextToken()); // JsonToken.START_ARRAY
+                Assert.assertEquals(JsonToken.END_ARRAY, parser.nextToken()); // JsonToken.END_ARRAY
+
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Data Element 6", "skos:relatedMatch", val);
+                Assert.assertEquals(JsonToken.START_ARRAY, parser.nextToken()); // JsonToken.START_ARRAY
+                if(i==0){
+                    parser.nextToken(); // move to value
+                    parser.nextToken(); // move to next value
+                    parser.nextToken(); // move to next value
+                }
+                Assert.assertEquals(JsonToken.END_ARRAY, parser.nextToken()); // JsonToken.END_ARRAY
+
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Data Element 7", "skos:related", val);
+                Assert.assertEquals(JsonToken.START_ARRAY, parser.nextToken()); // JsonToken.START_ARRAY
+                if(i==1){
+                    parser.nextToken(); // move to value
+                }
+                Assert.assertEquals(JsonToken.END_ARRAY, parser.nextToken()); // JsonToken.END_ARRAY
                 Assert.assertEquals(JsonToken.END_OBJECT, parser.nextToken()); // JsonToken.END_OBJECT
             }
             Assert.assertEquals(JsonToken.END_ARRAY, parser.nextToken()); // JsonToken.END_ARRAY
@@ -2007,6 +2187,52 @@ public class VocabularyFolderActionBeanTestIT extends DDDatabaseTestCase {
                 val = parser.getCurrentName();
                 Assert.assertEquals("Status", "Status", val);
                 parser.nextToken(); // move to value
+
+                //Changes for #136471
+                //in seed-vocabularycsv.xml which is the used xml there are no StatusModifiedDate and AcceptedDate values for all concepts so we move on to data elements
+
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Data Element 2", "AnotherCode", val);
+                Assert.assertEquals(JsonToken.START_ARRAY, parser.nextToken()); // JsonToken.START_ARRAY
+                if(i==1){
+                    parser.nextToken(); // move to value
+                    parser.nextToken(); // move to next value
+                }
+                Assert.assertEquals(JsonToken.END_ARRAY, parser.nextToken()); // JsonToken.END_ARRAY
+
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Data Element 5", "geo:lat", val);
+                Assert.assertEquals(JsonToken.START_ARRAY, parser.nextToken()); // JsonToken.START_ARRAY
+                if(i==1){
+                    parser.nextToken(); // move to value
+                }
+                Assert.assertEquals(JsonToken.END_ARRAY, parser.nextToken()); // JsonToken.END_ARRAY
+
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Data Element 8", "skos:prefLabel", val);
+                Assert.assertEquals(JsonToken.START_ARRAY, parser.nextToken()); // JsonToken.START_ARRAY
+                if(i==0){
+                    parser.nextToken(); // move to value
+                    parser.nextToken(); // move to next value
+                }
+                else if(i==1){
+                    parser.nextToken(); // move to value
+                }
+                Assert.assertEquals(JsonToken.END_ARRAY, parser.nextToken()); // JsonToken.END_ARRAY
+
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Data Element 9", "skos:definition", val);
+                Assert.assertEquals(JsonToken.START_ARRAY, parser.nextToken()); // JsonToken.START_ARRAY
+                if(i==1){
+                    parser.nextToken(); // move to value
+                    parser.nextToken(); // move to next value
+                    parser.nextToken(); // move to next value
+                }
+                Assert.assertEquals(JsonToken.END_ARRAY, parser.nextToken()); // JsonToken.END_ARRAY
 
                 Assert.assertEquals(JsonToken.END_OBJECT, parser.nextToken()); // JsonToken.END_OBJECT
             }
@@ -2502,6 +2728,53 @@ public class VocabularyFolderActionBeanTestIT extends DDDatabaseTestCase {
                 val = parser.getCurrentName();
                 Assert.assertEquals("Status", "Status", val);
                 parser.nextToken(); // move to value
+
+                //Changes for #136471
+                //in seed-vocabularycsv.xml which is the used xml there are no StatusModifiedDate and AcceptedDate values for all concepts so we move on to data elements
+
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Data Element 2", "AnotherCode", val);
+                Assert.assertEquals(JsonToken.START_ARRAY, parser.nextToken()); // JsonToken.START_ARRAY
+                if(i==1){
+                    parser.nextToken(); // move to value
+                    parser.nextToken(); // move to next value
+                }
+                Assert.assertEquals(JsonToken.END_ARRAY, parser.nextToken()); // JsonToken.END_ARRAY
+
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Data Element 5", "geo:lat", val);
+                Assert.assertEquals(JsonToken.START_ARRAY, parser.nextToken()); // JsonToken.START_ARRAY
+                if(i==1){
+                    parser.nextToken(); // move to value
+                }
+                Assert.assertEquals(JsonToken.END_ARRAY, parser.nextToken()); // JsonToken.END_ARRAY
+
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Data Element 8", "skos:prefLabel", val);
+                Assert.assertEquals(JsonToken.START_ARRAY, parser.nextToken()); // JsonToken.START_ARRAY
+                if(i==0){
+                    parser.nextToken(); // move to value
+                    parser.nextToken(); // move to next value
+                }
+                else if(i==1){
+                    parser.nextToken(); // move to value
+                }
+                Assert.assertEquals(JsonToken.END_ARRAY, parser.nextToken()); // JsonToken.END_ARRAY
+
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Data Element 9", "skos:definition", val);
+                Assert.assertEquals(JsonToken.START_ARRAY, parser.nextToken()); // JsonToken.START_ARRAY
+                if(i==1){
+                    parser.nextToken(); // move to value
+                    parser.nextToken(); // move to next value
+                    parser.nextToken(); // move to next value
+                }
+                Assert.assertEquals(JsonToken.END_ARRAY, parser.nextToken()); // JsonToken.END_ARRAY
+
                 Assert.assertEquals(JsonToken.END_OBJECT, parser.nextToken()); // JsonToken.END_OBJECT
             }
             Assert.assertEquals(JsonToken.END_ARRAY, parser.nextToken()); // JsonToken.END_ARRAY
@@ -2833,6 +3106,32 @@ public class VocabularyFolderActionBeanTestIT extends DDDatabaseTestCase {
                     }
                     Assert.assertEquals(JsonToken.END_ARRAY, parser.nextToken()); // JsonToken.END_ARRAY
                 }
+
+                //Changes for #136471
+                //in seed-vocabularycsv.xml which is the used xml there are no StatusModifiedDate and AcceptedDate values for all concepts so we move on to data elements
+
+                // move to data elements
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Data Element 10", "skos:narrower", val);
+                Assert.assertEquals(JsonToken.START_ARRAY, parser.nextToken()); // JsonToken.START_ARRAY
+                if(i==0){ //vocabularyConceptId = 20
+                    parser.nextToken(); // move to value
+                    parser.nextToken(); // move to next value
+                }
+                else if(i==1 || i==5){ //vocabularyConceptId = 21 or vocabularyConceptId = 25
+                    parser.nextToken(); // move to value
+                }
+                Assert.assertEquals(JsonToken.END_ARRAY, parser.nextToken()); // JsonToken.END_ARRAY
+
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Data Element 11", "skos:broader", val);
+                Assert.assertEquals(JsonToken.START_ARRAY, parser.nextToken()); // JsonToken.START_ARRAY
+                if(i==1 || i==2 || i==3 || i==6){ //vocabularyConceptId = 21 or vocabularyConceptId = 22 or vocabularyConceptId = 23 or vocabularyConceptId = 26
+                    parser.nextToken(); // move to value
+                }
+                Assert.assertEquals(JsonToken.END_ARRAY, parser.nextToken()); // JsonToken.END_ARRAY
 
                 Assert.assertEquals(JsonToken.END_OBJECT, parser.nextToken()); // JsonToken.END_OBJECT
             }

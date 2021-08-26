@@ -29,19 +29,21 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import eionet.meta.dao.domain.*;
+import eionet.meta.service.IVocabularyService;
+import eionet.meta.service.ServiceException;
+import eionet.meta.spring.SpringApplicationContext;
+import eionet.util.Util;
 import org.apache.commons.lang.StringUtils;
 
-import eionet.meta.dao.domain.DataElement;
-import eionet.meta.dao.domain.Folder;
-import eionet.meta.dao.domain.RdfNamespace;
-import eionet.meta.dao.domain.StandardGenericStatus;
-import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.exports.VocabularyOutputHelper;
 import eionet.meta.service.data.SiteCode;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.StringEncoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 
 /**
  * Vocabulary RDF-XML writer.
@@ -59,6 +61,10 @@ public class VocabularyXmlWriter {
 
     /** XMLWriter to write XML to. */
     private XMLStreamWriter writer;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(VocabularyXmlWriter.class);
+
+    private static ApplicationContext springContext = SpringApplicationContext.getContext();
 
     /**
      * Default constructor.
@@ -106,8 +112,6 @@ public class VocabularyXmlWriter {
     /**
      * Writes start of XML.
      *
-     * @param siteCodeType
-     *            if true it is a site code vocabulary
      * @param commonElemsUri
      *            uri for common elements
      * @param contextRoot
@@ -211,6 +215,17 @@ public class VocabularyXmlWriter {
      */
     public void writeVocabularyFolderXml(String folderContextRoot, String vocabularyContextRoot, VocabularyFolder vocabularyFolder,
             List<? extends VocabularyConcept> vocabularyConcepts) throws XMLStreamException {
+
+        //get bound data elements
+        IVocabularyService vocabularyService = springContext.getBean(IVocabularyService.class);
+        List<DataElement> boundDataElements = null;
+        try {
+            boundDataElements = vocabularyService.getVocabularyDataElements(vocabularyFolder.getId());
+        } catch (ServiceException e) {
+            LOGGER.error("Could not retrieve bound elements for vocabulary " + vocabularyFolder.getId());
+        }
+
+
         writer.writeCharacters("\n");
         writer.writeStartElement(VocabularyOutputHelper.LinkedDataNamespaces.SKOS_NS, "ConceptScheme");
         writer.writeAttribute("rdf", VocabularyOutputHelper.LinkedDataNamespaces.RDF_NS, "about", StringEncoder.encodeToIRI(vocabularyContextRoot));
@@ -228,6 +243,66 @@ public class VocabularyXmlWriter {
         writer.writeCharacters("\n");
         writer.writeEmptyElement(VocabularyOutputHelper.LinkedDataNamespaces.DCTERMS_NS, "isPartOf");
         writer.writeAttribute("rdf", VocabularyOutputHelper.LinkedDataNamespaces.RDF_NS, "resource", StringEncoder.encodeToIRI(folderContextRoot));
+
+        if(vocabularyFolder.getRegStatus() != null) {
+            writer.writeCharacters("\n");
+            writer.writeStartElement("registrationStatus");
+            writer.writeCharacters(vocabularyFolder.getRegStatus().getLabel());
+            writer.writeEndElement();
+        }
+
+        if(vocabularyFolder.getUserModified() != null) {
+            writer.writeCharacters("\n");
+            writer.writeStartElement("userModified");
+            writer.writeCharacters(vocabularyFolder.getUserModified());
+            writer.writeEndElement();
+        }
+
+        if(vocabularyFolder.getDateModified() != null) {
+            writer.writeCharacters("\n");
+            writer.writeStartElement("dateModified");
+            writer.writeCharacters(vocabularyFolder.getDateModified().toString());
+            writer.writeEndElement();
+        }
+
+        if(vocabularyFolder.getType() != null) {
+            writer.writeCharacters("\n");
+            writer.writeStartElement("vocabularyType");
+            writer.writeCharacters(vocabularyFolder.getType().getLabel());
+            writer.writeEndElement();
+        }
+
+        if(vocabularyFolder.getAttributes() != null) {
+            for (List<SimpleAttribute> attributeList : vocabularyFolder.getAttributes()) {
+                for (SimpleAttribute attribute : attributeList) {
+                    if (attribute.getIdentifier().equals("Version")) {
+                        writer.writeCharacters("\n");
+                        writer.writeStartElement("version");
+                        writer.writeCharacters(attribute.getValue());
+                        writer.writeEndElement();
+                    }
+                }
+            }
+        }
+
+        if(vocabularyFolder.getWorkingUser() != null) {
+            writer.writeCharacters("\n");
+            writer.writeStartElement("workingUser");
+            writer.writeCharacters(vocabularyFolder.getWorkingUser());
+            writer.writeEndElement();
+        }
+
+        writer.writeCharacters("\n");
+        writer.writeStartElement("isNumericConceptIdentifiers");
+        writer.writeCharacters(Boolean.toString(vocabularyFolder.isNumericConceptIdentifiers()));
+        writer.writeEndElement();
+
+
+        writer.writeCharacters("\n");
+        writer.writeStartElement("isNotationsEqualIdentifiers");
+        writer.writeCharacters(Boolean.toString(vocabularyFolder.isNotationsEqualIdentifiers()));
+        writer.writeEndElement();
+
 
         writer.writeCharacters("\n");
         writer.writeEndElement(); // End ConceptScheme
@@ -267,13 +342,34 @@ public class VocabularyXmlWriter {
                         StringEncoder.encodeToIRI(OWN_STATUS_VOCABULARY_URI + "/" + conceptStatus.getIdentifier()));
             }
 
+            if (vc.getStatusModified() != null) {
+                writer.writeCharacters("\n");
+                writer.writeStartElement("statusModified");
+                writer.writeCharacters(vc.getStatusModified().toString());
+                writer.writeEndElement();
+            }
+
+            if (vc.getAcceptedDate() != null) {
+                writer.writeCharacters("\n");
+                writer.writeStartElement("acceptedDate");
+                writer.writeCharacters(vc.getAcceptedDate().toString());
+                writer.writeEndElement();
+            }
+
+            if (vc.getNotAcceptedDate() != null) {
+                writer.writeCharacters("\n");
+                writer.writeStartElement("notAcceptedDate");
+                writer.writeCharacters(vc.getNotAcceptedDate().toString());
+                writer.writeEndElement();
+            }
+
             writer.writeCharacters("\n");
             writer.writeEmptyElement(VocabularyOutputHelper.LinkedDataNamespaces.SKOS_NS, "inScheme");
             writer.writeAttribute("rdf", VocabularyOutputHelper.LinkedDataNamespaces.RDF_NS, "resource",
                     StringEncoder.encodeToIRI(vocabularyContextRoot));
 
             // Write bound elements as last block.
-            writeBoundElements(vocabularyContextRoot, vc.getElementAttributes());
+            writeBoundElements(vocabularyContextRoot, vc.getElementAttributes(), boundDataElements);
 
             writer.writeCharacters("\n");
             writer.writeEndElement();
@@ -287,40 +383,61 @@ public class VocabularyXmlWriter {
      *            contex root
      * @param elements
      *            elements list
+     *@param boundDataElements
+     *      bound elements list
      * @throws XMLStreamException
      *             if writing fails
      */
-    private void writeBoundElements(String contextRoot, List<List<DataElement>> elements) throws XMLStreamException {
-        if (elements != null) {
-            for (List<DataElement> elems : elements) {
-                if (elems != null) {
-                    for (DataElement elem : elems) {
-                        writer.writeCharacters("\n");
-                        if (elem.isRelationalElement()) {
-                            writer.writeEmptyElement(elem.getIdentifier());
-                            writer.writeAttribute("rdf", VocabularyOutputHelper.LinkedDataNamespaces.RDF_NS, "resource",
-                                    StringEncoder.encodeToIRI(elem.getRelatedConceptUri()));
-                        } else if (StringUtils.isNotEmpty(elem.getAttributeValue())) {
-                            if (StringUtils.isNotEmpty(elem.getRelatedConceptUri()) && StringUtils.isNotEmpty(elem.getDatatype())
-                                    && elem.getDatatype().equalsIgnoreCase("reference")) {
-                                writer.writeEmptyElement(elem.getIdentifier());
-                                writer.writeAttribute("rdf", VocabularyOutputHelper.LinkedDataNamespaces.RDF_NS, "resource",
-                                        elem.getRelatedConceptUri());
-                            } else {
-                                writer.writeStartElement(elem.getIdentifier());
-                                if (StringUtils.isNotEmpty(elem.getAttributeLanguage())) {
-                                    writer.writeAttribute("xml", VocabularyOutputHelper.LinkedDataNamespaces.XML_NS, "lang",
-                                            elem.getAttributeLanguage());
+    private void writeBoundElements(String contextRoot, List<List<DataElement>> elements, List<DataElement> boundDataElements) throws XMLStreamException {
+        if(boundDataElements != null) {
+            for (DataElement boundDataElement : boundDataElements) {
+                Boolean printedBoundElement = false;
+                if (elements != null) {
+                    for (List<DataElement> elems : elements) {
+                        if (elems != null) {
+                            for (DataElement elem : elems) {
+                                if(!boundDataElement.getIdentifier().equals(elem.getIdentifier())){
+                                    continue;
                                 }
-                                if (StringUtils.isNotEmpty(elem.getDatatype()) && !elem.getDatatype().equalsIgnoreCase("string")) {
-                                    writer.writeAttribute("rdf", VocabularyOutputHelper.LinkedDataNamespaces.RDF_NS, "datatype",
-                                            Rdf.getXmlType(elem.getDatatype()));
+                                writer.writeCharacters("\n");
+
+                                if (elem.isRelationalElement()) {
+                                    writer.writeEmptyElement(elem.getIdentifier());
+                                    writer.writeAttribute("rdf", VocabularyOutputHelper.LinkedDataNamespaces.RDF_NS, "resource",
+                                            StringEncoder.encodeToIRI(elem.getRelatedConceptUri()));
+                                    printedBoundElement = true;
+                                } else if (StringUtils.isNotEmpty(elem.getAttributeValue())) {
+                                    if (StringUtils.isNotEmpty(elem.getRelatedConceptUri()) && StringUtils.isNotEmpty(elem.getDatatype())
+                                            && elem.getDatatype().equalsIgnoreCase("reference")) {
+                                        writer.writeEmptyElement(elem.getIdentifier());
+                                        writer.writeAttribute("rdf", VocabularyOutputHelper.LinkedDataNamespaces.RDF_NS, "resource",
+                                                elem.getRelatedConceptUri());
+                                    } else {
+                                        writer.writeStartElement(elem.getIdentifier());
+                                        if (StringUtils.isNotEmpty(elem.getAttributeLanguage())) {
+                                            writer.writeAttribute("xml", VocabularyOutputHelper.LinkedDataNamespaces.XML_NS, "lang",
+                                                    elem.getAttributeLanguage());
+                                        }
+                                        if (StringUtils.isNotEmpty(elem.getDatatype()) && !elem.getDatatype().equalsIgnoreCase("string")) {
+                                            writer.writeAttribute("rdf", VocabularyOutputHelper.LinkedDataNamespaces.RDF_NS, "datatype",
+                                                    Rdf.getXmlType(elem.getDatatype()));
+                                        }
+                                        writer.writeCharacters(elem.getAttributeValue());
+                                        writer.writeEndElement();
+                                    }
+                                    printedBoundElement = true;
                                 }
-                                writer.writeCharacters(elem.getAttributeValue());
-                                writer.writeEndElement();
                             }
                         }
                     }
+                }
+                if(!printedBoundElement){   //write empty elements
+                    if(boundDataElement.getIdentifier().equals("adms:status")){ //#136451 ignore adms:status because an entry for it has already been inserted
+                        continue;
+                    }
+                    writer.writeCharacters("\n");
+                    writer.writeStartElement(boundDataElement.getIdentifier());
+                    writer.writeEndElement();
                 }
             }
         }
