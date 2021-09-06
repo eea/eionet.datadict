@@ -253,13 +253,49 @@ public class RDFVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
         }
 
         RDFParser parser = new RDFXMLParser();
+        VocabularyRDFImportHandler rdfHandler = null;
         //perge per predicate basis option
         boolean createNewDataElementsForPredicates = UploadAction.add_and_purge_per_predicate_basis.equals(uploadAction);
-        VocabularyRDFImportHandler rdfHandler =
-                new VocabularyRDFImportHandler(folderCtxRoot, new ArrayList<VocabularyConcept>(concepts),
-                        elemToId, boundElementsByNS, boundURIs,
-                        createNewDataElementsForPredicates,
-                        Props.getProperty(PropsIF.DD_WORKING_LANGUAGE_KEY), DD_NAME_SPACE);
+
+        //Determine where we are from a selection of purge action viewPoint:
+        if(UploadAction.add.equals(uploadAction)&& uploadActionBefore.equals(UploadActionBefore.keep)){
+            //rdfPurgeOption 1: we dont purge vocabulary Data and also ignore empty elements
+             rdfHandler =
+                    new VocabularyRDFImportHandler(vocabularyFolder, folderCtxRoot, new ArrayList<VocabularyConcept>(concepts),
+                            elemToId, boundElementsByNS, boundURIs,
+                            createNewDataElementsForPredicates,
+                            Props.getProperty(PropsIF.DD_WORKING_LANGUAGE_KEY), DD_NAME_SPACE,false);
+
+        }
+
+        if(UploadAction.add_and_purge_per_predicate_basis.equals(uploadAction)){
+            //rdfPurgeOption 2: purge per predicate
+            rdfHandler =
+                    new VocabularyRDFImportHandler(vocabularyFolder,folderCtxRoot, new ArrayList<VocabularyConcept>(concepts),
+                            elemToId, boundElementsByNS, boundURIs,
+                            createNewDataElementsForPredicates,
+                            Props.getProperty(PropsIF.DD_WORKING_LANGUAGE_KEY), DD_NAME_SPACE,false);
+
+        }
+        if(uploadActionBefore.equals(UploadActionBefore.remove)){
+            //rdfPurgeOption 3:purge all vocabulary data
+            rdfHandler =
+                    new VocabularyRDFImportHandler(vocabularyFolder,folderCtxRoot, new ArrayList<VocabularyConcept>(concepts),
+                            elemToId, boundElementsByNS, boundURIs,
+                            createNewDataElementsForPredicates,
+                            Props.getProperty(PropsIF.DD_WORKING_LANGUAGE_KEY), DD_NAME_SPACE,true);
+
+        }
+        if(UploadAction.delete.equals(uploadAction)){
+            //rdfPurgeOption 4: delete vocabulary data
+            rdfHandler =
+                    new VocabularyRDFImportHandler(vocabularyFolder,folderCtxRoot, new ArrayList<VocabularyConcept>(concepts),
+                            elemToId, boundElementsByNS, boundURIs,
+                            createNewDataElementsForPredicates,
+                            Props.getProperty(PropsIF.DD_WORKING_LANGUAGE_KEY), DD_NAME_SPACE,false);
+
+        }
+
         parser.setRDFHandler(rdfHandler);
         // parser.setStopAtFirstError(false);
         ParserConfig config = parser.getParserConfig();
@@ -296,6 +332,11 @@ public class RDFVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
             List<VocabularyConcept> toBeUpdatedConcepts = rdfHandler.getToBeUpdatedConcepts();
             List<VocabularyConcept> missingConcepts = rdfHandler.getMissingConcepts();
             List<VocabularyConcept> toBeRemovedConcepts = new ArrayList<VocabularyConcept>();
+            //Lets say we do it here:
+            for (VocabularyConcept vocConcept: toBeUpdatedConcepts
+                 ) {
+
+            }
             
             // quick hack to support delete upload action
             if (uploadAction == UploadAction.delete) {
@@ -379,6 +420,8 @@ public class RDFVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
 
     private List<String> importRdfIntoVocabularyLegacyInternal(Reader contents, final VocabularyFolder vocabularyFolder, boolean deleteVocabularyData,
             boolean purgeVocabularyData, boolean purgePredicateBasis, MissingConceptsAction missingConceptsAction) throws ServiceException {
+        //If deleteVocabularyData == false && purgeVocabularyData==false && purgePredicateBasis == false, then we are into rdfPurgeOption 1, which means
+        //Don't purge Vocabulary Data.
         UploadActionBefore uploadActionBefore;
         if (purgeVocabularyData) {
             uploadActionBefore = UploadActionBefore.remove;
@@ -395,6 +438,7 @@ public class RDFVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
             uploadAction = getDefaultAction(false);
         }
 
+        //If we are into rdfPurgeOption 1 , which means 'dont purge vocabulary data', then uploadAction = add + uploadActionBefore = keep
         return importRdfIntoVocabularyInternal(contents, vocabularyFolder, uploadActionBefore, uploadAction, missingConceptsAction);
     }
     
