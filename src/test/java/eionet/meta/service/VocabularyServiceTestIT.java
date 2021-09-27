@@ -436,7 +436,7 @@ public class VocabularyServiceTestIT extends UnitilsJUnit4 {
 
         // now test for update
         cal.set(2014, 8, 21);
-        dStatusModified = cal.getTime();
+        dStatusModified = new Date();
         cal.set(2014, 8, 22);
         dNotAcceptedDate = cal.getTime();
         cal.set(2014, 8, 23);
