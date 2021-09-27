@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import eionet.meta.dao.domain.StandardGenericStatus;
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.ForwardResolution;
 import net.sourceforge.stripes.action.RedirectResolution;
@@ -90,6 +91,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
      * Vocabulary concept to add/edit.
      */
     private VocabularyConcept vocabularyConcept;
+
 
     /**
      * Other vocabulary concepts in the vocabulary folder.
@@ -211,6 +213,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
                         vocabularyFolder.isWorkingCopy());
         vocabularyConcept = vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), getConceptIdentifier(), true);
 
+
         validateView();
         initElemVocabularyNames();
         initBeans();
@@ -229,6 +232,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
     public Resolution saveConcept() throws ServiceException {
 
         vocabularyConcept.setIdentifier(getConceptIdentifier());
+
         vocabularyService.updateVocabularyConcept(vocabularyConcept);
 
         relatedVocabulary = null;
@@ -859,4 +863,6 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         }
         return ids;
     }
+
+
 }
