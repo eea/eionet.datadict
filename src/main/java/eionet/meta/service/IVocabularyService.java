@@ -700,4 +700,6 @@ public interface IVocabularyService {
     Integer getCheckedOutCopyIdForVocabulary(Integer vocabularyId);
 
     Boolean checkIfConceptShouldBeAddedWhenBoundToElement(Integer newVocabularyId, String notation);
+
+    void updateAcceptedNotAcceptedDate(VocabularyConcept vocabularyConcept) throws ServiceException;
 }

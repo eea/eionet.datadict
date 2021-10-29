@@ -149,6 +149,8 @@ public abstract class VocabularyImportServiceBaseImpl implements IVocabularyImpo
                 newConcepts.add(vocabularyConcept);
                 it.remove();
             }
+
+            this.vocabularyService.updateAcceptedNotAcceptedDate(vocabularyConcept);
         }
 
         if (!newConcepts.isEmpty()) {

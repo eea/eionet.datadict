@@ -298,4 +298,55 @@ public class Enumerations {
 
     }
 
+    public enum StatusesForAcceptedDate {
+        EXPERIMENTAL("experimental"),
+        DEPRECATED("deprecated"),
+        RETIRED("retired"),
+        STABLE("stable"),
+        SUPERSEDED("superseded"),
+        VALID("valid");
+
+        private final String value;
+
+        private StatusesForAcceptedDate(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public static List<String> getEnumValues() {
+            List<String> values = new ArrayList();
+            for (StatusesForAcceptedDate element : StatusesForAcceptedDate.values()) {
+                values.add(element.value);
+            }
+            return values;
+        }
+    }
+
+    public enum StatusesForNotAcceptedDate {
+        INVALID("invalid"),
+        RESERVED("reserved"),
+        SUBMITTED("submitted");
+
+        private final String value;
+
+        private StatusesForNotAcceptedDate(String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public static List<String> getEnumValues() {
+            List<String> values = new ArrayList();
+            for (StatusesForNotAcceptedDate element : StatusesForNotAcceptedDate.values()) {
+                values.add(element.value);
+            }
+            return values;
+        }
+    }
+
 }
