@@ -116,6 +116,9 @@ public class VocabularyServiceImpl implements IVocabularyService {
      */
     public static final String ADMS_STATUS = "adms:status";
 
+    public static final String ACCEPTED_STATUS="accepted";
+    public static final String NOT_ACCEPTED_STATUS="notAccepted";
+
     /**
      * {@inheritDoc}
      */
@@ -303,6 +306,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
             }
             if (vocabularyConcept.getStatus() == null) {
                 vocabularyConcept.setStatus(StandardGenericStatus.VALID);
+                vocabularyConcept.setAcceptedDate(new java.sql.Date(System.currentTimeMillis()));
                 vocabularyConcept.setStatusModified(new java.sql.Date(System.currentTimeMillis()));
             }
             return vocabularyConceptDAO.createVocabularyConcept(vocabularyFolderId, vocabularyConcept);
@@ -319,6 +323,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
     @Transactional(rollbackFor = ServiceException.class)
     public void updateVocabularyConcept(VocabularyConcept vocabularyConcept) throws ServiceException {
         this.updateVocabularyConceptStatusModifiedIfRequired(vocabularyConcept);
+        this.updateAcceptedNotAcceptedDate(vocabularyConcept);
         updateVocabularyConceptNonTransactional(vocabularyConcept, true);
     }
 
@@ -1761,52 +1766,73 @@ public class VocabularyServiceImpl implements IVocabularyService {
     }
 
     @Override
+    @Transactional
     public void updateAcceptedNotAcceptedDate(VocabularyConcept vocabularyConcept) throws ServiceException {
+        VocabularyConcept existingConcept = this.getVocabularyConcept(vocabularyConcept.getId());
+
+        VocabularyFolder vocabularyFolder = vocabularyFolderDAO.getVocabularyFolderOfConcept(vocabularyConcept.getId());
+        int conceptId = vocabularyConcept.getId();
+        Map<Integer, List<List<DataElement>>> vocabularyConceptsDataElementValues =
+                dataElementDAO.getVocabularyConceptsDataElementValues(vocabularyFolder.getId(), new int[]{conceptId}, false);
+        existingConcept.setElementAttributes(vocabularyConceptsDataElementValues.get(conceptId));
+        List<List<DataElement>> existingConceptElements = existingConcept.getElementAttributes();
+        List<DataElement> existingConceptAdmsStatusElements = new ArrayList<>();
+        if (existingConceptElements!=null) {
+            for (List<DataElement> values : existingConceptElements) {
+                if (values!=null) {
+                    for (DataElement element : values) {
+                        if (element != null && element.getIdentifier() != null && element.getIdentifier().equals(ADMS_STATUS)) {
+                            existingConceptAdmsStatusElements.add(element);
+                        }
+                    }
+                }
+            }
+        }
+
         List<List<DataElement>> elements = vocabularyConcept.getElementAttributes();
         if (elements != null) {
             for (List<DataElement> values : elements) {
                 if (values!=null) {
                     for (DataElement element : values) {
-                        if (element != null && element.getIdentifier() != null && element.getIdentifier().equals(ADMS_STATUS) && StringUtils.isNotEmpty(element.getAttributeValue()) && element.getAttributeValue().contains("accepted")) {
-                            vocabularyConcept.setAcceptedDate(new Date());
-                            return;
-                        } else if (element != null && element.getIdentifier() != null && element.getIdentifier().equals(ADMS_STATUS) && StringUtils.isNotEmpty(element.getAttributeValue()) && element.getAttributeValue().contains("notAccepted")) {
-                            vocabularyConcept.setNotAcceptedDate(new Date());
-                            return;
-                        } else if (element != null && element.getIdentifier() != null && element.getIdentifier().equals(SKOS_NARROWER) && element.getRelatedConceptId() != null) {
+                        if (element!=null && element.getIdentifier()!=null && element.getIdentifier().equals(ADMS_STATUS) && element.getRelatedConceptId()!=null) {
                             VocabularyConcept relatedConcept = this.getVocabularyConcept(element.getRelatedConceptId());
-
-                            VocabularyFolder relConceptFolder = vocabularyFolderDAO.getVocabularyFolderOfConcept(relatedConcept.getId());
-                            int conceptId = relatedConcept.getId();
-                            Map<Integer, List<List<DataElement>>> vocabularyConceptsDataElementValues =
-                                    dataElementDAO.getVocabularyConceptsDataElementValues(relConceptFolder.getId(), new int[]{conceptId}, false);
-                            relatedConcept.setElementAttributes(vocabularyConceptsDataElementValues.get(conceptId));
-
-                            List<List<DataElement>> relatedConceptElements = relatedConcept.getElementAttributes();
-                            if (relatedConceptElements!=null) {
-                                for (List<DataElement> elemList : relatedConceptElements) {
-                                    if (elemList!=null) {
-                                        for (DataElement relConceptElement : elemList) {
-                                            if (relConceptElement != null && relConceptElement.getIdentifier() != null && relConceptElement.getIdentifier().equals(ADMS_STATUS) && StringUtils.isNotEmpty(relConceptElement.getAttributeValue())) {
-                                                for (String status : Enumerations.StatusesForNotAcceptedDate.getEnumValues()) {
-                                                    if (relConceptElement.getAttributeValue().contains(status)) {
-                                                        vocabularyConcept.setNotAcceptedDate(new Date());
-                                                        return;
-                                                    }
-                                                }
-                                                for (String status : Enumerations.StatusesForAcceptedDate.getEnumValues()) {
-                                                    if (relConceptElement.getAttributeValue().contains(status)) {
-                                                        vocabularyConcept.setAcceptedDate(new Date());
-                                                        return;
-                                                    }
-                                                }
-                                            }
+                            if (existingConceptAdmsStatusElements.size()>0) {
+                                for (DataElement existingElem : existingConceptAdmsStatusElements) {
+                                    if (existingElem.getRelatedConceptIdentifier()!=null && !existingElem.getRelatedConceptIdentifier().equals(relatedConcept.getIdentifier())) {
+                                        if (relatedConcept.getIdentifier().equals(NOT_ACCEPTED_STATUS)) {
+                                            vocabularyConcept.setNotAcceptedDate(new Date());
+                                            return;
+                                        } else if (relatedConcept.getIdentifier().equals(ACCEPTED_STATUS)) {
+                                            vocabularyConcept.setAcceptedDate(new Date());
+                                            return;
                                         }
                                     }
+                                }
+                            } else {
+                                if (relatedConcept.getIdentifier().equals(NOT_ACCEPTED_STATUS)) {
+                                    vocabularyConcept.setNotAcceptedDate(new Date());
+                                    return;
+                                } else if (relatedConcept.getIdentifier().equals(ACCEPTED_STATUS)) {
+                                    vocabularyConcept.setAcceptedDate(new Date());
+                                    return;
                                 }
                             }
                         }
                     }
+                }
+            }
+        }
+        if (!existingConcept.getStatus().equals(vocabularyConcept.getStatus())) {
+            for (String status : Enumerations.StatusesForNotAcceptedDate.getEnumValues()) {
+                if (vocabularyConcept.getStatus().getIdentifier().equals(status)) {
+                    vocabularyConcept.setNotAcceptedDate(new Date());
+                    return;
+                }
+            }
+            for (String status : Enumerations.StatusesForAcceptedDate.getEnumValues()) {
+                if (vocabularyConcept.getStatus().getIdentifier().equals(status)) {
+                    vocabularyConcept.setAcceptedDate(new Date());
+                    return;
                 }
             }
         }
