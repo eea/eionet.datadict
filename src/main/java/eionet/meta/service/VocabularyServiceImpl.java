@@ -1701,7 +1701,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
         for (VocabularyConcept concept : concepts) {
             List<List<DataElement>> elems = concept.getElementAttributes();
             for (List<DataElement> elemMeta : elems) {
-                dataElementsIds.add(elemMeta.get(0).getId());
+                if (elemMeta.size()>0) dataElementsIds.add(elemMeta.get(0).getId());
             }
         }
 
@@ -1766,7 +1766,6 @@ public class VocabularyServiceImpl implements IVocabularyService {
     }
 
     @Override
-    @Transactional
     public void updateAcceptedNotAcceptedDate(VocabularyConcept vocabularyConcept) throws ServiceException {
         VocabularyConcept existingConcept = this.getVocabularyConcept(vocabularyConcept.getId());
 

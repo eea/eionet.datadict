@@ -331,13 +331,11 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
     public void markConceptsInvalid(List<Integer> ids) {
         StringBuffer sql = new StringBuffer();
         sql.append("update VOCABULARY_CONCEPT set STATUS = :invalid, STATUS_MODIFIED = now(), ");
-        sql.append("NOT_ACCEPTED_DATE = IF(NOT_ACCEPTED_DATE IS NULL OR ");
-        sql.append("(STATUS & :acceptedState) = :acceptedState, now(), NOT_ACCEPTED_DATE) ");
+        sql.append("NOT_ACCEPTED_DATE = now() ");
         sql.append("where VOCABULARY_CONCEPT_ID in (:ids) AND STATUS != :invalid");
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("ids", ids);
         parameters.put("invalid", StandardGenericStatus.INVALID.getValue());
-        parameters.put("acceptedState", StandardGenericStatus.ACCEPTED.getValue());
 
         getNamedParameterJdbcTemplate().update(sql.toString(), parameters);
     }
@@ -348,13 +346,11 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
     @Override
     public void markConceptsValid(List<Integer> ids) {
         StringBuffer sql = new StringBuffer();
-        sql.append("update VOCABULARY_CONCEPT set STATUS = :valid, STATUS_MODIFIED = now(), ACCEPTED_DATE = ");
-        sql.append("IF(ACCEPTED_DATE IS NULL OR (STATUS & :notAcceptedState) = :notAcceptedState, now(), ACCEPTED_DATE) ");
+        sql.append("update VOCABULARY_CONCEPT set STATUS = :valid, STATUS_MODIFIED = now(), ACCEPTED_DATE = now() ");
         sql.append("where VOCABULARY_CONCEPT_ID in (:ids) AND STATUS != :valid");
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("ids", ids);
         parameters.put("valid", StandardGenericStatus.VALID.getValue());
-        parameters.put("notAcceptedState", StandardGenericStatus.NOT_ACCEPTED.getValue());
 
         getNamedParameterJdbcTemplate().update(sql.toString(), parameters);
     }
