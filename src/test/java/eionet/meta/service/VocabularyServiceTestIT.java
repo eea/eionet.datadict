@@ -410,18 +410,12 @@ public class VocabularyServiceTestIT extends UnitilsJUnit4 {
         cal.setTimeInMillis(0);
         cal.set(2014, 8, 26);
         Date dStatusModified = cal.getTime();
-        cal.set(2014, 8, 27);
-        Date dNotAcceptedDate = cal.getTime();
-        cal.set(2014, 8, 28);
-        Date dAcceptedDate = cal.getTime();
 
         VocabularyConcept concept3 = new VocabularyConcept();
         concept3.setIdentifier("test3");
         concept3.setLabel("test3");
         concept3.setStatus(StandardGenericStatus.SUBMITTED);
         concept3.setStatusModified(dStatusModified);
-        concept3.setNotAcceptedDate(new java.sql.Date(dNotAcceptedDate.getTime()));
-        concept3.setAcceptedDate(new java.sql.Date(dAcceptedDate.getTime()));
 
         int id = vocabularyService.createVocabularyConcept(3, concept3);
         concept3.setId(id);
@@ -430,21 +424,13 @@ public class VocabularyServiceTestIT extends UnitilsJUnit4 {
         assertNotNull("Expected concept", result3);
         assertEquals("Status", StandardGenericStatus.SUBMITTED, result3.getStatus());
         assertEquals("Status Modified", dateFormatter.format(dStatusModified), dateFormatter.format(result3.getStatusModified()));
-        assertEquals("Not Accepted Date", dateFormatter.format(dNotAcceptedDate),
-                dateFormatter.format(result3.getNotAcceptedDate()));
-        assertEquals("Accepted Date", dateFormatter.format(dAcceptedDate), dateFormatter.format(result3.getAcceptedDate()));
+        assertEquals(dateFormatter.format(new Date()), dateFormatter.format(result3.getNotAcceptedDate()));
 
         // now test for update
         cal.set(2014, 8, 21);
         dStatusModified = new Date();
-        cal.set(2014, 8, 22);
-        dNotAcceptedDate = cal.getTime();
-        cal.set(2014, 8, 23);
-        dAcceptedDate = cal.getTime();
         concept3.setStatus(StandardGenericStatus.VALID);
         concept3.setStatusModified(dStatusModified);
-        concept3.setNotAcceptedDate(new java.sql.Date(dNotAcceptedDate.getTime()));
-        concept3.setAcceptedDate(new java.sql.Date(dAcceptedDate.getTime()));
         // update
         vocabularyService.updateVocabularyConcept(concept3);
         // query updated values
@@ -452,9 +438,7 @@ public class VocabularyServiceTestIT extends UnitilsJUnit4 {
         assertNotNull("Expected concept", result3);
         assertEquals("Status", StandardGenericStatus.VALID, result3.getStatus());
         assertEquals("Status Modified", dateFormatter.format(dStatusModified), dateFormatter.format(result3.getStatusModified()));
-        assertEquals("Not Accepted Date", dateFormatter.format(dNotAcceptedDate),
-                dateFormatter.format(result3.getNotAcceptedDate()));
-        assertEquals("Accepted Date", dateFormatter.format(dAcceptedDate), dateFormatter.format(result3.getAcceptedDate()));
+        assertEquals(dateFormatter.format(new Date()), dateFormatter.format(result3.getAcceptedDate()));
     }
 
     @Test
@@ -577,10 +561,10 @@ public class VocabularyServiceTestIT extends UnitilsJUnit4 {
         concept = vocabularyService.getVocabularyConcept(3, "concept1", true);
 
         assertEquals("Valid Concept", StandardGenericStatus.VALID, concept.getStatus());
-        assertNull("Not accepted date set", concept.getNotAcceptedDate());
-        java.sql.Date today = new java.sql.Date(System.currentTimeMillis());
+        Date today = new Date();
         String todayFormatted = dateFormatter.format(today);
-        assertEquals("Accepted date does not match", todayFormatted, dateFormatter.format(concept.getAcceptedDate()));
+        assertEquals(todayFormatted, dateFormatter.format(concept.getNotAcceptedDate()));
+        assertEquals(todayFormatted, dateFormatter.format(concept.getAcceptedDate()));
         assertEquals("Status modified date does not match", todayFormatted, dateFormatter.format(concept.getStatusModified()));
     }
 

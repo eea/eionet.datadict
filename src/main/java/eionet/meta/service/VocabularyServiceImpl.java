@@ -308,11 +308,28 @@ public class VocabularyServiceImpl implements IVocabularyService {
                 vocabularyConcept.setStatus(StandardGenericStatus.VALID);
                 vocabularyConcept.setAcceptedDate(new java.sql.Date(System.currentTimeMillis()));
                 vocabularyConcept.setStatusModified(new java.sql.Date(System.currentTimeMillis()));
+            } else {
+                setAcceptedNotAcceptedDateBasedOnStatus(vocabularyConcept);
             }
             return vocabularyConceptDAO.createVocabularyConcept(vocabularyFolderId, vocabularyConcept);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
             throw new ServiceException("Failed to create vocabulary concept: " + e.getMessage(), e);
+        }
+    }
+
+    private void setAcceptedNotAcceptedDateBasedOnStatus(VocabularyConcept vocabularyConcept) {
+        for (String status : Enumerations.StatusesForNotAcceptedDate.getEnumValues()) {
+            if (vocabularyConcept.getStatus().getIdentifier().equals(status)) {
+                vocabularyConcept.setNotAcceptedDate(new Date());
+                return;
+            }
+        }
+        for (String status : Enumerations.StatusesForAcceptedDate.getEnumValues()) {
+            if (vocabularyConcept.getStatus().getIdentifier().equals(status)) {
+                vocabularyConcept.setAcceptedDate(new Date());
+                return;
+            }
         }
     }
 
@@ -1822,18 +1839,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
             }
         }
         if (!existingConcept.getStatus().equals(vocabularyConcept.getStatus())) {
-            for (String status : Enumerations.StatusesForNotAcceptedDate.getEnumValues()) {
-                if (vocabularyConcept.getStatus().getIdentifier().equals(status)) {
-                    vocabularyConcept.setNotAcceptedDate(new Date());
-                    return;
-                }
-            }
-            for (String status : Enumerations.StatusesForAcceptedDate.getEnumValues()) {
-                if (vocabularyConcept.getStatus().getIdentifier().equals(status)) {
-                    vocabularyConcept.setAcceptedDate(new Date());
-                    return;
-                }
-            }
+            setAcceptedNotAcceptedDateBasedOnStatus(vocabularyConcept);
         }
     }
 }
