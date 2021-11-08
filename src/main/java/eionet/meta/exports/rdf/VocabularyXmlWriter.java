@@ -244,53 +244,53 @@ public class VocabularyXmlWriter {
         writer.writeEmptyElement(VocabularyOutputHelper.LinkedDataNamespaces.DCTERMS_NS, "isPartOf");
         writer.writeAttribute("rdf", VocabularyOutputHelper.LinkedDataNamespaces.RDF_NS, "resource", StringEncoder.encodeToIRI(folderContextRoot));
 
+        writer.writeCharacters("\n");
+        writer.writeStartElement("registrationStatus");
         if(vocabularyFolder.getRegStatus() != null) {
-            writer.writeCharacters("\n");
-            writer.writeStartElement("registrationStatus");
             writer.writeCharacters(vocabularyFolder.getRegStatus().getLabel());
-            writer.writeEndElement();
         }
+        writer.writeEndElement();
 
+        writer.writeCharacters("\n");
+        writer.writeStartElement("userModified");
         if(vocabularyFolder.getUserModified() != null) {
-            writer.writeCharacters("\n");
-            writer.writeStartElement("userModified");
             writer.writeCharacters(vocabularyFolder.getUserModified());
-            writer.writeEndElement();
         }
+        writer.writeEndElement();
 
+        writer.writeCharacters("\n");
+        writer.writeStartElement("dateModified");
         if(vocabularyFolder.getDateModified() != null) {
-            writer.writeCharacters("\n");
-            writer.writeStartElement("dateModified");
             writer.writeCharacters(vocabularyFolder.getDateModified().toString());
-            writer.writeEndElement();
         }
+        writer.writeEndElement();
 
+        writer.writeCharacters("\n");
+        writer.writeStartElement("vocabularyType");
         if(vocabularyFolder.getType() != null) {
-            writer.writeCharacters("\n");
-            writer.writeStartElement("vocabularyType");
             writer.writeCharacters(vocabularyFolder.getType().getLabel());
-            writer.writeEndElement();
         }
+        writer.writeEndElement();
 
+        writer.writeCharacters("\n");
+        writer.writeStartElement("version");
         if(vocabularyFolder.getAttributes() != null) {
             for (List<SimpleAttribute> attributeList : vocabularyFolder.getAttributes()) {
                 for (SimpleAttribute attribute : attributeList) {
                     if (attribute.getIdentifier().equals("Version")) {
-                        writer.writeCharacters("\n");
-                        writer.writeStartElement("version");
                         writer.writeCharacters(attribute.getValue());
-                        writer.writeEndElement();
                     }
                 }
             }
         }
+        writer.writeEndElement();
 
+        writer.writeCharacters("\n");
+        writer.writeStartElement("workingUser");
         if(vocabularyFolder.getWorkingUser() != null) {
-            writer.writeCharacters("\n");
-            writer.writeStartElement("workingUser");
             writer.writeCharacters(vocabularyFolder.getWorkingUser());
-            writer.writeEndElement();
         }
+        writer.writeEndElement();
 
         writer.writeCharacters("\n");
         writer.writeStartElement("isNumericConceptIdentifiers");
@@ -314,54 +314,54 @@ public class VocabularyXmlWriter {
             writer.writeAttribute("rdf", VocabularyOutputHelper.LinkedDataNamespaces.RDF_NS, "about",
                     StringEncoder.encodeToIRI(vocabularyContextRoot + vc.getIdentifier()));
 
+            writer.writeCharacters("\n");
+            writer.writeStartElement(VocabularyOutputHelper.LinkedDataNamespaces.SKOS_NS, "notation");
             if (StringUtils.isNotEmpty(vc.getNotation())) {
-                writer.writeCharacters("\n");
-                writer.writeStartElement(VocabularyOutputHelper.LinkedDataNamespaces.SKOS_NS, "notation");
                 writer.writeCharacters(vc.getNotation());
-                writer.writeEndElement();
             }
+            writer.writeEndElement();
 
             writer.writeCharacters("\n");
             writer.writeStartElement(VocabularyOutputHelper.LinkedDataNamespaces.SKOS_NS, "prefLabel");
             writer.writeCharacters(vc.getLabel());
             writer.writeEndElement();
 
+            writer.writeCharacters("\n");
+            writer.writeStartElement(VocabularyOutputHelper.LinkedDataNamespaces.SKOS_NS, "definition");
             if (StringUtils.isNotEmpty(vc.getDefinition())) {
-                writer.writeCharacters("\n");
-                writer.writeStartElement(VocabularyOutputHelper.LinkedDataNamespaces.SKOS_NS, "definition");
                 writer.writeCharacters(vc.getDefinition());
-                writer.writeEndElement();
             }
+            writer.writeEndElement();
 
             // Write concept status if it's not null;
             StandardGenericStatus conceptStatus = vc.getStatus();
+            writer.writeCharacters("\n");
+            writer.writeEmptyElement(VocabularyOutputHelper.LinkedDataNamespaces.ADMS_NS, "status");
             if (conceptStatus != null) {
-                writer.writeCharacters("\n");
-                writer.writeEmptyElement(VocabularyOutputHelper.LinkedDataNamespaces.ADMS_NS, "status");
                 writer.writeAttribute("rdf", VocabularyOutputHelper.LinkedDataNamespaces.RDF_NS, "resource",
                         StringEncoder.encodeToIRI(OWN_STATUS_VOCABULARY_URI + "/" + conceptStatus.getIdentifier()));
             }
 
+            writer.writeCharacters("\n");
+            writer.writeStartElement("statusModified");
             if (vc.getStatusModified() != null) {
-                writer.writeCharacters("\n");
-                writer.writeStartElement("statusModified");
                 writer.writeCharacters(vc.getStatusModified().toString());
-                writer.writeEndElement();
             }
+            writer.writeEndElement();
 
+            writer.writeCharacters("\n");
+            writer.writeStartElement("acceptedDate");
             if (vc.getAcceptedDate() != null) {
-                writer.writeCharacters("\n");
-                writer.writeStartElement("acceptedDate");
                 writer.writeCharacters(vc.getAcceptedDate().toString());
-                writer.writeEndElement();
             }
+            writer.writeEndElement();
 
+            writer.writeCharacters("\n");
+            writer.writeStartElement("notAcceptedDate");
             if (vc.getNotAcceptedDate() != null) {
-                writer.writeCharacters("\n");
-                writer.writeStartElement("notAcceptedDate");
                 writer.writeCharacters(vc.getNotAcceptedDate().toString());
-                writer.writeEndElement();
             }
+            writer.writeEndElement();
 
             writer.writeCharacters("\n");
             writer.writeEmptyElement(VocabularyOutputHelper.LinkedDataNamespaces.SKOS_NS, "inScheme");
