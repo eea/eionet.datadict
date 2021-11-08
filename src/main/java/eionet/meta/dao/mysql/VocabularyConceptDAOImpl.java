@@ -331,7 +331,8 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
     public void markConceptsInvalid(List<Integer> ids) {
         StringBuffer sql = new StringBuffer();
         sql.append("update VOCABULARY_CONCEPT set STATUS = :invalid, STATUS_MODIFIED = now(), ");
-        sql.append("NOT_ACCEPTED_DATE = now() ");
+        sql.append("NOT_ACCEPTED_DATE = now(), ");
+        sql.append("ACCEPTED_DATE = null ");
         sql.append("where VOCABULARY_CONCEPT_ID in (:ids) AND STATUS != :invalid");
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("ids", ids);
@@ -346,7 +347,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
     @Override
     public void markConceptsValid(List<Integer> ids) {
         StringBuffer sql = new StringBuffer();
-        sql.append("update VOCABULARY_CONCEPT set STATUS = :valid, STATUS_MODIFIED = now(), ACCEPTED_DATE = now() ");
+        sql.append("update VOCABULARY_CONCEPT set STATUS = :valid, STATUS_MODIFIED = now(), ACCEPTED_DATE = now(), NOT_ACCEPTED_DATE = null ");
         sql.append("where VOCABULARY_CONCEPT_ID in (:ids) AND STATUS != :valid");
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("ids", ids);

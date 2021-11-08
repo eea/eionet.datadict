@@ -322,13 +322,15 @@ public class VocabularyServiceImpl implements IVocabularyService {
         for (String status : Enumerations.StatusesForNotAcceptedDate.getEnumValues()) {
             if (vocabularyConcept.getStatus().getIdentifier().equals(status)) {
                 vocabularyConcept.setNotAcceptedDate(new Date());
-                return;
+                vocabularyConcept.setAcceptedDate(null);
+                break;
             }
         }
         for (String status : Enumerations.StatusesForAcceptedDate.getEnumValues()) {
             if (vocabularyConcept.getStatus().getIdentifier().equals(status)) {
                 vocabularyConcept.setAcceptedDate(new Date());
-                return;
+                vocabularyConcept.setNotAcceptedDate(null);
+                break;
             }
         }
     }
@@ -1817,9 +1819,11 @@ public class VocabularyServiceImpl implements IVocabularyService {
                                     if (existingElem.getRelatedConceptIdentifier()!=null && !existingElem.getRelatedConceptIdentifier().equals(relatedConcept.getIdentifier())) {
                                         if (relatedConcept.getIdentifier().equals(NOT_ACCEPTED_STATUS)) {
                                             vocabularyConcept.setNotAcceptedDate(new Date());
+                                            vocabularyConcept.setAcceptedDate(null);
                                             return;
                                         } else if (relatedConcept.getIdentifier().equals(ACCEPTED_STATUS)) {
                                             vocabularyConcept.setAcceptedDate(new Date());
+                                            vocabularyConcept.setNotAcceptedDate(null);
                                             return;
                                         }
                                     }
