@@ -213,7 +213,6 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
                         vocabularyFolder.isWorkingCopy());
         vocabularyConcept = vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), getConceptIdentifier(), true);
 
-
         validateView();
         initElemVocabularyNames();
         initBeans();

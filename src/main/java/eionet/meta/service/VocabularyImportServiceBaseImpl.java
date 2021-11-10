@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -144,10 +145,15 @@ public abstract class VocabularyImportServiceBaseImpl implements IVocabularyImpo
                 if (vocabularyConcept.getStatus() == null) {
                     vocabularyConcept.setStatus(StandardGenericStatus.VALID);
                     vocabularyConcept.setStatusModified(new java.sql.Date(System.currentTimeMillis()));
+                    vocabularyConcept.setAcceptedDate(new java.sql.Date(System.currentTimeMillis()));
                 }
                 vocabularyConcept.setVocabularyId(vocabularyId);
                 newConcepts.add(vocabularyConcept);
                 it.remove();
+            }
+
+            if (vocabularyConcept.getId() > 0) {
+                this.vocabularyService.updateAcceptedNotAcceptedDate(vocabularyConcept);
             }
         }
 
