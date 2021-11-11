@@ -1222,6 +1222,7 @@ public class RDFVocabularyImportServiceTestIT extends VocabularyImportServiceTes
 
         concepts.get(2).setStatus(StandardGenericStatus.DEPRECATED_RETIRED);
         concepts.get(2).setStatusModified(new Date(System.currentTimeMillis()));
+        concepts.get(2).setAcceptedDate(new Date(System.currentTimeMillis()));
         elems = VocabularyImportBaseHandler.getDataElementValuesByName("skos:related", concepts.get(2).getElementAttributes());
         elems.get(0).setRelatedConceptLabel("rdf_test_concept_label_2_updated");
 
