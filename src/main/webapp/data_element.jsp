@@ -2319,7 +2319,7 @@
                                                         <%
                                                             }
                                                         %>
-                                                            All valid concepts concepts from the vocabulary
+                                                            All valid concepts from the vocabulary
                                                             <a href="<%=vocabularyUri%>"><%=vocabulary.getLabel()%></a>
                                                             in the <em><%=vocabulary.getFolderName()%></em> set <br/> (Code = Notation)
                                                         <%
