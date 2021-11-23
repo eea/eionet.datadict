@@ -1025,6 +1025,20 @@ public class VocabularyFolderActionBeanTestIT extends DDDatabaseTestCase {
                 parser.nextToken(); // move to value
                 val = parser.getText();
                 Assert.assertEquals("IsNotationsEqualIdentifiers value", "false", val);
+                // move to Definition
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Definition", "Definition", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("Definition value", "null", val);
+                // move to Version
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Version", "Version", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("Version value", "null", val);
             }
             Assert.assertEquals(JsonToken.END_OBJECT, parser.nextToken()); // JsonToken.END_OBJECT
             // move to concepts array
@@ -1111,6 +1125,24 @@ public class VocabularyFolderActionBeanTestIT extends DDDatabaseTestCase {
                 parser.nextToken();
                 val = parser.getCurrentName();
                 Assert.assertEquals("Status", "Status", val);
+                parser.nextToken(); // move to value
+
+                // move to StatusModifiedDate
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("StatusModifiedDate", "StatusModifiedDate", val);
+                parser.nextToken(); // move to value
+
+                // move to AcceptedDate
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("AcceptedDate", "AcceptedDate", val);
+                parser.nextToken(); // move to value
+
+                // move to NotAcceptedDate
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("NotAcceptedDate", "NotAcceptedDate", val);
                 parser.nextToken(); // move to value
 
                 //Changes for #136471
@@ -1403,6 +1435,20 @@ public class VocabularyFolderActionBeanTestIT extends DDDatabaseTestCase {
                 parser.nextToken(); // move to value
                 val = parser.getText();
                 Assert.assertEquals("IsNotationsEqualIdentifiers value", "false", val);
+                // move to Definition
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Definition", "Definition", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("Definition value", "null", val);
+                // move to Version
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Version", "Version", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("Version value", "null", val);
             }
             Assert.assertEquals(JsonToken.END_OBJECT, parser.nextToken()); // JsonToken.END_OBJECT
             // move to concepts array
@@ -1490,6 +1536,23 @@ public class VocabularyFolderActionBeanTestIT extends DDDatabaseTestCase {
                 parser.nextToken();
                 val = parser.getCurrentName();
                 Assert.assertEquals("Status", "Status", val);
+                parser.nextToken(); // move to value
+                // move to StatusModifiedDate
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("StatusModifiedDate", "StatusModifiedDate", val);
+                parser.nextToken(); // move to value
+
+                // move to AcceptedDate
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("AcceptedDate", "AcceptedDate", val);
+                parser.nextToken(); // move to value
+
+                // move to NotAcceptedDate
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("NotAcceptedDate", "NotAcceptedDate", val);
                 parser.nextToken(); // move to value
 
                 //Changes for #136471
@@ -1748,6 +1811,20 @@ public class VocabularyFolderActionBeanTestIT extends DDDatabaseTestCase {
                 parser.nextToken(); // move to value
                 val = parser.getText();
                 Assert.assertEquals("IsNotationsEqualIdentifiers value", "false", val);
+                // move to Definition
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Definition", "Definition", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("Definition value", "null", val);
+                // move to Version
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Version", "Version", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("Version value", "null", val);
             }
             Assert.assertEquals(JsonToken.END_OBJECT, parser.nextToken()); // JsonToken.END_OBJECT
             // move to concepts array
@@ -1834,6 +1911,21 @@ public class VocabularyFolderActionBeanTestIT extends DDDatabaseTestCase {
                 parser.nextToken();
                 val = parser.getCurrentName();
                 Assert.assertEquals("Status", "Status", val);
+                parser.nextToken(); // move to value
+                // move to StatusModifiedDate
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("StatusModifiedDate", "StatusModifiedDate", val);
+                parser.nextToken(); // move to value
+                // move to AcceptedDate
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("AcceptedDate", "AcceptedDate", val);
+                parser.nextToken(); // move to value
+                // move to NotAcceptedDate
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("NotAcceptedDate", "NotAcceptedDate", val);
                 parser.nextToken(); // move to value
 
                 //Changes for #136471
@@ -2098,6 +2190,20 @@ public class VocabularyFolderActionBeanTestIT extends DDDatabaseTestCase {
                 parser.nextToken(); // move to value
                 val = parser.getText();
                 Assert.assertEquals("IsNotationsEqualIdentifiers value", "false", val);
+                // move to Definition
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Definition", "Definition", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("Definition value", "null", val);
+                // move to Version
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Version", "Version", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("Version value", "null", val);
             }
             Assert.assertEquals(JsonToken.END_OBJECT, parser.nextToken()); // JsonToken.END_OBJECT
             // move to concepts array
@@ -2186,6 +2292,21 @@ public class VocabularyFolderActionBeanTestIT extends DDDatabaseTestCase {
                 parser.nextToken();
                 val = parser.getCurrentName();
                 Assert.assertEquals("Status", "Status", val);
+                parser.nextToken(); // move to value
+                // move to StatusModifiedDate
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("StatusModifiedDate", "StatusModifiedDate", val);
+                parser.nextToken(); // move to value
+                // move to AcceptedDate
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("AcceptedDate", "AcceptedDate", val);
+                parser.nextToken(); // move to value
+                // move to NotAcceptedDate
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("NotAcceptedDate", "NotAcceptedDate", val);
                 parser.nextToken(); // move to value
 
                 //Changes for #136471
@@ -2432,6 +2553,20 @@ public class VocabularyFolderActionBeanTestIT extends DDDatabaseTestCase {
                 parser.nextToken(); // move to value
                 val = parser.getText();
                 Assert.assertEquals("IsNotationsEqualIdentifiers value", "false", val);
+                // move to Definition
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Definition", "Definition", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("Definition value", "null", val);
+                // move to Version
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Version", "Version", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("Version value", "null", val);
             }
             Assert.assertEquals(JsonToken.END_OBJECT, parser.nextToken()); // JsonToken.END_OBJECT
             // move to concepts array
@@ -2641,6 +2776,20 @@ public class VocabularyFolderActionBeanTestIT extends DDDatabaseTestCase {
                 parser.nextToken(); // move to value
                 val = parser.getText();
                 Assert.assertEquals("IsNotationsEqualIdentifiers value", "false", val);
+                // move to Definition
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Definition", "Definition", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("Definition value", "null", val);
+                // move to Version
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Version", "Version", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("Version value", "null", val);
             }
             Assert.assertEquals(JsonToken.END_OBJECT, parser.nextToken()); // JsonToken.END_OBJECT
             // move to concepts array
@@ -2727,6 +2876,21 @@ public class VocabularyFolderActionBeanTestIT extends DDDatabaseTestCase {
                 parser.nextToken();
                 val = parser.getCurrentName();
                 Assert.assertEquals("Status", "Status", val);
+                parser.nextToken(); // move to value
+                // move to StatusModifiedDate
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("StatusModifiedDate", "StatusModifiedDate", val);
+                parser.nextToken(); // move to value
+                // move to AcceptedDate
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("AcceptedDate", "AcceptedDate", val);
+                parser.nextToken(); // move to value
+                // move to NotAcceptedDate
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("NotAcceptedDate", "NotAcceptedDate", val);
                 parser.nextToken(); // move to value
 
                 //Changes for #136471
@@ -2979,6 +3143,20 @@ public class VocabularyFolderActionBeanTestIT extends DDDatabaseTestCase {
                 parser.nextToken(); // move to value
                 val = parser.getText();
                 Assert.assertEquals("IsNotationsEqualIdentifiers value", "false", val);
+                // move to Definition
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Definition", "Definition", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("Definition value", "null", val);
+                // move to Version
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("Version", "Version", val);
+                parser.nextToken(); // move to value
+                val = parser.getText();
+                Assert.assertEquals("Version value", "null", val);
             }
             Assert.assertEquals(JsonToken.END_OBJECT, parser.nextToken()); // JsonToken.END_OBJECT
             // move to concepts array
@@ -3065,6 +3243,21 @@ public class VocabularyFolderActionBeanTestIT extends DDDatabaseTestCase {
                 parser.nextToken();
                 val = parser.getCurrentName();
                 Assert.assertEquals("Status", "Status", val);
+                parser.nextToken(); // move to value
+                // move to StatusModifiedDate
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("StatusModifiedDate", "StatusModifiedDate", val);
+                parser.nextToken(); // move to value
+                // move to AcceptedDate
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("AcceptedDate", "AcceptedDate", val);
+                parser.nextToken(); // move to value
+                // move to NotAcceptedDate
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("NotAcceptedDate", "NotAcceptedDate", val);
                 parser.nextToken(); // move to value
 
                 if (broaders[i].length > 0) {
