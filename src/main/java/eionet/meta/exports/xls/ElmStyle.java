@@ -3,6 +3,8 @@ package eionet.meta.exports.xls;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
 
 public class ElmStyle {
 
@@ -15,11 +17,10 @@ public class ElmStyle {
         HSSFFont font = wb.createFont();
         font.setFontName(HSSFFont.FONT_ARIAL);
         font.setFontHeightInPoints((short)FONT_HEIGHT);
-        //font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
 
         style.setFont(font);
-        style.setAlignment(HSSFCellStyle.ALIGN_LEFT);
-        style.setBorderBottom(HSSFCellStyle.BORDER_MEDIUM);
+        style.setAlignment(HorizontalAlignment.LEFT);
+        style.setBorderBottom(BorderStyle.MEDIUM);
 
         return style.getIndex();
     }
