@@ -88,7 +88,7 @@
                     <images>
                         <image>
                             <alias>mysql</alias>
-                            <name>mysql:5.5</name>
+                            <name>mysql:5.7</name>
                             <run>
                                 <ports>
                                     <port>mysql.port:3306</port>
@@ -793,7 +793,7 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.31</version>
+            <version>8.0.16</version>
             <!--<scope>compile</scope>-->
         </dependency>
 
