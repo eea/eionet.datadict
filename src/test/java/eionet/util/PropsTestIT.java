@@ -20,7 +20,7 @@ public class PropsTestIT extends TestCase {
      */
     @Test
     public void test_getProperty() {
-        assertEquals("com.mysql.jdbc.Driver", Props.getProperty(PropsIF.DBDRV));
+        assertEquals("com.mysql.cj.jdbc.Driver", Props.getProperty(PropsIF.DBDRV));
         assertEquals(0, Props.getIntProperty("arbitrary"));
     }
 
