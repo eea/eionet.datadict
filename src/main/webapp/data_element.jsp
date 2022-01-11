@@ -6,6 +6,7 @@
 <%@page import="eionet.meta.dao.domain.InferenceRule"%>
 <%@page import="eionet.meta.notif.Subscriber"%>
 <%@page contentType="text/html;charset=UTF-8" import="java.net.URLEncoder,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.meta.dao.domain.VocabularyFolder,eionet.util.*,eionet.util.sql.ConnectionUtil,java.io.*,javax.servlet.http.HttpUtils"%>
+<%@ page import="org.apache.commons.lang3.StringEscapeUtils" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="stripes" uri="http://stripes.sourceforge.net/stripes.tld"%>
 <%@ include file="/pages/common/taglibs.jsp"%>
@@ -239,7 +240,7 @@
         // - ds_id
         // - table_id
         // - type (indicates whether element is fixed values or quantitative)
-        mode = request.getParameter("mode");
+        mode = StringEscapeUtils.escapeHtml4(request.getParameter("mode"));
         String delem_id = request.getParameter("delem_id");
         String delem_name = request.getParameter("delem_name");
         String copy_elem_id = request.getParameter("copy_elem_id");
