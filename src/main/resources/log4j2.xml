@@ -1,4 +1,8 @@
 <Configuration>
+    <Properties>
+        <Property name="basePath">/opt/datadict/logs</Property>
+    </Properties>
+
     <Appenders>
         <Console name="console">
             <PatternLayout>
@@ -7,16 +11,45 @@
         </Console>
         <!-- Configure the Sentry appender, overriding the logging threshold to the WARN level -->
         <Sentry name="Sentry" />
+
+        <RollingFile name="fileLogger"
+                     fileName="${basePath}/datadictLogs.log"
+                     filePattern="${basePath}/datadictLogs_%d{yyyy-MM-dd}.log"
+                     ignoreExceptions="false">
+
+            <PatternLayout>
+                <pattern>%d{yyyy-MMM-dd HH:mm:ss.SSS} %5p [%50.50c] : %M - %m%n
+                </pattern>
+            </PatternLayout>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="1"
+                                           modulate="true" />
+                <SizeBasedTriggeringPolicy size="100 MB" />
+            </Policies>
+        </RollingFile>
     </Appenders>
     <Loggers>
-        <logger name="eionet" level="debug"/>
-        <logger name="eionet.meta.DDSearchEngine" level="info"/>
-        <logger name="org.apache" level="info"/>
-        <logger name="org.springframework" level="warn"/>
-        <logger name="org.displaytag" level="warn"/>
-        <logger name="net.sourceforge.stripes" level="warn"/>
+        <logger name="eionet" level="debug">
+            <appender-ref ref="fileLogger" level="debug" />
+        </logger>
+        <logger name="eionet.meta.DDSearchEngine" level="info">
+            <appender-ref ref="fileLogger" level="info" />
+        </logger>
+        <logger name="org.apache" level="info">
+            <appender-ref ref="fileLogger" level="warn" />
+        </logger>
+        <logger name="org.springframework" level="warn">
+            <appender-ref ref="fileLogger" level="warn" />
+        </logger>
+        <logger name="org.displaytag" level="warn">
+            <appender-ref ref="fileLogger" level="warn" />
+        </logger>
+        <logger name="net.sourceforge.stripes" level="warn">
+            <appender-ref ref="fileLogger" level="warn" />
+        </logger>
         <Root level="info">
             <AppenderRef ref="console" />
+            <appender-ref ref="fileLogger" level="warn" />
             <AppenderRef ref="Sentry" level="warn" />
         </Root>
     </Loggers>
