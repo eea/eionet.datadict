@@ -1,6 +1,6 @@
 <Configuration>
     <Properties>
-        <Property name="basePath">/opt/datadict/logs</Property>
+        <Property name="basePath">${env:logFilePath}/logs</Property>
     </Properties>
 
     <Appenders>
@@ -14,7 +14,7 @@
 
         <RollingFile name="fileLogger"
                      fileName="${basePath}/datadictLogs.log"
-                     filePattern="${basePath}/datadictLogs_%d{yyyy-MM-dd}.log"
+                     filePattern="${basePath}/datadictLogs_%d{yyyy-MM-dd}-%i.log.gz"
                      ignoreExceptions="false">
 
             <PatternLayout>
@@ -22,9 +22,8 @@
                 </pattern>
             </PatternLayout>
             <Policies>
-                <TimeBasedTriggeringPolicy interval="1"
-                                           modulate="true" />
-                <SizeBasedTriggeringPolicy size="100 MB" />
+                <TimeBasedTriggeringPolicy interval="1"/>
+                <SizeBasedTriggeringPolicy size="5000KB" />
             </Policies>
         </RollingFile>
     </Appenders>
@@ -49,7 +48,7 @@
         </logger>
         <Root level="info">
             <AppenderRef ref="console" />
-            <appender-ref ref="fileLogger" level="warn" />
+            <appender-ref ref="fileLogger" level="info" />
             <AppenderRef ref="Sentry" level="warn" />
         </Root>
     </Loggers>
