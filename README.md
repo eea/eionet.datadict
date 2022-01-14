@@ -74,6 +74,8 @@ the specific values for your environment. Set these variables for your local tom
 
 Alternatively you can copy the default.properties file and create a local.properties file for development purposes.
 
+Add an environmental variable in tomcat with name logFilePath and value a path to a folder where log files will be stored. This variable is used in log4j2.xml
+
 ##### 3. Deploy on tomcat
 
 Place the resulting $CHECKOUT_HOME/target/datadict.war into Tomcat's webapps directory, and start Tomcat.
