@@ -360,9 +360,10 @@ public final class VocabularyJSONOutputHelper {
                     List<DataElement> dataElementValuesByName =
                             VocabularyOutputHelper.getDataElementValuesByName(DATA_ELEM_MAP.get(shortDataElemIdentifier),
                                     concept.getElementAttributes());
+                    // start writing element names
+                    generator.writeArrayFieldStart(shortDataElemIdentifier);
                     if (dataElementValuesByName != null && dataElementValuesByName.size() > 0) {
                         // start writing element values
-                        generator.writeArrayFieldStart(shortDataElemIdentifier);
                         for (DataElement elem : dataElementValuesByName) {
                             generator.writeStartObject();
                             {
@@ -370,9 +371,9 @@ public final class VocabularyJSONOutputHelper {
                             }
                             generator.writeEndObject();
                         }
-                        // end writing element values
-                        generator.writeEndArray();
                     }
+                    // end writing element
+                    generator.writeEndArray();
                 }
 
                 //write attribute elements values
