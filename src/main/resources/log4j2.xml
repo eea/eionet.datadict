@@ -18,8 +18,7 @@
                      ignoreExceptions="false">
 
             <PatternLayout>
-                <pattern>%d{yyyy-MMM-dd HH:mm:ss.SSS} %5p [%50.50c] : %M - %m%n
-                </pattern>
+                <pattern>[%d] - [%p] [%c:%L] : %m%n</pattern>
             </PatternLayout>
             <Policies>
                 <TimeBasedTriggeringPolicy interval="1"/>
