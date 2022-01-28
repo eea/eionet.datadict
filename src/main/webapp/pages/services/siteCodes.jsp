@@ -265,36 +265,37 @@
 
         <%-- Site codes table --%>
         <c:if test="${actionBean.context.eventName == 'search'}">
-        <c:set var="exporttext"><div class="exportlinks"> Download all results as: {0} </div></c:set>
-        <display:table name="actionBean.siteCodeResult" class="datatable results" id="siteCode" style="width:100%" requestURI="/services/siteCodes/search" export="true">
-            <display:setProperty name="basic.msg.empty_list" value="<p class='not-found'>No site codes found.</p>" />
+            <%-- Site codes search results and export option --%>
+            <stripes:form method="get" id="exportSiteCodesCSV" beanclass="${actionBean['class'].name}" action="/services/siteCodes/exportToCsv">
+                <input type="hidden" id="selectedCountryCode" name="selectedCountryCode" value="${actionBean.selectedCountryCode}">
+                <input type="hidden" id="selectedStatus" name="selectedStatus" value="${actionBean.selectedStatus}">
+                <input type="hidden" id="selectedSiteCode" name="selectedSiteCode" value="${actionBean.selectedSiteCode}">
+                <input type="hidden" id="selectedSiteName" name="selectedSiteName" value="${actionBean.selectedSiteName}">
 
-            <display:column title="Site code" class="number" sortable="true" sortProperty="identifier">
-                <stripes:link href="/vocabularyconcept/cdda/cddasites/${siteCode.identifier}/view" title="${siteCode.identifier}">
-                    <stripes:param name="facet" value="HTML Representation"/> <!-- Discourage people from copy-paste of the link -->
-                    <dd:attributeValue attrValue="${siteCode.identifier}"/>
-                </stripes:link>
-            </display:column>
-            <display:column title="Site name" escapeXml="true" property="label" sortable="true" sortProperty="label" />
-            <display:column title="Status" sortable="true" sortProperty="status">
-                <c:out value="${siteCode.siteCodeStatus.label}" />
-            </display:column>
-            <display:column title="Country" escapeXml="true" property="countryCode" sortable="true" sortProperty="cc_iso2" />
-            <display:column title="Allocated" sortable="true" sortProperty="date_allocated">
-                <fmt:formatDate value="${siteCode.dateAllocated}" pattern="yyyy-MM-dd HH:mm:ss" />
-            </display:column>
-            <display:column title="User" escapeXml="true" property="userAllocated" sortable="true" sortProperty="user_allocated" />
-            <c:if test="${actionBean.filter.status == actionBean.allocatedStatus}">
-                <display:column title="Preliminary site name/identifier" escapeXml="true" property="initialSiteName" sortable="true" sortProperty="initial_site_name" />
-            </c:if>
-            <display:setProperty name="export.banner" value="${exporttext}"/>
-            <display:setProperty name="export.excel.filename" value="CDDASiteCodes.xls"/>
-            <display:setProperty name="export.excel" value="false" />
-            <display:setProperty name="export.csv.filename" value="CDDASiteCodes.csv"/>
-            <display:setProperty name="export.csv" value="true" />
-            <display:setProperty name="export.csv.include_header" value="true" />
-            <display:setProperty name="export.xml" value="false" />
-        </display:table>
+                <display:table name="actionBean.siteCodeResult" class="datatable results" id="siteCode" style="width:100%" requestURI="/services/siteCodes/search">
+                    <display:setProperty name="basic.msg.empty_list" value="<p class='not-found'>No site codes found.</p>" />
+
+                    <display:column title="Site code" class="number" sortable="true" sortProperty="identifier">
+                        <stripes:link href="/vocabularyconcept/cdda/cddasites/${siteCode.identifier}/view" title="${siteCode.identifier}">
+                            <stripes:param name="facet" value="HTML Representation"/> <!-- Discourage people from copy-paste of the link -->
+                            <dd:attributeValue attrValue="${siteCode.identifier}"/>
+                        </stripes:link>
+                    </display:column>
+                    <display:column title="Site name" escapeXml="true" property="label" sortable="true" sortProperty="label" />
+                    <display:column title="Status" sortable="true" sortProperty="status">
+                        <c:out value="${siteCode.siteCodeStatus.label}" />
+                    </display:column>
+                    <display:column title="Country" escapeXml="true" property="countryCode" sortable="true" sortProperty="cc_iso2" />
+                    <display:column title="Allocated" sortable="true" sortProperty="date_allocated">
+                        <fmt:formatDate value="${siteCode.dateAllocated}" pattern="yyyy-MM-dd HH:mm:ss" />
+                    </display:column>
+                    <display:column title="User" escapeXml="true" property="userAllocated" sortable="true" sortProperty="user_allocated" />
+                    <c:if test="${actionBean.filter.status == actionBean.allocatedStatus}">
+                        <display:column title="Preliminary site name/identifier" escapeXml="true" property="initialSiteName" sortable="true" sortProperty="initial_site_name" />
+                    </c:if>
+                </display:table>
+                <stripes:submit name="export" value="Download all results as: CSV"/>
+            </stripes:form>
         </c:if>
         <%-- Site codes allocation popup --%>
         <div id="allocateSiteCodesDiv" title="Allocate site codes">
