@@ -45,7 +45,7 @@ public enum SiteCodeStatus {
     /**
      * Class constructor.
      *
-     * @param name
+     * @param label
      */
     private SiteCodeStatus(String label) {
         this.label = label;

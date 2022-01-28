@@ -29,6 +29,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import eionet.meta.service.data.SiteCode;
+import eionet.meta.service.data.SiteCodeResult;
 import org.apache.commons.lang.StringUtils;
 
 import au.com.bytecode.opencsv.CSVWriter;
@@ -71,6 +73,48 @@ public final class VocabularyCSVOutputHelper {
      * index of end date in header list.
      */
     public static final int ACCEPTED_DATE_INDEX = 5;
+
+    /* cdda related values*/
+
+    /**
+     * how many values are taken from cdda
+     */
+    public static int SC_ENTRIES_COUNT = 6;
+
+    /**
+     * index of site code in cdda header list.
+     */
+    public static final int SC_SITE_CODE_INDEX = 0;
+
+    /**
+     * index of site name in cdda header list.
+     */
+    public static final int SC_SITE_NAME_INDEX = 1;
+
+    /**
+     * index of status in site code header list.
+     */
+    public static final int SC_STATUS_INDEX = 2;
+
+    /**
+     * index of country in cdda header list.
+     */
+    public static final int SC_COUNTRY_INDEX = 3;
+
+    /**
+     * index of allocated date in cdda header list.
+     */
+    public static final int SC_ALLOCATED_INDEX = 4;
+
+    /**
+     * index of user in cdda header list.
+     */
+    public static final int SC_USER_INDEX = 5;
+
+    /**
+     * index of preliminary site name in cdda header list.
+     */
+    public static final int SC_PRELIMINARY_SITE_NAME_INDEX = 6;
 
 
     /**
@@ -173,6 +217,48 @@ public final class VocabularyCSVOutputHelper {
     }
 
     /**
+     * Writes CSV to output stream.
+     *
+     * @param out               outputstream
+     * @param siteCodeResult    the site code search result
+     * @throws IOException if error in I/O
+     */
+    public static void writeSiteCodeServiceCSV(OutputStream out, SiteCodeResult siteCodeResult, Boolean usePreliminarySiteName) throws IOException {
+
+        if(usePreliminarySiteName){
+            SC_ENTRIES_COUNT++;
+        }
+
+        List<SiteCode> siteCodeEntries = siteCodeResult.getList();
+        String[] entries = new String[SC_ENTRIES_COUNT];
+        addSiteCodeFixedEntryHeaders(entries, usePreliminarySiteName);
+
+        OutputStreamWriter osw = new OutputStreamWriter(out, "UTF-8");
+        addBOM(out);
+        CSVWriter writer = new CSVWriter(osw, ',', CSVWriter.DEFAULT_QUOTE_CHARACTER, CSVWriter.DEFAULT_ESCAPE_CHARACTER, "\r\n");
+        writer.writeNext(entries);
+
+        DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        for (SiteCode sc : siteCodeEntries) {
+            // add rows with values
+            entries = new String[SC_ENTRIES_COUNT];
+            entries[SC_SITE_CODE_INDEX] = sc.getIdentifier();
+            entries[SC_SITE_NAME_INDEX] = sc.getLabel();
+            entries[SC_STATUS_INDEX] = sc.getSiteCodeStatus() != null ? sc.getSiteCodeStatus().getLabel() : "";
+            entries[SC_COUNTRY_INDEX] = sc.getCountryCode();
+            entries[SC_ALLOCATED_INDEX] = sc.getDateAllocated() != null ? dateFormatter.format(sc.getDateAllocated()) : "";
+            entries[SC_USER_INDEX] = sc.getUserAllocated();
+            if(usePreliminarySiteName){
+                entries[SC_PRELIMINARY_SITE_NAME_INDEX] = sc.getInitialSiteName();
+            }
+            writer.writeNext(entries);
+        }
+        writer.close();
+        osw.close();
+    }
+
+    /**
      * Writes utf-8 BOM in the given writer.
      *
      * @param out current outputstream
@@ -197,6 +283,23 @@ public final class VocabularyCSVOutputHelper {
         entries[NOTATION_INDEX] = "Notation";
         entries[STATUS_INDEX] = "Status";
         entries[ACCEPTED_DATE_INDEX] = "AcceptedDate";
+    }
+
+    /**
+     * Adds pre-defined entries to the array.
+     *
+     * @param entries array for CSV output
+     */
+    public static void addSiteCodeFixedEntryHeaders(String[] entries, Boolean usePreliminarySiteName) {
+        entries[SC_SITE_CODE_INDEX] = "Site code";
+        entries[SC_SITE_NAME_INDEX] = "Site name";
+        entries[SC_STATUS_INDEX] = "Status";
+        entries[SC_COUNTRY_INDEX] = "Country";
+        entries[SC_ALLOCATED_INDEX] = "Allocated";
+        entries[SC_USER_INDEX] = "User";
+        if(usePreliminarySiteName){
+            entries[SC_PRELIMINARY_SITE_NAME_INDEX] = "Preliminary site name/identifier";
+        }
     }
 
 }
