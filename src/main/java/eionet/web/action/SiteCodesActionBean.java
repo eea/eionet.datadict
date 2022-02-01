@@ -27,11 +27,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import net.sourceforge.stripes.action.DefaultHandler;
-import net.sourceforge.stripes.action.ForwardResolution;
-import net.sourceforge.stripes.action.RedirectResolution;
-import net.sourceforge.stripes.action.Resolution;
-import net.sourceforge.stripes.action.UrlBinding;
+import eionet.util.VocabularyCSVOutputHelper;
+import net.sourceforge.stripes.action.*;
 import net.sourceforge.stripes.integration.spring.SpringBean;
 import net.sourceforge.stripes.validation.ValidationMethod;
 
@@ -56,6 +53,8 @@ import eionet.meta.service.data.SiteCodeResult;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.SecurityUtil;
+
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Site codes controller.
@@ -160,6 +159,20 @@ public class SiteCodesActionBean extends AbstractActionBean {
     /** Make the enum value visible for jsp. */
     private String allocatedStatus = SiteCodeStatus.ALLOCATED.toString();
 
+    private Boolean usePreliminarySiteName;
+
+    /* selected country code from search*/
+    private String selectedCountryCode;
+
+    /* selected status from search*/
+    private String selectedStatus;
+
+    /* selected site code from search*/
+    private String selectedSiteCode;
+
+    /* selected site name from search*/
+    private String selectedSiteName;
+
     /**
      * View site codes action.
      *
@@ -182,16 +195,54 @@ public class SiteCodesActionBean extends AbstractActionBean {
     public Resolution search() throws ServiceException {
         initFormData();
 
-        // detect if it is a export request, don't use paging in this case.
-        String exportTypeStr =
-                getContext().getRequest().getParameter((new ParamEncoder("siteCode").encodeParameterName(TableTagParameters.PARAMETER_EXPORTTYPE)));
-        if (String.valueOf(MediaTypeEnum.CSV.getCode()).equals(exportTypeStr)
-                || String.valueOf(MediaTypeEnum.EXCEL.getCode()).equals(exportTypeStr)) {
-            filter.setUsePaging(false);
-        }
         siteCodeResult = siteCodeService.searchSiteCodes(filter);
+
         unallocatedSiteCodes = siteCodeService.getFeeSiteCodeAmount();
+        selectedCountryCode = filter.getCountryCode();
+        if(filter.getStatus() != null){
+            selectedStatus = filter.getStatus().getLabel();
+        }
+        selectedSiteCode = filter.getIdentifier();
+        selectedSiteName = filter.getSiteName();
+
         return new ForwardResolution(VIEW_SITE_CODES_JSP);
+    }
+
+    /**
+     * Search action.
+     *
+     * @return
+     * @throws ServiceException
+     */
+    public Resolution exportToCsv() throws ServiceException {
+        initFormData();
+
+        //set up filter
+        filter.setUsePaging(false);
+        filter.setCountryCode(this.getSelectedCountryCode());
+        if(this.getSelectedStatus() != null){
+            filter.setStatus(SiteCodeStatus.valueOf(StringUtils.upperCase(this.getSelectedStatus())));
+        }
+        filter.setIdentifier(this.getSelectedSiteCode());
+        filter.setSiteName(this.getSelectedSiteName());
+
+        unallocatedSiteCodes = siteCodeService.getFeeSiteCodeAmount();
+
+        siteCodeResult = siteCodeService.searchSiteCodes(filter);
+        usePreliminarySiteName = false;
+        /* if selected status is allocated or all */
+        if((filter.getStatus() == null) || (filter.getStatus() != null && filter.getStatus().equals(SiteCodeStatus.ALLOCATED.getLabel()))){
+            usePreliminarySiteName = true;
+        }
+        //export siteCodeResult to CSV
+        StreamingResolution result = new StreamingResolution("text/csv") {
+            @Override
+            public void stream(HttpServletResponse response) throws Exception {
+                VocabularyCSVOutputHelper.writeSiteCodeServiceCSV(response.getOutputStream(), siteCodeResult, usePreliminarySiteName);
+            }
+        };
+        result.setFilename("CDDASiteCodes.csv");
+        return result;
     }
 
     /**
@@ -818,5 +869,37 @@ public class SiteCodesActionBean extends AbstractActionBean {
     /** Returns the maximum amount of codes allowed to allocate without site names to one country. */
     public int getMaxAllocateAmountWithoutNames() {
         return MAX_ALLOCATE_AMOUNT_WITHOUT_NAMES;
+    }
+
+    public String getSelectedCountryCode() {
+        return selectedCountryCode;
+    }
+
+    public void setSelectedCountryCode(String selectedCountryCode) {
+        this.selectedCountryCode = selectedCountryCode;
+    }
+
+    public String getSelectedStatus() {
+        return selectedStatus;
+    }
+
+    public void setSelectedStatus(String selectedStatus) {
+        this.selectedStatus = selectedStatus;
+    }
+
+    public String getSelectedSiteCode() {
+        return selectedSiteCode;
+    }
+
+    public void setSelectedSiteCode(String selectedSiteCode) {
+        this.selectedSiteCode = selectedSiteCode;
+    }
+
+    public String getSelectedSiteName() {
+        return selectedSiteName;
+    }
+
+    public void setSelectedSiteName(String selectedSiteName) {
+        this.selectedSiteName = selectedSiteName;
     }
 }
