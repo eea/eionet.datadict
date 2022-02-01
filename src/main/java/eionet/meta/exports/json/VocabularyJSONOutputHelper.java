@@ -210,32 +210,53 @@ public final class VocabularyJSONOutputHelper {
             if(vocabulary.getRegStatus() != null){
                 generator.writeStringField("RegistrationStatus", vocabulary.getRegStatus().getLabel());
             }
+            else{
+                generator.writeStringField("RegistrationStatus", null);
+            }
+
             generator.writeStringField("IsWorkingCopy", String.valueOf(vocabulary.isWorkingCopy()));
             generator.writeStringField("CheckedOutCopyId", String.valueOf(vocabulary.getCheckedOutCopyId()));
             generator.writeStringField("WorkingUser", vocabulary.getWorkingUser());
             if(vocabulary.getDateModified() != null){
                 generator.writeStringField("DateModified", vocabulary.getDateModified().toString());
             }
+            else{
+                generator.writeStringField("DateModified", null);
+            }
             generator.writeStringField("UserModified", vocabulary.getUserModified());
             generator.writeStringField("IsNumericConceptIdentifiers", String.valueOf(vocabulary.isNumericConceptIdentifiers()));
             if(vocabulary.getType() != null){
                 generator.writeStringField("VocabularyType", vocabulary.getType().getLabel());
             }
+            else{
+                generator.writeStringField("VocabularyType", null);
+            }
+
             generator.writeStringField("FolderId", String.valueOf(vocabulary.getFolderId()));
             generator.writeStringField("FolderName", vocabulary.getFolderName());
             generator.writeStringField("FolderLabel", vocabulary.getFolderLabel());
             generator.writeStringField("IsNotationsEqualIdentifiers", String.valueOf(vocabulary.isNotationsEqualIdentifiers()));
 
+            Boolean foundDefinition = false;
+            Boolean foundVersion = false;
             if(vocabulary.getAttributes() != null) {
                 for (List<SimpleAttribute> attributeList : vocabulary.getAttributes()) {
                     for (SimpleAttribute attribute : attributeList) {
-                        if (attribute.getIdentifier().equals("Definition")) {
+                        if (attribute.getIdentifier().equals("Definition") && attribute.getValue() != null) {
                             generator.writeStringField("Definition", String.valueOf(attribute.getValue()));
-                        } else if (attribute.getIdentifier().equals("Version")) {
+                            foundDefinition = true;
+                        } else if (attribute.getIdentifier().equals("Version") && attribute.getValue() != null) {
                             generator.writeStringField("Version", String.valueOf(attribute.getValue()));
+                            foundVersion = true;
                         }
                     }
                 }
+            }
+            if (!foundDefinition){
+                generator.writeStringField("Definition", null);
+            }
+            if (!foundVersion){
+                generator.writeStringField("Version", null);
             }
         }
         generator.writeEndObject();
@@ -307,17 +328,30 @@ public final class VocabularyJSONOutputHelper {
                 generator.writeStringField("Label", concept.getLabel());
                 generator.writeStringField("Definition", concept.getDefinition());
                 generator.writeStringField("Notation", concept.getNotation());
+
                 if(concept.getStatus() != null){
                     generator.writeStringField("Status", concept.getStatus().getLabel());
+                }
+                else{
+                    generator.writeStringField("Status", null);
                 }
                 if(concept.getStatusModified() != null){
                     generator.writeStringField("StatusModifiedDate", concept.getStatusModified().toString());
                 }
+                else{
+                    generator.writeStringField("StatusModifiedDate", null);
+                }
                 if(concept.getAcceptedDate() != null){
                     generator.writeStringField("AcceptedDate", concept.getAcceptedDate().toString());
                 }
+                else{
+                    generator.writeStringField("AcceptedDate", null);
+                }
                 if(concept.getNotAcceptedDate() != null){
                     generator.writeStringField("NotAcceptedDate", concept.getNotAcceptedDate().toString());
+                }
+                else{
+                    generator.writeStringField("NotAcceptedDate", null);
                 }
 
                 // write data elements

@@ -12,6 +12,7 @@ import eionet.meta.service.DataElementsService;
 import org.apache.commons.lang.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -49,8 +50,8 @@ public class DataElementsServiceImpl implements DataElementsService {
         
         return ownerElement;
     }
-    
-    private void checkEditability(AppContextProvider contextProvider, DataElement dataElement) 
+
+    private void checkEditability(AppContextProvider contextProvider, DataElement dataElement)
             throws ConflictException, UserAuthorizationException {
         boolean workingCopy;
         String workingUser;
@@ -78,6 +79,12 @@ public class DataElementsServiceImpl implements DataElementsService {
         if (!ObjectUtils.equals(workingUser, contextProvider.getUserName())) {
             throw new UserAuthorizationException();
         }
+    }
+
+    @Override
+    @Transactional
+    public void deleteVocabularyConceptDataElementValues(int vocabularyConceptId, int dataElementId) {
+        dataElementDao.deleteVocabularyConceptDataElementValues(vocabularyConceptId, dataElementId);
     }
     
 }

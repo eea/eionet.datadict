@@ -989,4 +989,23 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
         getNamedParameterJdbcTemplate().update(sql.toString(), parameters);
     }
 
+    @Override
+    public Boolean isVocabularyBoundToElement(Integer vocabularyId){
+        String sql = "select count(*) from DATAELEM de where de.VOCABULARY_ID = :vocabularyId";
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("vocabularyId", vocabularyId);
+
+        int count = this.getNamedParameterJdbcTemplate().queryForObject(sql, params,Integer.class);
+
+        return count > 0;
+    }
+
+    @Override
+    public Integer getWorkingCopyByVocabularyId(Integer vocabularyId) {
+        String sql = "select CHECKEDOUT_COPY_ID from VOCABULARY where VOCABULARY_ID = :vocabularyId";
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("vocabularyId", vocabularyId);
+        return getNamedParameterJdbcTemplate().queryForObject(sql, params, Integer.class);
+    }
+
 }

@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import eionet.datadict.model.enums.Enumerations;
 import net.sourceforge.stripes.util.StringUtil;
 
 import org.apache.commons.lang.StringUtils;
@@ -754,6 +755,12 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
                     StandardGenericStatus statusValue = StandardGenericStatus.fromIdentifier(statusIdentifier);
                     if (statusValue != null) {
                         concept.setStatus(statusValue);
+                        for (String s : Enumerations.StatusesForNotAcceptedDate.getEnumValues()) {
+                            if (concept.getStatus().getIdentifier().equals(s)) {
+                                concept.setNotAcceptedDate(new Date(System.currentTimeMillis()));
+                                concept.setAcceptedDate(null);
+                            }
+                        }
                     }
                 }
             }

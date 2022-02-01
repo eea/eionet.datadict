@@ -21,48 +21,31 @@
 
 package eionet.meta.service;
 
-import java.util.*;
-
-import eionet.datadict.model.Vocabulary;
+import eionet.datadict.errors.ConceptWithoutNotationException;
+import eionet.datadict.model.enums.Enumerations;
+import eionet.meta.DElemAttribute;
+import eionet.meta.DElemAttribute.ParentType;
+import eionet.meta.dao.*;
 import eionet.meta.dao.domain.*;
+import eionet.meta.service.data.*;
+import eionet.util.*;
+import eionet.web.action.ErrorActionBean;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import eionet.meta.DElemAttribute;
-import eionet.meta.DElemAttribute.ParentType;
-import eionet.meta.dao.DAOException;
-import eionet.meta.dao.IAttributeDAO;
-import eionet.meta.dao.IDataElementDAO;
-import eionet.meta.dao.IFolderDAO;
-import eionet.meta.dao.IRdfNamespaceDAO;
-import eionet.meta.dao.ISiteCodeDAO;
-import eionet.meta.dao.IVocabularyConceptDAO;
-import eionet.meta.dao.IVocabularyFolderDAO;
-import eionet.meta.service.data.VocabularyConceptBoundElementFilter;
-import eionet.meta.service.data.VocabularyConceptData;
-import eionet.meta.service.data.VocabularyConceptFilter;
-import eionet.meta.service.data.VocabularyConceptResult;
-import eionet.meta.service.data.VocabularyFilter;
-import eionet.meta.service.data.VocabularyResult;
-import eionet.util.Pair;
-import eionet.util.Props;
-import eionet.util.PropsIF;
-import eionet.util.Triple;
-import eionet.util.Util;
-import eionet.web.action.ErrorActionBean;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
-
-import org.apache.commons.lang.ArrayUtils;
-import org.springframework.context.annotation.DependsOn;
+import java.util.*;
 
 /**
  * Vocabulary service.
@@ -122,6 +105,19 @@ public class VocabularyServiceImpl implements IVocabularyService {
     private IRdfNamespaceDAO rdfNamespaceDAO;
 
     private static final int BATCH_SIZE = 1000;
+
+    /**
+     * Skos narrower keyword.
+     */
+    public static final String SKOS_NARROWER = "skos:narrower";
+
+    /**
+     * Adms status keyword
+     */
+    public static final String ADMS_STATUS = "adms:status";
+
+    public static final String ACCEPTED_STATUS="accepted";
+    public static final String NOT_ACCEPTED_STATUS="notAccepted";
 
     /**
      * {@inheritDoc}
@@ -261,19 +257,19 @@ public class VocabularyServiceImpl implements IVocabularyService {
      */
     @Override
     public VocabularyFolder getVocabularyFolder(String folderName, String identifier, boolean workingCopy) throws ServiceException {
-            VocabularyFolder result = vocabularyFolderDAO.getVocabularyFolder(folderName, identifier, workingCopy);
-            if (result==null){
-             ServiceException se =
+        VocabularyFolder result = vocabularyFolderDAO.getVocabularyFolder(folderName, identifier, workingCopy);
+        if (result == null) {
+            ServiceException se =
                     new ServiceException("Vocabulary set \"" + folderName + "\" or vocabulary identifier \"" + identifier
                             + "\" not found!");
             se.setErrorParameter(ErrorActionBean.ERROR_TYPE_KEY, ErrorActionBean.ErrorType.NOT_FOUND_404);
             throw se;
-            }
-            // Load attributes
-            List<List<SimpleAttribute>> attributes = attributeDAO.getVocabularyFolderAttributes(result.getId(), true);
-            result.setAttributes(attributes);
+        }
+        // Load attributes
+        List<List<SimpleAttribute>> attributes = attributeDAO.getVocabularyFolderAttributes(result.getId(), true);
+        result.setAttributes(attributes);
 
-            return result;
+        return result;
     }
 
     /**
@@ -310,12 +306,32 @@ public class VocabularyServiceImpl implements IVocabularyService {
             }
             if (vocabularyConcept.getStatus() == null) {
                 vocabularyConcept.setStatus(StandardGenericStatus.VALID);
+                vocabularyConcept.setAcceptedDate(new java.sql.Date(System.currentTimeMillis()));
                 vocabularyConcept.setStatusModified(new java.sql.Date(System.currentTimeMillis()));
+            } else {
+                setAcceptedNotAcceptedDateBasedOnStatus(vocabularyConcept);
             }
             return vocabularyConceptDAO.createVocabularyConcept(vocabularyFolderId, vocabularyConcept);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
             throw new ServiceException("Failed to create vocabulary concept: " + e.getMessage(), e);
+        }
+    }
+
+    private void setAcceptedNotAcceptedDateBasedOnStatus(VocabularyConcept vocabularyConcept) {
+        for (String status : Enumerations.StatusesForNotAcceptedDate.getEnumValues()) {
+            if (vocabularyConcept.getStatus().getIdentifier().equals(status)) {
+                vocabularyConcept.setNotAcceptedDate(new Date());
+                vocabularyConcept.setAcceptedDate(null);
+                break;
+            }
+        }
+        for (String status : Enumerations.StatusesForAcceptedDate.getEnumValues()) {
+            if (vocabularyConcept.getStatus().getIdentifier().equals(status)) {
+                vocabularyConcept.setAcceptedDate(new Date());
+                vocabularyConcept.setNotAcceptedDate(null);
+                break;
+            }
         }
     }
 
@@ -325,6 +341,8 @@ public class VocabularyServiceImpl implements IVocabularyService {
     @Override
     @Transactional(rollbackFor = ServiceException.class)
     public void updateVocabularyConcept(VocabularyConcept vocabularyConcept) throws ServiceException {
+        this.updateVocabularyConceptStatusModifiedIfRequired(vocabularyConcept);
+        this.updateAcceptedNotAcceptedDate(vocabularyConcept);
         updateVocabularyConceptNonTransactional(vocabularyConcept, true);
     }
 
@@ -371,16 +389,16 @@ public class VocabularyServiceImpl implements IVocabularyService {
 
                             //The following code checks if a vocabulary concept url is stored in the ELEMENT_VALUE column and if it exists in the dd db stores it into RELATED_CONCEPT_ID instead
                             // Refs #100490
-                            if(StringUtils.isNotEmpty(value.getAttributeValue()) && value.getAttributeValue().startsWith(Props.getProperty(Props.DD_URL) + "/")){
+                            if (StringUtils.isNotEmpty(value.getAttributeValue()) && value.getAttributeValue().startsWith(Props.getProperty(Props.DD_URL) + "/")) {
                                 String attrValueWithoutDomain = value.getAttributeValue().replace(Props.getProperty(Props.DD_URL) + "/", "");
                                 String[] splittedValue = attrValueWithoutDomain.split("/");
-                                if(splittedValue.length ==  4 && splittedValue[0].equals("vocabularyconcept")){
+                                if (splittedValue.length == 4 && splittedValue[0].equals("vocabularyconcept")) {
                                     String vocabularySetIdentifier = splittedValue[1];
                                     String vocabularyIdentifier = splittedValue[2];
                                     String vocabularyConceptIdentifier = splittedValue[3];
 
                                     VocabularyConcept vc = vocabularyConceptDAO.getVocabularyConceptByIdentifiers(vocabularySetIdentifier, vocabularyIdentifier, vocabularyConceptIdentifier);
-                                    if(vc != null){
+                                    if (vc != null) {
                                         value.setRelatedConceptId(vc.getId());
                                         value.setAttributeValue(null);
                                     }
@@ -416,9 +434,20 @@ public class VocabularyServiceImpl implements IVocabularyService {
             if (vocFolder != null && vocFolder.isNotationsEqualIdentifiers()) {
                 vocabularyConcept.setNotation(vocabularyConcept.getIdentifier());
             }
+            if (!checkIfConceptShouldBeAddedWhenBoundToElement(vocFolder.getId(), vocabularyConcept.getNotation())) {
+                String errorMsg = "Concept without notation can not exist for this vocabulary because it is referenced by data elements";
+                throw new ConceptWithoutNotationException(errorMsg);
+            }
             vocabularyConceptDAO.updateVocabularyConcept(vocabularyConcept);
         } catch (Exception e) {
-            throw new ServiceException("Failed to update vocabulary concept: " + e.getMessage(), e);
+            throw new ServiceException(e.getMessage(), e);
+        }
+    }
+
+    protected void updateVocabularyConceptStatusModifiedIfRequired(VocabularyConcept vocabularyConcept) throws ServiceException {
+        VocabularyConcept existingVocabularyConcept = this.getVocabularyConcept(vocabularyConcept.getId());
+        if (existingVocabularyConcept.getStatus() != vocabularyConcept.getStatus()) {
+            vocabularyConcept.setStatusModified(new Date());
         }
     }
 
@@ -602,7 +631,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
      */
     @Override
     @Transactional(rollbackFor = ServiceException.class)
-    public int checkOutVocabularyFolder(int vocabularyFolderId, String userName) throws ServiceException {      
+    public int checkOutVocabularyFolder(int vocabularyFolderId, String userName) throws ServiceException {
         if (StringUtils.isBlank(userName)) {
             throw new IllegalArgumentException("User name must not be blank!");
         }
@@ -683,10 +712,9 @@ public class VocabularyServiceImpl implements IVocabularyService {
             List<VocabularyConcept> concepts = getAllConceptsWithAttributes(originalVocabularyFolderId);
 
             Map<Integer, DataElement> conceptAttributes = vocabularyConceptDAO.getVocabularyConceptAttributes(originalVocabularyFolderId);
-            if(conceptAttributes != null){
+            if (conceptAttributes != null) {
                 LOGGER.info(String.format("Concept attributes %s for vocabulary #%d have been retrieved.", conceptAttributes.toString(), originalVocabularyFolderId));
-            }
-            else{
+            } else {
                 LOGGER.info(String.format("No concept attributes were found for vocabulary #%d.", originalVocabularyFolderId));
             }
             // delete relations for inverse attibute values
@@ -765,7 +793,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
     private List<Integer> getReferenceDataElementIds(Collection<DataElement> dataElements) {
         List<Integer> referenceDataElementIds = new ArrayList<Integer>();
         if (!dataElements.isEmpty()) {
-            for (Iterator<DataElement> it = dataElements.iterator(); it.hasNext();) {
+            for (Iterator<DataElement> it = dataElements.iterator(); it.hasNext(); ) {
                 DataElement element = it.next();
                 if (element.getDatatype().equals("reference")) {
                     referenceDataElementIds.add(element.getId());
@@ -783,7 +811,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
             Map<Integer, Integer> elementIdToInverseElementId = new HashMap<Integer, Integer>();
 
             // find inverse data elements
-            for (Iterator<Integer> it = referenceDataElementIds.iterator(); it.hasNext();) {
+            for (Iterator<Integer> it = referenceDataElementIds.iterator(); it.hasNext(); ) {
                 int elementId = it.next();
                 int inverseElementId = dataElementDAO.getInverseElementID(elementId);
                 if (inverseElementId > 0) {
@@ -814,12 +842,12 @@ public class VocabularyServiceImpl implements IVocabularyService {
 
     private void createInverseElementsRelations(Collection<DataElement> dataElements, List<VocabularyConcept> concepts) {
         List<Integer> referenceDataElementIds = getReferenceDataElementIds(dataElements);
-                
+
         if (!referenceDataElementIds.isEmpty()) {
             Map<Integer, Integer> elementIdToInverseElementId = new HashMap<Integer, Integer>();
 
             // find inverse data elements
-            for (Iterator<Integer> it = referenceDataElementIds.iterator(); it.hasNext();) {
+            for (Iterator<Integer> it = referenceDataElementIds.iterator(); it.hasNext(); ) {
                 Integer elementId = it.next();
                 int inverseElementId = dataElementDAO.getInverseElementID(elementId);
                 if (inverseElementId > 0) {
@@ -859,31 +887,31 @@ public class VocabularyServiceImpl implements IVocabularyService {
                 List<Pair<Integer, Integer>> vocabularyIdToDataElementId = new ArrayList<Pair<Integer, Integer>>();
                 List<Triple<Integer, Integer, Integer>> inverseRelatedReferenceElements = new ArrayList<Triple<Integer, Integer, Integer>>();
 
-                for (Iterator<Integer> it = inverseElementIdsToRelatedConceptIds.keySet().iterator(); it.hasNext();) {
+                for (Iterator<Integer> it = inverseElementIdsToRelatedConceptIds.keySet().iterator(); it.hasNext(); ) {
                     final Integer inverseElementId = it.next();
                     Set<Integer> relatedConceptIds = inverseElementIdsToRelatedConceptIds.get(inverseElementId);
 
                     // get the distinct vocabulary ids of the related concepts
                     Collection<Integer> relatedConceptsVocabularyIds = vocabularyFolderDAO.getVocabularyIds(relatedConceptIds);
-                    for (Iterator<Integer> it1 = relatedConceptsVocabularyIds.iterator(); it1.hasNext();) {
+                    for (Iterator<Integer> it1 = relatedConceptsVocabularyIds.iterator(); it1.hasNext(); ) {
                         vocabularyIdToDataElementId.add(new Pair<Integer, Integer>(it1.next(), inverseElementId));
                     }
 
                     // get the checked out vocabulary ids from the related concepts vocabularies
                     Collection<Integer> workingCopyVocabularyIds = vocabularyFolderDAO.getWorkingCopyIds(relatedConceptsVocabularyIds);
                     if (!workingCopyVocabularyIds.isEmpty()) {
-                        for (Iterator<Integer> it1 = workingCopyVocabularyIds.iterator(); it1.hasNext();) {
+                        for (Iterator<Integer> it1 = workingCopyVocabularyIds.iterator(); it1.hasNext(); ) {
                             vocabularyIdToDataElementId.add(new Pair<Integer, Integer>(it1.next(), inverseElementId));
                         }
 
                         // get the checked out to original id mappings for the related concepts
                         final Map<Integer, Integer> checkedOutToOriginalMappings = vocabularyConceptDAO.getCheckedOutToOriginalMappings(relatedConceptIds);
 
-                        for (Iterator<Integer> it1 = checkedOutToOriginalMappings.keySet().iterator(); it1.hasNext();) {
+                        for (Iterator<Integer> it1 = checkedOutToOriginalMappings.keySet().iterator(); it1.hasNext(); ) {
                             final Integer checkedOutConceptId = it1.next();
 
                             // create checked out concepts relations
-                            for (Iterator<Triple<Integer, Integer, Integer>> it2 = relatedReferenceElements.iterator(); it2.hasNext();) {
+                            for (Iterator<Triple<Integer, Integer, Integer>> it2 = relatedReferenceElements.iterator(); it2.hasNext(); ) {
                                 Triple<Integer, Integer, Integer> triple = it2.next();
                                 if (triple.getCentral().equals(inverseElementId) && triple.getLeft().equals(checkedOutToOriginalMappings.get(checkedOutConceptId))) {
                                     inverseRelatedReferenceElements.add(new Triple<Integer, Integer, Integer>(checkedOutConceptId, inverseElementId, triple.getRight()));
@@ -1219,7 +1247,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
     public List<VocabularyConcept> getConceptsWithAttributes(int vocabularyFolderId, String conceptIdentifier, String label, boolean acceptedOnly) throws ServiceException {
         try {
             StandardGenericStatus conceptStatus = acceptedOnly ? StandardGenericStatus.ACCEPTED : null;
-            
+
             return this.vocabularyConceptDAO.getConceptsWithAttributeValues(vocabularyFolderId, conceptStatus, conceptIdentifier, label);
         } catch (Exception e) {
             throw new ServiceException("Failed to get vocabulary concept: " + e.getMessage(), e);
@@ -1427,10 +1455,10 @@ public class VocabularyServiceImpl implements IVocabularyService {
         List<Triple<String, String, Integer>> boundElementNamesByLanguage = new ArrayList<Triple<String, String, Integer>>();
         for (VocabularyConcept concept : concepts) {
             Map<String, Integer> boundElementsWithLanguageToMaxValuesCount = new HashMap<String, Integer>();
-            for (Iterator<List<DataElement>> it = concept.getElementAttributes().iterator(); it.hasNext();) {
+            for (Iterator<List<DataElement>> it = concept.getElementAttributes().iterator(); it.hasNext(); ) {
                 List<DataElement> elementAttributes = it.next();
                 for (DataElement elementAttribute : elementAttributes) {
-                    String key = elementAttribute.getIdentifier()+ "~" + StringUtils.trimToEmpty(elementAttribute.getAttributeLanguage()); // e.g. skos:prefLabel~el
+                    String key = elementAttribute.getIdentifier() + "~" + StringUtils.trimToEmpty(elementAttribute.getAttributeLanguage()); // e.g. skos:prefLabel~el
                     if (boundElementsWithLanguageToMaxValuesCount.containsKey(key)) {
                         boundElementsWithLanguageToMaxValuesCount.put(key, boundElementsWithLanguageToMaxValuesCount.get(key) + 1);
                     } else {
@@ -1442,8 +1470,8 @@ public class VocabularyServiceImpl implements IVocabularyService {
             for (String boundElementsWithLanguageKey : boundElementsWithLanguageToMaxValuesCount.keySet()) {
                 boolean boundElementExists = false;
                 String identifier = boundElementsWithLanguageKey.split("~")[0];
-                String language = boundElementsWithLanguageKey.split("~").length > 1 ?  boundElementsWithLanguageKey.split("~")[1] : "";
-                Integer maxValuesCount =  boundElementsWithLanguageToMaxValuesCount.get(boundElementsWithLanguageKey);
+                String language = boundElementsWithLanguageKey.split("~").length > 1 ? boundElementsWithLanguageKey.split("~")[1] : "";
+                Integer maxValuesCount = boundElementsWithLanguageToMaxValuesCount.get(boundElementsWithLanguageKey);
 
                 for (Triple<String, String, Integer> boundElementWithLanguage : boundElementNamesByLanguage) {
                     if (StringUtils.equals(boundElementWithLanguage.getLeft(), identifier) && StringUtils.equals(boundElementWithLanguage.getCentral(), language)) {
@@ -1475,11 +1503,10 @@ public class VocabularyServiceImpl implements IVocabularyService {
     public VocabularyResult checkIfVocabulariesCanBeBoundToElements(VocabularyResult vocabularyResult) throws ServiceException {
         try {
             List<VocabularyFolder> vocabularies = vocabularyResult.getList();
-            for(VocabularyFolder vocabulary: vocabularies){
-                if(vocabulary.isNotationsEqualIdentifiers() == true){
+            for (VocabularyFolder vocabulary : vocabularies) {
+                if (vocabulary.isNotationsEqualIdentifiers() == true) {
                     vocabulary.setCanBeBoundToElements(true);
-                }
-                else{
+                } else {
                     Boolean result = vocabularyConceptDAO.checkIfConceptsWithoutNotationExist(vocabulary.getId());
                     vocabulary.setCanBeBoundToElements(result);
                 }
@@ -1615,7 +1642,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
 
     @Override
     public Map<Integer, List<List<DataElement>>> getVocabularyConceptsDataElementValues(int vocabularyFolderId,
-            int[] vocabularyConceptIds, boolean emptyAttributes) {
+                                                                                        int[] vocabularyConceptIds, boolean emptyAttributes) {
         return dataElementDAO.getVocabularyConceptsDataElementValues(vocabularyFolderId, vocabularyConceptIds, emptyAttributes);
     }
 
@@ -1653,7 +1680,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
     }
 
     @Override
-    public List<Integer> batchCreateVocabularyConcepts(List<VocabularyConcept> vocabularyConcepts, int batchSize) 
+    public List<Integer> batchCreateVocabularyConcepts(List<VocabularyConcept> vocabularyConcepts, int batchSize)
             throws ServiceException {
         try {
             return vocabularyConceptDAO.batchCreateVocabularyConcepts(vocabularyConcepts, batchSize);
@@ -1665,6 +1692,10 @@ public class VocabularyServiceImpl implements IVocabularyService {
     @Override
     public int[][] batchUpdateVocabularyConcepts(List<VocabularyConcept> vocabularyConcepts, int batchSize) throws ServiceException {
         try {
+            for (VocabularyConcept vocConcept : vocabularyConcepts
+            ) {
+                this.updateVocabularyConceptStatusModifiedIfRequired(vocConcept);
+            }
             return vocabularyConceptDAO.batchUpdateVocabularyConcepts(vocabularyConcepts, batchSize);
         } catch (Exception e) {
             throw new ServiceException("Failed to batch update vocabulary concepts: " + e.getMessage(), e);
@@ -1723,5 +1754,98 @@ public class VocabularyServiceImpl implements IVocabularyService {
     public boolean hasVocabularyWorkingCopy(String folderName, String identifier) {
         VocabularyFolder vocabulary = vocabularyFolderDAO.getVocabularyFolder(folderName, identifier, true);
         return (vocabulary != null) ? true : false;
+    }
+
+    @Override
+    public Boolean checkIfVocabularyIsBoundToElement(Integer vocabularyId) {
+        return vocabularyFolderDAO.isVocabularyBoundToElement(vocabularyId);
+    }
+
+    @Override
+    public Integer getCheckedOutCopyIdForVocabulary(Integer vocabularyId) {
+        return vocabularyFolderDAO.getWorkingCopyByVocabularyId(vocabularyId);
+    }
+
+    @Override
+    public Boolean checkIfConceptShouldBeAddedWhenBoundToElement(Integer newVocabularyId, String notation) {
+
+        VocabularyFolder vocabulary = vocabularyFolderDAO.getVocabularyFolder(newVocabularyId);
+        if (!vocabulary.isNotationsEqualIdentifiers()) {
+            //find original VOCABULARY id
+            Integer originalVocabularyId = getCheckedOutCopyIdForVocabulary(newVocabularyId);
+            if (originalVocabularyId == null || originalVocabularyId == 0) {
+                originalVocabularyId = newVocabularyId;
+            }
+            //check if vocabulary is bound to element and the concept does not have notation
+            if (checkIfVocabularyIsBoundToElement(originalVocabularyId)) {
+                if (Util.isEmpty(notation)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public void updateAcceptedNotAcceptedDate(VocabularyConcept vocabularyConcept) throws ServiceException {
+        VocabularyConcept existingConcept = this.getVocabularyConcept(vocabularyConcept.getId());
+
+        VocabularyFolder vocabularyFolder = vocabularyFolderDAO.getVocabularyFolderOfConcept(vocabularyConcept.getId());
+        int conceptId = vocabularyConcept.getId();
+        Map<Integer, List<List<DataElement>>> vocabularyConceptsDataElementValues =
+                dataElementDAO.getVocabularyConceptsDataElementValues(vocabularyFolder.getId(), new int[]{conceptId}, false);
+        existingConcept.setElementAttributes(vocabularyConceptsDataElementValues.get(conceptId));
+        List<List<DataElement>> existingConceptElements = existingConcept.getElementAttributes();
+        List<DataElement> existingConceptAdmsStatusElements = new ArrayList<>();
+        if (existingConceptElements!=null) {
+            for (List<DataElement> values : existingConceptElements) {
+                if (values!=null) {
+                    for (DataElement element : values) {
+                        if (element != null && element.getIdentifier() != null && element.getIdentifier().equals(ADMS_STATUS)) {
+                            existingConceptAdmsStatusElements.add(element);
+                        }
+                    }
+                }
+            }
+        }
+
+        List<List<DataElement>> elements = vocabularyConcept.getElementAttributes();
+        if (elements != null) {
+            for (List<DataElement> values : elements) {
+                if (values!=null) {
+                    for (DataElement element : values) {
+                        if (element!=null && element.getIdentifier()!=null && element.getIdentifier().equals(ADMS_STATUS) && element.getRelatedConceptId()!=null) {
+                            VocabularyConcept relatedConcept = this.getVocabularyConcept(element.getRelatedConceptId());
+                            if (existingConceptAdmsStatusElements.size()>0) {
+                                for (DataElement existingElem : existingConceptAdmsStatusElements) {
+                                    if (existingElem.getRelatedConceptIdentifier()!=null && !existingElem.getRelatedConceptIdentifier().equals(relatedConcept.getIdentifier())) {
+                                        if (relatedConcept.getIdentifier().equals(NOT_ACCEPTED_STATUS)) {
+                                            vocabularyConcept.setNotAcceptedDate(new Date());
+                                            vocabularyConcept.setAcceptedDate(null);
+                                            return;
+                                        } else if (relatedConcept.getIdentifier().equals(ACCEPTED_STATUS)) {
+                                            vocabularyConcept.setAcceptedDate(new Date());
+                                            vocabularyConcept.setNotAcceptedDate(null);
+                                            return;
+                                        }
+                                    }
+                                }
+                            } else {
+                                if (relatedConcept.getIdentifier().equals(NOT_ACCEPTED_STATUS)) {
+                                    vocabularyConcept.setNotAcceptedDate(new Date());
+                                    return;
+                                } else if (relatedConcept.getIdentifier().equals(ACCEPTED_STATUS)) {
+                                    vocabularyConcept.setAcceptedDate(new Date());
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (!existingConcept.getStatus().equals(vocabularyConcept.getStatus())) {
+            setAcceptedNotAcceptedDateBasedOnStatus(vocabularyConcept);
+        }
     }
 }
