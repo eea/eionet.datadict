@@ -35,6 +35,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import eionet.datadict.model.enums.Enumerations;
+import eionet.meta.service.IVocabularyService;
+import eionet.meta.spring.SpringApplicationContext;
 import net.sourceforge.stripes.util.StringUtil;
 
 import org.apache.commons.lang.StringUtils;
@@ -58,6 +60,7 @@ import eionet.util.PropsIF;
 import eionet.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 
 /**
  * Implementation of OpenRDF's {@link RDFHandler} that will be used by implementations of
@@ -212,6 +215,8 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
 
     /** The vocabulary on which the update will happen.*/
     private VocabularyFolder vocabularyFolder;
+
+    ApplicationContext springContext = SpringApplicationContext.getContext();
 
     /**
      * Constructor for RDFHandler to import rdf into vocabulary.
@@ -471,10 +476,12 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
                             if(preventEmptyMandatoryElementsAndWriteMessageLog){
                                 this.toBeUpdatedConcepts.remove(this.lastFoundConcept);
                                 this.logMessages.add(st.toString() + " NOT imported, contains empty value in Status");
-                            }else{
-                                setConceptStatusFromRdfObjectValue(this.lastFoundConcept, val, object instanceof Literal);
-                                candidateForConceptAttribute = false; // update adms:status bound element if exists
                             }
+                        }
+                        else{
+                            //set up status
+                            setConceptStatusFromRdfObjectValue(this.lastFoundConcept, val, object instanceof Literal);
+                            candidateForConceptAttribute = false; // update adms:status bound element if exists
                         }
 
                     }
@@ -739,7 +746,7 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
             objectValue = StringUtils.trim(objectValue);
         }
 
-        if (statusVocabularyEntries == null) {
+        if (statusVocabularyEntries == null || statusVocabularyEntries.isEmpty()) {
             try {
                 loadStatusVocabularyEntries();
             } catch (ServiceException e) {
@@ -793,6 +800,9 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
                 ownStatusVocabularyIdentifier));
 
         VocabularyFolder statusVoc = null;
+        if(vocabularyService == null){
+            vocabularyService = springContext.getBean(IVocabularyService.class);
+        }
         try {
             statusVoc = vocabularyService.getVocabularyWithConcepts(ownStatusVocabularyIdentifier, ownVocabulariesFolderName);
         } catch (Exception e) {
