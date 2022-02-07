@@ -1720,7 +1720,9 @@ public class VocabularyServiceImpl implements IVocabularyService {
         for (VocabularyConcept concept : concepts) {
             List<List<DataElement>> elems = concept.getElementAttributes();
             for (List<DataElement> elemMeta : elems) {
-                if (elemMeta.size()>0) dataElementsIds.add(elemMeta.get(0).getId());
+                if(elemMeta.size()>0) {
+                    dataElementsIds.add(elemMeta.get(0).getId());
+                }
             }
         }
 

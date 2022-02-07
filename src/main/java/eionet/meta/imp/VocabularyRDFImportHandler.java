@@ -35,6 +35,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import eionet.datadict.model.enums.Enumerations;
+import eionet.meta.service.IVocabularyService;
+import eionet.meta.spring.SpringApplicationContext;
 import net.sourceforge.stripes.util.StringUtil;
 
 import org.apache.commons.lang.StringUtils;
@@ -58,6 +60,7 @@ import eionet.util.PropsIF;
 import eionet.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 
 /**
  * Implementation of OpenRDF's {@link RDFHandler} that will be used by implementations of
@@ -122,6 +125,9 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
      * Bound elements of vocabulary.
      */
     protected Map<String, List<String>> boundElements = null;
+
+
+    public boolean preventEmptyMandatoryElementsAndWriteMessageLog = false;
 
     /**
      * number of valid triples that are processed.
@@ -207,6 +213,11 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
     /** The map containing identifier:notation pairs of concepts present in DD's own status vocabulary in the database. */
     private Map<String, String> statusVocabularyEntries;
 
+    /** The vocabulary on which the update will happen.*/
+    private VocabularyFolder vocabularyFolder;
+
+    ApplicationContext springContext = SpringApplicationContext.getContext();
+
     /**
      * Constructor for RDFHandler to import rdf into vocabulary.
      *
@@ -252,6 +263,15 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
         }
     } // end of constructor
 
+    public VocabularyRDFImportHandler(VocabularyFolder vocabularyFolder, String folderContextRoot, List<VocabularyConcept> concepts, Map<String, Integer> boundElementsToIds,
+                                      Map<String, List<String>> boundElements, Map<String, String> boundURIs, boolean createNewDataElementsForPredicates,
+                                      String workingLanguage, String ddNamespace, boolean preventEmptyMandatoryElementsAndWriteMessageLog) throws ServiceException {
+       this( folderContextRoot, concepts, boundElementsToIds,
+                boundElements,  boundURIs, createNewDataElementsForPredicates,
+        workingLanguage,  ddNamespace);
+       this.vocabularyFolder = vocabularyFolder;
+       this.preventEmptyMandatoryElementsAndWriteMessageLog = preventEmptyMandatoryElementsAndWriteMessageLog;
+    }
     @Override
     public void startRDF() throws RDFHandlerException {
     } // end of method startRDF
@@ -407,29 +427,73 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
 
             // Update concept value here.
             String val = StringUtils.trimToNull(object.stringValue());
-            if (ConceptAttribute.NOTATION.getNsPrefix().equals(predicateNsPrefix)
-                    && ConceptAttribute.NOTATION.getIdentifier().equals(attributeIdentifier)) {
-                this.lastFoundConcept.setNotation(val);
-            } else {
-                if (ConceptAttribute.DEFINITION.getNsPrefix().equals(predicateNsPrefix)
-                        && ConceptAttribute.DEFINITION.getIdentifier().equals(attributeIdentifier)) {
-                    this.lastFoundConcept.setDefinition(val);
-                } else if (ConceptAttribute.LABEL.getNsPrefix().equals(predicateNsPrefix)
-                        && ConceptAttribute.LABEL.getIdentifier().equals(attributeIdentifier)) {
-                    this.lastFoundConcept.setLabel(val);
-                } else if (ConceptAttribute.STATUS.getNsPrefix().equals(predicateNsPrefix)
-                        && ConceptAttribute.STATUS.getIdentifier().equals(attributeIdentifier)) {
-                    setConceptStatusFromRdfObjectValue(this.lastFoundConcept, val, object instanceof Literal);
-                    candidateForConceptAttribute = false; // update adms:status bound element if exists
-                }
-                if (object instanceof Literal) {
-                    String elemLang = StringUtils.substring(((Literal) object).getLanguage(), 0, 2);
-                    if (StringUtils.isNotBlank(elemLang)) {
-                        this.lastCandidateForConceptAttribute.put(this.lastFoundConcept.getId() + dataElemIdentifier, (Literal) object);
-                        candidateForConceptAttribute = false;
+
+                if (ConceptAttribute.NOTATION.getNsPrefix().equals(predicateNsPrefix)
+                        && ConceptAttribute.NOTATION.getIdentifier().equals(attributeIdentifier)) {
+                    if(val ==null){
+
+                        //For Notation to Be Mandatory, if the Vocabulary is set to have Notation equal to the concept Id - refs #137761
+                        if(this.vocabularyFolder.isNotationsEqualIdentifiers()){
+                            if(preventEmptyMandatoryElementsAndWriteMessageLog){
+                                this.toBeUpdatedConcepts.remove(this.lastFoundConcept);
+                                this.logMessages.add(st.toString() + " NOT imported, contains empty value in Notation");
+                            }else {
+                            this.lastFoundConcept.setNotation(val);
+                         }
+                        } else{
+                            this.lastFoundConcept.setNotation(val);
+                        }
+
+                    }else {
+                        this.lastFoundConcept.setNotation(val);
+                    }
+                } else {
+                    if (ConceptAttribute.DEFINITION.getNsPrefix().equals(predicateNsPrefix)
+                            && ConceptAttribute.DEFINITION.getIdentifier().equals(attributeIdentifier)) {
+                        if(val ==null){
+
+                            if(preventEmptyMandatoryElementsAndWriteMessageLog){
+                                this.toBeUpdatedConcepts.remove(this.lastFoundConcept);
+                                this.logMessages.add(st.toString() + " NOT imported, contains empty value in Definition");
+                            }
+                        }else {
+                            this.lastFoundConcept.setDefinition(val);
+                        }
+                    } else if (ConceptAttribute.LABEL.getNsPrefix().equals(predicateNsPrefix)
+                            && ConceptAttribute.LABEL.getIdentifier().equals(attributeIdentifier)) {
+                        if(val ==null){
+
+                            if(preventEmptyMandatoryElementsAndWriteMessageLog){
+                                this.toBeUpdatedConcepts.remove(this.lastFoundConcept);
+                                this.logMessages.add(st.toString() + " NOT imported, contains empty value in Label");
+                            }
+                        }else {
+                            this.lastFoundConcept.setLabel(val);
+                        }
+                    } else if (ConceptAttribute.STATUS.getNsPrefix().equals(predicateNsPrefix)
+                            && ConceptAttribute.STATUS.getIdentifier().equals(attributeIdentifier)) {
+                        if(val==null){
+                            if(preventEmptyMandatoryElementsAndWriteMessageLog){
+                                this.toBeUpdatedConcepts.remove(this.lastFoundConcept);
+                                this.logMessages.add(st.toString() + " NOT imported, contains empty value in Status");
+                            }
+                        }
+                        else{
+                            //set up status
+                            setConceptStatusFromRdfObjectValue(this.lastFoundConcept, val, object instanceof Literal);
+                            candidateForConceptAttribute = false; // update adms:status bound element if exists
+                        }
+
+                    }
+                    if (object instanceof Literal) {
+                        String elemLang = StringUtils.substring(((Literal) object).getLanguage(), 0, 2);
+                        if (StringUtils.isNotBlank(elemLang)) {
+                            this.lastCandidateForConceptAttribute.put(this.lastFoundConcept.getId() + dataElemIdentifier, (Literal) object);
+                            candidateForConceptAttribute = false;
+                        }
                     }
                 }
-            }
+
         } else if (candidateForConceptAttribute
                 && this.lastCandidateForConceptAttribute.containsKey(this.lastFoundConcept.getId() + dataElemIdentifier)) {
             // check if more prior value received
@@ -451,21 +515,48 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
             }
             if (updateValue) {
                 String val = StringUtils.trimToNull(object.stringValue());
-                if (ConceptAttribute.DEFINITION.getNsPrefix().equals(predicateNsPrefix)
-                        && ConceptAttribute.DEFINITION.getIdentifier().equals(attributeIdentifier)) {
-                    this.lastFoundConcept.setDefinition(val);
-                } else if (ConceptAttribute.LABEL.getNsPrefix().equals(predicateNsPrefix)
-                        && ConceptAttribute.LABEL.getIdentifier().equals(attributeIdentifier)) {
-                    this.lastFoundConcept.setLabel(val);
-                } else if (ConceptAttribute.STATUS.getNsPrefix().equals(predicateNsPrefix)
-                        && ConceptAttribute.STATUS.getIdentifier().equals(attributeIdentifier)) {
-                    setConceptStatusFromRdfObjectValue(this.lastFoundConcept, val, object instanceof Literal);
-                }
+
+                    if (ConceptAttribute.DEFINITION.getNsPrefix().equals(predicateNsPrefix)
+                            && ConceptAttribute.DEFINITION.getIdentifier().equals(attributeIdentifier)) {
+                        if(val ==null){
+
+                            if(preventEmptyMandatoryElementsAndWriteMessageLog){
+                                this.toBeUpdatedConcepts.remove(this.lastFoundConcept);
+                                this.logMessages.add(st.toString() + " NOT imported, contains empty value in Definition");
+                            }
+                        }else {
+                            this.lastFoundConcept.setDefinition(val);
+                        }
+                    } else if (ConceptAttribute.LABEL.getNsPrefix().equals(predicateNsPrefix)
+                            && ConceptAttribute.LABEL.getIdentifier().equals(attributeIdentifier)) {
+                        if(val ==null){
+
+                            if(preventEmptyMandatoryElementsAndWriteMessageLog){
+                                this.toBeUpdatedConcepts.remove(this.lastFoundConcept);
+                                this.logMessages.add(st.toString() + " NOT imported, contains empty value in LABEL");
+                            }
+                        }else {
+                            this.lastFoundConcept.setLabel(val);
+                        }
+                    } else if (ConceptAttribute.STATUS.getNsPrefix().equals(predicateNsPrefix)
+                            && ConceptAttribute.STATUS.getIdentifier().equals(attributeIdentifier)) {
+                        if(val ==null){
+
+                            if(preventEmptyMandatoryElementsAndWriteMessageLog){
+                                this.toBeUpdatedConcepts.remove(this.lastFoundConcept);
+                                this.logMessages.add(st.toString() + " NOT imported, contains empty value in Status");
+                            }
+                        }else {
+                            setConceptStatusFromRdfObjectValue(this.lastFoundConcept, val, object instanceof Literal);
+                        }
+                    }
+
             }
         } else {
             candidateForConceptAttribute = false;
         }
 
+        //Means we have boundElement
         if (!candidateForConceptAttribute) {
             if (!this.boundElementsIds.containsKey(dataElemIdentifier)) {
                 this.notBoundPredicates.add(predicateUri);
@@ -497,10 +588,7 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
             }
 
             String elementValue = object.stringValue();
-            if (StringUtils.isEmpty(elementValue)) {
-                // value is empty, no need to continue
-                return;
-            }
+
             String elemLang = null;
             VocabularyConcept foundRelatedConcept = null;
             // if object is a resource (i.e. URI), it can be a related concept
@@ -537,27 +625,33 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
                 }
             }
 
-            // create VCE
-            DataElement elem = new DataElement();
-            this.elementsOfConcept.add(elem);
-            elem.setAttributeLanguage(elemLang);
-            elem.setIdentifier(dataElemIdentifier);
-            elem.setId(this.boundElementsIds.get(dataElemIdentifier));
-            // check if there is a found related concept
-            if (foundRelatedConcept != null) {
-                elem.setRelatedConceptIdentifier(foundRelatedConcept.getIdentifier());
-                int id = foundRelatedConcept.getId();
-                elem.setRelatedConceptId(id);
-                elem.setAttributeValue(null);
-                if (id < 0) {
-                    addToElementsReferringNotCreatedConcepts(id, elem);
-                }
-            } else {
-                elem.setAttributeValue(elementValue);
-                elem.setRelatedConceptId(null);
+            if (StringUtils.isEmpty(elementValue)) {
+                    return;
             }
 
-            conceptIdsUpdatedWithPredicate.add(this.lastFoundConcept.getId());
+                // create VCE
+                DataElement elem = new DataElement();
+                this.elementsOfConcept.add(elem);
+                elem.setAttributeLanguage(elemLang);
+                elem.setIdentifier(dataElemIdentifier);
+                elem.setId(this.boundElementsIds.get(dataElemIdentifier));
+                // check if there is a found related concept
+                if (foundRelatedConcept != null) {
+                    elem.setRelatedConceptIdentifier(foundRelatedConcept.getIdentifier());
+                    int id = foundRelatedConcept.getId();
+                    elem.setRelatedConceptId(id);
+                    elem.setAttributeValue(null);
+                    if (id < 0) {
+                        addToElementsReferringNotCreatedConcepts(id, elem);
+                    }
+                } else {
+                    elem.setAttributeValue(elementValue);
+                    elem.setRelatedConceptId(null);
+                }
+
+                conceptIdsUpdatedWithPredicate.add(this.lastFoundConcept.getId());
+
+
         }
         this.numberOfValidTriples++;
     } // end of method handleStatement
@@ -652,7 +746,7 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
             objectValue = StringUtils.trim(objectValue);
         }
 
-        if (statusVocabularyEntries == null) {
+        if (statusVocabularyEntries == null || statusVocabularyEntries.isEmpty()) {
             try {
                 loadStatusVocabularyEntries();
             } catch (ServiceException e) {
@@ -706,6 +800,9 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
                 ownStatusVocabularyIdentifier));
 
         VocabularyFolder statusVoc = null;
+        if(vocabularyService == null){
+            vocabularyService = springContext.getBean(IVocabularyService.class);
+        }
         try {
             statusVoc = vocabularyService.getVocabularyWithConcepts(ownStatusVocabularyIdentifier, ownVocabulariesFolderName);
         } catch (Exception e) {
