@@ -1,4 +1,8 @@
 <Configuration>
+    <Properties>
+        <Property name="basePath">${env:logFilePath}/logs</Property>
+    </Properties>
+
     <Appenders>
         <Console name="console">
             <PatternLayout>
