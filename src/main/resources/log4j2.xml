@@ -35,22 +35,22 @@
     </Appenders>
     <Loggers>
         <logger name="eionet" level="debug">
-            <appender-ref ref="fileLogger" level="debug"/>
+            <appender-ref ref="fileLogger" level="debug" />
         </logger>
         <logger name="eionet.meta.DDSearchEngine" level="info">
-            <appender-ref ref="fileLogger" level="debug"/>
+            <appender-ref ref="fileLogger" level="info" />
         </logger>
         <logger name="org.apache" level="info">
-            <appender-ref ref="fileLogger" level="debug"/>
+            <appender-ref ref="fileLogger" level="warn" />
         </logger>
         <logger name="org.springframework" level="warn">
-            <appender-ref ref="fileLogger" level="debug"/>
+            <appender-ref ref="fileLogger" level="warn" />
         </logger>
         <logger name="org.displaytag" level="warn">
-            <appender-ref ref="fileLogger" level="debug"/>
+            <appender-ref ref="fileLogger" level="warn" />
         </logger>
         <logger name="net.sourceforge.stripes" level="warn">
-            <appender-ref ref="fileLogger" level="debug"/>
+            <appender-ref ref="fileLogger" level="warn" />
         </logger>
         <Root level="info">
             <AppenderRef ref="console" />
