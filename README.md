@@ -69,12 +69,19 @@ GRANT ALL PRIVILEGES ON DataDict.* TO 'dduser-here'@'localhost';
 
 ##### 2. Configure environment variables for tomcat:
 
+###### 2.a Local properties configuration
+
 In the env_setup/local/catalina_opts.txt file you will find all the CATALINA_OPTS that need to be configured with 
 the specific values for your environment. Set these variables for your local tomcat installation.
 
 Alternatively you can copy the default.properties file and create a local.properties file for development purposes.
 
-Add an environmental variable in tomcat with name logFilePath and value a path to a folder where log files will be stored. This variable is used in log4j2.xml
+###### 2.b Log4j RollingFile appender configuration
+
+Add the following environment variables in tomcat for log4j2 configuration (these variables are used in log4j2.xml):
+A variable with name logFilePath and value a path to a folder where log files will be stored. 
+A variable with name queryLogRetainAll and value=false if log files should be deleted, true otherwise.
+A variable with name queryLogRetentionDays and value the duration for which log files will be retained. Log files older than the specified duration will be deleted.
 
 ##### 3. Deploy on tomcat
 

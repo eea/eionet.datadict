@@ -24,6 +24,13 @@
                 <TimeBasedTriggeringPolicy interval="1"/>
                 <SizeBasedTriggeringPolicy size="5000KB" />
             </Policies>
+            <DefaultRolloverStrategy>
+                <!--    testMode - boolean - If true, files are not deleted but instead a message is printed to the status -->
+                <Delete basePath="${env:logFilePath}/logs/" maxDepth="1" testMode="${env:queryLogRetainAll}">
+                    <IfFileName glob="datadictLogs_*.log.gz"/>
+                    <IfLastModified age="${env:queryLogRetentionDays}"/>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
     </Appenders>
     <Loggers>
@@ -47,7 +54,7 @@
         </logger>
         <Root level="info">
             <AppenderRef ref="console" />
-            <appender-ref ref="fileLogger" level="info" />
+            <appender-ref ref="fileLogger" level="info"/>
             <AppenderRef ref="Sentry" level="warn" />
         </Root>
     </Loggers>
