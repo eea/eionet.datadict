@@ -17,6 +17,10 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import eionet.meta.service.DBUnitHelper;
+import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -34,12 +38,9 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {ApplicationTestContext.class})
 @TestExecutionListeners({DependencyInjectionTestExecutionListener.class,
-    TransactionalTestExecutionListener.class,
-    DbUnitTestExecutionListener.class})
-@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT,
-        value = "classpath:seed-attribute.xml")
-@DatabaseTearDown(type = DatabaseOperation.DELETE_ALL,
-        value = "classpath:seed-attribute.xml")
+    TransactionalTestExecutionListener.class
+   })
+
 public class AttributeDaoTestIT {
 
     @Autowired
@@ -49,7 +50,15 @@ public class AttributeDaoTestIT {
     public static final int DISPLAY_HEIGHT_DEFAULT = 1;
     public static final int DISPLAY_ORDER_DEFAULT = 999;
     public static final int NAMESPACE_ID_DEFAULT = 3;
+    @Before
+    public void setUp() throws Exception {
+        DBUnitHelper.loadData("seed-attribute.xml");
+    }
 
+    @AfterClass
+    public static void tearDown() throws Exception {
+        DBUnitHelper.deleteData("seed-attribute.xml");
+    }
     @Test
     public void testGetByIdForSimpleFields() {
         Attribute attribute37 = this.attributeDao.getById(37);

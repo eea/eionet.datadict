@@ -8,7 +8,11 @@ import eionet.config.ApplicationTestContext;
 import eionet.datadict.model.DatasetTable;
 import eionet.datadict.model.Namespace;
 import java.util.List;
+
+import eionet.meta.service.DBUnitHelper;
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,16 +29,24 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {ApplicationTestContext.class})
 @TestExecutionListeners({DependencyInjectionTestExecutionListener.class,
-    TransactionalTestExecutionListener.class,
-    DbUnitTestExecutionListener.class})
-@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT,
-            value ="classpath:seed-datasetTableIT.xml")
-@DatabaseTearDown(type = DatabaseOperation.DELETE_ALL,
-            value ="classpath:seed-datasetTableIT.xml")
+    TransactionalTestExecutionListener.class
+    })
+
 public class DatasetTableDaoTestIT {
 
     @Autowired
     DatasetTableDao datasetTableDao;
+
+    @Before
+    public void setUp() throws Exception {
+        DBUnitHelper.loadData("seed-datasetTableIT.xml");
+    }
+
+    @AfterClass
+    public static void tearDown() throws Exception {
+        DBUnitHelper.deleteData("seed-datasetTableIT.xml");
+    }
+
 
     @Test
      public void testGetById(){

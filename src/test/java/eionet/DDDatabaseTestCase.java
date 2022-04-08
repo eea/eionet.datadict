@@ -11,6 +11,7 @@ import java.util.Properties;
 
 import junit.framework.TestResult;
 import org.dbunit.DatabaseTestCase;
+import org.dbunit.database.DatabaseConfig;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.IDataSet;
@@ -20,6 +21,8 @@ import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
 
 import eionet.util.Props;
 import eionet.util.PropsIF;
+import org.dbunit.ext.mysql.MySqlDataTypeFactory;
+import org.dbunit.ext.mysql.MySqlMetadataHandler;
 import org.junit.Ignore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,7 +84,11 @@ public abstract class DDDatabaseTestCase extends DatabaseTestCase {
                 Props.getProperty(PropsIF.DBUSR),
                 Props.getProperty(PropsIF.DBPSW));
 
-        DatabaseConnection dbConn = new DatabaseConnection(jdbcConn);
+
+       DatabaseConnection dbConn = new DatabaseConnection(jdbcConn,"datadict");
+        dbConn.getConfig().setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new MySqlDataTypeFactory());
+        dbConn.getConfig().setProperty(DatabaseConfig.PROPERTY_METADATA_HANDLER, new MySqlMetadataHandler());
+
         dbConn.getConfig().setPropertiesByString(properties);
         return dbConn;
     }

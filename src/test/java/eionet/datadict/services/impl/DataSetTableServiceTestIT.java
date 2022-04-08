@@ -9,8 +9,11 @@ import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.errors.XmlExportException;
 import eionet.datadict.services.DataSetTableService;
 import eionet.datadict.util.StringUtils;
+import eionet.meta.service.DBUnitHelper;
 import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.Diff;
+import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,17 +40,23 @@ import static org.junit.Assert.assertTrue;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {ApplicationTestContext.class})
 @TestExecutionListeners({DependencyInjectionTestExecutionListener.class,
-    TransactionalTestExecutionListener.class,
-    DbUnitTestExecutionListener.class})
-@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT,
-        value = "classpath:seed-datasetTableIT.xml")
-@DatabaseTearDown(type = DatabaseOperation.DELETE_ALL,
-        value = "classpath:seed-datasetTableIT.xml")
+    TransactionalTestExecutionListener.class
+    })
+
 public class DataSetTableServiceTestIT {
 
     @Autowired
     DataSetTableService dataSetTableService;
 
+    @Before
+    public void setUp() throws Exception {
+        DBUnitHelper.loadData("seed-datasetTableIT.xml");
+    }
+
+    @AfterClass
+    public static void tearDown() throws Exception {
+        DBUnitHelper.deleteData("seed-datasetTableIT.xml");
+    }
     @Test
     public void testGetDataSetTableXMlSchema() throws XmlExportException, ResourceNotFoundException, TransformerException, IOException, SAXException {
         Document xmlDocument = dataSetTableService.getDataSetTableXMLSchema(6661);

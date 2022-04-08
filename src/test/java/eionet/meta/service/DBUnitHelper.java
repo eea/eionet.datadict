@@ -23,12 +23,14 @@ package eionet.meta.service;
 
 import eionet.util.Props;
 import eionet.util.PropsIF;
+import org.dbunit.database.DatabaseConfig;
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.IDataSet;
 import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSetBuilder;
+import org.dbunit.ext.mysql.MySqlMetadataHandler;
 import org.dbunit.operation.DatabaseOperation;
 
 import java.io.InputStream;
@@ -56,7 +58,9 @@ public class DBUnitHelper {
         Connection jdbcConnection =
                 DriverManager.getConnection(Props.getProperty(PropsIF.DBURL), Props.getProperty(PropsIF.DBUSR),
                         Props.getProperty(PropsIF.DBPSW));
-        IDatabaseConnection con = new DatabaseConnection(jdbcConnection);
+        IDatabaseConnection con = new DatabaseConnection(jdbcConnection,"datadict");
+        con.getConfig()
+                .setProperty(DatabaseConfig.PROPERTY_METADATA_HANDLER, new MySqlMetadataHandler());
         con.getConfig().setPropertiesByString(properties);
 
         InputStream is = DBUnitHelper.class.getClassLoader().getResourceAsStream(xmlFileName);
