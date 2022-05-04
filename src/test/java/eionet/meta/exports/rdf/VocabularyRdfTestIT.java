@@ -1,7 +1,9 @@
 package eionet.meta.exports.rdf;
 
+import eionet.meta.service.RDFVocabularyImportServiceImpl;
 import eionet.util.Props;
 import eionet.util.PropsIF;
+import eionet.web.action.VocabularyFolderActionBean;
 import net.sourceforge.stripes.mock.MockRoundtrip;
 import net.sourceforge.stripes.mock.MockServletContext;
 
@@ -23,6 +25,8 @@ public class VocabularyRdfTestIT extends DDDatabaseTestCase   {
      * Used instead of site prefix.
      */
     private static final String BASE_URL = "http://test.tripledev.ee/datadict";
+
+    RDFVocabularyImportServiceImpl rdfVocabularyImportService = new RDFVocabularyImportServiceImpl();
 
     /**
      * test if RDF output contains collection resource for a folder.

@@ -658,7 +658,7 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
 
     @Override
     public void endRDF() throws RDFHandlerException {
-        if (this.createNewDataElementsForPredicates) {
+        /*if (this.createNewDataElementsForPredicates) {
             // if purge per predicate is selected and rdf does not contain any for some concepts. Then those untouched concepts
             // should be updated to remove these predicates if they have
             // 1. first do it for toBeUpdateConcepts
@@ -689,7 +689,7 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
                     this.toBeUpdatedConcepts.add(concept);
                 }
             }
-        }
+        }*/
 
         // check for null label containing concepts
         List<String> conceptsWithNullLabels = processNewlyCreatedConceptsForNullCheck();

@@ -255,7 +255,7 @@ public class RDFVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
 
         RDFParser parser = new RDFXMLParser();
         VocabularyRDFImportHandler rdfHandler = null;
-        //perge per predicate basis option
+        //purge per predicate basis option
         boolean createNewDataElementsForPredicates = UploadAction.add_and_purge_per_predicate_basis.equals(uploadAction);
 
         //Determine where we are from a selection of purge action viewPoint:
@@ -333,11 +333,6 @@ public class RDFVocabularyImportServiceImpl extends VocabularyImportServiceBaseI
             List<VocabularyConcept> toBeUpdatedConcepts = rdfHandler.getToBeUpdatedConcepts();
             List<VocabularyConcept> missingConcepts = rdfHandler.getMissingConcepts();
             List<VocabularyConcept> toBeRemovedConcepts = new ArrayList<VocabularyConcept>();
-            //Lets say we do it here:
-            for (VocabularyConcept vocConcept: toBeUpdatedConcepts
-                 ) {
-
-            }
             
             // quick hack to support delete upload action
             if (uploadAction == UploadAction.delete) {

@@ -52,6 +52,11 @@ import eionet.meta.service.IVocabularyImportService.MissingConceptsAction;
 import eionet.meta.service.IVocabularyImportService.UploadAction;
 import eionet.meta.service.IVocabularyImportService.UploadActionBefore;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThan;
+
 /**
  * JUnit integration test with Unitils for RDF Vocabulary Import Service.
  *
@@ -1235,71 +1240,6 @@ public class RDFVocabularyImportServiceTestIT extends VocabularyImportServiceTes
     } // end of test step testIfConceptsUpdatedAndMissingConceptsRetired
 
     /**
-     * In this test, single concept RDF is imported. Purge per predicate basis is tested.
-     *
-     * @throws Exception
-     */
-    @Test
-    @Rollback
-    public void testIfConceptsUpdatedAddedAfterPerPredicatePurge() throws Exception {
-        // get vocabulary folder
-        VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(TEST_VALID_VOCABULARY_ID);
-
-        // get initial values of concepts with attributes
-        List<VocabularyConcept> concepts = getAllVocabularyConceptsWithAttributes(vocabularyFolder);
-
-        // get reader for RDF file
-        Reader reader = getReaderFromResource("rdf_import/rdf_import_test_5.rdf");
-
-        // import RDF into database
-        vocabularyImportService.importRdfIntoVocabulary(reader, vocabularyFolder, false, true);
-        Assert.assertFalse("Transaction rolled back (unexpected)", transactionManager.getTransaction(null).isRollbackOnly());
-
-        // get updated values of concepts with attributes
-        List<VocabularyConcept> updatedConcepts = getAllVocabularyConceptsWithAttributes(vocabularyFolder);
-        Assert.assertEquals("Updated Concepts does not include 3 vocabulary concepts", updatedConcepts.size(), 3);
-
-        // manually create values of new concept for comparison
-        String[] seenPredicates = new String[] { "skos:relatedMatch", "skos:related", "skos:prefLabel" };
-        // remove elements of these predicates from first and second concepts
-        for (int i = 0; i < 2; i++) {
-            for (String seenPredicate : seenPredicates) {
-                List<List<DataElement>> elementAttributes = concepts.get(i).getElementAttributes();
-                List<DataElement> elems = VocabularyImportBaseHandler.getDataElementValuesByName(seenPredicate, elementAttributes);
-                if (elems != null) {
-                    elementAttributes.remove(elems);
-                }
-            }
-        }
-
-        // build manually updated data elements values for concept (check rdf file for updated values)
-        VocabularyConcept vc3 = concepts.get(2);
-        vc3.setDefinition("rdf_test_concept_def_3_updated");
-        List<DataElement> dataElementValuesByName = VocabularyImportBaseHandler.getDataElementValuesByName("skos:relatedMatch", vc3.getElementAttributes());
-        DataElement elem = dataElementValuesByName.get(0);
-        elem.setAttributeValue("http://test.tripledev.ee/datadict/vocabulary/test/test_another_source/another2");
-        dataElementValuesByName = VocabularyImportBaseHandler.getDataElementValuesByName("skos:prefLabel", vc3.getElementAttributes());
-        elem = dataElementValuesByName.get(0);
-        elem.setAttributeValue("bg_rdf_test_concept_3_updated");
-        int count = dataElementValuesByName.size();
-        for (int i = 1; i < count; i++) {
-            dataElementValuesByName.remove(1);
-        }
-        // skos:related is deleted from concept 2 so now it will be automatically be deleted from db
-        // SEE: fixRelatedElements method in dao
-        dataElementValuesByName = VocabularyImportBaseHandler.getDataElementValuesByName("skos:related", vc3.getElementAttributes());
-
-        //Since we implemented fixing local ref, concept with identifier 2 should have skos:related back to concept with identifier 3
-        VocabularyConcept vc2Updated = updatedConcepts.get(1);
-        dataElementValuesByName = VocabularyImportBaseHandler.getDataElementValuesByName("skos:related", vc2Updated.getElementAttributes());
-        VocabularyConcept vc2 = concepts.get(1);
-        vc2.getElementAttributes().add(dataElementValuesByName);
-
-        // compare manually updated objects with queried ones (after import operation)
-        ReflectionAssert.assertReflectionEquals(concepts, updatedConcepts, ReflectionComparatorMode.LENIENT_DATES, ReflectionComparatorMode.LENIENT_ORDER);
-    } // end of test step testIfConceptsUpdatedAddedAfterPerPredicatePurge
-
-    /**
      * In this test, RDF file contains some concepts which has / and importer should skip those lines.
      *
      * @throws Exception
@@ -1873,4 +1813,5 @@ public class RDFVocabularyImportServiceTestIT extends VocabularyImportServiceTes
 
         Assert.assertNotNull(vc);
     }
+
 }
