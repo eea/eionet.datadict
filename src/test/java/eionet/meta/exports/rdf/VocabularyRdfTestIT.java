@@ -26,8 +26,6 @@ public class VocabularyRdfTestIT extends DDDatabaseTestCase   {
      */
     private static final String BASE_URL = "http://test.tripledev.ee/datadict";
 
-    RDFVocabularyImportServiceImpl rdfVocabularyImportService = new RDFVocabularyImportServiceImpl();
-
     /**
      * test if RDF output contains collection resource for a folder.
      * @throws Exception if test fails

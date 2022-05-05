@@ -658,39 +658,7 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
 
     @Override
     public void endRDF() throws RDFHandlerException {
-        /*if (this.createNewDataElementsForPredicates) {
-            // if purge per predicate is selected and rdf does not contain any for some concepts. Then those untouched concepts
-            // should be updated to remove these predicates if they have
-            // 1. first do it for toBeUpdateConcepts
-            for (VocabularyConcept concept : this.toBeUpdatedConcepts) {
-                for (String key : this.predicateUpdatesAtConcepts.keySet()) {
-                    if (!this.predicateUpdatesAtConcepts.get(key).contains(concept.getId())) {
-                        List<DataElement> conceptElements =
-                                getDataElementValuesByName(this.identifierOfPredicate.get(key), concept.getElementAttributes());
-                        if (conceptElements != null && conceptElements.size() > 0) {
-                            concept.getElementAttributes().remove(conceptElements);
-                        }
-                    }
-                }
-            }
-            // 2. do it for untouched concepts (aka - missing concepts in the rdf file).
-            //NOTE: this can be imported for: getMissingConcepts function.
-            for (VocabularyConcept concept : this.concepts) {
-                boolean conceptUpdated = false;
-                for (String key : this.predicateUpdatesAtConcepts.keySet()) {
-                    List<DataElement> conceptElements =
-                            getDataElementValuesByName(this.identifierOfPredicate.get(key), concept.getElementAttributes());
-                    if (conceptElements != null && conceptElements.size() > 0) {
-                        concept.getElementAttributes().remove(conceptElements);
-                        conceptUpdated = true;
-                    }
-                }
-                if (conceptUpdated) {
-                    this.toBeUpdatedConcepts.add(concept);
-                }
-            }
-        }*/
-
+        
         // check for null label containing concepts
         List<String> conceptsWithNullLabels = processNewlyCreatedConceptsForNullCheck();
         // process unseen concepts for related elements
