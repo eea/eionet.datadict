@@ -53,7 +53,7 @@ public class RDFVocabularyImportServiceAllCasesTestIT extends VocabularyImportSe
         In this case, existing vocabulary information will be updated with information from imported concepts.
         If there are missing concepts in the rdf they are ignored.
         If there are extra concepts in the rdf, they are added.
-        If there is an existing data element for a concept in the rdf, the new value is added for the concept as a list of values
+        If there is an existing data element for a concept in the rdf, the concept will have both the old value for the element, as well as the new one.
      */
     @Test
     public void testDontPurgeIgnoreMissingConcepts() throws Exception {
@@ -136,7 +136,7 @@ public class RDFVocabularyImportServiceAllCasesTestIT extends VocabularyImportSe
         In this case, existing vocabulary information will be updated with information from imported concepts.
         If there are missing concepts in the rdf they removed.
         If there are extra concepts in the rdf, they are added.
-        If there is an existing data element for a non missing concept in the rdf, the new value is added for the concept as a list of values
+        If there is an existing data element for a non missing concept in the rdf, the concept will have both the old value for the element, as well as the new one.
      */
     @Test
     public void testDontPurgeRemoveMissingConcepts() throws Exception {
@@ -197,7 +197,7 @@ public class RDFVocabularyImportServiceAllCasesTestIT extends VocabularyImportSe
         In this case, existing vocabulary information will be updated with information from imported concepts.
         If there are missing concepts in the rdf are maintained but their status is updated to invalid
         If there are extra concepts in the rdf, they are added.
-        If there is an existing data element for a non missing concept in the rdf, the new value is added for the concept as a list of values
+        If there is an existing data element for a non missing concept in the rdf, the concept will have both the old value for the element, as well as the new one.
      */
     @Test
     public void testDontPurgeMaintainMissingConceptsAndChangeStatusToInvalid() throws Exception {
@@ -285,7 +285,7 @@ public class RDFVocabularyImportServiceAllCasesTestIT extends VocabularyImportSe
         In this case, existing vocabulary information will be updated with information from imported concepts.
         If there are missing concepts in the rdf are maintained but their status is updated to Deprecated
         If there are extra concepts in the rdf, they are added.
-        If there is an existing data element for a non missing concept in the rdf, the new value is added for the concept as a list of values
+        If there is an existing data element for a non missing concept in the rdf, the concept will have both the old value for the element, as well as the new one.
      */
     @Test
     public void testDontPurgeMaintainMissingConceptsAndChangeStatusToDeprecated() throws Exception {
@@ -373,7 +373,7 @@ public class RDFVocabularyImportServiceAllCasesTestIT extends VocabularyImportSe
         In this case, existing vocabulary information will be updated with information from imported concepts.
         If there are missing concepts in the rdf are maintained but their status is updated to Deprecated-Retired
         If there are extra concepts in the rdf, they are added.
-        If there is an existing data element for a non missing concept in the rdf, the new value is added for the concept as a list of values
+        If there is an existing data element for a non missing concept in the rdf, the concept will have both the old value for the element, as well as the new one.
      */
     @Test
     public void testDontPurgeMaintainMissingConceptsAndChangeStatusToDeprecatedRetired() throws Exception {
@@ -461,7 +461,7 @@ public class RDFVocabularyImportServiceAllCasesTestIT extends VocabularyImportSe
         In this case, existing vocabulary information will be updated with information from imported concepts.
         If there are missing concepts in the rdf are maintained but their status is updated to Deprecated-Superseded
         If there are extra concepts in the rdf, they are added.
-        If there is an existing data element for a non missing concept in the rdf, the new value is added for the concept as a list of values
+        If there is an existing data element for a non missing concept in the rdf, the concept will have both the old value for the element, as well as the new one.
      */
     @Test
     public void testDontPurgeMaintainMissingConceptsAndChangeStatusToDeprecatedSuperseded() throws Exception {
@@ -547,9 +547,9 @@ public class RDFVocabularyImportServiceAllCasesTestIT extends VocabularyImportSe
 
     /*
         In this case, predicates of existing concepts will be replaced with the imported predicates.
-        If there are missing concepts in the rdf they are ignored
+        If there are missing concepts in the rdf they are ignored.
         If there are extra concepts in the rdf, they are added.
-        If an existing concept has a bound element that is not included in the rdf, then that element is maintained for the concept
+        If an existing concept has a bound element that is not included in the rdf, then that element is maintained for the concept.
      */
     @Test
     public void testPurgePerPredicateIgnoreMissingConcepts() throws Exception {
@@ -630,7 +630,7 @@ public class RDFVocabularyImportServiceAllCasesTestIT extends VocabularyImportSe
         In this case, predicates of existing concepts will be replaced with the imported predicates.
         If there are missing concepts in the rdf they removed
         If there are extra concepts in the rdf, they are added.
-        If an existing concept has a bound element that is not included in the rdf, then that element is maintained for the concept
+        If an existing concept has a bound element that is not included in the rdf, then that element is maintained for the concept.
      */
     @Test
     public void testPurgePerPredicateRemoveMissingConcepts() throws Exception {
@@ -688,7 +688,7 @@ public class RDFVocabularyImportServiceAllCasesTestIT extends VocabularyImportSe
         In this case, predicates of existing concepts will be replaced with the imported predicates.
         If there are missing concepts in the rdf are maintained but their status is updated to invalid
         If there are extra concepts in the rdf, they are added.
-        If an existing concept has a bound element that is not included in the rdf, then that element is maintained for the concept
+        If an existing concept has a bound element that is not included in the rdf, then that element is maintained for the concept.
      */
     @Test
     public void testPurgePerPredicateMaintainMissingConceptsAndChangeStatusToInvalid() throws Exception {
@@ -774,7 +774,7 @@ public class RDFVocabularyImportServiceAllCasesTestIT extends VocabularyImportSe
         In this case, predicates of existing concepts will be replaced with the imported predicates.
         /If there are missing concepts in the rdf are maintained but their status is updated to Deprecated
         If there are extra concepts in the rdf, they are added.
-        If an existing concept has a bound element that is not included in the rdf, then that element is maintained for the concept
+        If an existing concept has a bound element that is not included in the rdf, then that element is maintained for the concept.
      */
     @Test
     public void testPurgePerPredicateMaintainMissingConceptsAndChangeStatusToDeprecated() throws Exception {
@@ -860,7 +860,7 @@ public class RDFVocabularyImportServiceAllCasesTestIT extends VocabularyImportSe
         In this case, predicates of existing concepts will be replaced with the imported predicates.
         If there are missing concepts in the rdf are maintained but their status is updated to Deprecated-Retired
         If there are extra concepts in the rdf, they are added.
-        If an existing concept has a bound element that is not included in the rdf, then that element is maintained for the concept
+        If an existing concept has a bound element that is not included in the rdf, then that element is maintained for the concept.
      */
     @Test
     public void testPurgePerPredicateMaintainMissingConceptsAndChangeStatusToDeprecatedRetired() throws Exception {
@@ -946,7 +946,7 @@ public class RDFVocabularyImportServiceAllCasesTestIT extends VocabularyImportSe
         In this case, predicates of existing concepts will be replaced with the imported predicates.
         If there are missing concepts in the rdf are maintained but their status is updated to Deprecated-Superseded
         If there are extra concepts in the rdf, they are added.
-        If an existing concept has a bound element that is not included in the rdf, then that element is maintained for the concept
+        If an existing concept has a bound element that is not included in the rdf, then that element is maintained for the concept.
      */
     @Test
     public void testPurgePerPredicateMaintainMissingConceptsAndChangeStatusToDeprecatedSuperseded() throws Exception {
