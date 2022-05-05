@@ -6,7 +6,7 @@
    xmlns:skos="http://www.w3.org/2004/02/skos/core#"
    xmlns:dcterms="http://purl.org/dc/terms/"
    xmlns:geo="http://geo.org#ws64"
-   xmlns="http://127.0.0.1:8080/datadict/property/"
+   xmlns="http://dd.eionet.europa.eu/property/"
    xml:base="http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/">
    <skos:ConceptScheme rdf:about="http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/">
          <rdfs:label>rdf_header_vocab_test</rdfs:label>
