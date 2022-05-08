@@ -641,6 +641,7 @@ public class RDFVocabularyImportServiceAllCasesTestIT extends VocabularyImportSe
 
         // import RDF into database
         vocabularyImportService.importRdfIntoVocabulary(reader, oldVocabularyFolder, IVocabularyImportService.UploadActionBefore.keep, IVocabularyImportService.UploadAction.add_and_purge_per_predicate_basis, IVocabularyImportService.MissingConceptsAction.remove);
+
         List<VocabularyConcept> concepts = getAllVocabularyConceptsWithAttributes(oldVocabularyFolder);
         assertThat(concepts, is(notNullValue()));
         assertThat(concepts.size(), is(3));

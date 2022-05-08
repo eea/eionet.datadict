@@ -1442,7 +1442,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     public Resolution rdf() {
         try {
             vocabularyFolder =
-                    vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
+                    vocabularyService.getVocabularyFolder(getVocabularyFolder().getFolderName(), getVocabularyFolder().getIdentifier(),
                             false);
             LOGGER.info(String.format("Exporting rdf for vocabulary #%d", vocabularyFolder.getId()));
 
@@ -2351,5 +2351,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         }
         return null;
     }
+
+
 
 }
