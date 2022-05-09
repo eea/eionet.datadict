@@ -17,7 +17,7 @@
         <skos:notation>8</skos:notation>
         <skos:prefLabel>rdf_test_concept_label_1</skos:prefLabel>
         <skos:definition>rdf_test_concept_def_1</skos:definition>
-        <adms:status rdf:resource="http://dd.eionet.europa.eu/vocabulary/datadictionary/status/deprecated"/>
+        <adms:status rdf:resource="http://dd.eionet.europa.eu/vocabulary/datadictionary/status/superseded"/>
         <statusModified>2022-05-08</statusModified>
         <acceptedDate>2022-05-08</acceptedDate>
         <notAcceptedDate></notAcceptedDate>
@@ -35,7 +35,6 @@
         <acceptedDate></acceptedDate>
         <notAcceptedDate></notAcceptedDate>
         <skos:inScheme rdf:resource="http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/"/>
-        <testElement1>testElement1 for rdf_test_concept_2</testElement1>
         <testElement1>New testElement1 for rdf_test_concept_2</testElement1>
         <testElement2>testElement2 for rdf_test_concept_2</testElement2>
         <testElement3>testElement3 for rdf_test_concept_2</testElement3>
@@ -44,7 +43,7 @@
         <skos:notation>10</skos:notation>
         <skos:prefLabel>rdf_test_concept_label_3</skos:prefLabel>
         <skos:definition>rdf_test_concept_def_3</skos:definition>
-        <adms:status rdf:resource="http://dd.eionet.europa.eu/vocabulary/datadictionary/status/deprecated"/>
+        <adms:status rdf:resource="http://dd.eionet.europa.eu/vocabulary/datadictionary/status/superseded"/>
         <statusModified>2022-05-08</statusModified>
         <acceptedDate>2022-05-08</acceptedDate>
         <notAcceptedDate></notAcceptedDate>
