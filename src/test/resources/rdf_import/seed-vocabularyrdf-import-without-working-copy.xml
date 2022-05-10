@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='UTF-8'?>
+
+<dataset>
+    <T_RDF_NAMESPACE ID="1" NAME_PREFIX="geo" URI="http://geo.org#ws64"/>
+    <T_RDF_NAMESPACE ID="2" NAME_PREFIX="skos" URI="http://www.w3.org/2004/02/skos/core#"/>
+    <T_RDF_NAMESPACE ID="3" NAME_PREFIX="env" URI="http://www.tripledev.ee/2014/03/env/core#"/>
+    <T_RDF_NAMESPACE ID="4" NAME_PREFIX="dct" URI="http://purl.org/dc/terms/"/>
+
+    <NAMESPACE NAMESPACE_ID="1" SHORT_NAME="datasets"/>
+
+    <VOCABULARY_SET ID="5" IDENTIFIER="rdf_header_vs" LABEL="rdf_header_vs_test" />
+
+    <VOCABULARY VOCABULARY_ID="4" CONTINUITY_ID="124" IDENTIFIER="rdf_header_vocab" LABEL="rdf_header_vocab_test" REG_STATUS="Released" WORKING_COPY="0" WORKING_USER="[NULL]" CHECKEDOUT_COPY_ID="[NULL]" BASE_URI="http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/" FOLDER_ID="5"/>
+
+    <VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="8" VOCABULARY_ID="4" ORIGINAL_CONCEPT_ID="[NULL]" IDENTIFIER="rdf_test_concept_1" LABEL="rdf_test_concept_label_1" DEFINITION="rdf_test_concept_def_1" NOTATION="8" STATUS="145"/>
+    <VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="9" VOCABULARY_ID="4" ORIGINAL_CONCEPT_ID="[NULL]" IDENTIFIER="rdf_test_concept_2" LABEL="rdf_test_concept_label_2" DEFINITION="rdf_test_concept_def_2" NOTATION="9" STATUS="145"/>
+    <VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="10" VOCABULARY_ID="4" ORIGINAL_CONCEPT_ID="[NULL]" IDENTIFIER="rdf_test_concept_3" LABEL="rdf_test_concept_label_3" DEFINITION="rdf_test_concept_def_3" NOTATION="10" STATUS="145"/>
+
+    <DATAELEM DATAELEM_ID="1" NAMESPACE_ID="1" SHORT_NAME="testElement1" REG_STATUS="Released" IDENTIFIER="testElement1"/>
+    <DATAELEM DATAELEM_ID="2" NAMESPACE_ID="1" SHORT_NAME="testElement2" REG_STATUS="Released" IDENTIFIER="testElement2"/>
+    <DATAELEM DATAELEM_ID="3" NAMESPACE_ID="1" SHORT_NAME="testElement3" REG_STATUS="Released" IDENTIFIER="testElement3"/>
+
+    <VOCABULARY2ELEM VOCABULARY_ID="4" DATAELEM_ID="1" />
+    <VOCABULARY2ELEM VOCABULARY_ID="4" DATAELEM_ID="2" />
+    <VOCABULARY2ELEM VOCABULARY_ID="4" DATAELEM_ID="3" />
+
+    <VOCABULARY_CONCEPT_ELEMENT ID="1" VOCABULARY_CONCEPT_ID="8" DATAELEM_ID="1" ELEMENT_VALUE="testElement1 for rdf_test_concept_1" RELATED_CONCEPT_ID="[NULL]" LANGUAGE="[NULL]"/>
+    <VOCABULARY_CONCEPT_ELEMENT ID="2" VOCABULARY_CONCEPT_ID="8" DATAELEM_ID="2" ELEMENT_VALUE="testElement2 for rdf_test_concept_1" RELATED_CONCEPT_ID="[NULL]" LANGUAGE="[NULL]"/>
+
+    <VOCABULARY_CONCEPT_ELEMENT ID="3" VOCABULARY_CONCEPT_ID="9" DATAELEM_ID="1" ELEMENT_VALUE="testElement1 for rdf_test_concept_2" RELATED_CONCEPT_ID="[NULL]" LANGUAGE="[NULL]"/>
+    <VOCABULARY_CONCEPT_ELEMENT ID="4" VOCABULARY_CONCEPT_ID="9" DATAELEM_ID="3" ELEMENT_VALUE="testElement3 for rdf_test_concept_2" RELATED_CONCEPT_ID="[NULL]" LANGUAGE="[NULL]"/>
+
+
+</dataset>

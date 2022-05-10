@@ -1,7 +1,9 @@
 package eionet.meta.exports.rdf;
 
+import eionet.meta.service.RDFVocabularyImportServiceImpl;
 import eionet.util.Props;
 import eionet.util.PropsIF;
+import eionet.web.action.VocabularyFolderActionBean;
 import net.sourceforge.stripes.mock.MockRoundtrip;
 import net.sourceforge.stripes.mock.MockServletContext;
 

@@ -175,7 +175,7 @@ public abstract class VocabularyImportBaseHandler {
             return new Pair<VocabularyConcept, Boolean>(this.concepts.remove(j), false);
         }
 
-        // concept may already created, check it first
+        // concept may already be created, check it first
         j = getPositionIn(this.notSeenConceptsYet, conceptIdentifier);
         if (j < this.notSeenConceptsYet.size()) {
             return new Pair<VocabularyConcept, Boolean>(this.notSeenConceptsYet.remove(j), false);
