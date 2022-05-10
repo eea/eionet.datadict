@@ -327,7 +327,7 @@ public class VocabularyFolderApiActionBeanTestIT extends UnitilsJUnit4 {
 
  */
 
-        trip.getRequest().addHeader(JWT_API_KEY_HEADER, "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJERFRlc3QiLCJpYXQiOjE2MTc4Njg3NDIsImV4cCI6MTY0OTQwNDc0MiwiYXVkIjoid3JvbmdBdWRpZW5jZSIsInN1YiI6IiJ9.fNNXg0rV33u89kF8vnfRedQeHloS7oBPJFmGid-6x-r5KUzr_DbPlEmLZfw3qj7qOpgbuShNZCRjUG03RS64Fw\n");
+        trip.getRequest().addHeader(JWT_API_KEY_HEADER, "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJERHRlc3QiLCJpYXQiOjE2NDk2ODA0NTksImV4cCI6MTY4MTIxNjQ1OSwiYXVkIjoid3JvbmdBdWRpZW5jZSIsInN1YiI6IiJ9.F2YqA25cq256vgWm1tary0deF81kL2gTkcQeHU9l7ghzoX_DbaVLlBy6qksmVJPLxYUIRyJDuEcL-ox9oLhhvw");
         trip.execute("uploadRdf");
         MockHttpServletResponse response = trip.getResponse();
         Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
