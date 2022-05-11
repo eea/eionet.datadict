@@ -71,7 +71,7 @@ public class VocabularyFolderDAOTestIT extends UnitilsJUnit4 {
 
         VocabularyFolder vf = vocabularyFolderDAO.getVocabularyFolder(vocabularyId);
 
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         String expectedTime = formatter.format(testDate);
         String actualTime = formatter.format(vf.getDateModified());
         Assert.assertThat(actualTime, CoreMatchers.is(expectedTime) );
@@ -87,7 +87,7 @@ public class VocabularyFolderDAOTestIT extends UnitilsJUnit4 {
 
         VocabularyFolder vf = vocabularyFolderDAO.getVocabularyFolder(vocabularyId);
 
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         String expectedTime = formatter.format(testDate);
         String actualTime = formatter.format(vf.getDateModified());
         Assert.assertThat(actualTime, CoreMatchers.is(expectedTime) );
