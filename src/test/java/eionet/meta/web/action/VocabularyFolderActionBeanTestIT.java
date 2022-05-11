@@ -1148,6 +1148,24 @@ public class VocabularyFolderActionBeanTestIT extends DDDatabaseTestCase {
                 //Changes for #136471
                 //in seed-vocabularycsv.xml which is the used xml there are no StatusModifiedDate and AcceptedDate values for all concepts so we move on to data elements
 
+                // move to broader
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("broader", "broader", val);
+                parser.nextToken(); // move to value
+
+                // move to narrower
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("broader", "broader", val);
+                parser.nextToken(); // move to value
+
+                // move to narrower
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("narrower", "narrower", val);
+                parser.nextToken(); // move to value
+
                 // move to data elements
                 parser.nextToken();
                 val = parser.getCurrentName();
@@ -1558,6 +1576,24 @@ public class VocabularyFolderActionBeanTestIT extends DDDatabaseTestCase {
                 //Changes for #136471
                 //in seed-vocabularycsv.xml which is the used xml there are no StatusModifiedDate and AcceptedDate values for all concepts so we move on to data elements
 
+                // move to broader
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("broader", "broader", val);
+                parser.nextToken(); // move to value
+
+                // move to narrower
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("broader", "broader", val);
+                parser.nextToken(); // move to value
+
+                // move to narrower
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("narrower", "narrower", val);
+                parser.nextToken(); // move to value
+
                 parser.nextToken();
                 val = parser.getCurrentName();
                 Assert.assertEquals("Data Element 2", "AnotherCode", val);
@@ -1930,6 +1966,24 @@ public class VocabularyFolderActionBeanTestIT extends DDDatabaseTestCase {
 
                 //Changes for #136471
                 //in seed-vocabularycsv.xml which is the used xml there are no StatusModifiedDate and AcceptedDate values for all concepts so we move on to data elements
+
+                // move to broader
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("broader", "broader", val);
+                parser.nextToken(); // move to value
+
+                // move to narrower
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("broader", "broader", val);
+                parser.nextToken(); // move to value
+
+                // move to narrower
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("narrower", "narrower", val);
+                parser.nextToken(); // move to value
 
                 // move to data elements
                 parser.nextToken();
@@ -2311,6 +2365,24 @@ public class VocabularyFolderActionBeanTestIT extends DDDatabaseTestCase {
 
                 //Changes for #136471
                 //in seed-vocabularycsv.xml which is the used xml there are no StatusModifiedDate and AcceptedDate values for all concepts so we move on to data elements
+
+                // move to broader
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("broader", "broader", val);
+                parser.nextToken(); // move to value
+
+                // move to narrower
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("broader", "broader", val);
+                parser.nextToken(); // move to value
+
+                // move to narrower
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("narrower", "narrower", val);
+                parser.nextToken(); // move to value
 
                 parser.nextToken();
                 val = parser.getCurrentName();
@@ -2896,6 +2968,24 @@ public class VocabularyFolderActionBeanTestIT extends DDDatabaseTestCase {
                 //Changes for #136471
                 //in seed-vocabularycsv.xml which is the used xml there are no StatusModifiedDate and AcceptedDate values for all concepts so we move on to data elements
 
+                // move to broader
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("broader", "broader", val);
+                parser.nextToken(); // move to value
+
+                // move to narrower
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("broader", "broader", val);
+                parser.nextToken(); // move to value
+
+                // move to narrower
+                parser.nextToken();
+                val = parser.getCurrentName();
+                Assert.assertEquals("narrower", "narrower", val);
+                parser.nextToken(); // move to value
+
                 parser.nextToken();
                 val = parser.getCurrentName();
                 Assert.assertEquals("Data Element 2", "AnotherCode", val);
@@ -3279,6 +3369,18 @@ public class VocabularyFolderActionBeanTestIT extends DDDatabaseTestCase {
                     }
                     Assert.assertEquals(JsonToken.END_ARRAY, parser.nextToken()); // JsonToken.END_ARRAY
                 }
+                else{
+                    // move to broader
+                    parser.nextToken();
+                    val = parser.getCurrentName();
+                    Assert.assertEquals("Broader", VocabularyJSONOutputHelper.BROADER, val);
+                    parser.nextToken(); // move to value
+
+                    // move to broader
+                    parser.nextToken();
+                    val = parser.getCurrentName();
+                    Assert.assertEquals("Broader", VocabularyJSONOutputHelper.BROADER, val);
+                }
 
                 if (narrowers[i].length > 0) {
                     // narrowers array
@@ -3298,6 +3400,18 @@ public class VocabularyFolderActionBeanTestIT extends DDDatabaseTestCase {
                         Assert.assertEquals(JsonToken.END_OBJECT, parser.nextToken()); // JsonToken.END_OBJECT
                     }
                     Assert.assertEquals(JsonToken.END_ARRAY, parser.nextToken()); // JsonToken.END_ARRAY
+                }
+                else{
+                    // move to narrower
+                    parser.nextToken();
+                    val = parser.getCurrentName();
+                    Assert.assertEquals("Narrower", VocabularyJSONOutputHelper.NARROWER, val);
+                    parser.nextToken(); // move to value
+
+                    // move to narrower
+                    parser.nextToken();
+                    val = parser.getCurrentName();
+                    Assert.assertEquals("Narrower", VocabularyJSONOutputHelper.NARROWER, val);
                 }
 
                 //Changes for #136471
