@@ -202,7 +202,7 @@ public class SQLTransaction implements Transaction {
 
         Connection conn = null;
         try {
-            Class.forName("com.mysql.jdbc.Driver");
+            Class.forName("com.mysql.cj.jdbc.Driver");
             String url =
                 "jdbc:mysql://localhost/DataDict?autoReconnect=true&useUnicode=true&characterEncoding=UTF-8&emptyStringsConvertToZero=false&jdbcCompliantTruncation=false";
             conn = DriverManager.getConnection(url, "dduser", "xxx");

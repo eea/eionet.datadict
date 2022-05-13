@@ -15,6 +15,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+
+import eionet.meta.service.DBUnitHelper;
+import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,16 +35,23 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {ApplicationTestContext.class})
 @TestExecutionListeners({DependencyInjectionTestExecutionListener.class,
-    TransactionalTestExecutionListener.class,
-    DbUnitTestExecutionListener.class})
-@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT,
-        value = "classpath:seed-dataelementIT.xml")
-@DatabaseTearDown(type = DatabaseOperation.DELETE_ALL,
-        value = "classpath:seed-dataelementIT.xml")
+    TransactionalTestExecutionListener.class
+    })
+
 public class DataElementDaoTestIT {
 
     @Autowired
     DataElementDao dataElementDao;
+
+    @Before
+    public void setUp() throws Exception {
+        DBUnitHelper.loadData("seed-dataelementIT.xml");
+    }
+
+    @AfterClass
+    public static void tearDown() throws Exception {
+        DBUnitHelper.deleteData("seed-dataelementIT.xml");
+    }
 
     @Test
     public void testGetByID() {

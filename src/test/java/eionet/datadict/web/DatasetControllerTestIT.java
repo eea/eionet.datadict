@@ -6,8 +6,10 @@ import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.github.springtestdbunit.annotation.DatabaseTearDown;
 import eionet.config.ApplicationTestContext;
 import eionet.datadict.util.StringUtils;
+import eionet.meta.service.DBUnitHelper;
 import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.Diff;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,12 +38,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {ApplicationTestContext.class})
 @TestExecutionListeners({DependencyInjectionTestExecutionListener.class,
-    TransactionalTestExecutionListener.class,
-    DbUnitTestExecutionListener.class})
-@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT,
-        value = "classpath:seed-datasetIT.xml")
-@DatabaseTearDown(type = DatabaseOperation.DELETE_ALL,
-        value = "classpath:seed-datasetIT.xml")
+    TransactionalTestExecutionListener.class
+    })
+
 public class DatasetControllerTestIT {
 
     private MockMvc mockMvc;
@@ -49,6 +48,15 @@ public class DatasetControllerTestIT {
     @Autowired
     DataSetController dataSetController;
 
+    @Before
+    public void setUp() throws Exception {
+        DBUnitHelper.loadData("seed-datasetIT.xml");
+    }
+
+    @AfterClass
+    public static void tearDown() throws Exception {
+        DBUnitHelper.deleteData("seed-datasetIT.xml");
+    }
     @Before
     public void setup() throws Exception {
         MockitoAnnotations.initMocks(this);

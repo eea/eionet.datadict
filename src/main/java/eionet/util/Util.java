@@ -1442,14 +1442,11 @@ public final class Util {
      * @return encoded value
      */
     public static String encodeURLPath(String value) {
-        String retValue = value;
-        try {
-            retValue = UriUtils.encodePath(value, "utf-8");
-        } catch (UnsupportedEncodingException ue) {
+        String retValue = UriUtils.encodePath(value, "utf-8");
+        if(retValue != null){
             return retValue;
         }
-
-        return retValue;
+        return value;
     }
 
     /**

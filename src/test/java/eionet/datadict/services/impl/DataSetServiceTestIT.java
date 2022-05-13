@@ -9,8 +9,11 @@ import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.errors.XmlExportException;
 import eionet.datadict.services.DataSetService;
 import eionet.datadict.util.StringUtils;
+import eionet.meta.service.DBUnitHelper;
 import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.Diff;
+import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,18 +44,23 @@ import static org.junit.Assert.assertTrue;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {ApplicationTestContext.class})
 @TestExecutionListeners({DependencyInjectionTestExecutionListener.class,
-    TransactionalTestExecutionListener.class,
-    DbUnitTestExecutionListener.class})
-@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT,
-        value = "classpath:seed-datasetIT.xml")
-@DatabaseTearDown(type = DatabaseOperation.DELETE_ALL,
-        value = "classpath:seed-datasetIT.xml")
+    TransactionalTestExecutionListener.class
+    })
 
 public class DataSetServiceTestIT {
 
     @Autowired
     DataSetService dataSetService;
 
+    @Before
+    public void setUp() throws Exception {
+        DBUnitHelper.loadData("seed-datasetIT.xml");
+    }
+
+    @AfterClass
+    public static void tearDown() throws Exception {
+        DBUnitHelper.deleteData("seed-datasetIT.xml");
+    }
     @Test
     public void testGetDataSetXMLSchema() throws XmlExportException, ResourceNotFoundException, TransformerConfigurationException, TransformerException, SAXException, ParserConfigurationException, IOException {
         Document XMlDocument = dataSetService.getDataSetXMLSchema(2827);

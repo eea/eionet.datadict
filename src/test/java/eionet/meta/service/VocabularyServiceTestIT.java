@@ -403,9 +403,11 @@ public class VocabularyServiceTestIT extends UnitilsJUnit4 {
     @Test
     public void testVocabularyConceptStatusDateSave() throws ServiceException {
         Calendar cal = Calendar.getInstance();
-        cal.setTimeInMillis(0);
-        cal.set(2014, 8, 26);
-        Date dStatusModified = cal.getTime();
+        cal.setTimeInMillis(1647876082071l);
+     //   cal.set(2014, 8, 26);
+        cal.set(2014, Calendar.APRIL, 12, 0, 0, 0);
+
+        java.sql.Date dStatusModified = new java.sql.Date(cal.getTimeInMillis());
 
         VocabularyConcept concept3 = new VocabularyConcept();
         concept3.setIdentifier("test3");
@@ -420,20 +422,21 @@ public class VocabularyServiceTestIT extends UnitilsJUnit4 {
         assertNotNull("Expected concept", result3);
         assertEquals("Status", StandardGenericStatus.SUBMITTED, result3.getStatus());
         assertEquals("Status Modified", dateFormatter.format(dStatusModified), dateFormatter.format(result3.getStatusModified()));
+
         assertEquals(dateFormatter.format(new Date()), dateFormatter.format(result3.getNotAcceptedDate()));
 
         // now test for update
         cal.set(2014, 8, 21);
-        dStatusModified = new Date();
+       Date dStatusModified2 = new Date();
         concept3.setStatus(StandardGenericStatus.VALID);
-        concept3.setStatusModified(dStatusModified);
+        concept3.setStatusModified(dStatusModified2);
         // update
         vocabularyService.updateVocabularyConcept(concept3);
         // query updated values
         result3 = vocabularyService.getVocabularyConcept(3, "test3", true);
         assertNotNull("Expected concept", result3);
         assertEquals("Status", StandardGenericStatus.VALID, result3.getStatus());
-        assertEquals("Status Modified", dateFormatter.format(dStatusModified), dateFormatter.format(result3.getStatusModified()));
+        assertEquals("Status Modified", dateFormatter.format(dStatusModified2), dateFormatter.format(result3.getStatusModified()));
         assertEquals(dateFormatter.format(new Date()), dateFormatter.format(result3.getAcceptedDate()));
     }
 
