@@ -28,6 +28,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -193,6 +194,8 @@ public class DataSetController {
     @RequestMapping(value = "{id}/updateDispCreateLinks/{dispDownloadLinkType}/{value}")
     public ResponseEntity<?> updateDisplayDownloadLinks(HttpServletResponse response,@PathVariable int id,@PathVariable String dispDownloadLinkType,@PathVariable String value,
             HttpServletRequest request) throws IOException {
+        Thread.currentThread().setName("UPDATE-DATASET-DISPLAY-DOWNLOAD-LINKS");
+        MDC.put("sessionId", request.getSession().getId().substring(0,16));
         DDUser user = SecurityUtil.getUser(request);
         if (user != null && user.hasPermission("/datasets", "u")) {
             try {
