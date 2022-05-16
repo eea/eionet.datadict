@@ -21,41 +21,26 @@
 
 package eionet.web.action;
 
+import eionet.meta.dao.domain.FixedValue;
+import eionet.meta.dao.domain.SiteCodeStatus;
+import eionet.meta.service.*;
+import eionet.meta.service.data.*;
+import eionet.util.Props;
+import eionet.util.PropsIF;
+import eionet.util.SecurityUtil;
+import eionet.util.VocabularyCSVOutputHelper;
+import net.sourceforge.stripes.action.*;
+import net.sourceforge.stripes.integration.spring.SpringBean;
+import net.sourceforge.stripes.validation.ValidationMethod;
+import org.apache.commons.lang.StringUtils;
+import org.displaytag.properties.SortOrderEnum;
+
+import javax.servlet.http.HttpServletResponse;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import eionet.util.VocabularyCSVOutputHelper;
-import net.sourceforge.stripes.action.*;
-import net.sourceforge.stripes.integration.spring.SpringBean;
-import net.sourceforge.stripes.validation.ValidationMethod;
-
-import org.apache.commons.lang.StringUtils;
-import org.displaytag.properties.MediaTypeEnum;
-import org.displaytag.properties.SortOrderEnum;
-import org.displaytag.tags.TableTagParameters;
-import org.displaytag.util.ParamEncoder;
-
-import eionet.meta.dao.domain.FixedValue;
-import eionet.meta.dao.domain.SiteCodeStatus;
-import eionet.meta.service.IEmailService;
-import eionet.meta.service.ISiteCodeService;
-import eionet.meta.service.IVocabularyService;
-import eionet.meta.service.ServiceException;
-import eionet.meta.service.SiteCodeServiceImpl;
-import eionet.meta.service.data.AllocationResult;
-import eionet.meta.service.data.CountryAllocations;
-import eionet.meta.service.data.PagedRequest;
-import eionet.meta.service.data.SiteCodeFilter;
-import eionet.meta.service.data.SiteCodeResult;
-import eionet.util.Props;
-import eionet.util.PropsIF;
-import eionet.util.SecurityUtil;
-import org.slf4j.MDC;
-
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * Site codes controller.
@@ -254,7 +239,7 @@ public class SiteCodesActionBean extends AbstractActionBean {
      */
     public Resolution reserveNewSiteCodes() throws ServiceException {
         Thread.currentThread().setName("RESERVE-NEW-SITE-CODES");
-        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
+        ActionMethodUtils.setLogParameters(getContext());
         vocabularyService.reserveFreeSiteCodes(siteCodeFolderId, reserveAmount, startIdentifier, getUserName());
 
         String eventTime = new SimpleDateFormat(DATE_TIME_FORMAT).format(new Date());
@@ -280,7 +265,7 @@ public class SiteCodesActionBean extends AbstractActionBean {
      */
     public Resolution allocate() throws ServiceException {
         Thread.currentThread().setName("ALLOCATE-SITE-CODES");
-        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
+        ActionMethodUtils.setLogParameters(getContext());
         AllocationResult allocationResult = null;
         if (CHOICE_LABEL.equals(choice)) {
             if (siteNames == null || siteNames.length == 0) {

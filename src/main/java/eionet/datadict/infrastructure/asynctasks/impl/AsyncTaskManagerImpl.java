@@ -33,7 +33,6 @@ import static org.quartz.TriggerBuilder.newTrigger;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -51,7 +50,6 @@ public class AsyncTaskManagerImpl implements AsyncTaskManager {
     private final JobListener asyncJobListener;
     private final AsyncTaskDataSerializer asyncTaskDataSerializer;
     private final AsyncTaskHistoryDao asyncTaskHistoryDao;
-    private String sessionId;
 
     @Autowired
     public AsyncTaskManagerImpl(@Qualifier("jobScheduler") Scheduler scheduler,
@@ -79,7 +77,6 @@ public class AsyncTaskManagerImpl implements AsyncTaskManager {
     @Override
     public <T extends AsyncTask> String executeAsync(Class<T> taskType, Map<String, Object> parameters)
             throws AsyncTaskManagementException {
-        MDC.put("sessionId", getSessionId());
         if (taskType == null) {
             throw new IllegalArgumentException("Task type cannot be null.");
         }
@@ -243,6 +240,7 @@ public class AsyncTaskManagerImpl implements AsyncTaskManager {
 
     @Override
     public <T> String updateScheduledTask(Class<T> taskType, Map<String, Object> parameters, Integer intervalMinutes, String taskId) {
+
         if (taskType == null) {
             throw new IllegalArgumentException("Task type cannot be null.");
         }
@@ -278,20 +276,11 @@ public class AsyncTaskManagerImpl implements AsyncTaskManager {
 
     @Override
     public List<AsyncTaskExecutionEntryHistory> getTaskEntryHistoryByTaskId(String taskId) {
-           return asyncTaskHistoryDao.retrieveTaskHistoryByTaskId(taskId);
-    } 
+        return asyncTaskHistoryDao.retrieveTaskHistoryByTaskId(taskId);
+    }
 
     @Override
     public List<AsyncTaskExecutionEntryHistory> retrieveLimitedTaskHistoryByTaskId(String taskId, int limit) {
         return asyncTaskHistoryDao.retrieveLimitedTaskHistoryByTaskId(taskId, limit);
-    }
-
-    public String getSessionId() {
-        return sessionId;
-    }
-
-    @Override
-    public void setSessionId(String sessionId) {
-        this.sessionId = sessionId;
     }
 }

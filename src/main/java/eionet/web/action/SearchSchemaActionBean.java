@@ -21,19 +21,6 @@
 
 package eionet.web.action;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import net.sourceforge.stripes.action.DefaultHandler;
-import net.sourceforge.stripes.action.ForwardResolution;
-import net.sourceforge.stripes.action.RedirectResolution;
-import net.sourceforge.stripes.action.Resolution;
-import net.sourceforge.stripes.action.UrlBinding;
-import net.sourceforge.stripes.integration.spring.SpringBean;
-
-import org.apache.commons.lang.StringUtils;
-import org.displaytag.properties.SortOrderEnum;
-
 import eionet.meta.dao.domain.RegStatus;
 import eionet.meta.dao.domain.Schema;
 import eionet.meta.dao.domain.SchemaSet;
@@ -41,7 +28,13 @@ import eionet.meta.service.ISchemaService;
 import eionet.meta.service.ServiceException;
 import eionet.meta.service.data.SchemaFilter;
 import eionet.meta.service.data.SchemasResult;
-import org.slf4j.MDC;
+import net.sourceforge.stripes.action.*;
+import net.sourceforge.stripes.integration.spring.SpringBean;
+import org.apache.commons.lang.StringUtils;
+import org.displaytag.properties.SortOrderEnum;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Schema search action bean.
@@ -127,7 +120,7 @@ public class SearchSchemaActionBean extends AbstractActionBean {
      */
     public Resolution copyToSchemaSet() throws ServiceException {
         Thread.currentThread().setName("COPY-SCHEMA-TO-SCHEMASET");
-        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
+        ActionMethodUtils.setLogParameters(getContext());
         // Validate selected schema
         if (schemaId == 0) {
             addWarningMessage("Select schema to copy.");

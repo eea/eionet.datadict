@@ -21,21 +21,6 @@
 
 package eionet.web.action;
 
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import net.sourceforge.stripes.action.DefaultHandler;
-import net.sourceforge.stripes.action.ForwardResolution;
-import net.sourceforge.stripes.action.RedirectResolution;
-import net.sourceforge.stripes.action.Resolution;
-import net.sourceforge.stripes.action.UrlBinding;
-import net.sourceforge.stripes.integration.spring.SpringBean;
-
-import net.sourceforge.stripes.validation.ValidationMethod;
-import org.apache.commons.lang.StringUtils;
-import org.displaytag.properties.SortOrderEnum;
-
 import eionet.meta.dao.domain.RegStatus;
 import eionet.meta.dao.domain.SchemaSet;
 import eionet.meta.service.ISchemaService;
@@ -44,9 +29,17 @@ import eionet.meta.service.ValidationException;
 import eionet.meta.service.data.SchemaSetFilter;
 import eionet.meta.service.data.SchemaSetsResult;
 import eionet.util.SecurityUtil;
+import net.sourceforge.stripes.action.*;
+import net.sourceforge.stripes.integration.spring.SpringBean;
+import net.sourceforge.stripes.validation.ValidationMethod;
+import org.apache.commons.lang.StringUtils;
+import org.displaytag.properties.SortOrderEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
+
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Schema sets action bean.
@@ -147,7 +140,7 @@ public class SearchSchemaSetsActionBean extends AbstractActionBean {
     @Deprecated
     public Resolution delete() throws ServiceException {
         Thread.currentThread().setName("DELETE-SCHEMA-SETS");
-        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
+        ActionMethodUtils.setLogParameters(getContext());
         if (isDeletePermission()) {
             try {
                 schemaService.deleteSchemaSets(selected, getUser(), true);

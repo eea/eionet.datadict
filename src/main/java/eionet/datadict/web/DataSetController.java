@@ -19,6 +19,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
@@ -195,8 +196,10 @@ public class DataSetController {
     public ResponseEntity<?> updateDisplayDownloadLinks(HttpServletResponse response,@PathVariable int id,@PathVariable String dispDownloadLinkType,@PathVariable String value,
             HttpServletRequest request) throws IOException {
         Thread.currentThread().setName("UPDATE-DATASET-DISPLAY-DOWNLOAD-LINKS");
-        MDC.put("sessionId", request.getSession().getId().substring(0,16));
+        HttpSession session = request.getSession();
+        MDC.put("sessionId", session!=null ? session.getId().substring(0,16) : "");
         DDUser user = SecurityUtil.getUser(request);
+        MDC.put("username", user!=null ? user.getUserName() : "");
         if (user != null && user.hasPermission("/datasets", "u")) {
             try {
                 this.dataSetService.updateDatasetDisplayDownloadLinks(id,dispDownloadLinkType,value);

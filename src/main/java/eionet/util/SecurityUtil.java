@@ -78,7 +78,7 @@ public final class SecurityUtil {
 
         HttpSession session = request.getSession();
         DDUser user = session == null ? null : (DDUser) session.getAttribute(REMOTEUSER);
-        MDC.put("sessionId", session.getId().substring(0,16));
+        MDC.put("sessionId", session!=null ? session.getId().substring(0,16) : "");
         if (user == null) {
             String casUserName = session == null ? null : (String) session.getAttribute(CASFilter.CAS_FILTER_USER);
             if (casUserName != null) {

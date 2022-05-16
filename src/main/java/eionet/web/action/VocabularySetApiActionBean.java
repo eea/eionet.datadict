@@ -12,7 +12,6 @@ import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.StreamingResolution;
 import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.integration.spring.SpringBean;
-import org.slf4j.MDC;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
@@ -39,7 +38,7 @@ public class VocabularySetApiActionBean extends AbstractActionBean {
 
     public Resolution createVocabularySet() {
         Thread.currentThread().setName("ADD-VOCABULARYSET");
-        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
+        ActionMethodUtils.setLogParameters(getContext());
         try {
             this.webApiAuthService.authenticate(this.webApiAuthInfoService.getAuthenticationInfo(getContext().getRequest()));
         } catch (UserAuthenticationException ex) {

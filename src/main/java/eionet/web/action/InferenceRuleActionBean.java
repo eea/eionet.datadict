@@ -26,19 +26,13 @@ import eionet.meta.dao.domain.InferenceRule;
 import eionet.meta.dao.domain.InferenceRule.RuleType;
 import eionet.meta.service.IDataService;
 import eionet.meta.service.ServiceException;
-import java.util.Collection;
 import net.sf.json.JSONArray;
 import net.sf.json.JsonConfig;
 import net.sf.json.util.PropertyFilter;
-import net.sourceforge.stripes.action.DefaultHandler;
-import net.sourceforge.stripes.action.ForwardResolution;
-import net.sourceforge.stripes.action.HandlesEvent;
-import net.sourceforge.stripes.action.RedirectResolution;
-import net.sourceforge.stripes.action.Resolution;
-import net.sourceforge.stripes.action.StreamingResolution;
-import net.sourceforge.stripes.action.UrlBinding;
+import net.sourceforge.stripes.action.*;
 import net.sourceforge.stripes.integration.spring.SpringBean;
-import org.slf4j.MDC;
+
+import java.util.Collection;
 
 
 @UrlBinding("/inference_rules/{parentElementId}/{$event}/{type}/{targetElementId}/{newType}/{newTargetElementId}/{pattern}")
@@ -91,7 +85,7 @@ public class InferenceRuleActionBean extends AbstractActionBean {
     
     public Resolution addRule() throws ServiceException {
         Thread.currentThread().setName("ADD-INFERENCE-RULE");
-        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
+        ActionMethodUtils.setLogParameters(getContext());
         if (!dataService.dataElementExists(parentElementId)) {
             addCautionMessage("There is no source element with ID: " + Integer.toString(parentElementId));
         }
@@ -112,7 +106,7 @@ public class InferenceRuleActionBean extends AbstractActionBean {
         }
         
     }
-    
+
     public Resolution existingRule() throws ServiceException {
         if (!dataService.dataElementExists(parentElementId)) {
             addGlobalValidationError("There is no source element with ID: " + Integer.toString(parentElementId));
@@ -129,7 +123,7 @@ public class InferenceRuleActionBean extends AbstractActionBean {
     
     public Resolution editRule() throws ServiceException {
         Thread.currentThread().setName("EDIT-INFERENCE-RULE");
-        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
+        ActionMethodUtils.setLogParameters(getContext());
         if (!dataService.dataElementExists(parentElementId)) {
             addGlobalValidationError("The ID (" + Integer.toString(parentElementId) + ") of the parent element of the existing rule is not valid");
         }

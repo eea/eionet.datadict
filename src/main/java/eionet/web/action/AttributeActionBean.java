@@ -2,6 +2,8 @@ package eionet.web.action;
 
 import eionet.datadict.errors.BadRequestException;
 import eionet.datadict.errors.ResourceNotFoundException;
+import eionet.datadict.errors.UserAuthenticationException;
+import eionet.datadict.errors.UserAuthorizationException;
 import eionet.datadict.model.Attribute;
 import eionet.datadict.model.DataDictEntity;
 import eionet.datadict.model.Namespace;
@@ -14,21 +16,14 @@ import eionet.datadict.services.data.AttributeDataService;
 import eionet.datadict.services.data.NamespaceDataService;
 import eionet.datadict.services.data.RdfNamespaceDataService;
 import eionet.meta.DDUser;
-import eionet.datadict.errors.UserAuthenticationException;
-import eionet.datadict.errors.UserAuthorizationException;
 import eionet.meta.dao.domain.FixedValue;
-import java.util.List;
-import java.util.Map;
-import net.sourceforge.stripes.action.Before;
-import net.sourceforge.stripes.action.DefaultHandler;
-import net.sourceforge.stripes.action.ForwardResolution;
-import net.sourceforge.stripes.action.RedirectResolution;
-import net.sourceforge.stripes.action.Resolution;
-import net.sourceforge.stripes.action.UrlBinding;
+import net.sourceforge.stripes.action.*;
 import net.sourceforge.stripes.controller.LifecycleStage;
 import net.sourceforge.stripes.integration.spring.SpringBean;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.MDC;
+
+import java.util.List;
+import java.util.Map;
 
 @UrlBinding("/attribute/{$event}/{attribute.id}")
 public class AttributeActionBean extends AbstractActionBean {
@@ -196,7 +191,7 @@ public class AttributeActionBean extends AbstractActionBean {
      */
     public Resolution save() throws UserAuthenticationException, UserAuthorizationException, BadRequestException {
         Thread.currentThread().setName("SAVE-ATTRIBUTE");
-        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
+        ActionMethodUtils.setLogParameters(getContext());
         DDUser user = this.getUser();
         
         int attributeId = this.attributeService.save(attribute, user);
@@ -222,8 +217,8 @@ public class AttributeActionBean extends AbstractActionBean {
      */
     public Resolution delete() throws UserAuthenticationException, UserAuthorizationException, ResourceNotFoundException {
        Thread.currentThread().setName("DELETE-ATTRIBUTE");
-       MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
-       DDUser user = this.getUser();
+        ActionMethodUtils.setLogParameters(getContext());
+        DDUser user = this.getUser();
        
        int attributeId = attribute.getId();
        
@@ -235,7 +230,7 @@ public class AttributeActionBean extends AbstractActionBean {
        
        return new RedirectResolution("/attributes");
     }
-    
+
     /**
      * Handles requests for the confirmDelete event. Is responsible for searching for dependencies between an attribute to be deleted
      * and other DataDict entities. If dependencies are found a confirmation page is provided, otherwise the delete method is called.

@@ -1,36 +1,24 @@
 package eionet.web.action;
 
-import eionet.meta.GetPrintout;
 import eionet.datadict.model.CacheEntry;
 import eionet.datadict.model.CacheEntry.ArticleType;
+import eionet.datadict.services.data.CacheService;
+import eionet.meta.GetPrintout;
 import eionet.meta.exports.CachableIF;
 import eionet.meta.exports.pdf.DstPdfGuideline;
 import eionet.meta.exports.pdf.PdfHandout;
 import eionet.meta.exports.xls.DstXls;
 import eionet.meta.exports.xls.TblXls;
-import eionet.datadict.services.data.CacheService;
 import eionet.meta.service.ServiceException;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.sql.ConnectionUtil;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.EnumSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import net.sourceforge.stripes.action.Before;
-import net.sourceforge.stripes.action.DefaultHandler;
-import net.sourceforge.stripes.action.ForwardResolution;
-import net.sourceforge.stripes.action.RedirectResolution;
-import net.sourceforge.stripes.action.Resolution;
-import net.sourceforge.stripes.action.UrlBinding;
+import net.sourceforge.stripes.action.*;
 import net.sourceforge.stripes.integration.spring.SpringBean;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.MDC;
+
+import java.io.File;
+import java.util.*;
 
 @UrlBinding("/cache")
 public class CachePageActionBean extends AbstractActionBean {
@@ -215,7 +203,7 @@ public class CachePageActionBean extends AbstractActionBean {
 
     public Resolution delete() {
         Thread.currentThread().setName("DELETE-CACHE-ENTRIES");
-        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
+        ActionMethodUtils.setLogParameters(getContext());
         for (ArticleType articleType : articleTypes) {
             CacheEntry cacheEntry = this.cacheService.getCacheEntry(this.cacheEntryId, cacheTypeConfig.getObjectType(), articleType);
             if (cacheEntry != null) {
@@ -230,7 +218,7 @@ public class CachePageActionBean extends AbstractActionBean {
 
     public Resolution update() throws ServiceException {
         Thread.currentThread().setName("UPDATE-CACHE");
-        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
+        ActionMethodUtils.setLogParameters(getContext());
         for (ArticleType articleType : articleTypes) {
             CachableIF cachable = null;
             try {

@@ -1,26 +1,15 @@
 package eionet.web.action;
 
-import eionet.datadict.errors.ConflictException;
-import eionet.datadict.errors.DuplicateResourceException;
-import eionet.datadict.errors.EmptyParameterException;
-import eionet.datadict.errors.ResourceNotFoundException;
-import eionet.util.CompoundDataObject;
+import eionet.datadict.errors.*;
 import eionet.meta.controllers.DataElementFixedValuesController;
-import eionet.datadict.errors.UserAuthenticationException;
-import eionet.datadict.errors.UserAuthorizationException;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.FixedValue;
+import eionet.util.CompoundDataObject;
 import eionet.web.action.fixedvalues.DataElementFixedValuesViewModelBuilder;
 import eionet.web.action.fixedvalues.FixedValuesViewModel;
-import net.sourceforge.stripes.action.DefaultHandler;
-import net.sourceforge.stripes.action.ForwardResolution;
-import net.sourceforge.stripes.action.HandlesEvent;
-import net.sourceforge.stripes.action.RedirectResolution;
-import net.sourceforge.stripes.action.Resolution;
-import net.sourceforge.stripes.action.UrlBinding;
+import net.sourceforge.stripes.action.*;
 import net.sourceforge.stripes.integration.spring.SpringBean;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.MDC;
 
 /**
  *
@@ -135,7 +124,7 @@ public class DataElementFixedValuesActionBean extends AbstractActionBean {
     @HandlesEvent("save")
     public Resolution save() {
         Thread.currentThread().setName("SAVE-DATAELEMENT-FIXED-VALUE");
-        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
+        ActionMethodUtils.setLogParameters(getContext());
         return new ActionHandler<Void>(this) {
 
             @Override
@@ -155,7 +144,7 @@ public class DataElementFixedValuesActionBean extends AbstractActionBean {
             
         }.invoke();
     }
-    
+
     @HandlesEvent("delete")
     public Resolution delete() {
         if (this.isSingleValueRequest()) {
@@ -244,7 +233,7 @@ public class DataElementFixedValuesActionBean extends AbstractActionBean {
     
     private Resolution deleteSingle() {
         Thread.currentThread().setName("DELETE-DATAELEMENT-FIXED-VALUE");
-        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
+        ActionMethodUtils.setLogParameters(getContext());
         return new ActionHandler<Void>(this) {
 
             @Override
@@ -265,7 +254,7 @@ public class DataElementFixedValuesActionBean extends AbstractActionBean {
     
     private Resolution deleteAll() {
         Thread.currentThread().setName("DELETE-ALL-DATAELEMENT-FIXED-VALUES");
-        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
+        ActionMethodUtils.setLogParameters(getContext());
         return new ActionHandler<Void>(this) {
 
             @Override

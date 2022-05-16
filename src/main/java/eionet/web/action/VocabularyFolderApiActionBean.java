@@ -54,7 +54,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -224,7 +223,7 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
     public Resolution createVocabulary() {
         DDUser user;
         Thread.currentThread().setName("ADD-VOCABULARY");
-        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
+        ActionMethodUtils.setLogParameters(getContext());
 
         try {
             user = this.webApiAuthService.authenticate(this.webApiAuthInfoService.getAuthenticationInfo(getContext().getRequest()));
@@ -283,7 +282,7 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
 
             //Read RDF from request body and params from url
             HttpServletRequest request = getContext().getRequest();
-            MDC.put("sessionId", request.getSession().getId().substring(0,16));
+            ActionMethodUtils.setLogParameters(getContext());
 
             LOGGER.info("uploadRdf API - called with remote address: " + request.getRemoteAddr() + ", and remote host: " + request.getRemoteHost());
 

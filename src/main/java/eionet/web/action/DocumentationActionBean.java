@@ -20,21 +20,14 @@
  */
 package eionet.web.action;
 
-import net.sourceforge.stripes.action.DefaultHandler;
-import net.sourceforge.stripes.action.ForwardResolution;
-import net.sourceforge.stripes.action.RedirectResolution;
-import net.sourceforge.stripes.action.Resolution;
-import net.sourceforge.stripes.action.StreamingResolution;
-import net.sourceforge.stripes.action.UrlBinding;
-import net.sourceforge.stripes.validation.ValidationErrors;
-import net.sourceforge.stripes.validation.ValidationMethod;
 import eionet.doc.DocumentationService;
 import eionet.doc.dto.DocPageDTO;
 import eionet.doc.extensions.stripes.DocumentationValidator;
 import eionet.doc.extensions.stripes.FileBeanToFileInfoConverter;
-import net.sourceforge.stripes.action.FileBean;
+import net.sourceforge.stripes.action.*;
 import net.sourceforge.stripes.integration.spring.SpringBean;
-import org.slf4j.MDC;
+import net.sourceforge.stripes.validation.ValidationErrors;
+import net.sourceforge.stripes.validation.ValidationMethod;
 
 /**
  *
@@ -82,7 +75,7 @@ public class DocumentationActionBean extends AbstractActionBean {
      */
     public Resolution editContent() throws Exception {
         Thread.currentThread().setName("EDIT-DOCUMENTATION-CONTENT");
-        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
+        ActionMethodUtils.setLogParameters(getContext());
         if (isUserLoggedIn()) {
             if (isPostRequest()) {
                 if (this.fileToSave != null) {
@@ -105,7 +98,7 @@ public class DocumentationActionBean extends AbstractActionBean {
      */
     public Resolution addContent() throws Exception {
         Thread.currentThread().setName("ADD-DOCUMENTATION-CONTENT");
-        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
+        ActionMethodUtils.setLogParameters(getContext());
         String pid = pageObject.getPid();
         if (isUserLoggedIn()) {
             if (isPostRequest()) {
@@ -145,7 +138,7 @@ public class DocumentationActionBean extends AbstractActionBean {
      */
     public Resolution delete() throws Exception {
         Thread.currentThread().setName("DELETE-DOCUMENTATION-CONTENT");
-        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
+        ActionMethodUtils.setLogParameters(getContext());
         if (isUserLoggedIn()) {
             // The page title is not mandatory. If it is not filled in, then it takes the value of the page_id.
             if (pageObject != null && pageObject.getDocIds() != null &&  pageObject.getDocIds().size() > 0) {

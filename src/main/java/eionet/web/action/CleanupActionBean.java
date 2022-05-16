@@ -1,14 +1,8 @@
 package eionet.web.action;
 
 import eionet.datadict.services.data.CleanupService;
-import net.sourceforge.stripes.action.Before;
-import net.sourceforge.stripes.action.DefaultHandler;
-import net.sourceforge.stripes.action.ForwardResolution;
-import net.sourceforge.stripes.action.RedirectResolution;
-import net.sourceforge.stripes.action.Resolution;
-import net.sourceforge.stripes.action.UrlBinding;
+import net.sourceforge.stripes.action.*;
 import net.sourceforge.stripes.integration.spring.SpringBean;
-import org.slf4j.MDC;
 
 @UrlBinding("/cleanup")
 public class CleanupActionBean extends AbstractActionBean {
@@ -44,7 +38,7 @@ public class CleanupActionBean extends AbstractActionBean {
 
     public Resolution cleanup() {
         Thread.currentThread().setName("CLEANUP");
-        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
+        ActionMethodUtils.setLogParameters(getContext());
         int deletedBrokenDatasetToTableRelations = this.cleanupService.deleteBrokenDatasetToTableRelations();
         int deletedOrphanTables = this.cleanupService.deleteOrphanTables();
         int deletedBrokenTableToElementRelations = this.cleanupService.deleteBrokenTableToElementRelations();
