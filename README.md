@@ -151,3 +151,7 @@ Please find more detailed information in documentation of these applications.
 The file responsible for configuring logging in general and SENTRY integration specifically, is log4j2.xml.
 The default place to put such a file is on container folder /opt/datadict.
 The path for logging to that file can be set through CATALINA_OPTS environment variables mechanism by using this flag combined with the file location -Dlog4j.configurationFile=/opt/datadict/log4j2.xml
+
+### Class shadowing
+Classes org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate and org.springframework.jdbc.core.namedparam.JdbcTemplate have been shadowed. Library implementation is ignored
+and local implementation is used instead.
