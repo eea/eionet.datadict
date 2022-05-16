@@ -12,7 +12,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <env>default</env>
         <java_version>1.8</java_version>
-        <spring.version>5.3.1</spring.version>
+        <spring.version>5.3.19</spring.version>
         <spring-security-version>5.3.1.RELEASE</spring-security-version>
         <checkstyle.config.location>${basedir}/doc/checkstyle.xml</checkstyle.config.location>
         <sesame.openrdf.version>2.7.10</sesame.openrdf.version>
