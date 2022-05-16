@@ -12,11 +12,11 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <env>default</env>
         <java_version>1.8</java_version>
-        <spring.version>4.3.18.RELEASE</spring.version>
-        <spring-security-version>4.2.17.RELEASE</spring-security-version>
+        <spring.version>5.3.1</spring.version>
+        <spring-security-version>5.3.1.RELEASE</spring-security-version>
         <checkstyle.config.location>${basedir}/doc/checkstyle.xml</checkstyle.config.location>
         <sesame.openrdf.version>2.7.10</sesame.openrdf.version>
-        <jackson-version>2.10.3</jackson-version>
+        <jackson-version>2.12.1</jackson-version>
     </properties>
 
     <version>1.0-SNAPSHOT</version>
@@ -88,7 +88,7 @@
                     <images>
                         <image>
                             <alias>mysql</alias>
-                            <name>mysql:5.5</name>
+                            <name>mysql:5.7</name>
                             <run>
                                 <ports>
                                     <port>mysql.port:3306</port>
@@ -728,12 +728,12 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.4</version>
+            <version>2.7</version>
         </dependency>
         <dependency>
             <groupId>commons-beanutils</groupId>
             <artifactId>commons-beanutils</artifactId>
-            <version>1.7.0</version>
+            <version>1.9.4</version>
         </dependency>
         <dependency>
             <groupId>commons-validator</groupId>
@@ -753,7 +753,7 @@
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
-            <version>3.15</version>
+            <version>3.17</version>
         </dependency>
         <dependency>
             <groupId>xmlrpc</groupId>
@@ -793,7 +793,7 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.31</version>
+            <version>8.0.22</version>
             <!--<scope>compile</scope>-->
         </dependency>
 
@@ -1076,7 +1076,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.12</version>
+            <version>4.13.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -1187,7 +1187,7 @@
         <dependency>
             <groupId>org.dbunit</groupId>
             <artifactId>dbunit</artifactId>
-            <version>2.5.1</version>
+            <version>2.5.4</version>
             <scope>test</scope>
             <exclusions>
                 <exclusion>
@@ -1251,7 +1251,7 @@
         <dependency>
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
-            <version>1.12.2</version>
+            <version>1.14.2</version>
         </dependency>
 
         <!-- LDAP dependencies -->
@@ -1261,6 +1261,16 @@
             <version>3.0.0</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>2.4.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-jpa</artifactId>
+            <version>1.11.23.RELEASE</version>
+        </dependency>
     </dependencies>
 
     <reporting>

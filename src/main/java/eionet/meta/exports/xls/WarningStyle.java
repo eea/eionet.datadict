@@ -3,6 +3,7 @@ package eionet.meta.exports.xls;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
 
 public class WarningStyle {
 
@@ -15,10 +16,10 @@ public class WarningStyle {
         HSSFFont font = wb.createFont();
         font.setFontName(HSSFFont.FONT_ARIAL);
         font.setFontHeightInPoints((short)FONT_HEIGHT);
-        font.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+        font.setBold(true);
 
         style.setFont(font);
-        style.setAlignment(HSSFCellStyle.ALIGN_LEFT);
+        style.setAlignment(HorizontalAlignment.LEFT);
 
         return style.getIndex();
     }

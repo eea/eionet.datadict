@@ -10,7 +10,11 @@ import eionet.datadict.model.Namespace;
 import eionet.meta.dao.domain.DatasetRegStatus;
 import java.util.ArrayList;
 import java.util.List;
+
+import eionet.meta.service.DBUnitHelper;
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,16 +31,24 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {ApplicationTestContext.class})
 @TestExecutionListeners({DependencyInjectionTestExecutionListener.class,
-    TransactionalTestExecutionListener.class,
-    DbUnitTestExecutionListener.class})
-@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT,
-        value = "classpath:seed-datasetIT.xml")
-@DatabaseTearDown(type = DatabaseOperation.DELETE_ALL,
-        value = "classpath:seed-datasetIT.xml")
+    TransactionalTestExecutionListener.class})
+
 public class DatasetDaoTestIT {
 
     @Autowired
     DatasetDao datasetDao;
+
+
+    @Before
+    public void setUp() throws Exception {
+        DBUnitHelper.loadData("seed-datasetIT.xml");
+    }
+
+    @AfterClass
+    public static void tearDown() throws Exception {
+        DBUnitHelper.deleteData("seed-datasetIT.xml");
+    }
+
 
     @Test
     public void testGetById() {

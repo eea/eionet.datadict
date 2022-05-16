@@ -8,6 +8,10 @@ import eionet.config.ApplicationTestContext;
 import eionet.datadict.model.FixedValue;
 import java.util.List;
 import static org.junit.Assert.assertEquals;
+
+import eionet.meta.service.DBUnitHelper;
+import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,17 +28,23 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {ApplicationTestContext.class})
 @TestExecutionListeners({DependencyInjectionTestExecutionListener.class,
-    TransactionalTestExecutionListener.class,
-    DbUnitTestExecutionListener.class})
-@DatabaseSetup(type = DatabaseOperation.CLEAN_INSERT,
-        value = "classpath:seed-fixedValues.xml")
-@DatabaseTearDown(type = DatabaseOperation.DELETE_ALL,
-        value = "classpath:seed-fixedValues.xml")
+    TransactionalTestExecutionListener.class
+    })
+
 public class FixedValuesDaoTestIT {
 
     @Autowired
     FixedValuesDao fixedValuesDao;
 
+    @Before
+    public void setUp() throws Exception {
+        DBUnitHelper.loadData("seed-fixedValues.xml");
+    }
+
+    @AfterClass
+    public static void tearDown() throws Exception {
+        DBUnitHelper.deleteData("seed-fixedValues.xml");
+    }
     @Test
     public void testGetValueListCodesOfDataElementsInTable() {
         List<FixedValue> values = this.fixedValuesDao.getValueListCodesOfDataElementsInTable(8880);
