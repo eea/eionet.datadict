@@ -37,6 +37,7 @@ import net.sourceforge.stripes.integration.spring.SpringBean;
 import net.sourceforge.stripes.validation.ValidationMethod;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.MDC;
 import org.springframework.web.util.UriUtils;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.VocabularyConcept;
@@ -229,7 +230,8 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution saveConcept() throws ServiceException {
-
+        Thread.currentThread().setName("SAVE-VOCABULARY-CONCEPT");
+        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
         vocabularyConcept.setIdentifier(getConceptIdentifier());
 
         vocabularyService.updateVocabularyConcept(vocabularyConcept);
@@ -259,6 +261,8 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution markConceptObsolete() throws ServiceException {
+        Thread.currentThread().setName("MARK-VOCABULARY-CONCEPT-OBSOLETE");
+        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
         vocabularyConcept.setIdentifier(getConceptIdentifier());
         vocabularyService.markConceptsInvalid(Collections.singletonList(vocabularyConcept.getId()));
 
@@ -279,6 +283,8 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution unMarkConceptObsolete() throws ServiceException {
+        Thread.currentThread().setName("UNMARK-VOCABULARY-CONCEPT-OBSOLETE");
+        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
         vocabularyConcept.setIdentifier(getConceptIdentifier());
         vocabularyService.markConceptsValid(Collections.singletonList(vocabularyConcept.getId()));
 

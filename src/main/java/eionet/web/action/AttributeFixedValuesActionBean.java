@@ -19,6 +19,7 @@ import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.integration.spring.SpringBean;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.MDC;
 
 /**
  *
@@ -139,6 +140,8 @@ public class AttributeFixedValuesActionBean extends AbstractActionBean {
     
     @HandlesEvent("save")
     public Resolution save() {
+        Thread.currentThread().setName("SAVE-FIXED-ATTRIBUTE-VALUE");
+        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
         return new ActionHandler<Void>(this) {
 
             @Override
@@ -175,6 +178,8 @@ public class AttributeFixedValuesActionBean extends AbstractActionBean {
     }
     
     private Resolution deleteSingle() {
+        Thread.currentThread().setName("DELETE-FIXED-ATTRIBUTE-VALUE");
+        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
         return new ActionHandler<Void>(this) {
 
             @Override
@@ -194,6 +199,8 @@ public class AttributeFixedValuesActionBean extends AbstractActionBean {
     }
     
     private Resolution deleteAll() {
+        Thread.currentThread().setName("DELETE-ALL-ATTRIBUTE-FIXED-VALUES");
+        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
         return new ActionHandler<Void>(this) {
 
             @Override

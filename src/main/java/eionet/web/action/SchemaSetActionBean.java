@@ -40,6 +40,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.xml.sax.SAXException;
 
 import eionet.meta.DDException;
@@ -207,7 +208,8 @@ public class SchemaSetActionBean extends AbstractActionBean {
      *             if operation fails
      */
     public Resolution add() throws ServiceException {
-
+        Thread.currentThread().setName("ADD-SCHEMASET");
+        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
         if (!isCreateAllowed()) {
             throw new ServiceException("You are not authorised for this operation!");
         }
@@ -231,6 +233,8 @@ public class SchemaSetActionBean extends AbstractActionBean {
      *             if operation fails
      */
     public Resolution save() throws ServiceException {
+        Thread.currentThread().setName("SAVE-SCHEMASET");
+        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
         schemaService.updateSchemaSet(schemaSet, getSaveAttributeValues(), getUserName());
         addSystemMessage("Schema set successfully updated!");
 
@@ -245,7 +249,8 @@ public class SchemaSetActionBean extends AbstractActionBean {
      *             if operation fails
      */
     public Resolution saveAndClose() throws ServiceException {
-
+        Thread.currentThread().setName("SAVE-AND-CLOSE-SCHEMASET");
+        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
         schemaService.updateSchemaSet(schemaSet, getSaveAttributeValues(), getUserName());
         addSystemMessage("Schema set successfully updated!");
         return new RedirectResolution(getClass()).addParameter("schemaSet.identifier", schemaSet.getIdentifier()).addParameter(
@@ -282,7 +287,8 @@ public class SchemaSetActionBean extends AbstractActionBean {
      *             if operation fails
      */
     public Resolution checkIn() throws ServiceException {
-
+        Thread.currentThread().setName("CHECKIN-SCHEMASET");
+        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
         loadSchemaSetById();
         if (!isUserWorkingCopy()) {
             throw new ServiceException("Operation allowed on your working copy only!");
@@ -301,7 +307,8 @@ public class SchemaSetActionBean extends AbstractActionBean {
      *             if operation fails
      */
     public Resolution checkOut() throws ServiceException {
-
+        Thread.currentThread().setName("CHECKOUT-SCHEMASET");
+        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
         loadSchemaSetById();
         if (!isCheckoutAllowed()) {
             throw new ServiceException("You are not authorised for this operation!");
@@ -320,7 +327,8 @@ public class SchemaSetActionBean extends AbstractActionBean {
      *             if operation fails
      */
     public Resolution newVersion() throws ServiceException {
-
+        Thread.currentThread().setName("COPY-SCHEMASET");
+        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
         if (!isCreateAllowed()) {
             throw new ServiceException("You are not authorised for this operation!");
         }
@@ -339,7 +347,8 @@ public class SchemaSetActionBean extends AbstractActionBean {
      *             if operation fails
      */
     public Resolution delete() throws ServiceException {
-
+        Thread.currentThread().setName("DELETE-SCHEMASET");
+        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
         loadSchemaSetById();
         if (!isDeleteAllowed()) {
             throw new ServiceException("You are not authorized for this operation!");
@@ -357,7 +366,8 @@ public class SchemaSetActionBean extends AbstractActionBean {
      *             if operation fails
      */
     public Resolution undoCheckout() throws ServiceException {
-
+        Thread.currentThread().setName("UNDO-CHECKOUT-SCHEMASET");
+        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
         loadSchemaSetById();
         if (!isUserWorkingCopy()) {
             throw new ServiceException("Operation allowed on your working copy only!");
@@ -380,7 +390,8 @@ public class SchemaSetActionBean extends AbstractActionBean {
      *             if operation fails
      */
     public Resolution deleteSchemas() throws ServiceException {
-
+        Thread.currentThread().setName("DELETE-SCHEMAS");
+        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
         loadSchemaSetById();
         if (!isUserWorkingCopy()) {
             throw new ServiceException("Operation allowed on your working copy only!");
@@ -409,7 +420,8 @@ public class SchemaSetActionBean extends AbstractActionBean {
      *             if operation fails
      */
     public Resolution uploadSchema() throws ServiceException, IOException {
-
+        Thread.currentThread().setName("SCHEMA-UPLOAD");
+        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
         if (!isUserLoggedIn()) {
             throw new ServiceException("Only authenticated users can upload a schema.");
         }
@@ -450,7 +462,8 @@ public class SchemaSetActionBean extends AbstractActionBean {
      *             if operation fails
      */
     public Resolution uploadOtherDocument() throws ServiceException, IOException {
-
+        Thread.currentThread().setName("OTHER-DOCUMENT-UPLOAD");
+        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
         if (!isUserLoggedIn()) {
             throw new ServiceException("Only authenticated users can upload a Schema file.");
         }

@@ -48,4 +48,6 @@ public interface AsyncTaskManager {
 
     void deleteTask(String taskId);
 
+    void setSessionId(String sessionId);
+
 }

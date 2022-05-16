@@ -38,6 +38,7 @@ import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.StreamingResolution;
 import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.integration.spring.SpringBean;
+import org.slf4j.MDC;
 
 
 @UrlBinding("/inference_rules/{parentElementId}/{$event}/{type}/{targetElementId}/{newType}/{newTargetElementId}/{pattern}")
@@ -89,6 +90,8 @@ public class InferenceRuleActionBean extends AbstractActionBean {
     }
     
     public Resolution addRule() throws ServiceException {
+        Thread.currentThread().setName("ADD-INFERENCE-RULE");
+        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
         if (!dataService.dataElementExists(parentElementId)) {
             addCautionMessage("There is no source element with ID: " + Integer.toString(parentElementId));
         }
@@ -125,6 +128,8 @@ public class InferenceRuleActionBean extends AbstractActionBean {
     }
     
     public Resolution editRule() throws ServiceException {
+        Thread.currentThread().setName("EDIT-INFERENCE-RULE");
+        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
         if (!dataService.dataElementExists(parentElementId)) {
             addGlobalValidationError("The ID (" + Integer.toString(parentElementId) + ") of the parent element of the existing rule is not valid");
         }

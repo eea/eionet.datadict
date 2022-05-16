@@ -6,7 +6,7 @@
     <Appenders>
         <Console name="console">
             <PatternLayout>
-                <Pattern>[%d] - [%p] [%c:%L] : %m%n</Pattern>
+                <Pattern>[%d] - [%p] [%c:%L] [si:%X{sessionId}] [%tn] [tid:%tid] : %m%n</Pattern>
             </PatternLayout>
         </Console>
         <!-- Configure the Sentry appender, overriding the logging threshold to the WARN level -->

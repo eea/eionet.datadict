@@ -41,6 +41,7 @@ import eionet.meta.service.ISchemaService;
 import eionet.meta.service.ServiceException;
 import eionet.meta.service.data.SchemaFilter;
 import eionet.meta.service.data.SchemasResult;
+import org.slf4j.MDC;
 
 /**
  * Schema search action bean.
@@ -125,6 +126,8 @@ public class SearchSchemaActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution copyToSchemaSet() throws ServiceException {
+        Thread.currentThread().setName("COPY-SCHEMA-TO-SCHEMASET");
+        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
         // Validate selected schema
         if (schemaId == 0) {
             addWarningMessage("Select schema to copy.");

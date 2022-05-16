@@ -24,9 +24,11 @@ package eionet.web.action;
 import eionet.datadict.errors.DuplicateResourceException;
 import eionet.datadict.errors.EmptyParameterException;
 import eionet.datadict.errors.ResourceNotFoundException;
+import eionet.datadict.errors.UserAuthenticationException;
+import eionet.datadict.services.auth.WebApiAuthInfoService;
+import eionet.datadict.services.auth.WebApiAuthService;
 import eionet.datadict.services.data.VocabularyDataService;
 import eionet.meta.DDUser;
-import eionet.datadict.errors.UserAuthenticationException;
 import eionet.meta.dao.IVocabularyFolderDAO;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.exports.json.VocabularyJSONOutputHelper;
@@ -37,38 +39,28 @@ import eionet.meta.service.IVocabularyImportService.UploadAction;
 import eionet.meta.service.IVocabularyImportService.UploadActionBefore;
 import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.ServiceException;
-import eionet.datadict.services.auth.WebApiAuthInfoService;
-import eionet.datadict.services.auth.WebApiAuthService;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import net.sf.json.JSONObject;
+import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.StreamingResolution;
 import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.integration.spring.SpringBean;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.methods.PostMethod;
+import org.apache.commons.io.ByteOrderMark;
+import org.apache.commons.io.input.BOMInputStream;
 import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import net.sourceforge.stripes.action.DefaultHandler;
-import org.apache.commons.io.ByteOrderMark;
-import org.apache.commons.io.input.BOMInputStream;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.*;
 
 /**
  * Vocabulary folder API action bean.
@@ -231,7 +223,9 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
     @DefaultHandler
     public Resolution createVocabulary() {
         DDUser user;
-        
+        Thread.currentThread().setName("ADD-VOCABULARY");
+        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
+
         try {
             user = this.webApiAuthService.authenticate(this.webApiAuthInfoService.getAuthenticationInfo(getContext().getRequest()));
         }
@@ -282,12 +276,14 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
      * @throws eionet.meta.service.ServiceException when an error occurs
      */
     public Resolution uploadRdf() throws ServiceException {
+        Thread.currentThread().setName("RDF-IMPORT");
         try {
             StopWatch timer = new StopWatch();
             timer.start();
 
             //Read RDF from request body and params from url
             HttpServletRequest request = getContext().getRequest();
+            MDC.put("sessionId", request.getSession().getId().substring(0,16));
 
             LOGGER.info("uploadRdf API - called with remote address: " + request.getRemoteAddr() + ", and remote host: " + request.getRemoteHost());
 

@@ -42,6 +42,7 @@ import net.sourceforge.stripes.action.RedirectResolution;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.integration.spring.SpringBean;
+import org.slf4j.MDC;
 
 
 @UrlBinding("/vocabularyvalues/attribute/{attributeId}/{attrOwnerType}/{attrOwnerId}")
@@ -316,6 +317,8 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
      * @throws ConflictException 
      */
     public Resolution saveAdd() throws UserAuthorizationException, UserAuthenticationException, ConflictException, BadRequestException {
+        Thread.currentThread().setName("ADD-ATTRIBUTE-VOCABULARY-VALUE");
+        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
         DDUser user = this.getUser();
         if (user == null) {
             throw new UserAuthenticationException("You must be signed in in order to save a vocabulary attribute value.");
@@ -368,6 +371,8 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
      * @throws UserAuthorizationException 
      */
     public Resolution delete() throws UserAuthenticationException, UserAuthorizationException, BadRequestException {
+        Thread.currentThread().setName("DELETE-ATTRIBUTE-VOCABULARY-VALUE");
+        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
         DDUser user = this.getUser();
         if (user == null) {
             throw new UserAuthenticationException("You must be signed in in order to delete a vocabulary attribute value.");
@@ -406,6 +411,8 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
      * @throws UserAuthorizationException 
      */
     public Resolution deleteAll() throws UserAuthenticationException, UserAuthorizationException, BadRequestException {
+        Thread.currentThread().setName("DELETE-ALL-ATTRIBUTE-VOCABULARY-VALUES");
+        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
         DDUser user = this.getUser();
         if (user == null) {
             throw new UserAuthenticationException("You must be signed in in order to delete vocabulary attribute values.");

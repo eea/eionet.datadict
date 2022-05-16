@@ -8,6 +8,7 @@ import net.sourceforge.stripes.action.RedirectResolution;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.integration.spring.SpringBean;
+import org.slf4j.MDC;
 
 @UrlBinding("/cleanup")
 public class CleanupActionBean extends AbstractActionBean {
@@ -42,6 +43,8 @@ public class CleanupActionBean extends AbstractActionBean {
     }
 
     public Resolution cleanup() {
+        Thread.currentThread().setName("CLEANUP");
+        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
         int deletedBrokenDatasetToTableRelations = this.cleanupService.deleteBrokenDatasetToTableRelations();
         int deletedOrphanTables = this.cleanupService.deleteOrphanTables();
         int deletedBrokenTableToElementRelations = this.cleanupService.deleteBrokenTableToElementRelations();

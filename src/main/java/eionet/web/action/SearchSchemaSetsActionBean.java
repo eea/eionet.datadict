@@ -46,6 +46,7 @@ import eionet.meta.service.data.SchemaSetsResult;
 import eionet.util.SecurityUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 /**
  * Schema sets action bean.
@@ -145,6 +146,8 @@ public class SearchSchemaSetsActionBean extends AbstractActionBean {
      */
     @Deprecated
     public Resolution delete() throws ServiceException {
+        Thread.currentThread().setName("DELETE-SCHEMA-SETS");
+        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
         if (isDeletePermission()) {
             try {
                 schemaService.deleteSchemaSets(selected, getUser(), true);

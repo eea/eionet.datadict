@@ -41,6 +41,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.xml.sax.SAXException;
 
 import eionet.meta.DDException;
@@ -175,7 +176,8 @@ public class SchemaActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution save() throws ServiceException {
-
+        Thread.currentThread().setName("SAVE-SCHEMA");
+        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
         schemaService.updateSchema(schema, getSaveAttributeValues(), getUserName());
         addSystemMessage("Schema successfully updated!");
         return new ForwardResolution(EDIT_SCHEMA_JSP);
@@ -187,7 +189,8 @@ public class SchemaActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution saveAndClose() throws ServiceException {
-
+        Thread.currentThread().setName("SAVE-AND-CLOSE-SCHEMA");
+        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
         schemaService.updateSchema(schema, getSaveAttributeValues(), getUserName());
         addSystemMessage("Schema successfully updated!");
         return new RedirectResolution(getClass())
@@ -202,7 +205,8 @@ public class SchemaActionBean extends AbstractActionBean {
      * @throws IOException
      */
     public Resolution add() throws ServiceException, IOException {
-
+        Thread.currentThread().setName("ADD-SCHEMA");
+        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
         if (!isCreateAllowed()) {
             throw new ServiceException("You are not authorised for this operation!");
         }
@@ -259,7 +263,8 @@ public class SchemaActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution delete() throws ServiceException {
-
+        Thread.currentThread().setName("DELETE-SCHEMA");
+        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
         schemaService.deleteSchemas(Collections.singletonList(schema.getId()), getUserName(), true);
         addSystemMessage("Schema succesfully deleted!");
         return new RedirectResolution(BrowseSchemaSetsActionBean.class);
@@ -271,7 +276,8 @@ public class SchemaActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution checkIn() throws ServiceException {
-
+        Thread.currentThread().setName("CHECKIN-SCHEMA");
+        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
         loadSchemaById();
         int finalId = schemaService.checkInSchema(schema.getId(), getUserName(), schema.getComment());
         addSystemMessage("Schema successfully checked in!");
@@ -286,7 +292,8 @@ public class SchemaActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution checkOut() throws ServiceException {
-
+        Thread.currentThread().setName("CHECKOUT-SCHEMA");
+        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
         loadSchemaById();
         if (!isCheckoutAllowed()) {
             throw new ServiceException("You are not authorised for this operation!");
@@ -306,6 +313,8 @@ public class SchemaActionBean extends AbstractActionBean {
      * @throws IOException
      */
     public Resolution newVersion() throws ServiceException, IOException {
+        Thread.currentThread().setName("COPY-SCHEMA");
+        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
         if (!isCreateAllowed()) {
             throw new ServiceException("You are not authorised for this operation!");
         }
@@ -324,6 +333,8 @@ public class SchemaActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution undoCheckout() throws ServiceException {
+        Thread.currentThread().setName("UNDO-CHECKOUT-SCHEMA");
+        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
         loadSchemaById();
         int checkedOutCopyId = schemaService.undoCheckOutSchema(schema.getId(), getUserName());
         addSystemMessage("Working copy successfully deleted!");
@@ -343,7 +354,8 @@ public class SchemaActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution reupload() throws IOException, ServiceException {
-
+        Thread.currentThread().setName("REUPLOAD-SCHEMA");
+        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
         loadSchemaById();
         String schemaSetIdentifier = schemaSet == null ? null : schemaSet.getIdentifier();
         schemaRepository.reuploadSchema(schema.getFileName(), schemaSetIdentifier, uploadedFile);

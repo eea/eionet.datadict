@@ -30,6 +30,7 @@ import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.integration.spring.SpringBean;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.MDC;
 
 @UrlBinding("/cache")
 public class CachePageActionBean extends AbstractActionBean {
@@ -213,6 +214,8 @@ public class CachePageActionBean extends AbstractActionBean {
     }
 
     public Resolution delete() {
+        Thread.currentThread().setName("DELETE-CACHE-ENTRIES");
+        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
         for (ArticleType articleType : articleTypes) {
             CacheEntry cacheEntry = this.cacheService.getCacheEntry(this.cacheEntryId, cacheTypeConfig.getObjectType(), articleType);
             if (cacheEntry != null) {
@@ -226,6 +229,8 @@ public class CachePageActionBean extends AbstractActionBean {
     }
 
     public Resolution update() throws ServiceException {
+        Thread.currentThread().setName("UPDATE-CACHE");
+        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
         for (ArticleType articleType : articleTypes) {
             CachableIF cachable = null;
             try {

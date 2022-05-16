@@ -43,6 +43,7 @@ import eionet.meta.service.ValidationException;
 import eionet.util.SecurityUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 /**
  * Action bean for browsing schema sets.
@@ -122,6 +123,8 @@ public class BrowseSchemaSetsActionBean extends AbstractActionBean {
      * @throws ServiceException if operation fails
      */
     public Resolution delete() throws ServiceException {
+        Thread.currentThread().setName("DELETE-SCHEMA-SETS");
+        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
         if (!isDeletePermission()) {
             addGlobalValidationError("Cannot delete. No permission.");
             return viewList();

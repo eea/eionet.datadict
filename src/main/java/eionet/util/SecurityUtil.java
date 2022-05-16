@@ -35,6 +35,7 @@ import eionet.meta.filters.CASFilterConfig;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -77,7 +78,7 @@ public final class SecurityUtil {
 
         HttpSession session = request.getSession();
         DDUser user = session == null ? null : (DDUser) session.getAttribute(REMOTEUSER);
-
+        MDC.put("sessionId", session.getId().substring(0,16));
         if (user == null) {
             String casUserName = session == null ? null : (String) session.getAttribute(CASFilter.CAS_FILTER_USER);
             if (casUserName != null) {

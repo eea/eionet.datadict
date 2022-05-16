@@ -53,6 +53,7 @@ import eionet.meta.service.data.SiteCodeResult;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.SecurityUtil;
+import org.slf4j.MDC;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -252,7 +253,8 @@ public class SiteCodesActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution reserveNewSiteCodes() throws ServiceException {
-
+        Thread.currentThread().setName("RESERVE-NEW-SITE-CODES");
+        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
         vocabularyService.reserveFreeSiteCodes(siteCodeFolderId, reserveAmount, startIdentifier, getUserName());
 
         String eventTime = new SimpleDateFormat(DATE_TIME_FORMAT).format(new Date());
@@ -277,6 +279,8 @@ public class SiteCodesActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution allocate() throws ServiceException {
+        Thread.currentThread().setName("ALLOCATE-SITE-CODES");
+        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
         AllocationResult allocationResult = null;
         if (CHOICE_LABEL.equals(choice)) {
             if (siteNames == null || siteNames.length == 0) {

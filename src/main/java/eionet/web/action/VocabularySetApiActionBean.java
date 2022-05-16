@@ -2,19 +2,21 @@ package eionet.web.action;
 
 import eionet.datadict.errors.DuplicateResourceException;
 import eionet.datadict.errors.EmptyParameterException;
-import eionet.datadict.model.VocabularySet;
-import eionet.datadict.services.data.VocabularyDataService;
 import eionet.datadict.errors.UserAuthenticationException;
-import eionet.meta.exports.json.VocabularyJSONOutputHelper;
+import eionet.datadict.model.VocabularySet;
 import eionet.datadict.services.auth.WebApiAuthInfoService;
 import eionet.datadict.services.auth.WebApiAuthService;
-import java.util.ArrayList;
-import java.util.List;
-import javax.servlet.http.HttpServletResponse;
+import eionet.datadict.services.data.VocabularyDataService;
+import eionet.meta.exports.json.VocabularyJSONOutputHelper;
 import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.StreamingResolution;
 import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.integration.spring.SpringBean;
+import org.slf4j.MDC;
+
+import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -36,6 +38,8 @@ public class VocabularySetApiActionBean extends AbstractActionBean {
     private String label;
 
     public Resolution createVocabularySet() {
+        Thread.currentThread().setName("ADD-VOCABULARYSET");
+        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
         try {
             this.webApiAuthService.authenticate(this.webApiAuthInfoService.getAuthenticationInfo(getContext().getRequest()));
         } catch (UserAuthenticationException ex) {

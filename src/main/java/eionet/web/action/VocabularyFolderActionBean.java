@@ -45,8 +45,6 @@ import eionet.datadict.services.stripes.FileBeanDecompressor;
 import eionet.datadict.util.ScheduledTaskResolver;
 import eionet.datadict.web.asynctasks.*;
 import eionet.datadict.web.viewmodel.ScheduledTaskView;
-import eionet.meta.dao.IDataElementDAO;
-import eionet.meta.dao.IVocabularyConceptDAO;
 import eionet.meta.dao.domain.*;
 import eionet.meta.exports.json.VocabularyJSONOutputHelper;
 import eionet.meta.exports.rdf.InspireCodelistXmlWriter;
@@ -61,6 +59,7 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
+import org.slf4j.MDC;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -648,6 +647,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      *             if an error occurs
      */
     public Resolution addDataElement() throws ServiceException {
+        Thread.currentThread().setName("ADD-DATAELEMENT");
+        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
         RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class, "edit");
         resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());
         resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
@@ -667,6 +668,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      *             if an error occurs
      */
     public Resolution removeDataElement() throws ServiceException {
+        Thread.currentThread().setName("REMOVE-DATAELEMENT");
+        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
         vocabularyFolder =
                 vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
                         vocabularyFolder.isWorkingCopy());
@@ -737,6 +740,9 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      *             if an error occurs
      */
     public Resolution saveFolder() throws ServiceException {
+        String sessionId = getContext().getRequest().getSession().getId().substring(0,16);
+        Thread.currentThread().setName("SAVE-VOCABULARY-FOLDER");
+        MDC.put("sessionId", sessionId);
         if (vocabularyFolder.getId() == 0) {
             if (copyId != 0) {
                 if (StringUtils.equals(FOLDER_CHOICE_EXISTING, folderChoice)) {
@@ -780,6 +786,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      *             if an error occurs
      */
     public Resolution saveConcept() throws ServiceException {
+        Thread.currentThread().setName("SAVE-VOCABULARY-CONCEPT");
+        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
         RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class, "edit");
         resolution.addParameter("vocabularyFolder.folderName", vocabularyFolder.getFolderName());
         resolution.addParameter("vocabularyFolder.identifier", vocabularyFolder.getIdentifier());
@@ -823,7 +831,11 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * @return resolution
      */
     public Resolution checkIn() {
-        String taskId = this.asyncTaskManager.executeAsync(VocabularyCheckInTask.class, 
+        Thread.currentThread().setName("VOCABULARY-CHECK-IN");
+        String sessionId = getContext().getRequest().getSession().getId().substring(0,16);
+        MDC.put("sessionId", sessionId);
+        this.asyncTaskManager.setSessionId(sessionId);
+        String taskId = this.asyncTaskManager.executeAsync(VocabularyCheckInTask.class,
                 VocabularyCheckInTask.createParamsBundle(vocabularyFolder.getId(), getUserName(), 
                         vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier()));
         
@@ -836,6 +848,10 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * @return resolution
      */
     public Resolution checkOut() {
+        Thread.currentThread().setName("VOCABULARY-CHECK-OUT");
+        String sessionId = getContext().getRequest().getSession().getId().substring(0,16);
+        MDC.put("sessionId", sessionId);
+        this.asyncTaskManager.setSessionId(sessionId);
         String taskId = this.asyncTaskManager.executeAsync(VocabularyCheckOutTask.class, 
                 VocabularyCheckOutTask.createParamsBundle(vocabularyFolder.getId(), getUserName(), 
                         vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier()));
@@ -851,6 +867,10 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      *             if an error occurs
      */
     public Resolution undoCheckOut() throws ServiceException {
+        Thread.currentThread().setName("VOCABULARY-UNDO-CHECKOUT");
+        String sessionId = getContext().getRequest().getSession().getId().substring(0,16);
+        MDC.put("sessionId", sessionId);
+        this.asyncTaskManager.setSessionId(sessionId);
         String taskId = this.asyncTaskManager.executeAsync(VocabularyUndoCheckOutTask.class, 
                 VocabularyUndoCheckOutTask.createParamsBundle(vocabularyFolder.getId(), getUserName()));
         
@@ -865,6 +885,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      *             if an error occurs
      */
     public Resolution deleteConcepts() throws ServiceException {
+        Thread.currentThread().setName("DELETE-VOCABULARY-CONCEPTS");
+        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
         LOGGER.info("Deleting concepts with ids: " + conceptIds);
         vocabularyService.deleteVocabularyConcepts(conceptIds);
         addSystemMessage("Vocabulary concepts deleted successfully");
@@ -883,6 +905,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      *             if an error occurs
      */
     public Resolution markConceptsInvalid() throws ServiceException {
+        Thread.currentThread().setName("MARK-VOCABULARY-CONCEPTS-INVALID");
+        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
         vocabularyService.markConceptsInvalid(conceptIds);
         addSystemMessage("Vocabulary concepts marked invalid");
         RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class, "edit");
@@ -900,6 +924,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      *             if an error occurs
      */
     public Resolution markConceptsValid() throws ServiceException {
+        Thread.currentThread().setName("MARK-VOCABULARY-CONCEPTS-VALID");
+        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
         vocabularyService.markConceptsValid(conceptIds);
         addSystemMessage("Vocabulary concepts marked valid");
         RedirectResolution resolution = new RedirectResolution(VocabularyFolderActionBean.class, "edit");
@@ -1559,6 +1585,9 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      *             when an error occurs
      */
     public Resolution uploadCsv() throws ServiceException {
+        Thread.currentThread().setName("CSV-UPLOAD");
+        String sessionId = getContext().getRequest().getSession().getId().substring(0,16);
+        MDC.put("sessionId", sessionId);
         try {
             vocabularyFolder =
                     vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
@@ -1588,6 +1617,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                 tmpCsvFile.delete();
                 importFileBean.save(tmpCsvFile);
 
+                this.asyncTaskManager.setSessionId(sessionId);
                 String taskId = this.asyncTaskManager.executeAsync(VocabularyCsvImportTask.class, 
                         VocabularyCsvImportTask.createParamsBundle(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(), 
                                 vocabularyFolder.isWorkingCopy(), tmpCsvFile.getAbsolutePath(), purgeVocabularyData, purgeBoundElements));
@@ -1624,6 +1654,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      *             when an error occurs
      */
     public Resolution uploadRdf() throws ServiceException {
+        Thread.currentThread().setName("RDF-IMPORT");
+        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
         try {
             vocabularyFolder =
                     vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
@@ -1653,7 +1685,8 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
                 tmpRdfFile.delete();
                 importFileBean.save(tmpRdfFile);
 
-                String taskId = this.asyncTaskManager.executeAsync(VocabularyRdfImportTask.class, 
+                this.asyncTaskManager.setSessionId(getContext().getRequest().getSession().getId().substring(0,16));
+                String taskId = this.asyncTaskManager.executeAsync(VocabularyRdfImportTask.class,
                         VocabularyRdfImportTask.createParamsBundle(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(), 
                                 vocabularyFolder.isWorkingCopy(), tmpRdfFile.getAbsolutePath(), rdfPurgeOption, missingConceptsAction));
 

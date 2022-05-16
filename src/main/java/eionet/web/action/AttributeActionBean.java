@@ -28,6 +28,7 @@ import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.controller.LifecycleStage;
 import net.sourceforge.stripes.integration.spring.SpringBean;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.MDC;
 
 @UrlBinding("/attribute/{$event}/{attribute.id}")
 public class AttributeActionBean extends AbstractActionBean {
@@ -194,6 +195,8 @@ public class AttributeActionBean extends AbstractActionBean {
      * @throws BadRequestException 
      */
     public Resolution save() throws UserAuthenticationException, UserAuthorizationException, BadRequestException {
+        Thread.currentThread().setName("SAVE-ATTRIBUTE");
+        MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
         DDUser user = this.getUser();
         
         int attributeId = this.attributeService.save(attribute, user);
@@ -218,6 +221,8 @@ public class AttributeActionBean extends AbstractActionBean {
      * @throws ResourceNotFoundException 
      */
     public Resolution delete() throws UserAuthenticationException, UserAuthorizationException, ResourceNotFoundException {
+       Thread.currentThread().setName("DELETE-ATTRIBUTE");
+       MDC.put("sessionId", getContext().getRequest().getSession().getId().substring(0,16));
        DDUser user = this.getUser();
        
        int attributeId = attribute.getId();
