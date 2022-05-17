@@ -23,7 +23,16 @@ public class ActionMethodUtils {
     }
 
     private static String getSessionId(HttpSession session) {
-        return session != null ? session.getId().substring(0, 16) : "";
+        String sessionId = "";
+        if (session!=null) {
+            Integer length = session.getId().length();
+            if (length % 2 == 0) {
+                sessionId = session.getId().substring(0,length/2);
+            } else {
+                sessionId = session.getId().substring(0,(length-1)/2);
+            }
+        }
+        return sessionId;
     }
 
     private static String getUsername(HttpSession session) {

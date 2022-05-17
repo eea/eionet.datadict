@@ -78,7 +78,8 @@ public final class SecurityUtil {
 
         HttpSession session = request.getSession();
         DDUser user = session == null ? null : (DDUser) session.getAttribute(REMOTEUSER);
-        MDC.put("sessionId", session!=null ? session.getId().substring(0,16) : "");
+        String sessionId = getSessionId(session);
+        MDC.put("sessionId", sessionId);
         if (user == null) {
             String casUserName = session == null ? null : (String) session.getAttribute(CASFilter.CAS_FILTER_USER);
             if (casUserName != null) {
@@ -400,5 +401,18 @@ public final class SecurityUtil {
             }
         }
         return countries;
+    }
+
+    public static String getSessionId(HttpSession session) {
+        String sessionId = "";
+        if (session!=null) {
+            Integer length = session.getId().length();
+            if (length % 2 == 0) {
+                sessionId = session.getId().substring(0,length/2);
+            } else {
+                sessionId = session.getId().substring(0,(length-1)/2);
+            }
+        }
+        return sessionId;
     }
 }
