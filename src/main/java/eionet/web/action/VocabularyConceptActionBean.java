@@ -183,13 +183,13 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         // vocabularyconcept/{vocabularyFolder.folderName}/{vocabularyFolder.identifier}/{vocabularyConcept.identifier}/{$event}
         String[] params = realRequestPath.split("\\/", -1);
         String identifier = params[4];
-        try {
-            identifier = UriUtils.decode(identifier, "utf-8");
-        } catch (UnsupportedEncodingException e) {
-            LOGGER.warn("Unsupported Encoding Exception " + e);
+        String decodedIdentifier = UriUtils.decode(identifier, "utf-8");
+        if (decodedIdentifier != null) {
+            setConceptIdentifier(decodedIdentifier);
+        } else {
+            LOGGER.warn("Unsupported Encoding Exception for identifier: " + identifier);
+            setConceptIdentifier(identifier);
         }
-
-        setConceptIdentifier(identifier);
     }
 
     /**
