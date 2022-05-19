@@ -405,7 +405,7 @@ public final class SecurityUtil {
 
     public static String getSessionId(HttpSession session) {
         String sessionId = "";
-        if (session!=null) {
+        if (session!=null && session.getId()!=null) {
             Integer length = session.getId().length();
             if (length % 2 == 0) {
                 sessionId = session.getId().substring(0,length/2);
