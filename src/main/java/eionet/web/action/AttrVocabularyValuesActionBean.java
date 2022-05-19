@@ -1,47 +1,27 @@
 package eionet.web.action;
 
-import eionet.datadict.errors.BadRequestException;
-import eionet.datadict.errors.ConflictException;
-import eionet.datadict.errors.EmptyParameterException;
-import eionet.datadict.errors.ResourceNotFoundException;
-import eionet.datadict.errors.UserAuthenticationException;
-import eionet.datadict.errors.UserAuthorizationException;
+import eionet.datadict.errors.*;
 import eionet.datadict.model.Attribute;
-import eionet.datadict.model.DataDictEntity;
 import eionet.datadict.model.DataElement;
 import eionet.datadict.model.DataSet;
-import eionet.datadict.model.DatasetTable;
+import eionet.datadict.model.*;
 import eionet.datadict.services.AttributeService;
 import eionet.datadict.services.data.AttributeDataService;
 import eionet.datadict.services.data.DataElementDataService;
 import eionet.datadict.services.data.DataSetDataService;
 import eionet.datadict.services.data.DatasetTableDataService;
 import eionet.meta.DDUser;
-import eionet.meta.dao.domain.Schema;
-import eionet.meta.dao.domain.SchemaSet;
-import eionet.meta.dao.domain.StandardGenericStatus;
-import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.dao.domain.*;
 import eionet.meta.service.ISchemaService;
 import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.ServiceException;
 import eionet.meta.service.data.VocabularyConceptBoundElementFilter;
 import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyConceptResult;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-import net.sourceforge.stripes.action.DefaultHandler;
-import net.sourceforge.stripes.action.ForwardResolution;
-import net.sourceforge.stripes.action.RedirectResolution;
-import net.sourceforge.stripes.action.Resolution;
-import net.sourceforge.stripes.action.UrlBinding;
+import net.sourceforge.stripes.action.*;
 import net.sourceforge.stripes.integration.spring.SpringBean;
+
+import java.util.*;
 
 
 @UrlBinding("/vocabularyvalues/attribute/{attributeId}/{attrOwnerType}/{attrOwnerId}")
@@ -316,6 +296,8 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
      * @throws ConflictException 
      */
     public Resolution saveAdd() throws UserAuthorizationException, UserAuthenticationException, ConflictException, BadRequestException {
+        Thread.currentThread().setName("ADD-ATTRIBUTE-VOCABULARY-VALUE");
+        ActionMethodUtils.setLogParameters(getContext());
         DDUser user = this.getUser();
         if (user == null) {
             throw new UserAuthenticationException("You must be signed in in order to save a vocabulary attribute value.");
@@ -368,6 +350,8 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
      * @throws UserAuthorizationException 
      */
     public Resolution delete() throws UserAuthenticationException, UserAuthorizationException, BadRequestException {
+        Thread.currentThread().setName("DELETE-ATTRIBUTE-VOCABULARY-VALUE");
+        ActionMethodUtils.setLogParameters(getContext());
         DDUser user = this.getUser();
         if (user == null) {
             throw new UserAuthenticationException("You must be signed in in order to delete a vocabulary attribute value.");
@@ -406,6 +390,8 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
      * @throws UserAuthorizationException 
      */
     public Resolution deleteAll() throws UserAuthenticationException, UserAuthorizationException, BadRequestException {
+        Thread.currentThread().setName("DELETE-ALL-ATTRIBUTE-VOCABULARY-VALUES");
+        ActionMethodUtils.setLogParameters(getContext());
         DDUser user = this.getUser();
         if (user == null) {
             throw new UserAuthenticationException("You must be signed in in order to delete vocabulary attribute values.");
@@ -431,8 +417,7 @@ public class AttrVocabularyValuesActionBean extends AbstractActionBean {
         this.attributeService.deleteAllAttributeValues(Integer.parseInt(attributeId), attributeOwnerEntity, user);
         return new RedirectResolution("/vocabularyvalues/attribute/" + attributeId + "/" + attrOwnerType + "/" + attrOwnerId);
     }
-    
-    
+
     //---------------- Attribute-Vocabulary value owners specific methods ----------------------------
     
     protected void configureDataset() throws ResourceNotFoundException {

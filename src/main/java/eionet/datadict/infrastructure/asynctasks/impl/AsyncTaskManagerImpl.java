@@ -276,8 +276,8 @@ public class AsyncTaskManagerImpl implements AsyncTaskManager {
 
     @Override
     public List<AsyncTaskExecutionEntryHistory> getTaskEntryHistoryByTaskId(String taskId) {
-           return asyncTaskHistoryDao.retrieveTaskHistoryByTaskId(taskId);
-    } 
+        return asyncTaskHistoryDao.retrieveTaskHistoryByTaskId(taskId);
+    }
 
     @Override
     public List<AsyncTaskExecutionEntryHistory> retrieveLimitedTaskHistoryByTaskId(String taskId, int limit) {

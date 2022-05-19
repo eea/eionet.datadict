@@ -35,6 +35,7 @@ import eionet.meta.filters.CASFilterConfig;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -77,7 +78,8 @@ public final class SecurityUtil {
 
         HttpSession session = request.getSession();
         DDUser user = session == null ? null : (DDUser) session.getAttribute(REMOTEUSER);
-
+        String sessionId = getSessionId(session);
+        MDC.put("sessionId", sessionId);
         if (user == null) {
             String casUserName = session == null ? null : (String) session.getAttribute(CASFilter.CAS_FILTER_USER);
             if (casUserName != null) {
@@ -399,5 +401,18 @@ public final class SecurityUtil {
             }
         }
         return countries;
+    }
+
+    public static String getSessionId(HttpSession session) {
+        String sessionId = "";
+        if (session!=null && session.getId()!=null) {
+            Integer length = session.getId().length();
+            if (length % 2 == 0) {
+                sessionId = session.getId().substring(0,length/2);
+            } else {
+                sessionId = session.getId().substring(0,(length-1)/2);
+            }
+        }
+        return sessionId;
     }
 }

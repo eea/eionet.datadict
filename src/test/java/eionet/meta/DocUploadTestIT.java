@@ -64,6 +64,7 @@ public class DocUploadTestIT extends DDDatabaseTestCase {
         request.setCharacterEncoding("UTF-8");
         expectLastCall().atLeastOnce();
         expect(request.getSession()).andReturn(httpSession);
+        expect(httpSession.getId()).andReturn(null);
         expect(request.getParameter("idf")).andReturn("CDDA");
         // ds_id seems to only be used for ACL check. Can easily be spoofed
         expect(request.getParameter("ds_id")).andReturn(ds_id);
@@ -138,6 +139,7 @@ public class DocUploadTestIT extends DDDatabaseTestCase {
         // This is what we expect for the request object
         request.setCharacterEncoding("UTF-8");
         expect(request.getSession()).andReturn(httpSession);
+        expect(httpSession.getId()).andReturn(null);
         expect(request.getParameter("idf")).andReturn("CDDA");
         expect(request.getParameter("ds_id")).andReturn(ds_id);
         expect(request.getContextPath()).andReturn("/");

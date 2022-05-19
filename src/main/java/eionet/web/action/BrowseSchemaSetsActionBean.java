@@ -21,19 +21,6 @@
 
 package eionet.web.action;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import net.sourceforge.stripes.action.DefaultHandler;
-import net.sourceforge.stripes.action.ForwardResolution;
-import net.sourceforge.stripes.action.RedirectResolution;
-import net.sourceforge.stripes.action.Resolution;
-import net.sourceforge.stripes.action.UrlBinding;
-import net.sourceforge.stripes.integration.spring.SpringBean;
-
-import org.apache.commons.lang.StringUtils;
-
 import eionet.meta.dao.domain.RegStatus;
 import eionet.meta.dao.domain.Schema;
 import eionet.meta.dao.domain.SchemaSet;
@@ -41,8 +28,15 @@ import eionet.meta.service.ISchemaService;
 import eionet.meta.service.ServiceException;
 import eionet.meta.service.ValidationException;
 import eionet.util.SecurityUtil;
+import net.sourceforge.stripes.action.*;
+import net.sourceforge.stripes.integration.spring.SpringBean;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Action bean for browsing schema sets.
@@ -122,6 +116,8 @@ public class BrowseSchemaSetsActionBean extends AbstractActionBean {
      * @throws ServiceException if operation fails
      */
     public Resolution delete() throws ServiceException {
+        Thread.currentThread().setName("DELETE-SCHEMA-SETS");
+        ActionMethodUtils.setLogParameters(getContext());
         if (!isDeletePermission()) {
             addGlobalValidationError("Cannot delete. No permission.");
             return viewList();

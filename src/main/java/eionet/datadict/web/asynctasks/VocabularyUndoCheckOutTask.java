@@ -60,6 +60,7 @@ public class VocabularyUndoCheckOutTask implements AsyncTask {
 
     @Override
     public Object call() throws Exception {
+        Thread.currentThread().setName("VOCABULARY-UNDO-CHECKOUT");
         int id = vocabularyService.undoCheckOut(this.getVocabularyId(), this.getUserName());
         VocabularyFolder vocabularyFolder = vocabularyService.getVocabularyFolder(id);
         Map<String, Object> result = new HashMap();

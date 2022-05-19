@@ -7,42 +7,35 @@ import eionet.datadict.errors.XmlExportException;
 import eionet.datadict.services.DataSetService;
 import eionet.datadict.services.DataSetTableService;
 import eionet.meta.DDUser;
+import eionet.meta.outservices.OutService;
 import eionet.util.SecurityUtil;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.net.URLEncoder;
-import java.util.Hashtable;
-import java.util.Vector;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import javax.servlet.ServletException;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
+import org.apache.jena.rdf.model.Model;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
-import org.apache.jena.rdf.model.*;
-import org.apache.jena.vocabulary.*;
-import eionet.meta.outservices.OutService;
+
+import javax.servlet.ServletException;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.net.URLEncoder;
+import java.util.Hashtable;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 /**
  *
  * @author Vasilis Skiadas<vs@eworx.gr>
@@ -193,7 +186,12 @@ public class DataSetController {
     @RequestMapping(value = "{id}/updateDispCreateLinks/{dispDownloadLinkType}/{value}")
     public ResponseEntity<?> updateDisplayDownloadLinks(HttpServletResponse response,@PathVariable int id,@PathVariable String dispDownloadLinkType,@PathVariable String value,
             HttpServletRequest request) throws IOException {
+        Thread.currentThread().setName("UPDATE-DATASET-DISPLAY-DOWNLOAD-LINKS");
+        HttpSession session = request.getSession();
+        String sessionId = SecurityUtil.getSessionId(session);
+        MDC.put("sessionId", sessionId);
         DDUser user = SecurityUtil.getUser(request);
+        MDC.put("username", user!=null ? user.getUserName() : "");
         if (user != null && user.hasPermission("/datasets", "u")) {
             try {
                 this.dataSetService.updateDatasetDisplayDownloadLinks(id,dispDownloadLinkType,value);
