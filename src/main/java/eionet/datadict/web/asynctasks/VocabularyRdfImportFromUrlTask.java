@@ -112,6 +112,7 @@ public class VocabularyRdfImportFromUrlTask implements AsyncTask {
 
     @Override
     public Object call() throws Exception {
+        Thread.currentThread().setName("RDF-IMPORT");
         LOGGER.debug("Starting RDF import operation");
         List<String> systemMessages = new ArrayList<String>();
         try {

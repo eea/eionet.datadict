@@ -81,7 +81,7 @@ public class AsyncJobListener implements JobListener {
         if (result != null) {
             entry.setSerializedResult(this.asyncTaskDataSerializer.serializeResult(result));
         }
-        entry.setScheduledDate(jec.getNextFireTime());
+        entry.setScheduledDate(jec.getScheduledFireTime());
         this.asyncTaskDao.updateEndStatus(entry);
         this.asyncTaskDao.updateScheduledDate(entry);
         if (jee == null) {

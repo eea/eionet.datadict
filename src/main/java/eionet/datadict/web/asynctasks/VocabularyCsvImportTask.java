@@ -84,6 +84,7 @@ public class VocabularyCsvImportTask implements AsyncTask {
 
     @Override
     public Object call() throws Exception {
+        Thread.currentThread().setName("CSV-IMPORT");
         LOGGER.debug("Starting CSV import operation");
         
         try {
@@ -101,7 +102,7 @@ public class VocabularyCsvImportTask implements AsyncTask {
     }
     
     protected void importCsv() throws Exception {
-        VocabularyFolder vocabulary = vocabularyService.getVocabularyFolder(this.getVocabularySetIdentifier(), 
+        VocabularyFolder vocabulary = vocabularyService.getVocabularyFolder(this.getVocabularySetIdentifier(),
                 this.getVocabularyIdentifier(), this.isWorkingCopy());
         Reader csvFileReader = null;
         

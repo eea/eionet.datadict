@@ -5,18 +5,19 @@ import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.IRDFVocabularyImportService;
 import eionet.meta.service.IVocabularyImportService;
 import eionet.meta.service.IVocabularyService;
-import java.io.File;
-import java.io.FileReader;
-import java.io.Reader;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
+import java.io.File;
+import java.io.FileReader;
+import java.io.Reader;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Component
 @Scope("prototype")
@@ -28,7 +29,7 @@ public class VocabularyRdfImportTask implements AsyncTask {
     public static final String PARAM_RDF_FILE_NAME = "rdfFileName";
     public static final String PARAM_RDF_PURGE_OPTION = "rdfPurgeOption";
     public static final String PARAM_MISSING_CONCEPTS_ACTION = "missingConceptsAction";
-    
+
     public static Map<String, Object> createParamsBundle(String vocabularySetIdentifier, String vocabularyIdentifier, 
             boolean workingCopy, String rdfFileName, int rdfPurgeOption, IVocabularyImportService.MissingConceptsAction missingConceptsAction) {
         Map<String, Object> parameters = new HashMap<String, Object>();
@@ -78,6 +79,7 @@ public class VocabularyRdfImportTask implements AsyncTask {
 
     @Override
     public Object call() throws Exception {
+        Thread.currentThread().setName("RDF-IMPORT");
         LOGGER.debug("Starting RDF import operation");
         
         try {
@@ -95,7 +97,7 @@ public class VocabularyRdfImportTask implements AsyncTask {
     }
     
     protected void importRdf() throws Exception {
-        VocabularyFolder vocabulary = vocabularyService.getVocabularyFolder(this.getVocabularySetIdentifier(), 
+        VocabularyFolder vocabulary = vocabularyService.getVocabularyFolder(this.getVocabularySetIdentifier(),
                 this.getVocabularyIdentifier(), this.isWorkingCopy());
         Reader rdfFileReader = null;
         

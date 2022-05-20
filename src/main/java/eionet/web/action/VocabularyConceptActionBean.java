@@ -21,23 +21,6 @@
 
 package eionet.web.action;
 
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-
-import eionet.meta.dao.domain.StandardGenericStatus;
-import net.sourceforge.stripes.action.DefaultHandler;
-import net.sourceforge.stripes.action.ForwardResolution;
-import net.sourceforge.stripes.action.RedirectResolution;
-import net.sourceforge.stripes.action.Resolution;
-import net.sourceforge.stripes.action.UrlBinding;
-import net.sourceforge.stripes.integration.spring.SpringBean;
-import net.sourceforge.stripes.validation.ValidationMethod;
-
-import org.apache.commons.lang.StringUtils;
-import org.springframework.web.util.UriUtils;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
@@ -52,6 +35,17 @@ import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.StringEncoder;
 import eionet.util.Util;
+import net.sourceforge.stripes.action.*;
+import net.sourceforge.stripes.integration.spring.SpringBean;
+import net.sourceforge.stripes.validation.ValidationMethod;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.web.util.UriUtils;
+
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Vocabulary concept action bean.
@@ -229,7 +223,8 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution saveConcept() throws ServiceException {
-
+        Thread.currentThread().setName("SAVE-VOCABULARY-CONCEPT");
+        ActionMethodUtils.setLogParameters(getContext());
         vocabularyConcept.setIdentifier(getConceptIdentifier());
 
         vocabularyService.updateVocabularyConcept(vocabularyConcept);
@@ -259,6 +254,8 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution markConceptObsolete() throws ServiceException {
+        Thread.currentThread().setName("MARK-VOCABULARY-CONCEPT-OBSOLETE");
+        ActionMethodUtils.setLogParameters(getContext());
         vocabularyConcept.setIdentifier(getConceptIdentifier());
         vocabularyService.markConceptsInvalid(Collections.singletonList(vocabularyConcept.getId()));
 
@@ -279,6 +276,8 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution unMarkConceptObsolete() throws ServiceException {
+        Thread.currentThread().setName("UNMARK-VOCABULARY-CONCEPT-OBSOLETE");
+        ActionMethodUtils.setLogParameters(getContext());
         vocabularyConcept.setIdentifier(getConceptIdentifier());
         vocabularyService.markConceptsValid(Collections.singletonList(vocabularyConcept.getId()));
 

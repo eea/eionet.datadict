@@ -58,6 +58,7 @@ public class VocabularyCheckInTask implements AsyncTask {
 
     @Override
     public Object call() throws Exception {
+        Thread.currentThread().setName("VOCABULARY-CHECK-IN");
         vocabularyService.checkInVocabularyFolder(this.getVocabularyId(), this.getUserName());
         
         return null;

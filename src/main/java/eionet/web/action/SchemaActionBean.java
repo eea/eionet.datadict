@@ -9,62 +9,34 @@ import eionet.datadict.model.Attribute;
 import eionet.datadict.model.DataDictEntity;
 import eionet.datadict.services.AttributeService;
 import eionet.datadict.services.data.AttributeDataService;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Vector;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.xml.parsers.ParserConfigurationException;
-
-import net.sourceforge.stripes.action.DefaultHandler;
-import net.sourceforge.stripes.action.FileBean;
-import net.sourceforge.stripes.action.ForwardResolution;
-import net.sourceforge.stripes.action.RedirectResolution;
-import net.sourceforge.stripes.action.Resolution;
-import net.sourceforge.stripes.action.UrlBinding;
-import net.sourceforge.stripes.integration.spring.SpringBean;
-import net.sourceforge.stripes.validation.ValidationMethod;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
-
-import eionet.meta.DDException;
-import eionet.meta.DDSearchEngine;
-import eionet.meta.DElemAttribute;
-import eionet.meta.DownloadServlet;
 import eionet.meta.FixedValue;
+import eionet.meta.*;
 import eionet.meta.dao.DAOException;
-import eionet.meta.dao.domain.RegStatus;
-import eionet.meta.dao.domain.Schema;
-import eionet.meta.dao.domain.SchemaSet;
-import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.dao.domain.*;
 import eionet.meta.schemas.SchemaRepository;
 import eionet.meta.service.ISchemaService;
 import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.IXmlConvService;
 import eionet.meta.service.ServiceException;
 import eionet.meta.service.data.SchemaConversionsData;
-import eionet.util.Props;
-import eionet.util.PropsIF;
-import eionet.util.SecurityUtil;
-import eionet.util.Util;
-import eionet.util.XmlValidator;
+import eionet.util.*;
+import net.sourceforge.stripes.action.*;
+import net.sourceforge.stripes.integration.spring.SpringBean;
+import net.sourceforge.stripes.validation.ValidationMethod;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.SQLException;
+import java.util.*;
 
 /**
  * @author Jaanus Heinlaid
@@ -175,7 +147,8 @@ public class SchemaActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution save() throws ServiceException {
-
+        Thread.currentThread().setName("SAVE-SCHEMA");
+        ActionMethodUtils.setLogParameters(getContext());
         schemaService.updateSchema(schema, getSaveAttributeValues(), getUserName());
         addSystemMessage("Schema successfully updated!");
         return new ForwardResolution(EDIT_SCHEMA_JSP);
@@ -187,7 +160,8 @@ public class SchemaActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution saveAndClose() throws ServiceException {
-
+        Thread.currentThread().setName("SAVE-AND-CLOSE-SCHEMA");
+        ActionMethodUtils.setLogParameters(getContext());
         schemaService.updateSchema(schema, getSaveAttributeValues(), getUserName());
         addSystemMessage("Schema successfully updated!");
         return new RedirectResolution(getClass())
@@ -202,7 +176,8 @@ public class SchemaActionBean extends AbstractActionBean {
      * @throws IOException
      */
     public Resolution add() throws ServiceException, IOException {
-
+        Thread.currentThread().setName("ADD-SCHEMA");
+        ActionMethodUtils.setLogParameters(getContext());
         if (!isCreateAllowed()) {
             throw new ServiceException("You are not authorised for this operation!");
         }
@@ -259,7 +234,8 @@ public class SchemaActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution delete() throws ServiceException {
-
+        Thread.currentThread().setName("DELETE-SCHEMA");
+        ActionMethodUtils.setLogParameters(getContext());
         schemaService.deleteSchemas(Collections.singletonList(schema.getId()), getUserName(), true);
         addSystemMessage("Schema succesfully deleted!");
         return new RedirectResolution(BrowseSchemaSetsActionBean.class);
@@ -271,7 +247,8 @@ public class SchemaActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution checkIn() throws ServiceException {
-
+        Thread.currentThread().setName("CHECKIN-SCHEMA");
+        ActionMethodUtils.setLogParameters(getContext());
         loadSchemaById();
         int finalId = schemaService.checkInSchema(schema.getId(), getUserName(), schema.getComment());
         addSystemMessage("Schema successfully checked in!");
@@ -286,7 +263,8 @@ public class SchemaActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution checkOut() throws ServiceException {
-
+        Thread.currentThread().setName("CHECKOUT-SCHEMA");
+        ActionMethodUtils.setLogParameters(getContext());
         loadSchemaById();
         if (!isCheckoutAllowed()) {
             throw new ServiceException("You are not authorised for this operation!");
@@ -306,6 +284,8 @@ public class SchemaActionBean extends AbstractActionBean {
      * @throws IOException
      */
     public Resolution newVersion() throws ServiceException, IOException {
+        Thread.currentThread().setName("COPY-SCHEMA");
+        ActionMethodUtils.setLogParameters(getContext());
         if (!isCreateAllowed()) {
             throw new ServiceException("You are not authorised for this operation!");
         }
@@ -324,6 +304,8 @@ public class SchemaActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution undoCheckout() throws ServiceException {
+        Thread.currentThread().setName("UNDO-CHECKOUT-SCHEMA");
+        ActionMethodUtils.setLogParameters(getContext());
         loadSchemaById();
         int checkedOutCopyId = schemaService.undoCheckOutSchema(schema.getId(), getUserName());
         addSystemMessage("Working copy successfully deleted!");
@@ -343,7 +325,8 @@ public class SchemaActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     public Resolution reupload() throws IOException, ServiceException {
-
+        Thread.currentThread().setName("REUPLOAD-SCHEMA");
+        ActionMethodUtils.setLogParameters(getContext());
         loadSchemaById();
         String schemaSetIdentifier = schemaSet == null ? null : schemaSet.getIdentifier();
         schemaRepository.reuploadSchema(schema.getFileName(), schemaSetIdentifier, uploadedFile);
