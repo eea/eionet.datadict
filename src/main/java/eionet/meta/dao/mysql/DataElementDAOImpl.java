@@ -1538,5 +1538,16 @@ public class DataElementDAOImpl extends GeneralDAOImpl implements IDataElementDA
         getNamedParameterJdbcTemplate().update(sql, params);
     }
 
+    @Override
+    public Boolean checkIfEntryExistsInVocabularyConceptElementById(Integer vocabularyConceptElementId) {
+        String sql = "select count(*) from VOCABULARY_CONCEPT_ELEMENT vce where vce.ID = :vocabularyConceptElementId";
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("vocabularyConceptElementId", vocabularyConceptElementId);
+
+        Integer numberOfEntries = this.getNamedParameterJdbcTemplate().queryForObject(sql, parameters, Integer.class);
+
+        return numberOfEntries > 0;
+    }
+
 
 }
