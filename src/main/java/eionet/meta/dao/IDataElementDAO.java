@@ -477,4 +477,6 @@ public interface IDataElementDAO {
 
     void changeMultipleDataElemType(List<Integer> dataElementIds, String newType);
 
+    Boolean checkIfEntryExistsInVocabularyConceptElementById(Integer vocabularyConceptElementId);
+
 }

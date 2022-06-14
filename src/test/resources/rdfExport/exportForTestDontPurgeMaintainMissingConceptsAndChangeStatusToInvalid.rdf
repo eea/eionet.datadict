@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF xmlns:adms="http://www.w3.org/ns/adms#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:dctype="http://purl.org/dc/dcmitype/" xmlns:skos="http://www.w3.org/2004/02/skos/core#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns="http://dd.eionet.europa.eu/property/" xml:base="http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/">
+   <skos:ConceptScheme rdf:about="http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/">
+         <rdfs:label>rdf_header_vocab_test</rdfs:label>
+         <skos:notation>rdf_header_vocab</skos:notation>
+         <dcterms:isPartOf rdf:resource="http://dd.eionet.europa.eu/vocabulary/rdf_header_vs/"/>
+         <registrationStatus>Released</registrationStatus>
+         <userModified></userModified>
+         <dateModified>2022-05-09 11:42:26.0</dateModified>
+         <vocabularyType>Common</vocabularyType>
+         <version></version>
+         <workingUser></workingUser>
+         <isNumericConceptIdentifiers>false</isNumericConceptIdentifiers>
+         <isNotationsEqualIdentifiers>false</isNotationsEqualIdentifiers>
+   </skos:ConceptScheme>
+   <skos:Concept rdf:about="http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/rdf_test_concept_1">
+        <skos:notation>8</skos:notation>
+        <skos:prefLabel>rdf_test_concept_label_1</skos:prefLabel>
+        <skos:definition>rdf_test_concept_def_1</skos:definition>
+        <adms:status rdf:resource="http://dd.eionet.europa.eu/vocabulary/datadictionary/status/invalid"/>
+        <statusModified>2022-05-08</statusModified>
+        <acceptedDate></acceptedDate>
+        <notAcceptedDate>2022-05-08</notAcceptedDate>
+        <skos:inScheme rdf:resource="http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/"/>
+        <testElement1>testElement1 for rdf_test_concept_1</testElement1>
+        <testElement2>testElement2 for rdf_test_concept_1</testElement2>
+        <testElement3></testElement3>
+   </skos:Concept>
+   <skos:Concept rdf:about="http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/rdf_test_concept_2">
+        <skos:notation>9</skos:notation>
+        <skos:prefLabel>rdf_test_concept_label_2</skos:prefLabel>
+        <skos:definition>rdf_test_concept_def_2_changed</skos:definition>
+        <adms:status rdf:resource="http://dd.eionet.europa.eu/vocabulary/datadictionary/status/valid"/>
+        <statusModified></statusModified>
+        <acceptedDate></acceptedDate>
+        <notAcceptedDate></notAcceptedDate>
+        <skos:inScheme rdf:resource="http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/"/>
+        <testElement1>testElement1 for rdf_test_concept_2</testElement1>
+        <testElement1>New testElement1 for rdf_test_concept_2</testElement1>
+        <testElement2>testElement2 for rdf_test_concept_2</testElement2>
+        <testElement3>testElement3 for rdf_test_concept_2</testElement3>
+   </skos:Concept>
+   <skos:Concept rdf:about="http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/rdf_test_concept_3">
+        <skos:notation>10</skos:notation>
+        <skos:prefLabel>rdf_test_concept_label_3</skos:prefLabel>
+        <skos:definition>rdf_test_concept_def_3</skos:definition>
+        <adms:status rdf:resource="http://dd.eionet.europa.eu/vocabulary/datadictionary/status/invalid"/>
+        <statusModified>2022-05-08</statusModified>
+        <acceptedDate></acceptedDate>
+        <notAcceptedDate>2022-05-08</notAcceptedDate>
+        <skos:inScheme rdf:resource="http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/"/>
+        <testElement1></testElement1>
+        <testElement2></testElement2>
+        <testElement3></testElement3>
+   </skos:Concept>
+   <skos:Concept rdf:about="http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/rdf_test_concept_4">
+       <skos:notation>11</skos:notation>
+       <skos:prefLabel>rdf_test_concept_label_4</skos:prefLabel>
+       <skos:definition>rdf_test_concept_def_4</skos:definition>
+       <adms:status rdf:resource="http://dd.eionet.europa.eu/vocabulary/datadictionary/status/valid"/>
+       <statusModified>2022-05-08</statusModified>
+       <acceptedDate>2022-05-08</acceptedDate>
+       <notAcceptedDate></notAcceptedDate>
+       <skos:inScheme rdf:resource="http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/"/>
+       <testElement1></testElement1>
+       <testElement2></testElement2>
+       <testElement3></testElement3>
+   </skos:Concept>
+   <skos:Concept rdf:about="http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/rdf_test_concept_5">
+          <skos:notation>12</skos:notation>
+          <skos:prefLabel>rdf_test_concept_label_5</skos:prefLabel>
+          <skos:definition>rdf_test_concept_def_5</skos:definition>
+          <adms:status rdf:resource="http://dd.eionet.europa.eu/vocabulary/datadictionary/status/valid"/>
+          <statusModified>2022-05-08</statusModified>
+          <acceptedDate>2022-05-08</acceptedDate>
+          <notAcceptedDate></notAcceptedDate>
+          <skos:inScheme rdf:resource="http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/"/>
+          <testElement1>testElement1 for rdf_test_concept_5</testElement1>
+          <testElement2></testElement2>
+          <testElement3></testElement3>
+   </skos:Concept>
+</rdf:RDF>

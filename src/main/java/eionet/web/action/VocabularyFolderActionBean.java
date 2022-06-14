@@ -1460,7 +1460,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     public Resolution rdf() {
         try {
             vocabularyFolder =
-                    vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
+                    getVocabularyService().getVocabularyFolder(getVocabularyFolder().getFolderName(), getVocabularyFolder().getIdentifier(),
                             false);
             LOGGER.info(String.format("Exporting rdf for vocabulary #%d", vocabularyFolder.getId()));
 
@@ -1470,10 +1470,10 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
             List<VocabularyFolder> vocabularyFolders = new ArrayList<VocabularyFolder>();
             vocabularyFolders.add(vocabularyFolder);
-            final List<RdfNamespace> nameSpaces = vocabularyService.getVocabularyNamespaces(vocabularyFolders);
+            final List<RdfNamespace> nameSpaces = getVocabularyService().getVocabularyNamespaces(vocabularyFolders);
             LOGGER.info(String.format("Retrieved namespaces for vocabulary #%d", vocabularyFolder.getId()));
 
-            final List<? extends VocabularyConcept> concepts = vocabularyService.getAllConceptsWithAttributes(vocabularyFolder.getId());
+            final List<? extends VocabularyConcept> concepts = getVocabularyService().getAllConceptsWithAttributes(vocabularyFolder.getId());
             LOGGER.info(String.format("Retrieved concepts for vocabulary #%d", vocabularyFolder.getId()));
             final String contextRoot = VocabularyFolder.getBaseUri(vocabularyFolder);
 
@@ -2373,5 +2373,7 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         }
         return null;
     }
+
+
 
 }
