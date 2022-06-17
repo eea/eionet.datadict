@@ -21,6 +21,8 @@
 
 package eionet.web.action;
 
+import eionet.datadict.model.ContactDetails;
+import eionet.datadict.services.data.ContactService;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
@@ -41,11 +43,8 @@ import net.sourceforge.stripes.validation.ValidationMethod;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.web.util.UriUtils;
 
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Vocabulary concept action bean.
@@ -75,6 +74,12 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
      */
     @SpringBean
     private IDataService dataService;
+
+    /**
+     * attributeValueDataService
+     */
+    @SpringBean
+    private ContactService contactService;
 
     /**
      * Vocabulary folder.
@@ -152,6 +157,8 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
      */
     private List<String> excludedVocSetLabels;
 
+    private List<ContactDetails> contactDetails;
+
     /**
      * View action.
      *
@@ -167,6 +174,10 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
                 vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
                         vocabularyFolder.isWorkingCopy());
         vocabularyConcept = vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), getConceptIdentifier(), false);
+
+        List<Integer> acceptedMAttributes = new ArrayList<>(Arrays.asList(61, 62, 63, 64));
+        contactDetails = contactService.getAllByValue(Integer.toString(vocabularyConcept.getId()));
+        contactDetails = contactDetails.stream().filter(contactDetails -> acceptedMAttributes.contains(contactDetails.getmAttributeId())).collect(Collectors.toList());
         validateView();
 
         // LOGGER.debug("Element attributes: " + vocabularyConcept.getElementAttributes().size());
@@ -732,6 +743,14 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
 
     public void setElementId(String elemId) {
         elementId = elemId;
+    }
+
+    public List<ContactDetails> getContactDetails() {
+        return contactDetails;
+    }
+
+    public void setContactDetails(List<ContactDetails> contactDetails) {
+        this.contactDetails = contactDetails;
     }
 
     /**

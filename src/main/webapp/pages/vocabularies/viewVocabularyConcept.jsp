@@ -133,6 +133,45 @@
             </table>
         </div>
 
+        <br><br>
+
+        <!-- attribute values -->
+        <div>
+            <table class="datatable results">
+                <thead>
+                <tr>
+                    <th>Type of actor</th>
+                    <th>Dataelement id</th>
+                    <th>Type</th>
+                    <th>Dataset short name</th>
+                    <th>Dataset identifier</th>
+                    <th>Dataelement short name</th>
+                    <th>Dataelement identifier</th>
+                </tr>
+                </thead>
+                <tbody>
+                 <c:forEach var="contactRecord" items="${actionBean.contactDetails}" varStatus="loop">
+                  <tr>
+                    <td class="simple_attr_value"><c:out value="${contactRecord.mAttributeName}" /></td>
+                    <c:choose>
+                        <c:when test="${contactRecord.parentType eq 'Dataset'}">
+                            <td style="font-weight:bold"><stripes:link href="/datasets/${contactRecord.dataElemId}"><c:out value="${contactRecord.dataElemId}" /></stripes:link></td>
+                        </c:when>
+                        <c:otherwise>
+                            <td style="font-weight:bold"><stripes:link href="/dataelements/${contactRecord.dataElemId}"><c:out value="${contactRecord.dataElemId}" /></stripes:link></td>
+                        </c:otherwise>
+                    </c:choose>
+                    <td class="simple_attr_value"><c:out value="${contactRecord.parentType}" /></td>
+                    <td class="simple_attr_value"><span style="white-space:pre-wrap"><c:out value="${contactRecord.datasetShortName}" /></span></td>
+                    <td class="simple_attr_value"><span style="white-space:pre-wrap"><c:out value="${contactRecord.datasetIdentifier}" /></span></td>
+                    <td class="simple_attr_value"><span style="white-space:pre-wrap"><c:out value="${contactRecord.dataElementShortName}" /></span></td>
+                    <td class="simple_attr_value"><span style="white-space:pre-wrap"><c:out value="${contactRecord.dataElementIdentifier}" /></span></td>
+                  </tr>
+                 </c:forEach>
+                </tbody>
+            </table>
+        </div>
+
     </stripes:layout-component>
 
 </stripes:layout-render>
