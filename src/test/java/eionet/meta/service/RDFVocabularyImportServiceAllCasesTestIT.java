@@ -1,6 +1,7 @@
 package eionet.meta.service;
 
 import eionet.meta.ActionBeanUtils;
+import eionet.meta.dao.IDataElementDAO;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.StandardGenericStatus;
 import eionet.meta.dao.domain.VocabularyConcept;
@@ -25,6 +26,9 @@ public class RDFVocabularyImportServiceAllCasesTestIT extends VocabularyImportSe
      */
     @SpringBeanByType
     private IRDFVocabularyImportService vocabularyImportService;
+
+    @SpringBeanByType
+    private IDataElementDAO dataElementDAO;
 
     @BeforeClass
     public static void loadData() throws Exception {
@@ -191,6 +195,12 @@ public class RDFVocabularyImportServiceAllCasesTestIT extends VocabularyImportSe
         assertThat(element1Concept5.size(), is(1));
         assertThat(element1Concept5.get(0).getId(), is(1));
         assertThat(element1Concept5.get(0).getAttributeValue(), is("testElement1 for rdf_test_concept_5"));
+
+        //Check that vocabularyConceptElement entries have been removed from missing concepts
+        assertThat(dataElementDAO.checkIfEntryExistsInVocabularyConceptElementById(1), is(false));
+        assertThat(dataElementDAO.checkIfEntryExistsInVocabularyConceptElementById(2), is(false));
+
+        assertThat(dataElementDAO.checkIfEntryExistsInVocabularyConceptElementById(5), is(true));
     }
 
     /*
@@ -683,6 +693,12 @@ public class RDFVocabularyImportServiceAllCasesTestIT extends VocabularyImportSe
         assertThat(element1Concept5.size(), is(1));
         assertThat(element1Concept5.get(0).getId(), is(1));
         assertThat(element1Concept5.get(0).getAttributeValue(), is("testElement1 for rdf_test_concept_5"));
+
+        //Check that vocabularyConceptElement entries have been removed from missing concepts
+        assertThat(dataElementDAO.checkIfEntryExistsInVocabularyConceptElementById(1), is(false));
+        assertThat(dataElementDAO.checkIfEntryExistsInVocabularyConceptElementById(2), is(false));
+
+        assertThat(dataElementDAO.checkIfEntryExistsInVocabularyConceptElementById(5), is(true));
     }
 
     /*
