@@ -337,7 +337,7 @@ public class VocabularyXmlWriter {
             StandardGenericStatus conceptStatus = vc.getStatus();
             writer.writeCharacters("\n");
             writer.writeStartElement(VocabularyOutputHelper.LinkedDataNamespaces.ADMS_NS, "status");
-            if (StringUtils.isNotEmpty(vc.getDefinition())) {
+            if (conceptStatus != null) {
                 writer.writeCharacters(conceptStatus.getIdentifier());
             }
             writer.writeEndElement();
