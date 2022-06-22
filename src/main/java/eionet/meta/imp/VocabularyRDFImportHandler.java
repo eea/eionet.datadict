@@ -645,8 +645,10 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
                         addToElementsReferringNotCreatedConcepts(id, elem);
                     }
                 } else {
-                    elem.setAttributeValue(elementValue);
-                    elem.setRelatedConceptId(null);
+                    if( !elem.getIdentifier().equals("adms:status")) { //Refs #137907 for adms:status element there shouldn't be a text value. Only a link is acceptable.
+                        elem.setAttributeValue(elementValue);
+                        elem.setRelatedConceptId(null);
+                    }
                 }
 
                 conceptIdsUpdatedWithPredicate.add(this.lastFoundConcept.getId());
