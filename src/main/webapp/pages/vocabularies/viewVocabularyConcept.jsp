@@ -135,6 +135,7 @@
 
         <br><br>
 
+      <c:if test="${not empty actionBean.contactDetails}">
         <!-- attribute values -->
         <div>
             <table class="datatable results">
@@ -171,6 +172,7 @@
                 </tbody>
             </table>
         </div>
+       </c:if>
 
     </stripes:layout-component>
 
