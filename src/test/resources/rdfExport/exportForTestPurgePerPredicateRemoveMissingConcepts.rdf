@@ -17,7 +17,7 @@
         <skos:notation>9</skos:notation>
         <skos:prefLabel>rdf_test_concept_label_2</skos:prefLabel>
         <skos:definition>rdf_test_concept_def_2_changed</skos:definition>
-        <adms:status rdf:resource="http://dd.eionet.europa.eu/vocabulary/datadictionary/status/valid"/>
+        <adms:status>valid</adms:status>
         <statusModified></statusModified>
         <acceptedDate></acceptedDate>
         <notAcceptedDate></notAcceptedDate>
@@ -30,7 +30,7 @@
        <skos:notation>11</skos:notation>
        <skos:prefLabel>rdf_test_concept_label_4</skos:prefLabel>
        <skos:definition>rdf_test_concept_def_4</skos:definition>
-       <adms:status rdf:resource="http://dd.eionet.europa.eu/vocabulary/datadictionary/status/valid"/>
+       <adms:status>valid</adms:status>
        <statusModified>2022-05-08</statusModified>
        <acceptedDate>2022-05-08</acceptedDate>
        <notAcceptedDate></notAcceptedDate>
@@ -40,16 +40,16 @@
        <testElement3></testElement3>
    </skos:Concept>
    <skos:Concept rdf:about="http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/rdf_test_concept_5">
-          <skos:notation>12</skos:notation>
-          <skos:prefLabel>rdf_test_concept_label_5</skos:prefLabel>
-          <skos:definition>rdf_test_concept_def_5</skos:definition>
-          <adms:status rdf:resource="http://dd.eionet.europa.eu/vocabulary/datadictionary/status/valid"/>
-          <statusModified>2022-05-08</statusModified>
-          <acceptedDate>2022-05-08</acceptedDate>
-          <notAcceptedDate></notAcceptedDate>
-          <skos:inScheme rdf:resource="http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/"/>
-          <testElement1>testElement1 for rdf_test_concept_5</testElement1>
-          <testElement2></testElement2>
-          <testElement3></testElement3>
+      <skos:notation>12</skos:notation>
+      <skos:prefLabel>rdf_test_concept_label_5</skos:prefLabel>
+      <skos:definition>rdf_test_concept_def_5</skos:definition>
+      <adms:status>valid</adms:status>
+      <statusModified>2022-05-08</statusModified>
+      <acceptedDate>2022-05-08</acceptedDate>
+      <notAcceptedDate></notAcceptedDate>
+      <skos:inScheme rdf:resource="http://127.0.0.1:8080/datadict/vocabulary/rdf_header_vs/rdf_header_vocab/"/>
+      <testElement1>testElement1 for rdf_test_concept_5</testElement1>
+      <testElement2></testElement2>
+      <testElement3></testElement3>
    </skos:Concept>
 </rdf:RDF>

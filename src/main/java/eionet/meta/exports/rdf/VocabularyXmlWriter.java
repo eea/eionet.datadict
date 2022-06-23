@@ -336,11 +336,11 @@ public class VocabularyXmlWriter {
             // Write concept status if it's not null;
             StandardGenericStatus conceptStatus = vc.getStatus();
             writer.writeCharacters("\n");
-            writer.writeEmptyElement(VocabularyOutputHelper.LinkedDataNamespaces.ADMS_NS, "status");
+            writer.writeStartElement(VocabularyOutputHelper.LinkedDataNamespaces.ADMS_NS, "status");
             if (conceptStatus != null) {
-                writer.writeAttribute("rdf", VocabularyOutputHelper.LinkedDataNamespaces.RDF_NS, "resource",
-                        StringEncoder.encodeToIRI(OWN_STATUS_VOCABULARY_URI + "/" + conceptStatus.getIdentifier()));
+                writer.writeCharacters(conceptStatus.getIdentifier());
             }
+            writer.writeEndElement();
 
             writer.writeCharacters("\n");
             writer.writeStartElement("statusModified");
