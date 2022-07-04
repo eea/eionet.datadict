@@ -259,4 +259,19 @@ public class DataSetDAOImpl extends GeneralDAOImpl implements IDataSetDAO {
         return dataSetRowCallbackHandler.getResult();
     }
 
+    @Override
+    public Integer getLatestDatasetId(String shortName) {
+        String sql = "select DATASET_ID from DATASET where SHORT_NAME = :shortName order by DATASET_ID desc";
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("shortName", shortName);
+
+        List<String> result = getNamedParameterJdbcTemplate().query(sql, params, new RowMapper<String>() {
+            @Override
+            public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+                return rs.getString("DATASET_ID");
+            }
+        });
+        return result.isEmpty() ? null : Integer.valueOf(result.get(0));
+    }
+
 }

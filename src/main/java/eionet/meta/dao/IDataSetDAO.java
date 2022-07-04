@@ -62,4 +62,6 @@ public interface IDataSetDAO {
 
     List<DataSet> getWorkingCopiesOf(String userName);
 
+    Integer getLatestDatasetId(String shortname);
+
 }

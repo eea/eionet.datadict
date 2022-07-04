@@ -17,11 +17,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  *
@@ -440,6 +436,16 @@ public class AttributeDAOImpl extends GeneralDAOImpl implements IAttributeDAO {
         params.put("value", value);
 
         getNamedParameterJdbcTemplate().update(UPDATE_ATTRIBUTE_SQL, params);
+    }
+
+    @Override
+    public void deleteAttribute(int attributeId, int dataElemId, String value) {
+        String sql = "DELETE FROM ATTRIBUTE WHERE M_ATTRIBUTE_ID= :attributeId AND DATAELEM_ID= :dataElemId AND VALUE = :value";
+        Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("attributeId", attributeId);
+        parameters.put("dataElemId", dataElemId);
+        parameters.put("value", value);
+        getNamedParameterJdbcTemplate().update(sql, parameters);
     }
 
 }

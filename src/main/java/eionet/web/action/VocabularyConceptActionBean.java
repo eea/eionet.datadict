@@ -23,9 +23,15 @@ package eionet.web.action;
 
 import eionet.datadict.model.ContactDetails;
 import eionet.datadict.services.data.ContactService;
+import eionet.meta.DDSearchEngine;
+import eionet.meta.DDUser;
+import eionet.meta.VersionManager;
+import eionet.meta.dao.IAttributeDAO;
+import eionet.meta.dao.IVocabularyConceptDAO;
 import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.dao.domain.VocabularyFolder;
+import eionet.meta.savers.DatasetHandler;
 import eionet.meta.service.IDataService;
 import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.ServiceException;
@@ -33,16 +39,15 @@ import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyConceptResult;
 import eionet.meta.service.data.VocabularyFilter;
 import eionet.meta.service.data.VocabularyResult;
-import eionet.util.Props;
-import eionet.util.PropsIF;
-import eionet.util.StringEncoder;
-import eionet.util.Util;
+import eionet.util.*;
+import eionet.util.sql.ConnectionUtil;
 import net.sourceforge.stripes.action.*;
 import net.sourceforge.stripes.integration.spring.SpringBean;
 import net.sourceforge.stripes.validation.ValidationMethod;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.web.util.UriUtils;
 
+import java.sql.Connection;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -80,6 +85,13 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
      */
     @SpringBean
     private ContactService contactService;
+
+    /** Attribute DAO. */
+    @SpringBean
+    private IAttributeDAO attributeDao;
+
+    @SpringBean
+    private IVocabularyConceptDAO vocabularyConceptDAO;
 
     /**
      * Vocabulary folder.
@@ -157,7 +169,10 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
      */
     private List<String> excludedVocSetLabels;
 
-    private List<ContactDetails> contactDetails;
+    /**
+     * contact details list
+     */
+    private Set<ContactDetails> contactDetails;
 
     /**
      * View action.
@@ -176,8 +191,8 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         vocabularyConcept = vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), getConceptIdentifier(), false);
 
         List<Integer> acceptedMAttributes = new ArrayList<>(Arrays.asList(61, 62, 63, 64));
-        contactDetails = contactService.getAllByValue(Integer.toString(vocabularyConcept.getId()));
-        contactDetails = contactDetails.stream().filter(contactDetails -> acceptedMAttributes.contains(contactDetails.getmAttributeId())).collect(Collectors.toList());
+        contactDetails = contactService.getAllByValue(Integer.toString(vocabularyConcept.getOriginalConceptId()!=null && vocabularyConcept.getOriginalConceptId()!=0 ? vocabularyConcept.getOriginalConceptId() : vocabularyConcept.getId()));
+        contactDetails = contactDetails.stream().filter(contactDetails -> acceptedMAttributes.contains(contactDetails.getmAttributeId())).collect(Collectors.toSet());
         validateView();
 
         // LOGGER.debug("Element attributes: " + vocabularyConcept.getElementAttributes().size());
@@ -218,6 +233,10 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
                         vocabularyFolder.isWorkingCopy());
         vocabularyConcept = vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), getConceptIdentifier(), true);
 
+        List<Integer> acceptedMAttributes = new ArrayList<>(Arrays.asList(61, 62, 63, 64));
+        contactDetails = contactService.getAllByValue(Integer.toString(vocabularyConcept.getOriginalConceptId()));
+        contactDetails = contactDetails.stream().filter(contactDetails -> acceptedMAttributes.contains(contactDetails.getmAttributeId())).collect(Collectors.toSet());
+
         validateView();
         initElemVocabularyNames();
         initBeans();
@@ -233,7 +252,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
      * @return
      * @throws ServiceException
      */
-    public Resolution saveConcept() throws ServiceException {
+    public Resolution saveConcept() throws Exception {
         Thread.currentThread().setName("SAVE-VOCABULARY-CONCEPT");
         ActionMethodUtils.setLogParameters(getContext());
         vocabularyConcept.setIdentifier(getConceptIdentifier());
@@ -242,6 +261,60 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
 
         relatedVocabulary = null;
         relatedVocabularyConcepts = null;
+
+        List<Integer> acceptedMAttributes = new ArrayList<>(Arrays.asList(61, 62, 63, 64));
+        contactDetails = contactService.getAllByValue(Integer.toString(vocabularyConcept.getOriginalConceptId()));
+        contactDetails = contactDetails.stream().filter(contactDetails -> acceptedMAttributes.contains(contactDetails.getmAttributeId())).collect(Collectors.toSet());
+
+        DDUser user = SecurityUtil.getUser(getContext().getRequest());
+        Connection conn = ConnectionUtil.getConnection();
+        DDSearchEngine searchEngine = new DDSearchEngine(conn, "");
+        searchEngine.setUser(user);
+        VersionManager verMan = new VersionManager(conn, searchEngine, user);
+
+        try {
+            if (vocabularyConcept.isDeleteContactFromAllElements()) {
+                for (ContactDetails contactDetail : contactDetails) {
+                    if (contactDetail.getParentType().equals("Dataset")) {
+                        eionet.meta.savers.Parameters pars = new eionet.meta.savers.Parameters();
+                        pars.addParameterValue("resetVersionAndStatus", "resetVersionAndStatus");
+                        verMan.setServlRequestParams(pars);
+                        String copyID = verMan.checkOut(String.valueOf(contactDetail.getDataElemId()),"dst");
+                        switch (contactDetail.getmAttributeId()) {
+                            case 61:
+                            case 63:
+                            case 64:
+                            case 62:
+                                attributeDao.deleteAttribute(contactDetail.getmAttributeId(), Integer.parseInt(copyID), contactDetail.getValue());
+                                break;
+                        }
+                        eionet.meta.savers.Parameters dsHandlerParams = new eionet.meta.savers.Parameters();
+                        dsHandlerParams.addParameterValue("mode", "edit");
+                        dsHandlerParams.addParameterValue("ds_id", copyID);
+                        dsHandlerParams.addParameterValue("check_in", "true");
+                        dsHandlerParams.addParameterValue("checkedout_copy_id",String.valueOf(contactDetail.getDataElemId()));
+                        if (contactDetail.getDatasetRegStatus().equals("Incomplete")) {
+                            dsHandlerParams.addParameterValue("upd_version", "false");
+                        } else {
+                            dsHandlerParams.addParameterValue("upd_version", "true");
+                        }
+                        String[] dsIds = {copyID};
+                        dsHandlerParams.addParameterValue("ds_ids", dsIds.toString());
+                        dsHandlerParams.addParameterValue("ds_name", contactDetail.getDatasetShortName());
+                        dsHandlerParams.addParameterValue("idfier", contactDetail.getDatasetIdentifier());
+                        DatasetHandler handler = new DatasetHandler(conn, dsHandlerParams, getContext().getServletContext());
+                        handler.setUser(user);
+                        handler.execute();
+                    } else if (contactDetail.getParentType().equals("DataElement")) {
+                        String copyID = verMan.checkOut(String.valueOf(contactDetail.getDataElemId()), "elm");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            eionet.meta.savers.Parameters dsHandlerParams = new eionet.meta.savers.Parameters();
+            DatasetHandler handler = new DatasetHandler(conn, dsHandlerParams, getContext().getServletContext());
+           handler.execute();
+        }
 
         addSystemMessage("Vocabulary concept saved successfully");
 
@@ -255,6 +328,24 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         resolution.addParameter("elementId", elementId);
 
         // initElemVocabularyNames();
+        return resolution;
+    }
+
+    public Resolution deleteContact() throws Exception {
+        RedirectResolution resolution = new RedirectResolution(getClass(), "edit");
+        DDUser user = SecurityUtil.getUser(getContext().getRequest());
+        Connection conn = ConnectionUtil.getConnection();
+        DDSearchEngine searchEngine = new DDSearchEngine(conn, "");
+        searchEngine.setUser(user);
+        VersionManager verMan = new VersionManager(conn, searchEngine, user);
+
+        for (ContactDetails contactDetail : contactDetails) {
+            if (contactDetail.getParentType().equals("Dataset")) {
+                verMan.checkOut(String.valueOf(contactDetail.getDataElemId()),"dst");
+            } else {
+                verMan.checkOut(String.valueOf(contactDetail.getDataElemId()), "elm");
+            }
+        }
         return resolution;
     }
 
@@ -745,11 +836,11 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         elementId = elemId;
     }
 
-    public List<ContactDetails> getContactDetails() {
+    public Set<ContactDetails> getContactDetails() {
         return contactDetails;
     }
 
-    public void setContactDetails(List<ContactDetails> contactDetails) {
+    public void setContactDetails(Set<ContactDetails> contactDetails) {
         this.contactDetails = contactDetails;
     }
 

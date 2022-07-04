@@ -2,7 +2,7 @@ package eionet.datadict.dal;
 
 import eionet.datadict.model.ContactDetails;
 
-import java.util.List;
+import java.util.Set;
 
 public interface ContactDao {
 
@@ -11,5 +11,5 @@ public interface ContactDao {
      * @param value
      * @return
      */
-    public List<ContactDetails> getAllByValue(String value);
+    public Set<ContactDetails> getAllByValue(String value);
 }

@@ -6,7 +6,7 @@ import eionet.datadict.services.data.ContactService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Set;
 
 @Service
 public class ContactServiceImpl implements ContactService {
@@ -19,7 +19,7 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public List<ContactDetails> getAllByValue(String value) {
+    public Set<ContactDetails> getAllByValue(String value) {
         return contactDao.getAllByValue(value);
     }
 }

@@ -1,5 +1,7 @@
 package eionet.datadict.model;
 
+import java.util.Objects;
+
 public class ContactDetails {
 
     private int mAttributeId;
@@ -11,6 +13,7 @@ public class ContactDetails {
     private String dataElementShortName;
     private String datasetIdentifier;
     private String datasetShortName;
+    private String datasetRegStatus;
 
     public int getmAttributeId() {
         return mAttributeId;
@@ -82,5 +85,30 @@ public class ContactDetails {
 
     public void setDatasetShortName(String datasetShortName) {
         this.datasetShortName = datasetShortName;
+    }
+
+    public String getDatasetRegStatus() {
+        return datasetRegStatus;
+    }
+
+    public void setDatasetRegStatus(String datasetRegStatus) {
+        this.datasetRegStatus = datasetRegStatus;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ContactDetails that = (ContactDetails) o;
+        return mAttributeId == that.mAttributeId &&
+                (Objects.equals(dataElementIdentifier, that.dataElementIdentifier) &&
+                Objects.equals(dataElementShortName, that.dataElementShortName) ||
+                Objects.equals(datasetIdentifier, that.datasetIdentifier) &&
+                Objects.equals(datasetShortName, that.datasetShortName));
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(mAttributeId, dataElementIdentifier, dataElementShortName, datasetIdentifier, datasetShortName);
     }
 }

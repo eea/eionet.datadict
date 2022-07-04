@@ -56,6 +56,11 @@ public class VocabularyConcept {
     private String notation;
 
     /**
+     * Original concept id
+     */
+    private Integer originalConceptId;
+
+    /**
      * parent vocabulary identifier.
      */
     private int vocabularyId;
@@ -99,6 +104,11 @@ public class VocabularyConcept {
      * Status modified.
      */
     private java.util.Date statusModified;
+
+    /**
+     * deleteContactFromAllElements
+     */
+    private boolean deleteContactFromAllElements;
 
     /**
      * @return the id
@@ -173,6 +183,14 @@ public class VocabularyConcept {
      */
     public void setNotation(String notation) {
         this.notation = notation;
+    }
+
+    public Integer getOriginalConceptId() {
+        return originalConceptId;
+    }
+
+    public void setOriginalConceptId(Integer originalConceptId) {
+        this.originalConceptId = originalConceptId;
     }
 
     /**
@@ -304,6 +322,14 @@ public class VocabularyConcept {
 
     public void setStatusModified(java.util.Date statusModified) {
         this.statusModified = statusModified;
+    }
+
+    public boolean isDeleteContactFromAllElements() {
+        return deleteContactFromAllElements;
+    }
+
+    public void setDeleteContactFromAllElements(boolean deleteContactFromAllElements) {
+        this.deleteContactFromAllElements = deleteContactFromAllElements;
     }
 
     /*

@@ -3,6 +3,7 @@ package eionet.datadict.services.data;
 import eionet.datadict.model.ContactDetails;
 
 import java.util.List;
+import java.util.Set;
 
 public interface ContactService {
 
@@ -11,5 +12,5 @@ public interface ContactService {
      * @param value
      * @return
      */
-    public List<ContactDetails> getAllByValue(String value);
+     Set<ContactDetails> getAllByValue(String value);
 }

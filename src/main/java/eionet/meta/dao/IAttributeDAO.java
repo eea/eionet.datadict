@@ -134,5 +134,13 @@ public interface IAttributeDAO {
      * @param value new attr value
      */
     void updateSimpleAttributeValue(String attrName, int dataElemId , String parentType, String value);
+
+    /**
+     * deletes attribute
+     * @param attributeId
+     * @param dataElemId
+     * @param value
+     */
+    void deleteAttribute(int attributeId, int dataElemId, String value);
     
 }

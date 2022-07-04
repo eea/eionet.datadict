@@ -493,7 +493,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
         params.put("identifier", conceptIdentifier);
 
         StringBuilder sql = new StringBuilder();
-        sql.append("select VOCABULARY_CONCEPT_ID, VOCABULARY_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION, STATUS, ");
+        sql.append("select VOCABULARY_CONCEPT_ID, VOCABULARY_ID, IDENTIFIER, LABEL, DEFINITION, NOTATION, ORIGINAL_CONCEPT_ID, STATUS, ");
         sql.append("ACCEPTED_DATE, NOT_ACCEPTED_DATE, STATUS_MODIFIED ");
         sql.append("from VOCABULARY_CONCEPT where VOCABULARY_ID=:vocabularyFolderId and IDENTIFIER=:identifier");
 
@@ -508,6 +508,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
                         vc.setLabel(rs.getString("LABEL"));
                         vc.setDefinition(rs.getString("DEFINITION"));
                         vc.setNotation(rs.getString("NOTATION"));
+                        vc.setOriginalConceptId(rs.getInt("ORIGINAL_CONCEPT_ID"));
                         vc.setStatus(rs.getInt("STATUS"));
                         vc.setAcceptedDate(rs.getDate("ACCEPTED_DATE"));
                         vc.setNotAcceptedDate(rs.getDate("NOT_ACCEPTED_DATE"));

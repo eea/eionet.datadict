@@ -2814,4 +2814,12 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
                 tableName="VOCABULARY_CONCEPT_ELEMENT"/>
         <comment>Change default value</comment>
     </changeSet>
+    <changeSet author="favvmary" id="rev-209">
+        <comment>
+            Make Responsible field not mandatory
+        </comment>
+        <sql>
+            UPDATE M_ATTRIBUTE SET OBLIGATION='O' WHERE NAME='Responsible';
+        </sql>
+    </changeSet>
 </databaseChangeLog>

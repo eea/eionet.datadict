@@ -1,7 +1,9 @@
 package eionet.datadict.dal.impl;
 
 import eionet.datadict.dal.ContactDao;
-import eionet.datadict.model.*;
+import eionet.datadict.model.ContactDetails;
+import eionet.datadict.model.DataDictEntity;
+import eionet.meta.dao.IDataSetDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
@@ -10,10 +12,7 @@ import org.springframework.stereotype.Repository;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Repository
 public class ContactDaoImpl extends JdbcDaoBase implements ContactDao {
@@ -23,20 +22,38 @@ public class ContactDaoImpl extends JdbcDaoBase implements ContactDao {
         super(dataSource);
     }
 
+    @Autowired
+    private IDataSetDAO dataSetDAO;
+
     @Override
-    public List<ContactDetails> getAllByValue(String value) {
+    public Set<ContactDetails> getAllByValue(String value) {
         String sql = "select M_ATTRIBUTE.NAME as M_ATTRIBUTE_NAME, ATTRIBUTE.*, DATAELEM.SHORT_NAME as DATAELEM_SHORT_NAME, DATAELEM.IDENTIFIER as DATAELEM_IDENTIFIER, \n" +
-                "DATASET.SHORT_NAME as DATASET_SHORT_NAME, DATASET.IDENTIFIER as DATASET_IDENTIFIER from ATTRIBUTE "
+                "DATASET.SHORT_NAME as DATASET_SHORT_NAME, DATASET.IDENTIFIER as DATASET_IDENTIFIER, DATASET.REG_STATUS as DATASET_REG_STATUS from ATTRIBUTE "
                 + "left outer join M_ATTRIBUTE on ATTRIBUTE.M_ATTRIBUTE_ID=M_ATTRIBUTE.M_ATTRIBUTE_ID "
                 + "left outer join DATAELEM on DATAELEM.DATAELEM_ID=ATTRIBUTE.DATAELEM_ID "
                 + "left outer join DATASET on DATASET.DATASET_ID=ATTRIBUTE.DATAELEM_ID "
-                + "WHERE VALUE = :value";
+                + "WHERE ATTRIBUTE.VALUE = :value "
+                + "AND DATASET.WORKING_COPY='N' "
+                + "ORDER BY ATTRIBUTE.DATAELEM_ID desc;";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("value", value);
+        Set<ContactDetails> contactDetailsSet = new HashSet<>();
+        Set<ContactDetails> contactDetailsTempSet = new HashSet<>();
         try {
-            return this.getNamedParameterJdbcTemplate().query(sql, params, new ContactDaoImpl.ContactRowMapper());
+            List<ContactDetails> contactDetailsList = this.getNamedParameterJdbcTemplate().query(sql, params, new ContactDaoImpl.ContactRowMapper());
+            contactDetailsList.forEach(entry -> contactDetailsTempSet.add(entry));
+            for (ContactDetails contactDetails : contactDetailsTempSet) {
+                Integer latestDatasetId;
+                if (contactDetails.getParentType().equals("Dataset")) {
+                    latestDatasetId = dataSetDAO.getLatestDatasetId(contactDetails.getDatasetShortName());
+                    if (contactDetails.getDataElemId()==latestDatasetId) {
+                        contactDetailsSet.add(contactDetails);
+                    }
+                }
+            }
+            return contactDetailsSet;
         } catch (EmptyResultDataAccessException ex) {
-            return Collections.EMPTY_LIST;
+            return Collections.EMPTY_SET;
         }
     }
 
@@ -64,6 +81,8 @@ public class ContactDaoImpl extends JdbcDaoBase implements ContactDao {
             contactDetails.setDatasetIdentifier(rs.getString("DATASET_IDENTIFIER"));
             contactDetails.setDataElementShortName(rs.getString("DATAELEM_SHORT_NAME"));
             contactDetails.setDataElementIdentifier(rs.getString("DATAELEM_IDENTIFIER"));
+            contactDetails.setDatasetRegStatus(rs.getString("DATASET_REG_STATUS"));
+            contactDetails.setValue(rs.getString("VALUE"));
             return contactDetails;
         }
 
