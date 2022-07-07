@@ -284,12 +284,13 @@
                 <thead>
                 <tr>
                     <th>Type of actor</th>
-                    <th>Dataelement id</th>
+                    <th>DataElement id</th>
                     <th>Type</th>
                     <th>Dataset short name</th>
                     <th>Dataset identifier</th>
-                    <th>Dataelement short name</th>
-                    <th>Dataelement identifier</th>
+                    <th>DataElement dataset id</th>
+                    <th>DataElement short name</th>
+                    <th>DataElement identifier</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -307,6 +308,14 @@
                         <td class="simple_attr_value"><c:out value="${contactRecord.parentType}" /></td>
                         <td class="simple_attr_value"><span style="white-space:pre-wrap"><c:out value="${contactRecord.datasetShortName}" /></span></td>
                         <td class="simple_attr_value"><span style="white-space:pre-wrap"><c:out value="${contactRecord.datasetIdentifier}" /></span></td>
+                        <c:choose>
+                            <c:when test="${not empty contactRecord.dataElementDatasetId}">
+                                <td style="font-weight:bold"><stripes:link href="/datasets/${contactRecord.dataElementDatasetId}"><c:out value="${contactRecord.dataElementDatasetId}" /></stripes:link></td>
+                            </c:when>
+                            <c:otherwise>
+                                <td style="font-weight:bold"></td>
+                            </c:otherwise>
+                        </c:choose>
                         <td class="simple_attr_value"><span style="white-space:pre-wrap"><c:out value="${contactRecord.dataElementShortName}" /></span></td>
                         <td class="simple_attr_value"><span style="white-space:pre-wrap"><c:out value="${contactRecord.dataElementIdentifier}" /></span></td>
                     </tr>

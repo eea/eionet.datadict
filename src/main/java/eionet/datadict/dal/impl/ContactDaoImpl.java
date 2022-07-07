@@ -1,6 +1,8 @@
 package eionet.datadict.dal.impl;
 
 import eionet.datadict.dal.ContactDao;
+import eionet.datadict.dal.DataElementDao;
+import eionet.datadict.dal.DatasetTableDao;
 import eionet.datadict.model.ContactDetails;
 import eionet.datadict.model.DataDictEntity;
 import eionet.meta.dao.IDataSetDAO;
@@ -24,16 +26,21 @@ public class ContactDaoImpl extends JdbcDaoBase implements ContactDao {
 
     @Autowired
     private IDataSetDAO dataSetDAO;
+    @Autowired
+    private DataElementDao dataElementDao;
+    @Autowired
+    private DatasetTableDao datasetTableDao;
 
     @Override
     public Set<ContactDetails> getAllByValue(String value) {
         String sql = "select M_ATTRIBUTE.NAME as M_ATTRIBUTE_NAME, ATTRIBUTE.*, DATAELEM.SHORT_NAME as DATAELEM_SHORT_NAME, DATAELEM.IDENTIFIER as DATAELEM_IDENTIFIER, \n" +
+                "DATAELEM.TYPE as DATAELEM_TYPE, DATAELEM.PARENT_NS as DATAELEM_PARENT_NS, DATAELEM.TOP_NS as DATAELEM_TOP_NS, TBL2ELEM.TABLE_ID as DATAELEM_TABLE_ID, " +
                 "DATASET.SHORT_NAME as DATASET_SHORT_NAME, DATASET.IDENTIFIER as DATASET_IDENTIFIER, DATASET.REG_STATUS as DATASET_REG_STATUS from ATTRIBUTE "
-                + "left outer join M_ATTRIBUTE on ATTRIBUTE.M_ATTRIBUTE_ID=M_ATTRIBUTE.M_ATTRIBUTE_ID "
-                + "left outer join DATAELEM on DATAELEM.DATAELEM_ID=ATTRIBUTE.DATAELEM_ID "
-                + "left outer join DATASET on DATASET.DATASET_ID=ATTRIBUTE.DATAELEM_ID "
+                + "left join M_ATTRIBUTE on ATTRIBUTE.M_ATTRIBUTE_ID=M_ATTRIBUTE.M_ATTRIBUTE_ID "
+                + "left join DATAELEM on DATAELEM.DATAELEM_ID=ATTRIBUTE.DATAELEM_ID AND DATAELEM.WORKING_COPY='N' "
+                + "left join DATASET on DATASET.DATASET_ID=ATTRIBUTE.DATAELEM_ID AND DATASET.WORKING_COPY='N' "
+                + "left join TBL2ELEM on TBL2ELEM.DATAELEM_ID=ATTRIBUTE.DATAELEM_ID "
                 + "WHERE ATTRIBUTE.VALUE = :value "
-                + "AND DATASET.WORKING_COPY='N' "
                 + "ORDER BY ATTRIBUTE.DATAELEM_ID desc;";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("value", value);
@@ -43,10 +50,16 @@ public class ContactDaoImpl extends JdbcDaoBase implements ContactDao {
             List<ContactDetails> contactDetailsList = this.getNamedParameterJdbcTemplate().query(sql, params, new ContactDaoImpl.ContactRowMapper());
             contactDetailsList.forEach(entry -> contactDetailsTempSet.add(entry));
             for (ContactDetails contactDetails : contactDetailsTempSet) {
-                Integer latestDatasetId;
                 if (contactDetails.getParentType().equals("Dataset")) {
-                    latestDatasetId = dataSetDAO.getLatestDatasetId(contactDetails.getDatasetShortName());
-                    if (contactDetails.getDataElemId()==latestDatasetId) {
+                    Integer latestDatasetId = dataSetDAO.getLatestDatasetId(contactDetails.getDatasetIdentifier());
+                    if (contactDetails.getDataElemId().equals(latestDatasetId)) {
+                        contactDetailsSet.add(contactDetails);
+                    }
+                } else if (contactDetails.getParentType().equals("DataElement")) {
+                    Integer latestDataElementId = dataElementDao.getLatestDataElementId(contactDetails.getDataElementIdentifier());
+                    if (contactDetails.getDataElemId().equals(latestDataElementId)) {
+                        Integer parentDatasetId = datasetTableDao.getParentDatasetId(contactDetails.getDataElemTableId());
+                        contactDetails.setDataElementDatasetId(String.valueOf(parentDatasetId));
                         contactDetailsSet.add(contactDetails);
                     }
                 }
@@ -81,6 +94,10 @@ public class ContactDaoImpl extends JdbcDaoBase implements ContactDao {
             contactDetails.setDatasetIdentifier(rs.getString("DATASET_IDENTIFIER"));
             contactDetails.setDataElementShortName(rs.getString("DATAELEM_SHORT_NAME"));
             contactDetails.setDataElementIdentifier(rs.getString("DATAELEM_IDENTIFIER"));
+            contactDetails.setDataElemTableId(rs.getInt("DATAELEM_TABLE_ID"));
+            contactDetails.setDataElemType(rs.getString("DATAELEM_TYPE"));
+            contactDetails.setDataElemParentNs(rs.getInt("DATAELEM_PARENT_NS"));
+            contactDetails.setDataElemTopNs(rs.getInt("DATAELEM_TOP_NS"));
             contactDetails.setDatasetRegStatus(rs.getString("DATASET_REG_STATUS"));
             contactDetails.setValue(rs.getString("VALUE"));
             return contactDetails;

@@ -124,6 +124,42 @@ public class DataElementDaoImpl extends JdbcDaoBase implements DataElementDao {
             return null;
         }    }
 
+    @Override
+    public int getDataElemCheckoutOutId(int datasetId, String dataElemShortName) {
+        String sql = "select DATAELEM.DATAELEM_ID from DATAELEM "
+                + "left join TBL2ELEM on TBL2ELEM.DATAELEM_ID=DATAELEM.DATAELEM_ID "
+                + "left join DS_TABLE on TBL2ELEM.TABLE_ID=DS_TABLE.TABLE_ID "
+                + "left join DST2TBL on DST2TBL.TABLE_ID=DS_TABLE.TABLE_ID "
+                + "where DST2TBL.DATASET_ID= :datasetId "
+                + "and DATAELEM.SHORT_NAME= :dataElemShortName";
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("datasetId", datasetId);
+        params.put("dataElemShortName", dataElemShortName);
+
+        List<String> result = getNamedParameterJdbcTemplate().query(sql, params, new RowMapper<String>() {
+            @Override
+            public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+                return rs.getString("DATAELEM_ID");
+            }
+        });
+        return result.isEmpty() ? null : Integer.valueOf(result.get(0));
+    }
+
+    @Override
+    public int getLatestDataElementId(String identifier) {
+        String sql = "select DATAELEM_ID from DATAELEM where IDENTIFIER = :identifier order by DATAELEM_ID desc";
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("identifier", identifier);
+
+        List<String> result = getNamedParameterJdbcTemplate().query(sql, params, new RowMapper<String>() {
+            @Override
+            public String mapRow(ResultSet rs, int rowNum) throws SQLException {
+                return rs.getString("DATAELEM_ID");
+            }
+        });
+        return result.isEmpty() ? null : Integer.valueOf(result.get(0));
+    }
+
     public static class DataElementRowMapper implements RowMapper<DataElement> {
 
         @Override

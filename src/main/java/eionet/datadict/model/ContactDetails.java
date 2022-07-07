@@ -6,11 +6,16 @@ public class ContactDetails {
 
     private int mAttributeId;
     private String mAttributeName;
-    private int dataElemId;
+    private Integer dataElemId;
     private String value;
     private String parentType;
     private String dataElementIdentifier;
     private String dataElementShortName;
+    private String dataElementDatasetId;
+    private Integer dataElemTableId;
+    private String dataElemType;
+    private Integer dataElemParentNs;
+    private Integer dataElemTopNs;
     private String datasetIdentifier;
     private String datasetShortName;
     private String datasetRegStatus;
@@ -31,11 +36,11 @@ public class ContactDetails {
         this.mAttributeName = mAttributeName;
     }
 
-    public int getDataElemId() {
+    public Integer getDataElemId() {
         return dataElemId;
     }
 
-    public void setDataElemId(int dataElemId) {
+    public void setDataElemId(Integer dataElemId) {
         this.dataElemId = dataElemId;
     }
 
@@ -71,6 +76,46 @@ public class ContactDetails {
         this.dataElementShortName = dataElementShortName;
     }
 
+    public String getDataElementDatasetId() {
+        return dataElementDatasetId;
+    }
+
+    public void setDataElementDatasetId(String dataElementDatasetId) {
+        this.dataElementDatasetId = dataElementDatasetId;
+    }
+
+    public Integer getDataElemTableId() {
+        return dataElemTableId;
+    }
+
+    public void setDataElemTableId(Integer dataElemTableId) {
+        this.dataElemTableId = dataElemTableId;
+    }
+
+    public String getDataElemType() {
+        return dataElemType;
+    }
+
+    public void setDataElemType(String dataElemType) {
+        this.dataElemType = dataElemType;
+    }
+
+    public Integer getDataElemParentNs() {
+        return dataElemParentNs;
+    }
+
+    public void setDataElemParentNs(Integer dataElemParentNs) {
+        this.dataElemParentNs = dataElemParentNs;
+    }
+
+    public Integer getDataElemTopNs() {
+        return dataElemTopNs;
+    }
+
+    public void setDataElemTopNs(Integer dataElemTopNs) {
+        this.dataElemTopNs = dataElemTopNs;
+    }
+
     public String getDatasetIdentifier() {
         return datasetIdentifier;
     }
@@ -100,7 +145,7 @@ public class ContactDetails {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ContactDetails that = (ContactDetails) o;
-        return mAttributeId == that.mAttributeId &&
+        return mAttributeId == that.mAttributeId && parentType == that.parentType &&
                 (Objects.equals(dataElementIdentifier, that.dataElementIdentifier) &&
                 Objects.equals(dataElementShortName, that.dataElementShortName) ||
                 Objects.equals(datasetIdentifier, that.datasetIdentifier) &&

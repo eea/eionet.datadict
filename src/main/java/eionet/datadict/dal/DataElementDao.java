@@ -35,4 +35,14 @@ public interface DataElementDao {
     public Boolean isDataSetTableElementMandatory(int tableId,int elementId);
     
     public String getDataElementMultiValueDelimiter(int tableId, int elementId);
+
+    /**
+     * finds specific dataElement id of the checked out dataset
+     * @param datasetId
+     * @param dataElemShortName
+     * @return
+     */
+    int getDataElemCheckoutOutId(int datasetId, String dataElemShortName);
+
+    int getLatestDataElementId(String identifier);
 }
