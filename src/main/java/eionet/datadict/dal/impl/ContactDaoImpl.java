@@ -34,8 +34,9 @@ public class ContactDaoImpl extends JdbcDaoBase implements ContactDao {
     @Override
     public Set<ContactDetails> getAllByValue(String value) {
         String sql = "select M_ATTRIBUTE.NAME as M_ATTRIBUTE_NAME, ATTRIBUTE.*, DATAELEM.SHORT_NAME as DATAELEM_SHORT_NAME, DATAELEM.IDENTIFIER as DATAELEM_IDENTIFIER, \n" +
-                "DATAELEM.TYPE as DATAELEM_TYPE, DATAELEM.PARENT_NS as DATAELEM_PARENT_NS, DATAELEM.TOP_NS as DATAELEM_TOP_NS, TBL2ELEM.TABLE_ID as DATAELEM_TABLE_ID, " +
-                "DATASET.SHORT_NAME as DATASET_SHORT_NAME, DATASET.IDENTIFIER as DATASET_IDENTIFIER, DATASET.REG_STATUS as DATASET_REG_STATUS from ATTRIBUTE "
+                "DATAELEM.REG_STATUS as DATAELEM_REG_STATUS, DATAELEM.TYPE as DATAELEM_TYPE, DATAELEM.PARENT_NS as DATAELEM_PARENT_NS, DATAELEM.TOP_NS as DATAELEM_TOP_NS, " +
+                "TBL2ELEM.TABLE_ID as DATAELEM_TABLE_ID, DATASET.SHORT_NAME as DATASET_SHORT_NAME, DATASET.IDENTIFIER as DATASET_IDENTIFIER, DATASET.REG_STATUS as DATASET_REG_STATUS "
+                + "from ATTRIBUTE "
                 + "left join M_ATTRIBUTE on ATTRIBUTE.M_ATTRIBUTE_ID=M_ATTRIBUTE.M_ATTRIBUTE_ID "
                 + "left join DATAELEM on DATAELEM.DATAELEM_ID=ATTRIBUTE.DATAELEM_ID AND DATAELEM.WORKING_COPY='N' "
                 + "left join DATASET on DATASET.DATASET_ID=ATTRIBUTE.DATAELEM_ID AND DATASET.WORKING_COPY='N' "
@@ -58,8 +59,10 @@ public class ContactDaoImpl extends JdbcDaoBase implements ContactDao {
                 } else if (contactDetails.getParentType().equals("DataElement")) {
                     Integer latestDataElementId = dataElementDao.getLatestDataElementId(contactDetails.getDataElementIdentifier());
                     if (contactDetails.getDataElemId().equals(latestDataElementId)) {
-                        Integer parentDatasetId = datasetTableDao.getParentDatasetId(contactDetails.getDataElemTableId());
-                        contactDetails.setDataElementDatasetId(String.valueOf(parentDatasetId));
+                        if (contactDetails.getDataElemParentNs()!=null && !contactDetails.getDataElemParentNs().equals(0)) {
+                            Integer parentDatasetId = datasetTableDao.getParentDatasetId(contactDetails.getDataElemTableId());
+                            contactDetails.setDataElementDatasetId(parentDatasetId);
+                        }
                         contactDetailsSet.add(contactDetails);
                     }
                 }
@@ -94,6 +97,7 @@ public class ContactDaoImpl extends JdbcDaoBase implements ContactDao {
             contactDetails.setDatasetIdentifier(rs.getString("DATASET_IDENTIFIER"));
             contactDetails.setDataElementShortName(rs.getString("DATAELEM_SHORT_NAME"));
             contactDetails.setDataElementIdentifier(rs.getString("DATAELEM_IDENTIFIER"));
+            contactDetails.setDataElemRegStatus(rs.getString("DATAELEM_REG_STATUS"));
             contactDetails.setDataElemTableId(rs.getInt("DATAELEM_TABLE_ID"));
             contactDetails.setDataElemType(rs.getString("DATAELEM_TYPE"));
             contactDetails.setDataElemParentNs(rs.getInt("DATAELEM_PARENT_NS"));

@@ -290,21 +290,24 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         VersionManager verMan = setVersionManager(user, conn);
 
         if (vocabularyConcept.isDeleteContactFromAllElements()) {
-            List<ContactDetails> commonElements = contactDetails.stream().filter(contactDetail -> contactDetail.getParentType().equals("DataElement") && contactDetail.getDataElemParentNs() == null).collect(Collectors.toList());
+            List<ContactDetails> commonElements = contactDetails.stream().filter(contactDetail -> contactDetail.getParentType().equals("DataElement") && (contactDetail.getDataElemParentNs() == null || contactDetail.getDataElemParentNs().equals(0))).collect(Collectors.toList());
+            Map<Integer, List<ContactDetails>> commonElementsMap = commonElements.stream().collect(groupingBy(ContactDetails::getDataElemId));
             commonElements.stream().forEach(element -> contactDetails.remove(element));
             Map<Pair<Integer, String>, List<ContactDetails>> groupByDataElemIdAndParentType = contactDetails.stream().collect(groupingBy(VocabularyConceptActionBean::getPairOfDataElemIdAndParentType));
             Map<Integer, Pair<List<DatasetAttribute>, List<DataElementAttribute>>> map = new HashMap<>();
-            for (ContactDetails contactDetail : contactDetails) {
-                createDatasetAndElementAttributes(groupByDataElemIdAndParentType, map, contactDetail);
+            for (Pair<Integer, String> pair : groupByDataElemIdAndParentType.keySet()) {
+                createDatasetAndElementAttributes(groupByDataElemIdAndParentType, map, pair);
             }
 
             for (Integer datasetId : map.keySet()) {
                 List<DatasetAttribute> datasetAttributes = map.get(datasetId).getLeft();
                 List<DataElementAttribute> dataElementAttributes = map.get(datasetId).getRight();
-                String dsCopyID = verMan.checkOut(String.valueOf(datasetId), "dst");
                 String[] dsIds = new String[5];
-                dsIds[0] = dsCopyID;
+                String dsCopyID = null;
                 try {
+                    DataSet dataSet = datasetDao.getById(datasetId);
+                    dsCopyID = verMan.checkOut(String.valueOf(datasetId), "dst");
+                    dsIds[0] = dsCopyID;
                     for (DatasetAttribute datasetAttribute : datasetAttributes) {
                         attributeDao.deleteAttribute(datasetAttribute.getAttributeId(), Integer.parseInt(dsCopyID), datasetAttribute.getValue());
                     }
@@ -312,21 +315,29 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
                         String datElemCopyID = String.valueOf(dataElementDao.getDataElemCheckoutOutId(Integer.valueOf(dsCopyID), dataElementAttribute.getShortName()));
                         attributeDao.deleteAttribute(dataElementAttribute.getAttributeId(), Integer.valueOf(datElemCopyID), dataElementAttribute.getValue());
                     }
+                    checkInDataset(user, conn, dsCopyID, dsIds, String.valueOf(dataSet.getId()), dataSet.getRegStatus().getName(), dataSet.getShortName(), dataSet.getIdentifier());
                 } catch (Exception e) {
-                    undoCheckoutDataset(user, conn, dsCopyID, dsIds);
+                    if (dsCopyID!=null) {
+                        undoCheckoutDataset(user, conn, dsCopyID, dsIds);
+                    }
                     throw new Exception(e.getMessage());
                 }
-                DataSet dataSet = datasetDao.getById(datasetId);
-                checkInDataset(user, conn, dsCopyID, dsIds, String.valueOf(dataSet.getId()), dataSet.getRegStatus().getName(), dataSet.getShortName(), dataSet.getIdentifier());
             }
-            for (ContactDetails contactDetail : commonElements) {
+            for (Integer dataElemId : commonElementsMap.keySet()) {
                 String datElemCopyID = null;
+                List<ContactDetails> commonElementsContactDet = commonElementsMap.get(dataElemId);
                 try {
-                    datElemCopyID = verMan.checkOut(String.valueOf(contactDetail.getDataElemId()), "elm");
-                    attributeDao.deleteAttribute(contactDetail.getmAttributeId(), Integer.valueOf(datElemCopyID), contactDetail.getValue());
-                    checkInDataElement(conn, datElemCopyID, contactDetail);
+                    eionet.datadict.model.DataElement dataElement = dataElementDao.getById(dataElemId);
+                    datElemCopyID = verMan.checkOut(String.valueOf(dataElemId), "elm");
+                    for (ContactDetails contactDetail : commonElementsContactDet) {
+                        attributeDao.deleteAttribute(contactDetail.getmAttributeId(), Integer.valueOf(datElemCopyID), contactDetail.getValue());
+                    }
+                    checkInDataElement(conn, user, datElemCopyID, dataElement.getRegStatus().getName(), dataElemId, dataElement.getShortName(), dataElement.getIdentifier());
                 } catch (Exception e) {
-                    undoCheckoutDataElement(user, conn, datElemCopyID, String.valueOf(contactDetail.getDataElemTableId()));
+                    if (datElemCopyID!=null) {
+                        undoCheckoutDataElement(user, conn, datElemCopyID);
+                    }
+                    throw new RuntimeException(e.getMessage());
                 }
             }
         }
@@ -352,49 +363,39 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         return new VersionManager(conn, searchEngine, user);
     }
 
-    private void createDatasetAndElementAttributes(Map<Pair<Integer, String>, List<ContactDetails>> groupByDataElemIdAndParentType, Map<Integer, Pair<List<DatasetAttribute>, List<DataElementAttribute>>> map, ContactDetails contactDetail) {
+    private void createDatasetAndElementAttributes(Map<Pair<Integer, String>, List<ContactDetails>> groupByDataElemIdAndParentType, Map<Integer, Pair<List<DatasetAttribute>, List<DataElementAttribute>>> map, Pair<Integer, String> pair) {
         List<DatasetAttribute> datasetAttributes = new ArrayList<>();
         List<DataElementAttribute> dataElementAttributes = new ArrayList<>();
-        Integer datasetId = contactDetail.getDataElementDatasetId() != null ? Integer.parseInt(contactDetail.getDataElementDatasetId()) : contactDetail.getDataElemId();
-        Pair<List<DatasetAttribute>, List<DataElementAttribute>> contactHolder = map.get(datasetId);
-        if (contactHolder != null) {
-            datasetAttributes = contactHolder.getLeft();
-            dataElementAttributes = contactHolder.getRight();
-        } else {
-            map.put(datasetId, Pair.of(datasetAttributes, dataElementAttributes));
-        }
-        List<ContactDetails> listByDataElemIdAndParentType = groupByDataElemIdAndParentType.get(Pair.of(contactDetail.getDataElemId(), contactDetail.getParentType()));
-        if (listByDataElemIdAndParentType.size() > 0) {
+        List<ContactDetails> contactDetailsList = groupByDataElemIdAndParentType.get(pair);
+        for (ContactDetails contactDetail : contactDetailsList) {
+            Integer datasetId = contactDetail.getDataElementDatasetId() != null ? contactDetail.getDataElementDatasetId() : contactDetail.getDataElemId();
+            Pair<List<DatasetAttribute>, List<DataElementAttribute>> contactHolder = map.get(datasetId);
+            if (contactHolder != null) {
+                datasetAttributes = contactHolder.getLeft();
+                dataElementAttributes = contactHolder.getRight();
+            } else {
+                map.put(datasetId, Pair.of(datasetAttributes, dataElementAttributes));
+            }
             if (contactDetail.getParentType().equals("Dataset")) {
-                for (ContactDetails entry : listByDataElemIdAndParentType) {
-                    DatasetAttribute datasetAttribute = createDatasetAttribute(entry);
-                    if (datasetAttributes.contains(datasetAttribute)) {
-                        continue;
-                    }
-                    datasetAttributes.add(datasetAttribute);
-                }
+                DatasetAttribute datasetAttribute = createDatasetAttribute(contactDetail);
+                datasetAttributes.add(datasetAttribute);
             } else if (contactDetail.getParentType().equals("DataElement")) {
-                for (ContactDetails entry : listByDataElemIdAndParentType) {
-                    DataElementAttribute dataElementAttribute = createDataElementAttribute(entry);
-                    if (dataElementAttributes.contains(dataElementAttribute)) {
-                        continue;
-                    }
-                    dataElementAttributes.add(dataElementAttribute);
-                }
+                DataElementAttribute dataElementAttribute = createDataElementAttribute(contactDetail);
+                dataElementAttributes.add(dataElementAttribute);
             }
         }
     }
 
     private DatasetAttribute createDatasetAttribute(ContactDetails entry) {
         DatasetAttribute datasetAttribute = new DatasetAttribute();
-        datasetAttribute.setValue(entry.getValue()).setAttributeId(entry.getmAttributeId()).setIdentifier(entry.getDatasetIdentifier()).setShortName(entry.getDatasetShortName());
+        datasetAttribute.setDataElemId(entry.getDataElemId()).setValue(entry.getValue()).setAttributeId(entry.getmAttributeId()).setIdentifier(entry.getDatasetIdentifier()).setShortName(entry.getDatasetShortName());
         datasetAttribute.setRegStatus(entry.getDatasetRegStatus());
         return datasetAttribute;
     }
 
     private DataElementAttribute createDataElementAttribute(ContactDetails entry) {
         DataElementAttribute dataElementAttribute = new DataElementAttribute();
-        dataElementAttribute.setAttributeId(entry.getmAttributeId()).setValue(entry.getValue()).setIdentifier(entry.getDataElementIdentifier()).setShortName(entry.getDataElementShortName());
+        dataElementAttribute.setDataElemId(entry.getDataElemId()).setAttributeId(entry.getmAttributeId()).setValue(entry.getValue()).setIdentifier(entry.getDataElementIdentifier()).setShortName(entry.getDataElementShortName());
         dataElementAttribute.setTableId(entry.getDataElemTableId());
         dataElementAttribute.setParentNs(entry.getDataElemParentNs());
         dataElementAttribute.setTopNs(entry.getDataElemTopNs());
@@ -402,24 +403,29 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         return dataElementAttribute;
     }
 
-    private void checkInDataElement(Connection conn, String datElemCopyID, ContactDetails contactDetail) throws Exception {
+    private void checkInDataElement(Connection conn, DDUser user, String datElemCopyID, String regStatus, Integer dataElemId, String shortName, String identifier) throws Exception {
         eionet.meta.savers.Parameters datElemHandlerParams = new eionet.meta.savers.Parameters();
         datElemHandlerParams.addParameterValue("mode", "edit");
-        datElemHandlerParams.addParameterValue("type", contactDetail.getDataElemType());
+        datElemHandlerParams.addParameterValue("common", "true");
+        datElemHandlerParams.addParameterValue("switch_type", "false");
+        datElemHandlerParams.addParameterValue("check_in", "true");
         datElemHandlerParams.addParameterValue("delem_id", datElemCopyID);
-        datElemHandlerParams.addParameterValue("delem_name", contactDetail.getDataElementShortName());
-        datElemHandlerParams.addParameterValue("idfier", contactDetail.getDataElementIdentifier());
-        datElemHandlerParams.addParameterValue("table_id", contactDetail.getDataElemTableId().toString());
-        datElemHandlerParams.addParameterValue("dst_namespace_id", contactDetail.getDataElemParentNs().toString());
-        datElemHandlerParams.addParameterValue("tbl_namespace_id", contactDetail.getDataElemTopNs().toString());
+        datElemHandlerParams.addParameterValue("checkedout_copy_id", String.valueOf(dataElemId));
+        if (regStatus.equals("Incomplete")) {
+            datElemHandlerParams.addParameterValue("upd_version", "false");
+        } else {
+            datElemHandlerParams.addParameterValue("upd_version", "true");
+        }
+        datElemHandlerParams.addParameterValue("delem_name", shortName);
+        datElemHandlerParams.addParameterValue("idfier", identifier);
         DataElementHandler elementHandler = new DataElementHandler(conn, datElemHandlerParams, getContext().getServletContext());
+        elementHandler.setUser(user);
         elementHandler.execute_();
     }
 
-    private void undoCheckoutDataElement(DDUser user, Connection conn, String datElemCopyID, String datElemTableId) throws Exception {
+    private void undoCheckoutDataElement(DDUser user, Connection conn, String datElemCopyID) throws Exception {
         eionet.meta.savers.Parameters datElemHandlerParams = new eionet.meta.savers.Parameters();
         datElemHandlerParams.addParameterValue("mode", "delete");
-        datElemHandlerParams.addParameterValue("table_id", datElemTableId);
         datElemHandlerParams.addParameterValue("delem_id", datElemCopyID);
         DataElementHandler elementHandler = new DataElementHandler(conn, datElemHandlerParams, getContext().getServletContext());
         elementHandler.setUser(user);

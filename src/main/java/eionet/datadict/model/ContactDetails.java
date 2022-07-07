@@ -11,7 +11,8 @@ public class ContactDetails {
     private String parentType;
     private String dataElementIdentifier;
     private String dataElementShortName;
-    private String dataElementDatasetId;
+    private Integer dataElementDatasetId;
+    private String dataElemRegStatus;
     private Integer dataElemTableId;
     private String dataElemType;
     private Integer dataElemParentNs;
@@ -76,12 +77,20 @@ public class ContactDetails {
         this.dataElementShortName = dataElementShortName;
     }
 
-    public String getDataElementDatasetId() {
+    public Integer getDataElementDatasetId() {
         return dataElementDatasetId;
     }
 
-    public void setDataElementDatasetId(String dataElementDatasetId) {
+    public void setDataElementDatasetId(Integer dataElementDatasetId) {
         this.dataElementDatasetId = dataElementDatasetId;
+    }
+
+    public String getDataElemRegStatus() {
+        return dataElemRegStatus;
+    }
+
+    public void setDataElemRegStatus(String dataElemRegStatus) {
+        this.dataElemRegStatus = dataElemRegStatus;
     }
 
     public Integer getDataElemTableId() {
