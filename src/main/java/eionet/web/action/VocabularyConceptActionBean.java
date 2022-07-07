@@ -337,7 +337,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
                     if (datElemCopyID!=null) {
                         undoCheckoutDataElement(user, conn, datElemCopyID);
                     }
-                    throw new RuntimeException(e.getMessage());
+                    throw new Exception(e.getMessage());
                 }
             }
         }
