@@ -136,6 +136,22 @@
         <br><br>
 
       <c:if test="${not empty actionBean.contactDetails}">
+
+          <stripes:form id="editForm" method="post" beanclass="${actionBean['class'].name}">
+              <c:if test="${actionBean.usrLoggedIn}">
+                <stripes:submit id="deleteContactFromAllElements" style="margin-bottom:5px" name="deleteContactFromAllElements" value="Delete Contact from all elements" class="mediumbuttonb"/>
+              </c:if>
+              <stripes:hidden name="vocabularyFolder.folderName" />
+              <stripes:hidden name="vocabularyFolder.identifier" />
+              <stripes:hidden name="vocabularyFolder.workingCopy" />
+              <stripes:hidden name="vocabularyFolder.id" />
+              <stripes:hidden name="vocabularyFolder.numericConceptIdentifiers" />
+              <stripes:hidden name="vocabularyConcept.id" />
+              <stripes:hidden name="vocabularyConcept.vocabularyId" />
+              <stripes:hidden name="vocabularyConcept.identifier" />
+              <stripes:hidden name="vocabularyConcept.originalConceptId" />
+              <stripes:hidden name="conceptIdentifier" />
+          </stripes:form>
         <!-- attribute values -->
         <div>
             <table class="datatable results">

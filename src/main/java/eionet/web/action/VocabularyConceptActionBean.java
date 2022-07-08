@@ -192,6 +192,11 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
     private Set<ContactDetails> contactDetails;
 
     /**
+     *
+     */
+    private boolean usrLoggedIn;
+
+    /**
      * View action.
      *
      * @return
@@ -208,12 +213,13 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         vocabularyConcept = vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), getConceptIdentifier(), false);
 
         List<Integer> acceptedMAttributes = new ArrayList<>(Arrays.asList(61, 62, 63, 64));
-        contactDetails = contactService.getAllByValue(Integer.toString(vocabularyConcept.getOriginalConceptId() != null && vocabularyConcept.getOriginalConceptId() != 0 ? vocabularyConcept.getOriginalConceptId() : vocabularyConcept.getId()));
+        contactDetails = contactService.getAllByValue(Integer.toString(vocabularyConcept.getId()));
         contactDetails = contactDetails.stream().filter(contactDetails -> acceptedMAttributes.contains(contactDetails.getmAttributeId())).collect(Collectors.toSet());
         validateView();
 
         // LOGGER.debug("Element attributes: " + vocabularyConcept.getElementAttributes().size());
 
+        setUsrLoggedIn(isUserLoggedIn());
         return new ForwardResolution(VIEW_VOCABULARY_CONCEPT_JSP);
     }
 
@@ -250,10 +256,6 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
                         vocabularyFolder.isWorkingCopy());
         vocabularyConcept = vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), getConceptIdentifier(), true);
 
-        List<Integer> acceptedMAttributes = new ArrayList<>(Arrays.asList(61, 62, 63, 64));
-        contactDetails = contactService.getAllByValue(Integer.toString(vocabularyConcept.getOriginalConceptId()));
-        contactDetails = contactDetails.stream().filter(contactDetails -> acceptedMAttributes.contains(contactDetails.getmAttributeId())).collect(Collectors.toSet());
-
         validateView();
         initElemVocabularyNames();
         initBeans();
@@ -281,67 +283,6 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         relatedVocabulary = null;
         relatedVocabularyConcepts = null;
 
-        List<Integer> acceptedMAttributes = new ArrayList<>(Arrays.asList(61, 62, 63, 64));
-        contactDetails = contactService.getAllByValue(Integer.toString(vocabularyConcept.getOriginalConceptId()));
-        contactDetails = contactDetails.stream().filter(contactDetails -> acceptedMAttributes.contains(contactDetails.getmAttributeId())).collect(Collectors.toSet());
-
-        DDUser user = SecurityUtil.getUser(getContext().getRequest());
-        Connection conn = ConnectionUtil.getConnection();
-        VersionManager verMan = setVersionManager(user, conn);
-
-        if (vocabularyConcept.isDeleteContactFromAllElements()) {
-            List<ContactDetails> commonElements = contactDetails.stream().filter(contactDetail -> contactDetail.getParentType().equals("DataElement") && (contactDetail.getDataElemParentNs() == null || contactDetail.getDataElemParentNs().equals(0))).collect(Collectors.toList());
-            Map<Integer, List<ContactDetails>> commonElementsMap = commonElements.stream().collect(groupingBy(ContactDetails::getDataElemId));
-            commonElements.stream().forEach(element -> contactDetails.remove(element));
-            Map<Pair<Integer, String>, List<ContactDetails>> groupByDataElemIdAndParentType = contactDetails.stream().collect(groupingBy(VocabularyConceptActionBean::getPairOfDataElemIdAndParentType));
-            Map<Integer, Pair<List<DatasetAttribute>, List<DataElementAttribute>>> map = new HashMap<>();
-            for (Pair<Integer, String> pair : groupByDataElemIdAndParentType.keySet()) {
-                createDatasetAndElementAttributes(groupByDataElemIdAndParentType, map, pair);
-            }
-
-            for (Integer datasetId : map.keySet()) {
-                List<DatasetAttribute> datasetAttributes = map.get(datasetId).getLeft();
-                List<DataElementAttribute> dataElementAttributes = map.get(datasetId).getRight();
-                String[] dsIds = new String[5];
-                String dsCopyID = null;
-                try {
-                    DataSet dataSet = datasetDao.getById(datasetId);
-                    dsCopyID = verMan.checkOut(String.valueOf(datasetId), "dst");
-                    dsIds[0] = dsCopyID;
-                    for (DatasetAttribute datasetAttribute : datasetAttributes) {
-                        attributeDao.deleteAttribute(datasetAttribute.getAttributeId(), Integer.parseInt(dsCopyID), datasetAttribute.getValue());
-                    }
-                    for (DataElementAttribute dataElementAttribute : dataElementAttributes) {
-                        String datElemCopyID = String.valueOf(dataElementDao.getDataElemCheckoutOutId(Integer.valueOf(dsCopyID), dataElementAttribute.getShortName()));
-                        attributeDao.deleteAttribute(dataElementAttribute.getAttributeId(), Integer.valueOf(datElemCopyID), dataElementAttribute.getValue());
-                    }
-                    checkInDataset(user, conn, dsCopyID, dsIds, String.valueOf(dataSet.getId()), dataSet.getRegStatus().getName(), dataSet.getShortName(), dataSet.getIdentifier());
-                } catch (Exception e) {
-                    if (dsCopyID!=null) {
-                        undoCheckoutDataset(user, conn, dsCopyID, dsIds);
-                    }
-                    throw new Exception(e.getMessage());
-                }
-            }
-            for (Integer dataElemId : commonElementsMap.keySet()) {
-                String datElemCopyID = null;
-                List<ContactDetails> commonElementsContactDet = commonElementsMap.get(dataElemId);
-                try {
-                    eionet.datadict.model.DataElement dataElement = dataElementDao.getById(dataElemId);
-                    datElemCopyID = verMan.checkOut(String.valueOf(dataElemId), "elm");
-                    for (ContactDetails contactDetail : commonElementsContactDet) {
-                        attributeDao.deleteAttribute(contactDetail.getmAttributeId(), Integer.valueOf(datElemCopyID), contactDetail.getValue());
-                    }
-                    checkInDataElement(conn, user, datElemCopyID, dataElement.getRegStatus().getName(), dataElemId, dataElement.getShortName(), dataElement.getIdentifier());
-                } catch (Exception e) {
-                    if (datElemCopyID!=null) {
-                        undoCheckoutDataElement(user, conn, datElemCopyID);
-                    }
-                    throw new Exception(e.getMessage());
-                }
-            }
-        }
-
         addSystemMessage("Vocabulary concept saved successfully");
 
         RedirectResolution resolution = new RedirectResolution(getClass(), "edit");
@@ -355,6 +296,75 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
 
         // initElemVocabularyNames();
         return resolution;
+    }
+
+    public Resolution deleteContactFromAllElements() throws Exception {
+        vocabularyFolder =
+                vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
+                        vocabularyFolder.isWorkingCopy());
+        vocabularyConcept = vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), getConceptIdentifier(), false);
+
+        List<Integer> acceptedMAttributes = new ArrayList<>(Arrays.asList(61, 62, 63, 64));
+        contactDetails = contactService.getAllByValue(Integer.toString(vocabularyConcept.getId()));
+        contactDetails = contactDetails.stream().filter(contactDetails -> acceptedMAttributes.contains(contactDetails.getmAttributeId())).collect(Collectors.toSet());
+
+        DDUser user = SecurityUtil.getUser(getContext().getRequest());
+        Connection conn = ConnectionUtil.getConnection();
+        VersionManager verMan = setVersionManager(user, conn);
+
+        List<ContactDetails> commonElements = contactDetails.stream().filter(contactDetail -> contactDetail.getParentType().equals("DataElement") && (contactDetail.getDataElemParentNs() == null || contactDetail.getDataElemParentNs().equals(0))).collect(Collectors.toList());
+        Map<Integer, List<ContactDetails>> commonElementsMap = commonElements.stream().collect(groupingBy(ContactDetails::getDataElemId));
+        commonElements.stream().forEach(element -> contactDetails.remove(element));
+        Map<Pair<Integer, String>, List<ContactDetails>> groupByDataElemIdAndParentType = contactDetails.stream().collect(groupingBy(VocabularyConceptActionBean::getPairOfDataElemIdAndParentType));
+        Map<Integer, Pair<List<DatasetAttribute>, List<DataElementAttribute>>> map = new HashMap<>();
+        for (Pair<Integer, String> pair : groupByDataElemIdAndParentType.keySet()) {
+            createDatasetAndElementAttributes(groupByDataElemIdAndParentType, map, pair);
+        }
+
+        for (Integer datasetId : map.keySet()) {
+            List<DatasetAttribute> datasetAttributes = map.get(datasetId).getLeft();
+            List<DataElementAttribute> dataElementAttributes = map.get(datasetId).getRight();
+            String[] dsIds = new String[5];
+            String dsCopyID = null;
+            try {
+                DataSet dataSet = datasetDao.getById(datasetId);
+                dsCopyID = verMan.checkOut(String.valueOf(datasetId), "dst");
+                dsIds[0] = dsCopyID;
+                for (DatasetAttribute datasetAttribute : datasetAttributes) {
+                    attributeDao.deleteAttribute(datasetAttribute.getAttributeId(), Integer.parseInt(dsCopyID), datasetAttribute.getValue());
+                }
+                for (DataElementAttribute dataElementAttribute : dataElementAttributes) {
+                    String datElemCopyID = String.valueOf(dataElementDao.getDataElemCheckoutOutId(Integer.valueOf(dsCopyID), dataElementAttribute.getShortName()));
+                    attributeDao.deleteAttribute(dataElementAttribute.getAttributeId(), Integer.valueOf(datElemCopyID), dataElementAttribute.getValue());
+                }
+                checkInDataset(user, conn, dsCopyID, dsIds, String.valueOf(dataSet.getId()), dataSet.getRegStatus().getName(), dataSet.getShortName(), dataSet.getIdentifier());
+            } catch (Exception e) {
+                if (dsCopyID != null) {
+                    undoCheckoutDataset(user, conn, dsCopyID, dsIds);
+                }
+                throw new Exception(e.getMessage());
+            }
+        }
+        for (Integer dataElemId : commonElementsMap.keySet()) {
+            String datElemCopyID = null;
+            List<ContactDetails> commonElementsContactDet = commonElementsMap.get(dataElemId);
+            try {
+                eionet.datadict.model.DataElement dataElement = dataElementDao.getById(dataElemId);
+                datElemCopyID = verMan.checkOut(String.valueOf(dataElemId), "elm");
+                for (ContactDetails contactDetail : commonElementsContactDet) {
+                    attributeDao.deleteAttribute(contactDetail.getmAttributeId(), Integer.valueOf(datElemCopyID), contactDetail.getValue());
+                }
+                checkInDataElement(conn, user, datElemCopyID, dataElement.getRegStatus().getName(), dataElemId, dataElement.getShortName(), dataElement.getIdentifier());
+            } catch (Exception e) {
+                if (datElemCopyID != null) {
+                    undoCheckoutDataElement(user, conn, datElemCopyID);
+                }
+                throw new Exception(e.getMessage());
+            }
+        }
+
+        validateView();
+        return new ForwardResolution(VIEW_VOCABULARY_CONCEPT_JSP);
     }
 
     private VersionManager setVersionManager(DDUser user, Connection conn) {
@@ -956,6 +966,14 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
 
     public void setContactDetails(Set<ContactDetails> contactDetails) {
         this.contactDetails = contactDetails;
+    }
+
+    public boolean isUsrLoggedIn() {
+        return usrLoggedIn;
+    }
+
+    public void setUsrLoggedIn(boolean usrLoggedIn) {
+        this.usrLoggedIn = usrLoggedIn;
     }
 
     /**
