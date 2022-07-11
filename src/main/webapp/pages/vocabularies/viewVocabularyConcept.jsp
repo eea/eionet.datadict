@@ -4,6 +4,25 @@
 
 <stripes:layout-render name="/pages/common/template.jsp" pageTitle="Vocabulary" currentSection="vocabularies">
 
+    <stripes:layout-component name="head">
+        <link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+        <script type="text/javascript">
+            $(document).ready( function () {
+                $('#contact').DataTable({
+                    scrollY: "500px",
+                    order: [[1, "asc"]],
+                    scrollX: true,
+                    scrollCollapse: true,
+                    fixedColumns: true
+                });
+
+                $('.dataTables_length').addClass('bs-select');
+            });
+        </script>
+    </stripes:layout-component>
+
     <stripes:layout-component name="contents">
         <h1>Concept: <em><c:out value="${actionBean.vocabularyConcept.label}" /></em> in the <em><c:out value="${actionBean.vocabularyFolder.identifier}" /></em> vocabulary</h1>
 
@@ -139,7 +158,7 @@
 
           <stripes:form id="editForm" method="post" beanclass="${actionBean['class'].name}">
               <c:if test="${actionBean.usrLoggedIn}">
-                <stripes:submit id="deleteContactFromAllElements" style="margin-bottom:5px" name="deleteContactFromAllElements" value="Delete Contact from all elements" class="mediumbuttonb"/>
+                <stripes:submit id="deleteContactFromAllElements" style="margin-bottom:10px" name="deleteContactFromAllElements" value="Delete Contact from all elements" class="mediumbuttonb"/>
               </c:if>
               <stripes:hidden name="vocabularyFolder.folderName" />
               <stripes:hidden name="vocabularyFolder.identifier" />
@@ -154,7 +173,7 @@
           </stripes:form>
         <!-- attribute values -->
         <div>
-            <table class="datatable results">
+            <table id="contact" class="datatable results">
                 <thead>
                 <tr>
                     <th>Type of actor</th>
@@ -202,3 +221,5 @@
     </stripes:layout-component>
 
 </stripes:layout-render>
+
+
