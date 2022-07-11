@@ -51,12 +51,12 @@ public class ContactDaoImpl extends JdbcDaoBase implements ContactDao {
             List<ContactDetails> contactDetailsList = this.getNamedParameterJdbcTemplate().query(sql, params, new ContactDaoImpl.ContactRowMapper());
             contactDetailsList.forEach(entry -> contactDetailsTempSet.add(entry));
             for (ContactDetails contactDetails : contactDetailsTempSet) {
-                if (contactDetails.getParentType().equals("Dataset")) {
+                if (contactDetails.getParentType().equals("Dataset") && contactDetails.getDatasetIdentifier()!=null) {
                     Integer latestDatasetId = dataSetDAO.getLatestDatasetId(contactDetails.getDatasetIdentifier());
                     if (contactDetails.getDataElemId().equals(latestDatasetId)) {
                         contactDetailsSet.add(contactDetails);
                     }
-                } else if (contactDetails.getParentType().equals("DataElement")) {
+                } else if (contactDetails.getParentType().equals("DataElement") && contactDetails.getDataElementIdentifier()!=null) {
                     Integer latestDataElementId = dataElementDao.getLatestDataElementId(contactDetails.getDataElementIdentifier());
                     if (contactDetails.getDataElemId().equals(latestDataElementId)) {
                         if (contactDetails.getDataElemParentNs()!=null && !contactDetails.getDataElemParentNs().equals(0)) {
