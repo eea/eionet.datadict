@@ -363,6 +363,9 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
             }
         }
 
+        contactDetails = contactService.getAllByValue(Integer.toString(vocabularyConcept.getId()));
+        contactDetails = contactDetails.stream().filter(contactDetails -> acceptedMAttributes.contains(contactDetails.getmAttributeId())).collect(Collectors.toSet());
+
         validateView();
         return new ForwardResolution(VIEW_VOCABULARY_CONCEPT_JSP);
     }
