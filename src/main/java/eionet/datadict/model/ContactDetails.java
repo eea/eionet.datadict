@@ -21,6 +21,8 @@ public class ContactDetails {
     private String datasetIdentifier;
     private String datasetShortName;
     private String datasetRegStatus;
+    private String datasetWorkingCopy;
+    private String dataElemWorkingCopy;
 
     public int getmAttributeId() {
         return mAttributeId;
@@ -156,6 +158,22 @@ public class ContactDetails {
 
     public void setDatasetRegStatus(String datasetRegStatus) {
         this.datasetRegStatus = datasetRegStatus;
+    }
+
+    public String getDatasetWorkingCopy() {
+        return datasetWorkingCopy;
+    }
+
+    public void setDatasetWorkingCopy(String datasetWorkingCopy) {
+        this.datasetWorkingCopy = datasetWorkingCopy;
+    }
+
+    public String getDataElemWorkingCopy() {
+        return dataElemWorkingCopy;
+    }
+
+    public void setDataElemWorkingCopy(String dataElemWorkingCopy) {
+        this.dataElemWorkingCopy = dataElemWorkingCopy;
     }
 
     @Override
