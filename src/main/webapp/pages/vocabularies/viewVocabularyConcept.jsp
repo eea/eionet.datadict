@@ -158,7 +158,7 @@
 
           <stripes:form id="editForm" method="post" beanclass="${actionBean['class'].name}">
               <c:if test="${actionBean.usrLoggedIn}">
-                <stripes:submit id="deleteContactFromAllElements" style="margin-bottom:10px" name="deleteContactFromAllElements" value="Delete Contact from all elements" class="mediumbuttonb"/>
+                <stripes:submit id="deleteContactFromAllElements" onclick="javascript:return confirm('Delete contact from all datasets and elements?');" style="margin-bottom:10px" name="deleteContactFromAllElements" value="Delete Contact from all elements" class="mediumbuttonb"/>
               </c:if>
               <stripes:hidden name="vocabularyFolder.folderName" />
               <stripes:hidden name="vocabularyFolder.identifier" />
