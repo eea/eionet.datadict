@@ -125,16 +125,18 @@ public class DataElementDaoImpl extends JdbcDaoBase implements DataElementDao {
         }    }
 
     @Override
-    public int getDataElemCheckoutOutId(int datasetId, String dataElemShortName) {
+    public int getDataElemCheckoutOutId(int datasetId, String dataElemIdentifier, String dataElemTableIdentifier) {
         String sql = "select DATAELEM.DATAELEM_ID from DATAELEM "
                 + "left join TBL2ELEM on TBL2ELEM.DATAELEM_ID=DATAELEM.DATAELEM_ID "
                 + "left join DS_TABLE on TBL2ELEM.TABLE_ID=DS_TABLE.TABLE_ID "
                 + "left join DST2TBL on DST2TBL.TABLE_ID=DS_TABLE.TABLE_ID "
                 + "where DST2TBL.DATASET_ID= :datasetId "
-                + "and DATAELEM.SHORT_NAME= :dataElemShortName";
+                + "and DATAELEM.IDENTIFIER= :dataElemIdentifier "
+                + "and  DS_TABLE.IDENTIFIER= :dataElemTableIdentifier";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("datasetId", datasetId);
-        params.put("dataElemShortName", dataElemShortName);
+        params.put("dataElemIdentifier", dataElemIdentifier);
+        params.put("dataElemTableIdentifier", dataElemTableIdentifier);
 
         List<String> result = getNamedParameterJdbcTemplate().query(sql, params, new RowMapper<String>() {
             @Override

@@ -5,6 +5,7 @@ import eionet.datadict.dal.DataElementDao;
 import eionet.datadict.dal.DatasetTableDao;
 import eionet.datadict.model.ContactDetails;
 import eionet.datadict.model.DataDictEntity;
+import eionet.datadict.model.DatasetTable;
 import eionet.meta.dao.IDataSetDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -51,23 +52,25 @@ public class ContactDaoImpl extends JdbcDaoBase implements ContactDao {
             List<ContactDetails> contactDetailsList = this.getNamedParameterJdbcTemplate().query(sql, params, new ContactDaoImpl.ContactRowMapper());
             contactDetailsList.forEach(entry -> contactDetailsTempSet.add(entry));
             for (ContactDetails contactDetails : contactDetailsTempSet) {
-                if (contactDetails.getParentType().equals("Dataset") && contactDetails.getDatasetIdentifier()!=null) {
+                if (contactDetails.getParentType().equals("Dataset") && contactDetails.getDatasetIdentifier() != null) {
                     Integer latestDatasetId = dataSetDAO.getLatestDatasetId(contactDetails.getDatasetIdentifier());
                     if (contactDetails.getDataElemId().equals(latestDatasetId)) {
                         contactDetailsSet.add(contactDetails);
                     }
-                } else if (contactDetails.getParentType().equals("DataElement") && contactDetails.getDataElementIdentifier()!=null) {
-                    Integer latestDataElementId = dataElementDao.getLatestDataElementId(contactDetails.getDataElementIdentifier());
-                    if (contactDetails.getDataElemId().equals(latestDataElementId)) {
-                        if (contactDetails.getDataElemParentNs()!=null && !contactDetails.getDataElemParentNs().equals(0)) {
-                            Integer parentDatasetId = datasetTableDao.getParentDatasetId(contactDetails.getDataElemTableId());
-                            String parentDatasetIdentifier = dataSetDAO.getIdentifierById(parentDatasetId);
-                            Integer latestDatasetId = dataSetDAO.getLatestDatasetId(parentDatasetIdentifier);
-                            if (latestDatasetId.equals(parentDatasetId)) {
-                                contactDetails.setDataElementDatasetId(parentDatasetId);
-                                contactDetailsSet.add(contactDetails);
-                            }
-                        } else {
+                } else if (contactDetails.getParentType().equals("DataElement") && contactDetails.getDataElementIdentifier() != null) {
+                    if (contactDetails.getDataElemParentNs() != null && !contactDetails.getDataElemParentNs().equals(0)) {
+                        Integer parentDatasetId = datasetTableDao.getParentDatasetId(contactDetails.getDataElemTableId());
+                        String parentDatasetIdentifier = dataSetDAO.getIdentifierById(parentDatasetId);
+                        Integer latestDatasetId = dataSetDAO.getLatestDatasetId(parentDatasetIdentifier);
+                        if (latestDatasetId.equals(parentDatasetId)) {
+                            contactDetails.setDataElementDatasetId(parentDatasetId);
+                            DatasetTable table = datasetTableDao.getById(contactDetails.getDataElemTableId());
+                            contactDetails.setDataElemTableIdentifier(table.getIdentifier());
+                            contactDetailsSet.add(contactDetails);
+                        }
+                    } else {
+                        Integer latestDataElementId = dataElementDao.getLatestDataElementId(contactDetails.getDataElementIdentifier());
+                        if (contactDetails.getDataElemId().equals(latestDataElementId)) {
                             contactDetailsSet.add(contactDetails);
                         }
                     }

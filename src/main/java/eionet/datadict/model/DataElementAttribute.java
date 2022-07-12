@@ -3,6 +3,7 @@ package eionet.datadict.model;
 public class DataElementAttribute extends AttributeFields {
 
     private Integer tableId;
+    private String tableIdentifier;
     private String type;
     private Integer parentNs;
     private Integer topNs;
@@ -13,6 +14,14 @@ public class DataElementAttribute extends AttributeFields {
 
     public void setTableId(Integer tableId) {
         this.tableId = tableId;
+    }
+
+    public String getTableIdentifier() {
+        return tableIdentifier;
+    }
+
+    public void setTableIdentifier(String tableIdentifier) {
+        this.tableIdentifier = tableIdentifier;
     }
 
     public String getType() {

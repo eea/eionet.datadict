@@ -14,6 +14,7 @@ public class ContactDetails {
     private Integer dataElementDatasetId;
     private String dataElemRegStatus;
     private Integer dataElemTableId;
+    private String dataElemTableIdentifier;
     private String dataElemType;
     private Integer dataElemParentNs;
     private Integer dataElemTopNs;
@@ -101,6 +102,14 @@ public class ContactDetails {
         this.dataElemTableId = dataElemTableId;
     }
 
+    public String getDataElemTableIdentifier() {
+        return dataElemTableIdentifier;
+    }
+
+    public void setDataElemTableIdentifier(String dataElemTableIdentifier) {
+        this.dataElemTableIdentifier = dataElemTableIdentifier;
+    }
+
     public String getDataElemType() {
         return dataElemType;
     }
@@ -154,7 +163,8 @@ public class ContactDetails {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ContactDetails that = (ContactDetails) o;
-        return mAttributeId == that.mAttributeId && parentType == that.parentType &&
+        return mAttributeId == that.mAttributeId &&
+                Objects.equals(parentType, that.parentType) && Objects.equals(dataElemTableId, that.dataElemTableId) &&
                 (Objects.equals(dataElementIdentifier, that.dataElementIdentifier) &&
                 Objects.equals(dataElementShortName, that.dataElementShortName) ||
                 Objects.equals(datasetIdentifier, that.datasetIdentifier) &&
@@ -163,6 +173,6 @@ public class ContactDetails {
 
     @Override
     public int hashCode() {
-        return Objects.hash(mAttributeId, dataElementIdentifier, dataElementShortName, datasetIdentifier, datasetShortName);
+        return Objects.hash(mAttributeId, parentType, dataElementIdentifier, dataElementShortName, dataElemTableId, datasetIdentifier, datasetShortName);
     }
 }

@@ -334,7 +334,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
                     attributeDao.deleteAttribute(datasetAttribute.getAttributeId(), Integer.parseInt(dsCopyID), datasetAttribute.getValue());
                 }
                 for (DataElementAttribute dataElementAttribute : dataElementAttributes) {
-                    String datElemCopyID = String.valueOf(dataElementDao.getDataElemCheckoutOutId(Integer.valueOf(dsCopyID), dataElementAttribute.getShortName()));
+                    String datElemCopyID = String.valueOf(dataElementDao.getDataElemCheckoutOutId(Integer.valueOf(dsCopyID), dataElementAttribute.getIdentifier(), dataElementAttribute.getTableIdentifier()));
                     attributeDao.deleteAttribute(dataElementAttribute.getAttributeId(), Integer.valueOf(datElemCopyID), dataElementAttribute.getValue());
                 }
                 checkInDataset(user, conn, dsCopyID, dsIds, String.valueOf(dataSet.getId()), dataSet.getRegStatus().getName(), dataSet.getShortName(), dataSet.getIdentifier());
@@ -410,6 +410,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         DataElementAttribute dataElementAttribute = new DataElementAttribute();
         dataElementAttribute.setDataElemId(entry.getDataElemId()).setAttributeId(entry.getmAttributeId()).setValue(entry.getValue()).setIdentifier(entry.getDataElementIdentifier()).setShortName(entry.getDataElementShortName());
         dataElementAttribute.setTableId(entry.getDataElemTableId());
+        dataElementAttribute.setTableIdentifier(entry.getDataElemTableIdentifier());
         dataElementAttribute.setParentNs(entry.getDataElemParentNs());
         dataElementAttribute.setTopNs(entry.getDataElemTopNs());
         dataElementAttribute.setType(entry.getDataElemType());

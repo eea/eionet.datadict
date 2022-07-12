@@ -42,7 +42,7 @@ public interface DataElementDao {
      * @param dataElemShortName
      * @return
      */
-    int getDataElemCheckoutOutId(int datasetId, String dataElemShortName);
+    int getDataElemCheckoutOutId(int datasetId, String dataElemShortName, String dataElemTableIdentifier);
 
     int getLatestDataElementId(String identifier);
 }
