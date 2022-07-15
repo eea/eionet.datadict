@@ -21,6 +21,9 @@
 
 package eionet.web.action;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import eionet.datadict.dal.DataElementDao;
 import eionet.datadict.dal.DatasetDao;
 import eionet.datadict.model.ContactDetails;
@@ -194,6 +197,11 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
     /**
      *
      */
+    private String contactDetailsString;
+
+    /**
+     *
+     */
     private boolean usrLoggedIn;
 
     /**
@@ -203,7 +211,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
      * @throws ServiceException
      */
     @DefaultHandler
-    public Resolution view() throws ServiceException {
+    public Resolution view() throws ServiceException, JsonProcessingException {
         // to be removed if Stripes is upgraded to 1.5.8
         handleConceptIdentifier();
 
@@ -212,15 +220,22 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
                         vocabularyFolder.isWorkingCopy());
         vocabularyConcept = vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), getConceptIdentifier(), false);
 
-        List<Integer> acceptedMAttributes = new ArrayList<>(Arrays.asList(61, 62, 63, 64));
-        contactDetails = contactService.getAllByValue(Integer.toString(vocabularyConcept.getId()));
-        contactDetails = contactDetails.stream().filter(contactDetails -> acceptedMAttributes.contains(contactDetails.getmAttributeId())).collect(Collectors.toSet());
+        setContactDetails(getContactDatasetAndDataElements());
+        ObjectMapper mapper = new ObjectMapper();
+        setContactDetailsString(mapper.writeValueAsString(contactDetails));
+
         validateView();
 
         // LOGGER.debug("Element attributes: " + vocabularyConcept.getElementAttributes().size());
 
         setUsrLoggedIn(isUserLoggedIn());
         return new ForwardResolution(VIEW_VOCABULARY_CONCEPT_JSP);
+    }
+
+    private Set<ContactDetails> getContactDatasetAndDataElements() {
+        List<Integer> acceptedMAttributes = new ArrayList<>(Arrays.asList(61, 62, 63, 64));
+        contactDetails = contactService.getAllByValue(Integer.toString(vocabularyConcept.getId()));
+        return contactDetails.stream().filter(contactDetails -> acceptedMAttributes.contains(contactDetails.getmAttributeId())).collect(Collectors.toSet());
     }
 
     /**
@@ -304,9 +319,12 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
                         vocabularyFolder.isWorkingCopy());
         vocabularyConcept = vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), getConceptIdentifier(), false);
 
-        List<Integer> acceptedMAttributes = new ArrayList<>(Arrays.asList(61, 62, 63, 64));
-        contactDetails = contactService.getAllByValue(Integer.toString(vocabularyConcept.getId()));
-        contactDetails = contactDetails.stream().filter(contactDetails -> acceptedMAttributes.contains(contactDetails.getmAttributeId())).collect(Collectors.toSet());
+
+        contactDetailsString = getContactDetailsString();
+        ObjectMapper mapper = new ObjectMapper();
+        if (org.apache.commons.lang3.StringUtils.isNotEmpty(contactDetailsString)) {
+            contactDetails = mapper.readValue(contactDetailsString, new TypeReference<Set<ContactDetails>>(){});
+        }
 
         DDUser user = SecurityUtil.getUser(getContext().getRequest());
         Connection conn = ConnectionUtil.getConnection();
@@ -363,8 +381,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
             }
         }
 
-        contactDetails = contactService.getAllByValue(Integer.toString(vocabularyConcept.getId()));
-        contactDetails = contactDetails.stream().filter(contactDetails -> acceptedMAttributes.contains(contactDetails.getmAttributeId())).collect(Collectors.toSet());
+        contactDetails = getContactDatasetAndDataElements();
 
         validateView();
         return new ForwardResolution(VIEW_VOCABULARY_CONCEPT_JSP);
@@ -970,6 +987,14 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
 
     public void setContactDetails(Set<ContactDetails> contactDetails) {
         this.contactDetails = contactDetails;
+    }
+
+    public String getContactDetailsString() {
+        return contactDetailsString;
+    }
+
+    public void setContactDetailsString(String contactDetailsString) {
+        this.contactDetailsString = contactDetailsString;
     }
 
     public boolean isUsrLoggedIn() {

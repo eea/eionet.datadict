@@ -170,6 +170,7 @@
               <stripes:hidden name="vocabularyConcept.identifier" />
               <stripes:hidden name="vocabularyConcept.originalConceptId" />
               <stripes:hidden name="conceptIdentifier" />
+              <stripes:hidden name="contactDetailsString" />
           </stripes:form>
         <!-- attribute values -->
         <div>
