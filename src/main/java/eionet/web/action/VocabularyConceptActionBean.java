@@ -314,6 +314,11 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
     }
 
     public Resolution deleteContactFromAllElements() throws Exception {
+        DDUser user = SecurityUtil.getUser(getContext().getRequest());
+        if (!SecurityUtil.hasPerm(user, "/datasets/", "u") && !SecurityUtil.hasPerm(user, "/datasets/", "er")) {
+            throw new Exception("You have no permission for this action");
+        }
+
         vocabularyFolder =
                 vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
                         vocabularyFolder.isWorkingCopy());
@@ -326,7 +331,6 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
             contactDetails = mapper.readValue(contactDetailsString, new TypeReference<Set<ContactDetails>>(){});
         }
 
-        DDUser user = SecurityUtil.getUser(getContext().getRequest());
         Connection conn = ConnectionUtil.getConnection();
         VersionManager verMan = setVersionManager(user, conn);
 
