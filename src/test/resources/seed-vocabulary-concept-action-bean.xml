@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<dataset>
+
+    <NAMESPACE NAMESPACE_ID="58" SHORT_NAME="test_table" FULL_NAME="test_table_fullName" DEFINITION="tableDef" WORKING_USER="heinlja" />
+    <NAMESPACE NAMESPACE_ID="100" SHORT_NAME="test_name" FULL_NAME="test_fullName" DEFINITION="definition" WORKING_USER="heinlja" />
+
+    <VOCABULARY_SET ID="10" IDENTIFIER="test" LABEL="testLabel" />
+
+    <VOCABULARY VOCABULARY_ID="3" CONTINUITY_ID="fdasfd552" IDENTIFIER="contacts" LABEL="users" REG_STATUS="Released" WORKING_COPY="0" USER_MODIFIED="demo_user" CONCEPT_IDENTIFIER_NUMERIC="0" BASE_URI="testUrl" VOCABULARY_TYPE="COMMON" FOLDER_ID="10" NOTATIONS_EQUAL_IDENTIFIERS="1" />
+
+    <VOCABULARY_CONCEPT VOCABULARY_CONCEPT_ID="11" VOCABULARY_ID="3" ORIGINAL_CONCEPT_ID="[NULL]" IDENTIFIER="testUser" LABEL="Test User" />
+
+    <DS_TABLE TABLE_ID="101" SHORT_NAME="tabShortName" IDENTIFIER="tabIdentifier" CORRESP_NS="58" PARENT_NS="100" WORKING_COPY="N" />
+
+    <TBL2ELEM TABLE_ID="101" DATAELEM_ID="265578" POSITION="1" MANDATORY="1" PRIM_KEY="0" />
+
+
+    <ATTRIBUTE M_ATTRIBUTE_ID="61" DATAELEM_ID="200" VALUE="11" PARENT_TYPE="DS"/>
+    <ATTRIBUTE M_ATTRIBUTE_ID="62" DATAELEM_ID="265578" VALUE="11" PARENT_TYPE="E"/>
+
+    <DATASET DATASET_ID="200" IDENTIFIER="dataset1" SHORT_NAME="dataset1" USER="heinlja" WORKING_COPY="N" CORRESP_NS="100" VERSION="1" REG_STATUS="Released"/>
+
+    <DST2TBL DATASET_ID="200" TABLE_ID="101" POSITION="0" />
+
+    <DATAELEM TYPE="CH2" DATAELEM_ID="265578" NAMESPACE_ID="1" SHORT_NAME="regular1" WORKING_COPY="N" PARENT_NS="58" TOP_NS="100"  REG_STATUS="Released" VERSION="1" USER="staromar" IDENTIFIER="E3" />
+
+    <M_ATTRIBUTE M_ATTRIBUTE_ID="61" NAME="Owner (Accountable)" OBLIGATION="O" DEFINITION="Makes the decision and will be answerable for results." SHORT_NAME="Owner" NAMESPACE_ID="3" DISP_TYPE="vocabulary" DISP_ORDER="60" DISP_WHEN="267" DISP_WIDTH="20" DISP_HEIGHT="1" DISP_MULTIPLE="0" INHERIT="0"/>
+    <M_ATTRIBUTE M_ATTRIBUTE_ID="62" NAME="Responsible" OBLIGATION="O" DEFINITION="Implements or executes the decision; ensure that things happen, timelines are met, budget is managed etc." SHORT_NAME="Responsible" NAMESPACE_ID="3" DISP_TYPE="vocabulary" DISP_ORDER="60" DISP_WHEN="267" DISP_WIDTH="20" DISP_HEIGHT="1" DISP_MULTIPLE="0" INHERIT="0"/>
+    <M_ATTRIBUTE M_ATTRIBUTE_ID="63" NAME="Consulted on changes" OBLIGATION="O" DEFINITION="Needs to be asked for input or to review work products because of specialist knowledge or expertise" SHORT_NAME="Consulted" NAMESPACE_ID="3" DISP_TYPE="vocabulary" DISP_ORDER="60" DISP_WHEN="267" DISP_WIDTH="20" DISP_HEIGHT="1" DISP_MULTIPLE="0" INHERIT="0"/>
+    <M_ATTRIBUTE M_ATTRIBUTE_ID="64" NAME="Informed on changes" OBLIGATION="O" DEFINITION="Needs to be kept aware of status, benefits, and what will be changing" SHORT_NAME="Owner" NAMESPACE_ID="3" DISP_TYPE="Informed" DISP_ORDER="60" DISP_WHEN="267" DISP_WIDTH="20" DISP_HEIGHT="1" DISP_MULTIPLE="0" INHERIT="0"/>
+
+</dataset>
