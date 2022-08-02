@@ -359,7 +359,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
                     String datElemCopyID = String.valueOf(dataElementDao.getDataElemCheckoutOutId(Integer.valueOf(dsCopyID), dataElementAttribute.getIdentifier(), dataElementAttribute.getTableIdentifier()));
                     attributeDao.deleteAttribute(dataElementAttribute.getAttributeId(), Integer.valueOf(datElemCopyID), dataElementAttribute.getValue());
                 }
-                checkInDataset(user, conn, dsCopyID, dsIds, String.valueOf(dataSet.getId()), dataSet.getRegStatus().getName(), dataSet.getShortName(), dataSet.getIdentifier());
+                checkInDataset(user, conn, dsCopyID, dsIds, String.valueOf(dataSet.getId()), dataSet.getShortName(), dataSet.getIdentifier());
             } catch (Exception e) {
                 if (dsCopyID != null) {
                     undoCheckoutDataset(user, conn, dsCopyID, dsIds);
@@ -376,7 +376,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
                 for (ContactDetails contactDetail : commonElementsContactDet) {
                     attributeDao.deleteAttribute(contactDetail.getmAttributeId(), Integer.valueOf(datElemCopyID), contactDetail.getValue());
                 }
-                checkInDataElement(conn, user, datElemCopyID, dataElement.getRegStatus().getName(), dataElemId, dataElement.getShortName(), dataElement.getIdentifier());
+                checkInDataElement(conn, user, datElemCopyID, dataElemId, dataElement.getShortName(), dataElement.getIdentifier());
             } catch (Exception e) {
                 if (datElemCopyID != null) {
                     undoCheckoutDataElement(user, conn, datElemCopyID);
@@ -438,7 +438,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         return dataElementAttribute;
     }
 
-    private void checkInDataElement(Connection conn, DDUser user, String datElemCopyID, String regStatus, Integer dataElemId, String shortName, String identifier) throws Exception {
+    private void checkInDataElement(Connection conn, DDUser user, String datElemCopyID, Integer dataElemId, String shortName, String identifier) throws Exception {
         eionet.meta.savers.Parameters datElemHandlerParams = new eionet.meta.savers.Parameters();
         datElemHandlerParams.addParameterValue("mode", "edit");
         datElemHandlerParams.addParameterValue("common", "true");
@@ -446,11 +446,7 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         datElemHandlerParams.addParameterValue("check_in", "true");
         datElemHandlerParams.addParameterValue("delem_id", datElemCopyID);
         datElemHandlerParams.addParameterValue("checkedout_copy_id", String.valueOf(dataElemId));
-        if (regStatus.equals("Incomplete")) {
-            datElemHandlerParams.addParameterValue("upd_version", "false");
-        } else {
-            datElemHandlerParams.addParameterValue("upd_version", "true");
-        }
+        datElemHandlerParams.addParameterValue("upd_version", "false");
         datElemHandlerParams.addParameterValue("delem_name", shortName);
         datElemHandlerParams.addParameterValue("idfier", identifier);
         DataElementHandler elementHandler = new DataElementHandler(conn, datElemHandlerParams, getContext().getServletContext());
@@ -479,17 +475,13 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         dsHandler.execute();
     }
 
-    private void checkInDataset(DDUser user, Connection conn, String dsCopyID, String[] dsIds, String elemId, String datasetRegStatus, String datasetShortName, String datasetIdentifier) throws Exception {
+    private void checkInDataset(DDUser user, Connection conn, String dsCopyID, String[] dsIds, String elemId, String datasetShortName, String datasetIdentifier) throws Exception {
         eionet.meta.savers.Parameters dsHandlerParams = new eionet.meta.savers.Parameters();
         dsHandlerParams.addParameterValue("mode", "edit");
         dsHandlerParams.addParameterValue("ds_id", dsCopyID);
         dsHandlerParams.addParameterValue("check_in", "true");
         dsHandlerParams.addParameterValue("checkedout_copy_id", elemId);
-        if (datasetRegStatus.equals("Incomplete")) {
-            dsHandlerParams.addParameterValue("upd_version", "false");
-        } else {
-            dsHandlerParams.addParameterValue("upd_version", "true");
-        }
+        dsHandlerParams.addParameterValue("upd_version", "false");
         dsHandlerParams.addParameterValue("ds_ids", dsIds.toString());
         dsHandlerParams.addParameterValue("ds_name", datasetShortName);
         dsHandlerParams.addParameterValue("idfier", datasetIdentifier);
