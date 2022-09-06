@@ -33,13 +33,12 @@ import eionet.meta.service.data.VocabularyConceptFilter;
 import eionet.meta.service.data.VocabularyConceptResult;
 import eionet.meta.service.data.VocabularyFilter;
 import eionet.meta.service.data.VocabularyResult;
+import eionet.meta.spring.SpringApplicationContext;
 import eionet.util.Pair;
 import eionet.util.Util;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -54,7 +53,6 @@ import java.util.Set;
  *
  * @author enver
  */
-@Configurable
 public abstract class VocabularyImportBaseHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(VocabularyImportBaseHandler.class);
@@ -112,15 +110,27 @@ public abstract class VocabularyImportBaseHandler {
     /**
      * Vocabulary service.
      */
-    @Autowired
-    protected IVocabularyService vocabularyService;
+    private IVocabularyService vocabularyService;
 
     /**
      * Data elements service.
      */
-    @Autowired
-    protected IDataService dataService;
+    private IDataService dataService;
+    
+    public IDataService getDataService() {
+        if (this.dataService == null) {
+            return SpringApplicationContext.getContext().getBean(IDataService.class); 
+        }
+        return this.dataService;
+    }
 
+    public IVocabularyService getVocabularyService() {
+        if (this.vocabularyService == null) {
+            return SpringApplicationContext.getContext().getBean(IVocabularyService.class); 
+        }
+        return this.vocabularyService;
+    }
+    
     /**
      * An object can only be instantiated from this package.
      *
@@ -270,7 +280,7 @@ public abstract class VocabularyImportBaseHandler {
                     vocabularyFilter.setUsePaging(false);
                     vocabularyFilter.setBaseUri(relatedConceptBaseUri);
                     // first search for vocabularies, to find correct concept and to make searching faster for concepts
-                    VocabularyResult vocabularyResult = this.vocabularyService.searchVocabularies(vocabularyFilter);
+                    VocabularyResult vocabularyResult = getVocabularyService().searchVocabularies(vocabularyFilter);
                     if (vocabularyResult != null && vocabularyResult.getTotalItems() > 0) {
                         // get the first found item, since base uri kinda unique
                         foundVocabularyFolder = vocabularyResult.getList().get(0);
@@ -280,7 +290,7 @@ public abstract class VocabularyImportBaseHandler {
                         filter.setIdentifier(relatedConceptIdentifier);
                         filter.setVocabularyFolderId(foundVocabularyFolder.getId());
                         // search for concepts now
-                        VocabularyConceptResult results = this.vocabularyService.searchVocabularyConcepts(filter);
+                        VocabularyConceptResult results = getVocabularyService().searchVocabularyConcepts(filter);
                         // if found more than one, how can system detect which one is searched for!
                         if (results != null && results.getFullListSize() == 1) {
                             foundRelatedConcept = results.getList().get(0);

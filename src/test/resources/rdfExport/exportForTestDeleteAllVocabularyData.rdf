@@ -17,7 +17,7 @@
         <skos:notation>8</skos:notation>
         <skos:prefLabel>rdf_test_concept_label_1</skos:prefLabel>
         <skos:definition>rdf_test_concept_def_1</skos:definition>
-        <adms:status rdf:resource="http://dd.eionet.europa.eu/vocabulary/datadictionary/status/valid"/>
+        <adms:status>valid</adms:status>
         <statusModified></statusModified>
         <acceptedDate></acceptedDate>
         <notAcceptedDate></notAcceptedDate>
@@ -30,7 +30,7 @@
         <skos:notation>10</skos:notation>
         <skos:prefLabel>rdf_test_concept_label_3</skos:prefLabel>
         <skos:definition>rdf_test_concept_def_3</skos:definition>
-        <adms:status rdf:resource="http://dd.eionet.europa.eu/vocabulary/datadictionary/status/valid"/>
+        <adms:status>valid</adms:status>
         <statusModified></statusModified>
         <acceptedDate></acceptedDate>
         <notAcceptedDate></notAcceptedDate>

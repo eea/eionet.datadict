@@ -52,7 +52,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author enver
  */
- //@Configurable
 public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
 
     /** Static logger for this class. */
@@ -162,7 +161,7 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
                 if (!this.boundElementsIds.containsKey(elementHeader)) {
                     // search for data element
                     this.elementsFilter.setIdentifier(elementHeader);
-                    List<DataElement> dataElements  = this.dataService.searchDataElements(this.elementsFilter);
+                    List<DataElement> dataElements  = getDataService().searchDataElements(this.elementsFilter);
                     // if there is one and only one element check if header and identifer exactly matches!
                     if (dataElements.size() < 1) {
                         throw new ServiceException("Cannot find any data element for column: " + elementHeader
@@ -211,7 +210,7 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
                     continue;
                 }
 
-                String conceptIdentifier = uri.replace(this.folderContextRoot, "");
+                String conceptIdentifier = StringUtils.trimToNull(uri.replace(this.folderContextRoot, ""));
                 if (StringUtils.contains(conceptIdentifier, "/") || !Util.isValidIdentifier(conceptIdentifier)) {
                     this.logMessages.add("Row (" + rowNumber + ") did not contain a valid concept identifier.");
                     continue;
@@ -427,7 +426,7 @@ public class VocabularyCSVImportHandler extends VocabularyImportBaseHandler {
 
         VocabularyFolder statusVoc = null;
         try {
-            statusVoc = vocabularyService.getVocabularyWithConcepts(ownStatusVocabularyIdentifier, ownVocabulariesFolderName);
+            statusVoc = getVocabularyService().getVocabularyWithConcepts(ownStatusVocabularyIdentifier, ownVocabulariesFolderName);
         } catch (Exception e) {
             LOGGER.info("Could not find DD's own status vocabulary: " + e.toString());
         }

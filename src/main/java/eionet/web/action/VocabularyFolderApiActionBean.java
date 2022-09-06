@@ -21,13 +21,16 @@
 
 package eionet.web.action;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import eionet.datadict.errors.DuplicateResourceException;
 import eionet.datadict.errors.EmptyParameterException;
 import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.errors.UserAuthenticationException;
+import eionet.datadict.infrastructure.asynctasks.AsyncTaskManager;
 import eionet.datadict.services.auth.WebApiAuthInfoService;
 import eionet.datadict.services.auth.WebApiAuthService;
 import eionet.datadict.services.data.VocabularyDataService;
+import eionet.datadict.web.asynctasks.VocabularyRdfImportFromApiTask;
 import eionet.meta.DDUser;
 import eionet.meta.dao.IVocabularyFolderDAO;
 import eionet.meta.dao.domain.VocabularyFolder;
@@ -38,7 +41,6 @@ import eionet.meta.service.IVocabularyImportService.MissingConceptsAction;
 import eionet.meta.service.IVocabularyImportService.UploadAction;
 import eionet.meta.service.IVocabularyImportService.UploadActionBefore;
 import eionet.meta.service.IVocabularyService;
-import eionet.meta.service.ServiceException;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import net.sf.json.JSONObject;
@@ -47,19 +49,15 @@ import net.sourceforge.stripes.action.Resolution;
 import net.sourceforge.stripes.action.StreamingResolution;
 import net.sourceforge.stripes.action.UrlBinding;
 import net.sourceforge.stripes.integration.spring.SpringBean;
-import org.apache.commons.io.ByteOrderMark;
-import org.apache.commons.io.input.BOMInputStream;
-import org.apache.commons.lang.CharEncoding;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.time.StopWatch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
+import org.apache.commons.io.IOUtils;
 
 /**
  * Vocabulary folder API action bean.
@@ -176,6 +174,9 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
      */
     @SpringBean
     private IJWTService jwtService;
+    
+    @SpringBean
+    private AsyncTaskManager asyncTaskManager;
 
     /**
      * Vocabulary folder.
@@ -227,9 +228,8 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
 
         try {
             user = this.webApiAuthService.authenticate(this.webApiAuthInfoService.getAuthenticationInfo(getContext().getRequest()));
-        }
-        catch (UserAuthenticationException ex) {
-        return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, ex.getMessage(), ErrorActionBean.RETURN_ERROR_EVENT);
+        } catch (UserAuthenticationException ex) {
+            return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, ex.getMessage(), ErrorActionBean.RETURN_ERROR_EVENT);
         }
         
         VocabularyFolder vocabulary = new VocabularyFolder();
@@ -274,22 +274,29 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
      * @return resolution
      * @throws eionet.meta.service.ServiceException when an error occurs
      */
-    public Resolution uploadRdf() throws ServiceException {
+    public Resolution uploadRdf() throws Exception {
         Thread.currentThread().setName("RDF-IMPORT");
-        try {
-            StopWatch timer = new StopWatch();
-            timer.start();
-
-            //Read RDF from request body and params from url
+            // read RDF from request body and params from url
             HttpServletRequest request = getContext().getRequest();
             ActionMethodUtils.setLogParameters(getContext());
 
             LOGGER.info("uploadRdf API - called with remote address: " + request.getRemoteAddr() + ", and remote host: " + request.getRemoteHost());
 
+            Map<String, Object> result = new HashMap<>();
+            ObjectMapper mapper = new ObjectMapper();
+
             String contentType = request.getHeader(CONTENT_TYPE_HEADER);
             if (!StringUtils.startsWithIgnoreCase(contentType, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD)) {
                 LOGGER.error("uploadRdf API - invalid content type: " + contentType);
-                return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.INVALID_INPUT, "Invalid content-type for RDF upload", ErrorActionBean.RETURN_ERROR_EVENT);
+                
+                result.put("error", "Invalid content-type for RDF upload: " + contentType);
+                return new StreamingResolution(contentType, mapper.writeValueAsString(result)) {
+                    @Override
+                    protected void stream(HttpServletResponse response) throws Exception {
+                        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                        super.stream(response);
+                    }
+                };
             }
 
             String keyHeader = request.getHeader(JWT_API_KEY_HEADER);
@@ -300,40 +307,80 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
                     JSONObject jsonObject = jwtService.verify(JWT_KEY, JWT_AUDIENCE, jsonWebToken);
 
                     long createdTimeInSeconds = jsonObject.getLong(TOKEN_CREATED_TIME_IDENTIFIER_IN_JSON);
-
                     long nowInSeconds = Calendar.getInstance().getTimeInMillis() / 1000l;
+
                     if (nowInSeconds > (createdTimeInSeconds + (JWT_TIMEOUT_IN_MINUTES * 60))) {
                         LOGGER.error("uploadRdf API - Deprecated token");
-                        return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "Cannot authorize: Deprecated token", ErrorActionBean.RETURN_ERROR_EVENT);
+                        
+                        result.put("error", "Cannot authorize: Deprecated token.");
+                        return new StreamingResolution(contentType, mapper.writeValueAsString(result)) {
+                            @Override
+                            protected void stream(HttpServletResponse response) throws Exception {
+                                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                                super.stream(response);
+                            }
+                        };
                     }
 
-                    /* Check if the domain that the token was generated in, is the same as this one. */
+                    // check if the domain that the token was generated in, is the same as this one
                     String domain = null;
-                    try{
+                    try {
                         domain = jsonObject.getString(DOMAIN);
-                    }
-                    catch(Exception e){
+                    } catch(Exception e) {
                         LOGGER.error("uploadRdf API - The token does not include domain information");
-                        return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "Cannot authorize: Domain was not specified", ErrorActionBean.RETURN_ERROR_EVENT);
+                        
+                        result.put("error", "Cannot authorize: The token does not include domain information.");
+                        result.put("errorDetails", e.getMessage());
+                        return new StreamingResolution(contentType, mapper.writeValueAsString(result)) {
+                            @Override
+                            protected void stream(HttpServletResponse response) throws Exception {
+                                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                                super.stream(response);
+                            }
+                        };
                     }
 
                     if (!Props.getProperty(PropsIF.DD_URL).equals(domain)) {
                         LOGGER.error("uploadRdf API - The token was not generated from this domain");
-                        return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "Cannot authorize: Different domain", ErrorActionBean.RETURN_ERROR_EVENT);
+                        
+                        result.put("error", "Cannot authorize: The token was not generated from this domain.");
+                        return new StreamingResolution(contentType, mapper.writeValueAsString(result)) {
+                            @Override
+                            protected void stream(HttpServletResponse response) throws Exception {
+                                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                                super.stream(response);
+                            }
+                        };
                     }
-
                 } catch (Exception e) {
                     LOGGER.error("uploadRdf API - Cannot verify key", e);
-                    return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "Cannot authorize: " + e.getMessage(), ErrorActionBean.RETURN_ERROR_EVENT);
+                    
+                    result.put("error", "Cannot authorize: Cannot verify key.");
+                    result.put("errorDetails", e.getMessage());
+                    return new StreamingResolution(contentType, mapper.writeValueAsString(result)) {
+                        @Override
+                        protected void stream(HttpServletResponse response) throws Exception {
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            super.stream(response);
+                        }
+                    };
                 }
             } else {
                 LOGGER.error("uploadRdf API - Key missing");
-                return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401, "API Key cannot be missing", ErrorActionBean.RETURN_ERROR_EVENT);
+                
+                result.put("error", "Cannot authorize: API Key missing.");
+                return new StreamingResolution(contentType, mapper.writeValueAsString(result)) {
+                    @Override
+                    protected void stream(HttpServletResponse response) throws Exception {
+                        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                        super.stream(response);
+                    }
+                };
             }
 
             LOGGER.info("uploadRdf API - request authorized");
 
-            //These lines are redundant but for any case, are kept in code. Stripes handle well, request parameters.
+            // these lines are redundant but for any case, are kept in code. Stripes handle well, request parameters.
             if (this.actionBefore == null && request.getParameter(ACTION_BEFORE_REQ_PARAM) != null) {
                 setActionBefore(request.getParameter(ACTION_BEFORE_REQ_PARAM));
             }
@@ -346,7 +393,7 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
                 setAction(request.getParameter(ACTION_REQ_PARAM));
             }
 
-            //Validate parameters
+            // validate parameters
             UploadActionBefore uploadActionBefore = null;
             UploadAction uploadAction = null;
             MissingConceptsAction missingConceptsAction = null;
@@ -359,88 +406,26 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
                         vocabularyRdfImportService.getDefaultMissingConceptsAction(true));
             } catch (IllegalArgumentException e) {
                 LOGGER.error("uploadRdf API - Illegal argument: " + e.getMessage());
-                return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.INVALID_INPUT, e.getMessage(), ErrorActionBean.RETURN_ERROR_EVENT);
+                
+                result.put("error", "Illegal argument");
+                result.put("errorDetails", e.getMessage());
+                return new StreamingResolution(contentType, mapper.writeValueAsString(result)) {
+                    @Override
+                    protected void stream(HttpServletResponse response) throws Exception {
+                        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                        super.stream(response);
+                    }
+                };
             }
 
-            LOGGER.info("uploadRdf API - parameters are valid");
+            String taskId = this.asyncTaskManager.executeAsync(VocabularyRdfImportFromApiTask.class,
+                        VocabularyRdfImportFromApiTask.createParamsBundle(IOUtils.toString(request.getInputStream(), StandardCharsets.UTF_8), 
+                                vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(), uploadActionBefore, uploadAction, missingConceptsAction, 
+                                request.getParameter(VocabularyRdfImportFromApiTask.PARAM_NOTIFIERS_EMAILS)));
 
-            VocabularyFolder workingCopy = null;
-            try {
-                workingCopy = vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(),
-                        vocabularyFolder.getIdentifier(), true);
-            } catch (ServiceException e) {
-                HashMap<String, Object> errorParameters = e.getErrorParameters();
-                if (errorParameters == null ||
-                        !ErrorActionBean.ErrorType.NOT_FOUND_404.equals(errorParameters.get(ErrorActionBean.ERROR_TYPE_KEY))) {
-                    LOGGER.error("uploadRdf API - Vocabulary has working copy", e);
-                    return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.FORBIDDEN_403, "Vocabulary should NOT have a working copy", ErrorActionBean.RETURN_ERROR_EVENT);
-                }
-            }
-
-            if (workingCopy != null && workingCopy.isWorkingCopy()) {
-                LOGGER.error("uploadRdf API - Vocabulary has working copy");
-                return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.FORBIDDEN_403, "Vocabulary should NOT have a working copy", ErrorActionBean.RETURN_ERROR_EVENT);
-            }
-
-            try {
-                vocabularyFolder = vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(),
-                        vocabularyFolder.getIdentifier(), false);
-            } catch (ServiceException e) {
-                HashMap<String, Object> errorParameters = e.getErrorParameters();
-                if (errorParameters != null &&
-                        ErrorActionBean.ErrorType.NOT_FOUND_404.equals(errorParameters.get(ErrorActionBean.ERROR_TYPE_KEY))) {
-                    LOGGER.error("uploadRdf API - Vocabulary can NOT be found", e);
-                    return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.NOT_FOUND_404, "Vocabulary can NOT be found", ErrorActionBean.RETURN_ERROR_EVENT);
-                }
-            }
-
-            if (vocabularyFolder.isWorkingCopy()) {
-                LOGGER.error("uploadRdf API - Vocabulary has working copy");
-                return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.FORBIDDEN_403, "Vocabulary should NOT have a working copy", ErrorActionBean.RETURN_ERROR_EVENT);
-            }
-
-            LOGGER.info("uploadRdf API - Starting RDF import operation");
-
-            //Reader rdfFileReader = new InputStreamReader(this.sourceFile.getInputStream(), CharEncoding.UTF_8); //KL 151216: input stream reading from request
-            BOMInputStream bomIn = new BOMInputStream(request.getInputStream(), ByteOrderMark.UTF_8, ByteOrderMark.UTF_16LE, ByteOrderMark.UTF_16BE,
-                    ByteOrderMark.UTF_32LE, ByteOrderMark.UTF_32BE
-            );
-            if (bomIn.hasBOM()) {
-                LOGGER.info("uploadRdf API - Detected BOM");
-            }
-
-            Reader rdfFileReader = new InputStreamReader(bomIn, CharEncoding.UTF_8);
-            
-            final List<String> systemMessages = this.vocabularyRdfImportService.importRdfIntoVocabulary(rdfFileReader,
-                    vocabularyFolder, uploadActionBefore, uploadAction, missingConceptsAction);
-            for (String systemMessage : systemMessages) {
-                addSystemMessage(systemMessage);
-                LOGGER.info(systemMessage);
-            }
-
-            Date dateModified = new Date();
-            String userModified = PropsIF.API_USER_MODIFIED_IDENTIFIER;
-            vocabularyFolderDAO.updateDateAndUserModified(dateModified, userModified, vocabularyFolder.getId());
-            LOGGER.info("uploadRdf API - DATE_MODIFIED was updated");
-
-            StreamingResolution result = new StreamingResolution(JSON_FORMAT) {
-                @Override
-                public void stream(HttpServletResponse response) throws Exception {
-                    VocabularyJSONOutputHelper.writeJSON(response.getOutputStream(), systemMessages);
-                }
-            };
-
-            timer.stop();
-            LOGGER.info("uploadRdf API - RDF import completed, total time of execution: " + timer.toString());
-            return result;
-        } catch (ServiceException e) {
-            LOGGER.error("uploadRdf API - Failed to import vocabulary RDF into db", e);
-            return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.INTERNAL_SERVER_ERROR, e.getMessage(), ErrorActionBean.RETURN_ERROR_EVENT);
-        } catch (Exception e) {
-            LOGGER.error("uploadRdf API - Failed to import vocabulary RDF into db, unexpected exception: ", e);
-            return super.createErrorResolutionWithoutRedirect(ErrorActionBean.ErrorType.INVALID_INPUT, "Failed to import vocabulary RDF into db, unexpected exception: " + e.getMessage(), ErrorActionBean.RETURN_ERROR_EVENT);
-        }
-    } // end of method uploadRDF
+            result.put("url", Props.getRequiredProperty(PropsIF.DD_URL) + "/asynctasks/" + taskId);
+            return new StreamingResolution(JSON_FORMAT, mapper.writeValueAsString(result));
+    }
 
     /**
      * Validator and enum value converter for upload action before parameter.

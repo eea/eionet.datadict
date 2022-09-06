@@ -17,6 +17,7 @@ public class ScheduledTaskResolver {
     private static final String VOCABULARY_CSV_IMPORT_TASK = "Vocabulary CSV Import Task";   
     private static final String VOCABULARY_RDF_IMPORT_TASK = "Vocabulary RDF Import Task";
     private static final String VOCABULARY_RDF_IMPORT_FROM_URL_TASK = "Import Vocabulary RDF from Url Task";
+    private static final String VOCABULARY_RDF_IMPORT_FROM_API_TASK = "Import Vocabulary RDF from API Task";
     private static final String VOCABULARY_UNDO_CHECKOUT_TASK = "Vocabulary undo Checkout Task";
     private final AsyncTaskDataSerializer asyncTaskDataSerializer;
 
@@ -44,6 +45,9 @@ public class ScheduledTaskResolver {
         }
         if(className.contains("VocabularyRdfImportTask")) {
             return VOCABULARY_RDF_IMPORT_TASK;
+        }
+        if(className.contains("VocabularyRdfImportFromApiTask")) {
+            return VOCABULARY_RDF_IMPORT_FROM_API_TASK;
         }
         if (className.contains("VocabularyUndoCheckOutTask")) {
             return VOCABULARY_UNDO_CHECKOUT_TASK;

@@ -35,8 +35,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import eionet.datadict.model.enums.Enumerations;
-import eionet.meta.service.IVocabularyService;
-import eionet.meta.spring.SpringApplicationContext;
 import net.sourceforge.stripes.util.StringUtil;
 
 import org.apache.commons.lang.StringUtils;
@@ -60,7 +58,6 @@ import eionet.util.PropsIF;
 import eionet.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
 
 /**
  * Implementation of OpenRDF's {@link RDFHandler} that will be used by implementations of
@@ -69,7 +66,6 @@ import org.springframework.context.ApplicationContext;
  *
  * @author enver
  */
-// @Configurable
 @SuppressWarnings("rawtypes")
 public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler implements RDFHandler {
 
@@ -216,8 +212,6 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
     /** The vocabulary on which the update will happen.*/
     private VocabularyFolder vocabularyFolder;
 
-    ApplicationContext springContext = SpringApplicationContext.getContext();
-
     /**
      * Constructor for RDFHandler to import rdf into vocabulary.
      *
@@ -325,7 +319,7 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
 
         String conceptUriDecoded = StringUtil.urlDecode(conceptUri);
         // if it does not a have conceptIdentifier than it may be an attribute for vocabulary or a wrong record, so just ignore it
-        String conceptIdentifier = conceptUriDecoded.replace(this.folderContextRoot, "");
+        String conceptIdentifier = StringUtils.trimToNull(conceptUriDecoded.replace(this.folderContextRoot, ""));
         if (StringUtils.contains(conceptIdentifier, "/") || !Util.isValidIdentifier(conceptIdentifier)) {
             // this.logMessages.add(st.toString() + " NOT imported, contains a / in concept identifier or empty");
             return;
@@ -770,11 +764,8 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
                 ownStatusVocabularyIdentifier));
 
         VocabularyFolder statusVoc = null;
-        if(vocabularyService == null){
-            vocabularyService = springContext.getBean(IVocabularyService.class);
-        }
         try {
-            statusVoc = vocabularyService.getVocabularyWithConcepts(ownStatusVocabularyIdentifier, ownVocabulariesFolderName);
+            statusVoc = getVocabularyService().getVocabularyWithConcepts(ownStatusVocabularyIdentifier, ownVocabulariesFolderName);
         } catch (Exception e) {
             // Ignore deliberately.
         }
