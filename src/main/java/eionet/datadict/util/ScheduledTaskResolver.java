@@ -14,6 +14,7 @@ public class ScheduledTaskResolver {
     
     private static final String VOCABULARY_CHECK_IN_TASK = "Vocabulary Check In Task";  
     private static final String VOCABULARY_CHECK_OUT_TASK = "Vocabulary Check Out Task"; 
+    private static final String VOCABULARY_CREATE_COPY_TASK = "Vocabulary Create Copy Task"; 
     private static final String VOCABULARY_CSV_IMPORT_TASK = "Vocabulary CSV Import Task";   
     private static final String VOCABULARY_RDF_IMPORT_TASK = "Vocabulary RDF Import Task";
     private static final String VOCABULARY_RDF_IMPORT_FROM_URL_TASK = "Import Vocabulary RDF from Url Task";
@@ -36,6 +37,9 @@ public class ScheduledTaskResolver {
         }
         if(className.contains("VocabularyCheckOutTask")) {
             return VOCABULARY_CHECK_OUT_TASK;
+        }
+        if(className.contains("VocabularyCreateCopyTask")) {
+            return VOCABULARY_CREATE_COPY_TASK;
         }
         if(className.contains("VocabularyCsvImportTask")) {
             return VOCABULARY_CSV_IMPORT_TASK;

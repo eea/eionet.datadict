@@ -743,12 +743,16 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         ActionMethodUtils.setLogParameters(getContext());
         if (vocabularyFolder.getId() == 0) {
             if (copyId != 0) {
-                if (StringUtils.equals(FOLDER_CHOICE_EXISTING, folderChoice)) {
-                    vocabularyService.createVocabularyFolderCopy(vocabularyFolder, copyId, getUserName(), null);
-                }
-                if (StringUtils.equals(FOLDER_CHOICE_NEW, folderChoice)) {
-                    vocabularyService.createVocabularyFolderCopy(vocabularyFolder, copyId, getUserName(), folder);
-                }
+                String taskId = this.asyncTaskManager.executeAsync(VocabularyCreateCopyTask.class,
+                        VocabularyCreateCopyTask.createParamsBundle(copyId, vocabularyFolder.getFolderId(), 
+                                vocabularyFolder.getIdentifier(), vocabularyFolder.getLabel(),
+                                vocabularyFolder.getBaseUri(), vocabularyFolder.getType(),
+                                vocabularyFolder.isNumericConceptIdentifiers(), vocabularyFolder.isNotationsEqualIdentifiers(),
+                                getUserName(), 
+                                StringUtils.equals(FOLDER_CHOICE_NEW, folderChoice)? folder.getIdentifier() : null, 
+                                StringUtils.equals(FOLDER_CHOICE_NEW, folderChoice)? folder.getLabel(): null));
+
+                return AsyncTaskProgressActionBean.createAwaitResolution(taskId);
             } else {
                 if (StringUtils.equals(FOLDER_CHOICE_EXISTING, folderChoice)) {
                     vocabularyService.createVocabularyFolder(vocabularyFolder, null, getUserName());
