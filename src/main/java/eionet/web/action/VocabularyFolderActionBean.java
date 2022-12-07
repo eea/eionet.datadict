@@ -66,6 +66,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.*;
+import org.springframework.web.util.UriUtils;
 
 /**
  * Edit vocabulary folder action bean.
@@ -1725,9 +1726,9 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
             }
             if (!RESERVED_VOCABULARY_EVENTS.contains(parameters[2])) {
                 RedirectResolution resolution = new RedirectResolution(VocabularyConceptActionBean.class, "view");
-                resolution.addParameter("vocabularyFolder.folderName", parameters[0]);
-                resolution.addParameter("vocabularyFolder.identifier", parameters[1]);
-                resolution.addParameter("vocabularyConcept.identifier", parameters[2]);
+                resolution.addParameter("vocabularyFolder.folderName", UriUtils.decode(parameters[0], "utf-8"));
+                resolution.addParameter("vocabularyFolder.identifier", UriUtils.decode(parameters[1], "utf-8"));
+                resolution.addParameter("vocabularyConcept.identifier", UriUtils.decode(parameters[2], "utf-8"));
                 if (vocabularyFolder.isWorkingCopy()) {
                     resolution.addParameter("vocabularyFolder.workingCopy", vocabularyFolder.isWorkingCopy());
                 }

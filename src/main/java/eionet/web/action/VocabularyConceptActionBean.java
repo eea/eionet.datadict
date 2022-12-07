@@ -41,7 +41,6 @@ import net.sourceforge.stripes.validation.ValidationMethod;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.web.util.UriUtils;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -612,7 +611,11 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
      * @return concept uri
      */
     public String getConceptUri() {
-        return StringEncoder.encodeToIRI(getUriPrefix() + getConceptIdentifier());
+        return getUriPrefix() + Util.encodeURLPath(getConceptIdentifier());
+    }
+
+    public String getConceptUriWithNonEncodedIdentifier() {
+        return getUriPrefix() + getConceptIdentifier();
     }
 
     /**
