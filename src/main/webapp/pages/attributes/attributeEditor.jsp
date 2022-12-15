@@ -46,7 +46,7 @@
                     </tr>
                     <tr>
                         <th scope="row" class="scope-row">Definition</th>
-                        <td><img src="<stripes:url value="/images/optional.gif" />" alt="Optional" name="Optional"/></td>
+                        <td><img src="<stripes:url value="/images/mandatory.gif" />" alt="Mandatory" name="Mandatory"/></td>
                         <td><stripes:textarea class="small" rows="5" cols="52" name="attribute.definition"/></td>  
                     </tr>
                     <tr>
