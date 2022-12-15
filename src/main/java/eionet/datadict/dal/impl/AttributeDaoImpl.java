@@ -576,7 +576,7 @@ public class AttributeDaoImpl extends JdbcDaoBase implements AttributeDao {
         attribute.setName(rs.getString("M_ATTRIBUTE.NAME"));
         attribute.setDefinition(rs.getString("M_ATTRIBUTE.DEFINITION"));
         attribute.setShortName(rs.getString("M_ATTRIBUTE.SHORT_NAME"));
-        attribute.setDisplayMultiple(rs.getBoolean("M_ATTRIBUTE.DISP_MULTIPLE"));
+        attribute.setDisplayMultiple(new BooleanToMySqlEnumConverter(Boolean.FALSE).convertBack(rs.getString("M_ATTRIBUTE.DISP_MULTIPLE")));
         attribute.setRdfPropertyName(rs.getString("M_ATTRIBUTE.RDF_PROPERTY_NAME"));
         attribute.setObligationType(new ObligationTypeConverter().convertBack(rs.getString("M_ATTRIBUTE.OBLIGATION")));
         attribute.setDisplayType(new DisplayTypeConverter().convertBack(rs.getString("M_ATTRIBUTE.DISP_TYPE")));
