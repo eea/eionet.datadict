@@ -64,7 +64,7 @@ public class AttributeDaoImplTestIT {
         when(resultSet.getString("M_ATTRIBUTE.NAME")).thenReturn("name");
         when(resultSet.getString("M_ATTRIBUTE.DEFINITION")).thenReturn("definition");
         when(resultSet.getString("M_ATTRIBUTE.SHORT_NAME")).thenReturn("short name");
-        when(resultSet.getBoolean("M_ATTRIBUTE.DISP_MULTIPLE")).thenReturn(Boolean.FALSE);
+        when(resultSet.getString("M_ATTRIBUTE.DISP_MULTIPLE")).thenReturn("0");
         when(resultSet.getString("M_ATTRIBUTE.RDF_PROPERTY_NAME")).thenReturn("rdfPropertyName");
         when(resultSet.getString("M_ATTRIBUTE.OBLIGATION")).thenReturn("M");
         when(resultSet.getString("M_ATTRIBUTE.INHERIT")).thenReturn("0");
