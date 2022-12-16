@@ -91,11 +91,6 @@ public class VocabularyFolderApiActionBeanTestIT extends UnitilsJUnit4 {
     private static final int VALID_JWT_EXPIRATION_IN_MINUTES = Props.getIntProperty(PropsIF.DD_VOCABULARY_API_JWT_EXP_IN_MINUTES);
 
     /**
-     * JWT Timeout in minutes for verification (used to validate if sent token is still active or deprecated).
-     */
-    private static final int VALID_JWT_TIMEOUT_IN_MINUTES = Props.getIntProperty(PropsIF.DD_VOCABULARY_API_JWT_TIMEOUT_IN_MINUTES);
-
-    /**
      * JWT Algorithm for signing. i.e. HS512
      */
     private static final String VALID_JWT_SIGNING_ALGORITHM = Props.getProperty(PropsIF.DD_VOCABULARY_ADI_JWT_ALGORITHM);
@@ -106,34 +101,9 @@ public class VocabularyFolderApiActionBeanTestIT extends UnitilsJUnit4 {
     public static final String VALID_CONTENT_TYPE_FOR_RDF_UPLOAD = "application/rdf+xml";
 
     /**
-     * Invalid input status code.
-     */
-    public static final int INVALID_INPUT_STATUS_CODE = HttpServletResponse.SC_NOT_ACCEPTABLE;
-
-    /**
-     * Invalid content type error message.
-     */
-    public static final String INVALID_CONTENT_TYPE_ERROR_MESSAGE = "Invalid content-type for RDF upload";
-
-    /**
      * Unauthorized status code.
      */
     public static final int UNAUTHORIZED_STATUS_CODE = HttpServletResponse.SC_UNAUTHORIZED;
-
-    /**
-     * Forbidden status code.
-     */
-    public static final int FORBIDDEN_STATUS_CODE = HttpServletResponse.SC_FORBIDDEN;
-
-    /**
-     * Not found status code.
-     */
-    public static final int NOT_FOUND_STATUS_CODE = HttpServletResponse.SC_NOT_FOUND;
-
-    /**
-     * A valid API key.
-     */
-    public static final String VALID_API_KEY = "ValidApiKey";
 
     /**
      * JWT service.
@@ -190,8 +160,7 @@ public class VocabularyFolderApiActionBeanTestIT extends UnitilsJUnit4 {
         MockRoundtrip trip = new MockRoundtrip(ctx, VocabularyFolderApiActionBean.class);
         trip.execute("uploadRdf");
         MockHttpServletResponse response = trip.getResponse();
-        Assert.assertEquals("Status code", INVALID_INPUT_STATUS_CODE, response.getStatus());
-        Assert.assertEquals("Error message", INVALID_CONTENT_TYPE_ERROR_MESSAGE, response.getErrorMessage());
+        Assert.assertEquals("Status code", HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
     } // end of test step testNoContentType
 
     /**
@@ -206,8 +175,7 @@ public class VocabularyFolderApiActionBeanTestIT extends UnitilsJUnit4 {
         trip.getRequest().addHeader(CONTENT_TYPE_HEADER, "asdadsasd");
         trip.execute("uploadRdf");
         MockHttpServletResponse response = trip.getResponse();
-        Assert.assertEquals("Status code", INVALID_INPUT_STATUS_CODE, response.getStatus());
-        Assert.assertEquals("Error message", INVALID_CONTENT_TYPE_ERROR_MESSAGE, response.getErrorMessage());
+        Assert.assertEquals("Status code", HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
     } // end of test step testInvalidContentType
 
     /**
@@ -223,7 +191,6 @@ public class VocabularyFolderApiActionBeanTestIT extends UnitilsJUnit4 {
         trip.execute("uploadRdf");
         MockHttpServletResponse response = trip.getResponse();
         Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
-        Assert.assertEquals("Error message", "API Key cannot be missing", response.getErrorMessage());
     } // end of test step testValidContentTypeEmptyJwt
 
     /**
@@ -240,7 +207,6 @@ public class VocabularyFolderApiActionBeanTestIT extends UnitilsJUnit4 {
         trip.execute("uploadRdf");
         MockHttpServletResponse response = trip.getResponse();
         Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
-        Assert.assertEquals("Error message", "API Key cannot be missing", response.getErrorMessage());
     } // end of test step testValidContentTypeBlankJwt
 
     /**
@@ -257,7 +223,6 @@ public class VocabularyFolderApiActionBeanTestIT extends UnitilsJUnit4 {
         trip.execute("uploadRdf");
         MockHttpServletResponse response = trip.getResponse();
         Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
-        Assert.assertEquals("Error message", "Cannot authorize: Wrong number of segments: 1", response.getErrorMessage());
     } // end of test step testValidContentTypeInvalidJwt
 
     /**
@@ -274,7 +239,6 @@ public class VocabularyFolderApiActionBeanTestIT extends UnitilsJUnit4 {
         trip.execute("uploadRdf");
         MockHttpServletResponse response = trip.getResponse();
         Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
-        Assert.assertEquals("Error message", "Cannot authorize: signature verification failed", response.getErrorMessage());
     } // end of test step testValidJwtInvalidApiKeyString
 
     /**
@@ -303,7 +267,6 @@ public class VocabularyFolderApiActionBeanTestIT extends UnitilsJUnit4 {
         trip.execute("uploadRdf");
         MockHttpServletResponse response = trip.getResponse();
         Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
-        Assert.assertEquals("Error message", "Cannot authorize: jwt expired", response.getErrorMessage());
     } // end of test step testValidAlreadyExpiredJwt
 
     /**
@@ -331,7 +294,6 @@ public class VocabularyFolderApiActionBeanTestIT extends UnitilsJUnit4 {
         trip.execute("uploadRdf");
         MockHttpServletResponse response = trip.getResponse();
         Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
-        Assert.assertEquals("Error message", "Cannot authorize: jwt audience invalid", response.getErrorMessage());
     } // end of test step testWrongAudienceJwt
 
     /**
@@ -358,7 +320,6 @@ public class VocabularyFolderApiActionBeanTestIT extends UnitilsJUnit4 {
         trip.execute("uploadRdf");
         MockHttpServletResponse response = trip.getResponse();
         Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
-        Assert.assertEquals("Error message", "Cannot authorize: Deprecated token", response.getErrorMessage());
     } // end of test step testValidDeprecatedJwt
 
     /**
@@ -376,56 +337,7 @@ public class VocabularyFolderApiActionBeanTestIT extends UnitilsJUnit4 {
         trip.execute("uploadRdf");
         MockHttpServletResponse response = trip.getResponse();
         Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
-        Assert.assertEquals("Error message", "Cannot authorize: signature verification failed", response.getErrorMessage());
     } // end of test step testWrongSecretKeyGeneratedJwt
-
-    /**
-     * Call api with a valid API key and working copy folder.
-     *
-     * @throws Exception if test fails
-     */
-    @Test
-    public void testValidApiKeyWorkingCopyVocabulary() throws Exception {
-        MockServletContext ctx = ActionBeanUtils.getServletContext();
-        MockRoundtrip trip = new MockRoundtrip(ctx, VocabularyFolderApiActionBean.class);
-        trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
-
-        Map<String, String> jwtPayload = new HashMap<String, String>();
-        jwtPayload.put(DOMAIN, "http://dd.eionet.europa.eu");
-
-        trip.getRequest().addHeader(JWT_API_KEY_HEADER, jwtService.sign(VALID_JWT_SECRET_KEY, VALID_JWT_AUDIENCE, jwtPayload, VALID_JWT_EXPIRATION_IN_MINUTES, VALID_JWT_SIGNING_ALGORITHM));
-        trip.addParameter("vocabularyFolder.folderName", "common");
-        trip.addParameter("vocabularyFolder.identifier", "test_vocabulary2");
-
-        trip.execute("uploadRdf");
-        MockHttpServletResponse response = trip.getResponse();
-        Assert.assertEquals("Status code", FORBIDDEN_STATUS_CODE, response.getStatus());
-        Assert.assertEquals("Error message", "Vocabulary should NOT have a working copy", response.getErrorMessage());
-    } // end of test step testValidApiKeyWorkingCopyVocabulary
-
-    /**
-     * Call api with a valid API key and not existing vocabulary.
-     *
-     * @throws Exception if test fails
-     */
-    @Test
-    public void testValidApiKeyNotExistingVocabulary() throws Exception {
-        MockServletContext ctx = ActionBeanUtils.getServletContext();
-        MockRoundtrip trip = new MockRoundtrip(ctx, VocabularyFolderApiActionBean.class);
-        trip.getRequest().addHeader(CONTENT_TYPE_HEADER, VALID_CONTENT_TYPE_FOR_RDF_UPLOAD);
-
-        Map<String, String> jwtPayload = new HashMap<String, String>();
-        jwtPayload.put(DOMAIN, "http://dd.eionet.europa.eu");
-
-        trip.getRequest().addHeader(JWT_API_KEY_HEADER, jwtService.sign(VALID_JWT_SECRET_KEY, VALID_JWT_AUDIENCE, jwtPayload, VALID_JWT_EXPIRATION_IN_MINUTES, VALID_JWT_SIGNING_ALGORITHM));
-        trip.addParameter("vocabularyFolder.folderName", "common");
-        trip.addParameter("vocabularyFolder.identifier", "test_vocabulary3");
-
-        trip.execute("uploadRdf");
-        MockHttpServletResponse response = trip.getResponse();
-        Assert.assertEquals("Status code", NOT_FOUND_STATUS_CODE, response.getStatus());
-        Assert.assertEquals("Error message", "Vocabulary can NOT be found", response.getErrorMessage());
-    } // end of test step testValidApiKeyNotExistingVocabulary
 
     /**
      * Call api with a valid API key, valid vocabulary, invalid actionBefore.
@@ -448,8 +360,7 @@ public class VocabularyFolderApiActionBeanTestIT extends UnitilsJUnit4 {
 
         trip.execute("uploadRdf");
         MockHttpServletResponse response = trip.getResponse();
-        Assert.assertEquals("Status code", INVALID_INPUT_STATUS_CODE, response.getStatus());
-        Assert.assertEquals("Error message", "Invalid action before parameter: kept", response.getErrorMessage());
+        Assert.assertEquals("Status code", HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
     } // end of test step testValidApiKeyValidVocabularyInvalidActionBefore
 
     /**
@@ -473,8 +384,7 @@ public class VocabularyFolderApiActionBeanTestIT extends UnitilsJUnit4 {
 
         trip.execute("uploadRdf");
         MockHttpServletResponse response = trip.getResponse();
-        Assert.assertEquals("Status code", INVALID_INPUT_STATUS_CODE, response.getStatus());
-        Assert.assertEquals("Error message", "Invalid action parameter: addd", response.getErrorMessage());
+        Assert.assertEquals("Status code", HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
     } // end of test step testValidApiKeyValidVocabularyInvalidActionBefore
 
     /**
@@ -498,8 +408,7 @@ public class VocabularyFolderApiActionBeanTestIT extends UnitilsJUnit4 {
 
         trip.execute("uploadRdf");
         MockHttpServletResponse response = trip.getResponse();
-        Assert.assertEquals("Status code", INVALID_INPUT_STATUS_CODE, response.getStatus());
-        Assert.assertEquals("Error message", "Invalid missing concepts action parameter: removed", response.getErrorMessage());
+        Assert.assertEquals("Status code", HttpServletResponse.SC_BAD_REQUEST, response.getStatus());
     } // end of test step testValidApiKeyValidVocabularyInvalidMissingConcepts
 
     /**
@@ -525,7 +434,6 @@ public class VocabularyFolderApiActionBeanTestIT extends UnitilsJUnit4 {
         trip.execute("uploadRdf");
         MockHttpServletResponse response = trip.getResponse();
         Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
-        Assert.assertEquals("Error message", "Cannot authorize: Domain was not specified", response.getErrorMessage());
     } // end of test step testValidApiKeyDomainMissing
 
     /**
@@ -552,7 +460,6 @@ public class VocabularyFolderApiActionBeanTestIT extends UnitilsJUnit4 {
         trip.execute("uploadRdf");
         MockHttpServletResponse response = trip.getResponse();
         Assert.assertEquals("Status code", UNAUTHORIZED_STATUS_CODE, response.getStatus());
-        Assert.assertEquals("Error message", "Cannot authorize: Different domain", response.getErrorMessage());
     } // end of test step testValidApiKeyWrongDomain
 
     /**

@@ -373,20 +373,14 @@
                 </c:choose>
             </display:column>
             <display:column title="Label" media="html" style="width: 30%">
-                <c:choose>
-                    <c:when test="${not actionBean.vocabularyFolder.workingCopy}">
-                        <stripes:link href="/vocabularyconcept/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/${concept.identifier}/view" title="${concept.label}">
-                            <stripes:param name="facet" value="HTML Representation"/> <!-- Discourage people from copy-paste of the link -->
-                            <dd:attributeValue attrValue="${concept.label}" attrLen="40"/>
-                        </stripes:link>
-                    </c:when>
-                    <c:otherwise>
-                        <stripes:link href="/vocabularyconcept/${actionBean.vocabularyFolder.folderName}/${actionBean.vocabularyFolder.identifier}/${concept.identifier}/view" title="${concept.label}">
-                            <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
-                            <dd:attributeValue attrValue="${concept.label}" attrLen="40"/>
-                        </stripes:link>
-                    </c:otherwise>
-                </c:choose>
+                <stripes:link beanclass="eionet.web.action.VocabularyConceptActionBean">
+                    <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
+                    <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
+                    <stripes:param name="vocabularyFolder.workingCopy" value="${actionBean.vocabularyFolder.workingCopy}" />
+                    <stripes:param name="vocabularyConcept.identifier" value="${concept.identifier}" />
+                    <stripes:param name="facet" value="HTML Representation"/> <!-- Discourage people from copy-paste of the link -->
+                    <dd:attributeValue attrValue="${concept.label}" attrLen="40"/>
+                </stripes:link>
                 <c:if test="${actionBean.filter.visibleDefinition}">
                     <c:choose>
                         <c:when test="${not empty concept.definition}">

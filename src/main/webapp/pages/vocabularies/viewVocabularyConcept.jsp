@@ -40,7 +40,7 @@
                 <tr>
                     <th scope="row" class="scope-row simple_attr_title" style="min-width:7em">
                         Concept URI</th>
-                    <td class="simple_attr_value" style="font-weight:bold"><stripes:link href="${actionBean.conceptUri}"><c:out value="${actionBean.conceptUri}" /></stripes:link>
+                    <td class="simple_attr_value" style="font-weight:bold"><a href="${actionBean.conceptUri}"><c:out value="${actionBean.conceptUriWithNonEncodedIdentifier}" /></a>
                     </td>
                 </tr>
                 <tr>
