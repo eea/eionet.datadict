@@ -404,8 +404,8 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
                     this.lastFoundConcept.setStatus(StandardGenericStatus.VALID);
                     this.lastFoundConcept.setStatusModified(new Date(System.currentTimeMillis()));
                     this.lastFoundConcept.setAcceptedDate(new Date(System.currentTimeMillis()));
+                }
             }
-        }
         }
 
         String dataElemIdentifier = predicateNsPrefix + ":" + attributeIdentifier;
@@ -422,72 +422,58 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
             // Update concept value here.
             String val = StringUtils.trimToNull(object.stringValue());
 
-                if (ConceptAttribute.NOTATION.getNsPrefix().equals(predicateNsPrefix)
-                        && ConceptAttribute.NOTATION.getIdentifier().equals(attributeIdentifier)) {
-                    if(val ==null){
-
-                        //For Notation to Be Mandatory, if the Vocabulary is set to have Notation equal to the concept Id - refs #137761
-                        if(this.vocabularyFolder.isNotationsEqualIdentifiers()){
-                            if(preventEmptyMandatoryElementsAndWriteMessageLog){
-                                this.toBeUpdatedConcepts.remove(this.lastFoundConcept);
-                                this.logMessages.add(st.toString() + " NOT imported, contains empty value in Notation");
-                            }else {
-                            this.lastFoundConcept.setNotation(val);
-                         }
-                        } else{
+            if (ConceptAttribute.NOTATION.getNsPrefix().equals(predicateNsPrefix)
+                    && ConceptAttribute.NOTATION.getIdentifier().equals(attributeIdentifier)) {
+                if (val ==null) {
+                    // For Notation to Be Mandatory, if the Vocabulary is set to have Notation equal to the concept Id - refs #137761
+                    if (this.vocabularyFolder.isNotationsEqualIdentifiers()) {
+                        if (preventEmptyMandatoryElementsAndWriteMessageLog) {
+                            this.toBeUpdatedConcepts.remove(this.lastFoundConcept);
+                            this.logMessages.add(st.toString() + " NOT imported, contains empty value in Notation");
+                        } else {
                             this.lastFoundConcept.setNotation(val);
                         }
-
-                    }else {
+                    } else {
                         this.lastFoundConcept.setNotation(val);
                     }
                 } else {
-                    if (ConceptAttribute.DEFINITION.getNsPrefix().equals(predicateNsPrefix)
-                            && ConceptAttribute.DEFINITION.getIdentifier().equals(attributeIdentifier)) {
-                        if(val ==null){
-
-                            if(preventEmptyMandatoryElementsAndWriteMessageLog){
-                                this.toBeUpdatedConcepts.remove(this.lastFoundConcept);
-                                this.logMessages.add(st.toString() + " NOT imported, contains empty value in Definition");
-                            }
-                        }else {
-                            this.lastFoundConcept.setDefinition(val);
+                    this.lastFoundConcept.setNotation(val);
+                }
+            } else {
+                if (ConceptAttribute.DEFINITION.getNsPrefix().equals(predicateNsPrefix)
+                        && ConceptAttribute.DEFINITION.getIdentifier().equals(attributeIdentifier)) {
+                    this.lastFoundConcept.setDefinition(val);
+                } else if (ConceptAttribute.LABEL.getNsPrefix().equals(predicateNsPrefix)
+                        && ConceptAttribute.LABEL.getIdentifier().equals(attributeIdentifier)) {
+                    if (val == null) {
+                        if (preventEmptyMandatoryElementsAndWriteMessageLog) {
+                            this.toBeUpdatedConcepts.remove(this.lastFoundConcept);
+                            this.logMessages.add(st.toString() + " NOT imported, contains empty value in Label");
                         }
-                    } else if (ConceptAttribute.LABEL.getNsPrefix().equals(predicateNsPrefix)
-                            && ConceptAttribute.LABEL.getIdentifier().equals(attributeIdentifier)) {
-                        if(val ==null){
-
-                            if(preventEmptyMandatoryElementsAndWriteMessageLog){
-                                this.toBeUpdatedConcepts.remove(this.lastFoundConcept);
-                                this.logMessages.add(st.toString() + " NOT imported, contains empty value in Label");
-                            }
-                        }else {
-                            this.lastFoundConcept.setLabel(val);
-                        }
-                    } else if (ConceptAttribute.STATUS.getNsPrefix().equals(predicateNsPrefix)
-                            && ConceptAttribute.STATUS.getIdentifier().equals(attributeIdentifier)) {
-                        if(val==null){
-                            if(preventEmptyMandatoryElementsAndWriteMessageLog){
-                                this.toBeUpdatedConcepts.remove(this.lastFoundConcept);
-                                this.logMessages.add(st.toString() + " NOT imported, contains empty value in Status");
-                            }
-                        }
-                        else{
-                            //set up status
-                            setConceptStatusFromRdfObjectValue(this.lastFoundConcept, val, object instanceof Literal);
-                            candidateForConceptAttribute = false; // update adms:status bound element if exists
-                        }
-
+                    } else {
+                        this.lastFoundConcept.setLabel(val);
                     }
-                    if (object instanceof Literal) {
-                        String elemLang = StringUtils.substring(((Literal) object).getLanguage(), 0, 2);
-                        if (StringUtils.isNotBlank(elemLang)) {
-                            this.lastCandidateForConceptAttribute.put(this.lastFoundConcept.getId() + dataElemIdentifier, (Literal) object);
-                            candidateForConceptAttribute = false;
+                } else if (ConceptAttribute.STATUS.getNsPrefix().equals(predicateNsPrefix)
+                        && ConceptAttribute.STATUS.getIdentifier().equals(attributeIdentifier)) {
+                    if (val == null){
+                        if (preventEmptyMandatoryElementsAndWriteMessageLog) {
+                            this.toBeUpdatedConcepts.remove(this.lastFoundConcept);
+                            this.logMessages.add(st.toString() + " NOT imported, contains empty value in Status");
                         }
+                    } else {
+                        //set up status
+                        setConceptStatusFromRdfObjectValue(this.lastFoundConcept, val, object instanceof Literal);
+                        candidateForConceptAttribute = false; // update adms:status bound element if exists
                     }
                 }
-
+                if (object instanceof Literal) {
+                    String elemLang = StringUtils.substring(((Literal) object).getLanguage(), 0, 2);
+                    if (StringUtils.isNotBlank(elemLang)) {
+                        this.lastCandidateForConceptAttribute.put(this.lastFoundConcept.getId() + dataElemIdentifier, (Literal) object);
+                        candidateForConceptAttribute = false;
+                    }
+                }
+            }
         } else if (candidateForConceptAttribute
                 && this.lastCandidateForConceptAttribute.containsKey(this.lastFoundConcept.getId() + dataElemIdentifier)) {
             // check if more prior value received
@@ -510,41 +496,30 @@ public class VocabularyRDFImportHandler extends VocabularyImportBaseHandler impl
             if (updateValue) {
                 String val = StringUtils.trimToNull(object.stringValue());
 
-                    if (ConceptAttribute.DEFINITION.getNsPrefix().equals(predicateNsPrefix)
-                            && ConceptAttribute.DEFINITION.getIdentifier().equals(attributeIdentifier)) {
-                        if(val ==null){
-
-                            if(preventEmptyMandatoryElementsAndWriteMessageLog){
-                                this.toBeUpdatedConcepts.remove(this.lastFoundConcept);
-                                this.logMessages.add(st.toString() + " NOT imported, contains empty value in Definition");
-                            }
-                        }else {
-                            this.lastFoundConcept.setDefinition(val);
+                if (ConceptAttribute.DEFINITION.getNsPrefix().equals(predicateNsPrefix)
+                        && ConceptAttribute.DEFINITION.getIdentifier().equals(attributeIdentifier)) {
+                    this.lastFoundConcept.setDefinition(val);
+                } else if (ConceptAttribute.LABEL.getNsPrefix().equals(predicateNsPrefix)
+                        && ConceptAttribute.LABEL.getIdentifier().equals(attributeIdentifier)) {
+                    if (val == null) {
+                        if (preventEmptyMandatoryElementsAndWriteMessageLog) {
+                            this.toBeUpdatedConcepts.remove(this.lastFoundConcept);
+                            this.logMessages.add(st.toString() + " NOT imported, contains empty value in LABEL");
                         }
-                    } else if (ConceptAttribute.LABEL.getNsPrefix().equals(predicateNsPrefix)
-                            && ConceptAttribute.LABEL.getIdentifier().equals(attributeIdentifier)) {
-                        if(val ==null){
-
-                            if(preventEmptyMandatoryElementsAndWriteMessageLog){
-                                this.toBeUpdatedConcepts.remove(this.lastFoundConcept);
-                                this.logMessages.add(st.toString() + " NOT imported, contains empty value in LABEL");
-                            }
-                        }else {
-                            this.lastFoundConcept.setLabel(val);
-                        }
-                    } else if (ConceptAttribute.STATUS.getNsPrefix().equals(predicateNsPrefix)
-                            && ConceptAttribute.STATUS.getIdentifier().equals(attributeIdentifier)) {
-                        if(val ==null){
-
-                            if(preventEmptyMandatoryElementsAndWriteMessageLog){
-                                this.toBeUpdatedConcepts.remove(this.lastFoundConcept);
-                                this.logMessages.add(st.toString() + " NOT imported, contains empty value in Status");
-                            }
-                        }else {
-                            setConceptStatusFromRdfObjectValue(this.lastFoundConcept, val, object instanceof Literal);
-                        }
+                    }else {
+                        this.lastFoundConcept.setLabel(val);
                     }
-
+                } else if (ConceptAttribute.STATUS.getNsPrefix().equals(predicateNsPrefix)
+                        && ConceptAttribute.STATUS.getIdentifier().equals(attributeIdentifier)) {
+                    if(val == null) {
+                        if (preventEmptyMandatoryElementsAndWriteMessageLog) {
+                            this.toBeUpdatedConcepts.remove(this.lastFoundConcept);
+                            this.logMessages.add(st.toString() + " NOT imported, contains empty value in Status");
+                        }
+                    } else {
+                        setConceptStatusFromRdfObjectValue(this.lastFoundConcept, val, object instanceof Literal);
+                    }
+                }
             }
         } else {
             candidateForConceptAttribute = false;
