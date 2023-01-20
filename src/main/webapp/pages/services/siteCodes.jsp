@@ -271,6 +271,8 @@
                 <input type="hidden" id="selectedStatus" name="selectedStatus" value="${actionBean.selectedStatus}">
                 <input type="hidden" id="selectedSiteCode" name="selectedSiteCode" value="${actionBean.selectedSiteCode}">
                 <input type="hidden" id="selectedSiteName" name="selectedSiteName" value="${actionBean.selectedSiteName}">
+                <input type="hidden" id="userAllocated" name="userAllocated" value="${fn:escapeXml(param.userAllocated)}">
+                <input type="hidden" id="dateAllocated" name="dateAllocated" value="${fn:escapeXml(param.dateAllocated)}">
 
                 <display:table name="actionBean.siteCodeResult" class="datatable results" id="siteCode" style="width:100%" requestURI="/services/siteCodes/search">
                     <display:setProperty name="basic.msg.empty_list" value="<p class='not-found'>No site codes found.</p>" />
