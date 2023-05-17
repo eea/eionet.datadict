@@ -24,7 +24,7 @@
                 <TimeBasedTriggeringPolicy interval="1"/>
                 <SizeBasedTriggeringPolicy size="5000KB"/>
             </Policies>
-            <DefaultRolloverStrategy>
+            <DefaultRolloverStrategy max="20">
                 <!--    testMode - boolean - If true, files are not deleted but instead a message is printed to the status -->
                 <Delete basePath="${env:logFilePath}/logs/" maxDepth="1" testMode="${env:queryLogRetainAll}">
                     <IfFileName glob="datadictLogs_*.log.gz"/>
