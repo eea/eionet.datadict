@@ -1112,11 +1112,12 @@
                     while (keys != null && keys.hasMoreElements()) {
                         String name = (String) keys.nextElement();
                         String[] values = (String[]) qryStrHash1.get(name);
+                        String escapedName = StringEscapeUtils.escapeEcmaScript(name);
                         if (values != null && values.length > 0) {%>
-                        inputName = "<%=name%>";
+                        inputName = "<%=escapedName%>";
                         popValues = new Array();
                         <%for (int i = 0; i < values.length; i++) {
-                                String value = values[i];
+                                String value = StringEscapeUtils.escapeEcmaScript(values[i]);
                                 // value can contain line breaks which need to make to "\n" strings for the below Javascript that puts the values into form inputs
                                 StringTokenizer valueLines = new StringTokenizer(
                                         value, "\r\n");
