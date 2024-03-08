@@ -2814,4 +2814,9 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
                 tableName="VOCABULARY_CONCEPT_ELEMENT"/>
         <comment>Change default value</comment>
     </changeSet>
+    <changeSet id="rev-209" author="stamojoh">
+        <sql>
+            ALTER TABLE QRTZ_JOB_DETAILS MODIFY COLUMN JOB_DATA MEDIUMBLOB;
+        </sql>
+    </changeSet>
 </databaseChangeLog>
