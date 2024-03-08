@@ -13,19 +13,21 @@ import eionet.meta.service.IVocabularyImportService.UploadActionBefore;
 import eionet.meta.service.IVocabularyService;
 import eionet.util.Props;
 import eionet.util.PropsIF;
+import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.GZIPInputStream;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import org.apache.commons.io.ByteOrderMark;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.input.BOMInputStream;
 
 import org.slf4j.Logger;
@@ -53,7 +55,7 @@ public class VocabularyRdfImportFromApiTask implements AsyncTask {
     public static final String PARAM_MISSING_CONCEPTS_ACTION = "missingConceptsAction";
     public static final String PARAM_NOTIFIERS_EMAILS = "emails";
 
-    public static Map<String, Object> createParamsBundle(String rdfContent,
+    public static Map<String, Object> createParamsBundle(String base64EncodedCompressedRdf,
             String vocabularySetIdentifier, String vocabularyIdentifier,
             IVocabularyImportService.UploadActionBefore uploadActionBefore,
             IVocabularyImportService.UploadAction uploadAction,
@@ -61,7 +63,7 @@ public class VocabularyRdfImportFromApiTask implements AsyncTask {
             String emails) {
 
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put(PARAM_RDF_CONTENT, rdfContent);
+        parameters.put(PARAM_RDF_CONTENT, base64EncodedCompressedRdf);
         parameters.put(PARAM_VOCABULARY_SET_IDENTIFIER, vocabularySetIdentifier);
         parameters.put(PARAM_VOCABULARY_IDENTIFIER, vocabularyIdentifier);
         parameters.put(PARAM_UPLOAD_ACTION_BEFORE, uploadActionBefore);
@@ -119,7 +121,12 @@ public class VocabularyRdfImportFromApiTask implements AsyncTask {
 
         VocabularyFolder vocabulary = vocabularyService.getVocabularyFolder(this.getVocabularySetIdentifier(), this.getVocabularyIdentifier(), false);
         
-        BOMInputStream bomIn = new BOMInputStream(IOUtils.toInputStream(this.getRdfContent(), StandardCharsets.UTF_8), ByteOrderMark.UTF_8, ByteOrderMark.UTF_16LE, ByteOrderMark.UTF_16BE,
+        // decode and decompress rdf content
+        byte[] decodedRdf = Base64.getDecoder().decode(this.getBase64EncodedCompressedRdf());
+        ByteArrayInputStream bais = new ByteArrayInputStream(decodedRdf);
+        GZIPInputStream decompressedRdf = new GZIPInputStream(bais);
+
+        BOMInputStream bomIn = new BOMInputStream(decompressedRdf, ByteOrderMark.UTF_8, ByteOrderMark.UTF_16LE, ByteOrderMark.UTF_16BE,
                 ByteOrderMark.UTF_32LE, ByteOrderMark.UTF_32BE
         );
 
@@ -176,7 +183,7 @@ public class VocabularyRdfImportFromApiTask implements AsyncTask {
         }
     }
 
-    protected String getRdfContent() {
+    protected String getBase64EncodedCompressedRdf() {
         return (String) this.parameters.get(PARAM_RDF_CONTENT);
     }
 

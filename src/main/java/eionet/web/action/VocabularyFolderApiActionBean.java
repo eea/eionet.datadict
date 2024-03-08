@@ -43,6 +43,7 @@ import eionet.meta.service.IVocabularyImportService.UploadActionBefore;
 import eionet.meta.service.IVocabularyService;
 import eionet.util.Props;
 import eionet.util.PropsIF;
+import java.io.ByteArrayOutputStream;
 import net.sf.json.JSONObject;
 import net.sourceforge.stripes.action.DefaultHandler;
 import net.sourceforge.stripes.action.Resolution;
@@ -55,9 +56,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
-import org.apache.commons.io.IOUtils;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * Vocabulary folder API action bean.
@@ -417,14 +417,26 @@ public class VocabularyFolderApiActionBean extends AbstractActionBean {
                     }
                 };
             }
+        
+        // compress and base64 encode to accomodate storage for large RDF body content in JOB_DATA column of QRTZ_JOB_DETAILS table
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        try (GZIPOutputStream gzos = new GZIPOutputStream(baos)) {
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = request.getInputStream().read(buffer)) != -1) {
+                gzos.write(buffer, 0, length);
+            }
+            request.getInputStream().close();
+        }
+        String base64EncodedCompressedRdf = Base64.getEncoder().encodeToString(baos.toByteArray());
+       
+        String taskId = this.asyncTaskManager.executeAsync(VocabularyRdfImportFromApiTask.class,
+                    VocabularyRdfImportFromApiTask.createParamsBundle(base64EncodedCompressedRdf, 
+                            vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(), uploadActionBefore, uploadAction, missingConceptsAction, 
+                            request.getParameter(VocabularyRdfImportFromApiTask.PARAM_NOTIFIERS_EMAILS)));
 
-            String taskId = this.asyncTaskManager.executeAsync(VocabularyRdfImportFromApiTask.class,
-                        VocabularyRdfImportFromApiTask.createParamsBundle(IOUtils.toString(request.getInputStream(), StandardCharsets.UTF_8), 
-                                vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(), uploadActionBefore, uploadAction, missingConceptsAction, 
-                                request.getParameter(VocabularyRdfImportFromApiTask.PARAM_NOTIFIERS_EMAILS)));
-
-            result.put("url", Props.getRequiredProperty(PropsIF.DD_URL) + "/asynctasks/" + taskId);
-            return new StreamingResolution(JSON_FORMAT, mapper.writeValueAsString(result));
+        result.put("url", Props.getRequiredProperty(PropsIF.DD_URL) + "/asynctasks/" + taskId);
+        return new StreamingResolution(JSON_FORMAT, mapper.writeValueAsString(result));
     }
 
     /**
