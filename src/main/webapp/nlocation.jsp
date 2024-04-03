@@ -1,4 +1,4 @@
-<%@page import="java.util.*,eionet.util.SecurityUtil,eionet.util.Props,eionet.util.PropsIF,eionet.meta.DDUser,eionet.meta.LoginServlet"%>
+<%@page import="java.util.*,eionet.util.SecurityUtil,eionet.util.Props,eionet.util.PropsIF,eionet.meta.DDUser,eionet.meta.LoginServlet,org.apache.commons.lang3.StringEscapeUtils"%>
 <%@ include file="/pages/common/taglibs.jsp"%>
 <%
 ServletContext ctx = getServletContext();
@@ -49,33 +49,13 @@ ServletContext ctx = getServletContext();
 <div class="breadcrumbtrail">
     <div class="breadcrumbhead">You are here:</div>
     <div class="breadcrumbitem eionetaccronym"><a href="https://www.eionet.europa.eu">Eionet</a></div>
+    <div class="breadcrumbitem"><a href="<%=request.getContextPath()%>/">${ddfn:getProperty("app.displayName")}</a></div>
     <%
-    String contextName = request.getParameter("context_name");
-    String contextPath = request.getParameter("context_path");
-    if (contextPath==null)
-        contextPath = "";
-    String lastItemName = request.getParameter("name");
-    if (lastItemName!=null && contextName==null){
-        %>
-        <div class="breadcrumbitem"><a href="<%=request.getContextPath()%>/">${ddfn:getProperty("app.displayName")}</a></div>
-        <div class="breadcrumbitemlast"><%=lastItemName%></div><%
-    }
-    else if (lastItemName==null && contextName!=null){
-        %>
-        <div class="breadcrumbitem"><a href="<%=request.getContextPath()%>/">${ddfn:getProperty("app.displayName")}</a></div>
-        <div class="breadcrumbitemlast"><%=contextName%></div><%
-    }
-    else if (lastItemName!=null && contextName!=null){
-        %>
-        <div class="breadcrumbitem"><a href="<%=request.getContextPath()%>/">${ddfn:getProperty("app.displayName")}</a></div>
-        <div class="breadcrumbitem"><a href="<%=contextPath%>"><%=contextName%></a></div>
-        <div class="breadcrumbitemlast"><%=lastItemName%></div><%
-    }
-    else if (lastItemName==null && contextName==null){
-        %>
-        <div class="breadcrumbitemlast">${ddfn:getProperty("app.displayName")}</div><%
-    }
+        String lastItemName = StringEscapeUtils.escapeHtml4(request.getParameter("name"));
+        if (lastItemName!=null){
     %>
+        <div class="breadcrumbitemlast"><%=lastItemName%></div><%
+    }%>
     <div class="breadcrumbtail">
     </div>
 </div>
