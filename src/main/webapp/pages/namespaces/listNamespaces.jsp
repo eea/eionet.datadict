@@ -2,7 +2,7 @@
 
 <%@ include file="/pages/common/taglibs.jsp"%>
 
-<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Tables" currentSection="namespaces">
+<stripes:layout-render name="/pages/common/template.jsp" pageTitle="Namespaces" currentSection="namespaces">
 
     <stripes:layout-component name="contents">
 
