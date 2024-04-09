@@ -135,8 +135,7 @@
         </p>
 
         <p>
-        Appointed Reportnet users, which are all Eionet <a href="https://www.eionet.europa.eu/ldap-roles/?role_id=eionet-nfp">NFPs</a>
-        and <a href="https://www.eionet.europa.eu/ldap-roles/?role_id=eionet-nrc-biodivdata">NRCs for Biodiversity data and information</a>,
+        Appointed Reportnet users, which are all Nationally designated areas Reporters,
         can reserve a set of new site codes for their new sites after logging into the service. The process is called allocation of site codes.
         </p>
 
