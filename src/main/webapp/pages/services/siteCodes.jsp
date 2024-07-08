@@ -266,10 +266,10 @@
         <c:if test="${actionBean.context.eventName == 'search'}">
             <%-- Site codes search results and export option --%>
             <stripes:form method="get" id="exportSiteCodesCSV" beanclass="${actionBean['class'].name}" action="/services/siteCodes/exportToCsv">
-                <input type="hidden" id="selectedCountryCode" name="selectedCountryCode" value="${actionBean.selectedCountryCode}">
-                <input type="hidden" id="selectedStatus" name="selectedStatus" value="${actionBean.selectedStatus}">
-                <input type="hidden" id="selectedSiteCode" name="selectedSiteCode" value="${actionBean.selectedSiteCode}">
-                <input type="hidden" id="selectedSiteName" name="selectedSiteName" value="${actionBean.selectedSiteName}">
+                <input type="hidden" id="selectedCountryCode" name="selectedCountryCode" value="${fn:escapeXml(actionBean.selectedCountryCode)}">
+                <input type="hidden" id="selectedStatus" name="selectedStatus" value="${fn:escapeXml(actionBean.selectedStatus)}">
+                <input type="hidden" id="selectedSiteCode" name="selectedSiteCode" value="${fn:escapeXml(actionBean.selectedSiteCode)}">
+                <input type="hidden" id="selectedSiteName" name="selectedSiteName" value="${fn:escapeXml(actionBean.selectedSiteName)}">
                 <input type="hidden" id="userAllocated" name="userAllocated" value="${fn:escapeXml(param.userAllocated)}">
                 <input type="hidden" id="dateAllocated" name="dateAllocated" value="${fn:escapeXml(param.dateAllocated)}">
 
