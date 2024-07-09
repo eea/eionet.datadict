@@ -35,22 +35,10 @@
             </snapshots>
         </repository>
         <repository>
-            <id>archiva.internal</id>
-            <name>Internal Release Repository</name>
-            <url>https://archiva.eionet.europa.eu/repository/internal</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
+            <id>github</id>
+            <name>Internal Maven Repository</name>
+            <url>https://maven.pkg.github.com/eea/maven-repo</url>
         </repository>
-        <repository>
-            <id>archiva.snapshots</id>
-            <name>Internal Snapshot Repository</name>
-            <url>https://archiva.eionet.europa.eu/repository/snapshots/</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
-
     </repositories>
 
     <profiles>
