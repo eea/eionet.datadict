@@ -19,7 +19,11 @@ pipeline {
         jdk 'Java8'
       }
       steps {
-          sh 'mvn clean -B -V verify  -Dmaven.test.skip=true'
+        withCredentials([string(credentialsId: 'jenkins-maven-token', variable: 'GITHUB_TOKEN')]) {
+          sh '''mkdir -p ~/.m2'''
+          sh ''' sed "s/TOKEN/$GITHUB_TOKEN/" m2.settings.tpl.xml > ~/.m2/settings.xml '''
+          sh '''mvn clean -B -V verify  -Dmaven.test.skip=true'''
+        }
       }
       post {
           success {
