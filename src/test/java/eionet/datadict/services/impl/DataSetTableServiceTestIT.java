@@ -30,6 +30,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 
 import static org.junit.Assert.assertTrue;
 
@@ -67,7 +68,7 @@ public class DataSetTableServiceTestIT {
         DOMSource source = new DOMSource(xmlDocument);
         transformer.transform(source, actualXMLResult);
         ClassLoader classLoader = getClass().getClassLoader();
-        String expectedXMLResultString = IOUtils.toString(classLoader.getResourceAsStream("datasetTableXMLSchemaTestIT-2.xsd"));
+        String expectedXMLResultString = IOUtils.toString(classLoader.getResourceAsStream("datasetTableXMLSchemaTestIT-2.xsd"), StandardCharsets.UTF_8);
         Diff diff = new Diff(StringUtils.trimWhiteSpacesFromStringifiedXml(expectedXMLResultString), StringUtils.trimWhiteSpacesFromStringifiedXml(actualXMLResult.getWriter().toString()));
         assertTrue(diff.similar());
     }
@@ -82,7 +83,7 @@ public class DataSetTableServiceTestIT {
         DOMSource source = new DOMSource(xmlDocument);
         transformer.transform(source, actualXMLResult);
         ClassLoader classLoader = getClass().getClassLoader();
-        String expectedXMLResultString = IOUtils.toString(classLoader.getResourceAsStream("datasetTableXMLInstanceTestIT.xml"));
+        String expectedXMLResultString = IOUtils.toString(classLoader.getResourceAsStream("datasetTableXMLInstanceTestIT.xml"), StandardCharsets.UTF_8);
         Diff diff = new Diff(StringUtils.trimWhiteSpacesFromStringifiedXml(expectedXMLResultString), StringUtils.trimWhiteSpacesFromStringifiedXml(actualXMLResult.getWriter().toString()));
         assertTrue(diff.similar());
     }

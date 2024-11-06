@@ -25,6 +25,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.nio.charset.StandardCharsets;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -82,7 +84,7 @@ public class DatasetControllerTestIT {
         assertEquals("attachment;filename=schema-dst-2827.xsd", mockMvc.perform(request).andReturn().getResponse().getHeader("Content-Disposition"));
         String xmlResult = mockMvc.perform(request).andReturn().getResponse().getContentAsString();
         ClassLoader classLoader = getClass().getClassLoader();
-        String expectedXMLResultString = IOUtils.toString(classLoader.getResourceAsStream("datasetXMLSChemaTestIT.xsd"));
+        String expectedXMLResultString = IOUtils.toString(classLoader.getResourceAsStream("datasetXMLSChemaTestIT.xsd"), StandardCharsets.UTF_8);
         Diff diff = new Diff(StringUtils.trimWhiteSpacesFromStringifiedXml(expectedXMLResultString), StringUtils.trimWhiteSpacesFromStringifiedXml(xmlResult));
         assertTrue(diff.similar());
     }
@@ -105,7 +107,7 @@ public class DatasetControllerTestIT {
         assertEquals("attachment;filename=schema-tbl-6661.xsd", mockMvc.perform(request).andReturn().getResponse().getHeader("Content-Disposition"));
         String actualXMLResult = mockMvc.perform(request).andReturn().getResponse().getContentAsString();
         ClassLoader classLoader = getClass().getClassLoader();
-        String expectedXMLResultString = IOUtils.toString(classLoader.getResourceAsStream("datasetTableXMLSchemaTestIT.xsd"));
+        String expectedXMLResultString = IOUtils.toString(classLoader.getResourceAsStream("datasetTableXMLSchemaTestIT.xsd"), StandardCharsets.UTF_8);
         Diff diff = new Diff(StringUtils.trimWhiteSpacesFromStringifiedXml(expectedXMLResultString), StringUtils.trimWhiteSpacesFromStringifiedXml(actualXMLResult));
         assertTrue(diff.similar());
     }
@@ -128,7 +130,7 @@ public class DatasetControllerTestIT {
         assertEquals("attachment;filename=dataset-instance.xml", mockMvc.perform(request).andReturn().getResponse().getHeader("Content-Disposition"));
         String xmlResult = mockMvc.perform(request).andReturn().getResponse().getContentAsString();
         ClassLoader classLoader = getClass().getClassLoader();
-        String expectedXMLResultString = IOUtils.toString(classLoader.getResourceAsStream("datasetXMLInstanceTestIT.xml"));
+        String expectedXMLResultString = IOUtils.toString(classLoader.getResourceAsStream("datasetXMLInstanceTestIT.xml"), StandardCharsets.UTF_8);
         Diff diff = new Diff(expectedXMLResultString, xmlResult);
         assertTrue(diff.similar());
     }
@@ -151,7 +153,7 @@ public class DatasetControllerTestIT {
         assertEquals("attachment;filename=table-6661-instance.xml", mockMvc.perform(request).andReturn().getResponse().getHeader("Content-Disposition"));
         String xmlResult = mockMvc.perform(request).andReturn().getResponse().getContentAsString();
         ClassLoader classLoader = getClass().getClassLoader();
-        String expectedXMLResultString = IOUtils.toString(classLoader.getResourceAsStream("datasetTableXMLInstanceTestIT.xml"));
+        String expectedXMLResultString = IOUtils.toString(classLoader.getResourceAsStream("datasetTableXMLInstanceTestIT.xml"), StandardCharsets.UTF_8);
         Diff diff = new Diff(expectedXMLResultString, xmlResult);
         assertTrue(diff.similar());
     }
@@ -166,7 +168,7 @@ public class DatasetControllerTestIT {
         assertEquals(APPLICATION_XML.toString(), mockMvc.perform(request).andReturn().getResponse().getContentType());
         String xmlResult = mockMvc.perform(request).andReturn().getResponse().getContentAsString();
         ClassLoader classLoader = getClass().getClassLoader();
-        String expectedRDFResultString = IOUtils.toString(classLoader.getResourceAsStream("datasetRDFExportTestIT.xml"));
+        String expectedRDFResultString = IOUtils.toString(classLoader.getResourceAsStream("datasetRDFExportTestIT.xml"), StandardCharsets.UTF_8);
         Diff diff = new Diff(expectedRDFResultString, xmlResult);
 
         assertTrue(diff.similar());

@@ -20,6 +20,7 @@ import org.unitils.spring.annotation.SpringBeanByType;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -96,7 +97,7 @@ public class RDFVocabularyImportServiceAllCasesRdfExportTestIT extends Vocabular
         streamingResolution.execute(request, response);
         String actualResult = response.getContentAsString();
         ClassLoader classLoader = getClass().getClassLoader();
-        String expectedRDFResultString = IOUtils.toString(classLoader.getResourceAsStream("rdfExport/exportForTestDontPurgeIgnoreMissingConcepts.rdf"));
+        String expectedRDFResultString = IOUtils.toString(classLoader.getResourceAsStream("rdfExport/exportForTestDontPurgeIgnoreMissingConcepts.rdf"), StandardCharsets.UTF_8);
         Diff diff = new Diff(StringUtils.trimWhiteSpacesFromStringifiedXml(expectedRDFResultString), StringUtils.trimWhiteSpacesFromStringifiedXml(actualResult));
         assertFalse(diff.similar());
         DetailedDiff detDiff = new DetailedDiff(diff);
@@ -133,7 +134,7 @@ public class RDFVocabularyImportServiceAllCasesRdfExportTestIT extends Vocabular
         streamingResolution.execute(request, response);
         String actualResult = response.getContentAsString();
         ClassLoader classLoader = getClass().getClassLoader();
-        String expectedRDFResultString = IOUtils.toString(classLoader.getResourceAsStream("rdfExport/exportForTestDontPurgeRemoveMissingConcepts.rdf"));
+        String expectedRDFResultString = IOUtils.toString(classLoader.getResourceAsStream("rdfExport/exportForTestDontPurgeRemoveMissingConcepts.rdf"), StandardCharsets.UTF_8);
         Diff diff = new Diff(StringUtils.trimWhiteSpacesFromStringifiedXml(expectedRDFResultString), StringUtils.trimWhiteSpacesFromStringifiedXml(actualResult));
         assertFalse(diff.similar());
         DetailedDiff detDiff = new DetailedDiff(diff);
@@ -169,7 +170,8 @@ public class RDFVocabularyImportServiceAllCasesRdfExportTestIT extends Vocabular
         streamingResolution.execute(request, response);
         String actualResult = response.getContentAsString();
         ClassLoader classLoader = getClass().getClassLoader();
-        String expectedRDFResultString = IOUtils.toString(classLoader.getResourceAsStream("rdfExport/exportForTestDontPurgeMaintainMissingConceptsAndChangeStatusToInvalid.rdf"));
+        String expectedRDFResultString = IOUtils.toString(classLoader.getResourceAsStream(
+                "rdfExport/exportForTestDontPurgeMaintainMissingConceptsAndChangeStatusToInvalid.rdf"), StandardCharsets.UTF_8);
         Diff diff = new Diff(StringUtils.trimWhiteSpacesFromStringifiedXml(expectedRDFResultString), StringUtils.trimWhiteSpacesFromStringifiedXml(actualResult));
         assertFalse(diff.similar());
         DetailedDiff detDiff = new DetailedDiff(diff);
@@ -209,7 +211,8 @@ public class RDFVocabularyImportServiceAllCasesRdfExportTestIT extends Vocabular
         streamingResolution.execute(request, response);
         String actualResult = response.getContentAsString();
         ClassLoader classLoader = getClass().getClassLoader();
-        String expectedRDFResultString = IOUtils.toString(classLoader.getResourceAsStream("rdfExport/exportForTestDontPurgeMaintainMissingConceptsAndChangeStatusToDeprecated.rdf"));
+        String expectedRDFResultString = IOUtils.toString(classLoader.getResourceAsStream(
+                "rdfExport/exportForTestDontPurgeMaintainMissingConceptsAndChangeStatusToDeprecated.rdf"), StandardCharsets.UTF_8);
         Diff diff = new Diff(StringUtils.trimWhiteSpacesFromStringifiedXml(expectedRDFResultString), StringUtils.trimWhiteSpacesFromStringifiedXml(actualResult));
         assertFalse(diff.similar());
         DetailedDiff detDiff = new DetailedDiff(diff);
@@ -249,7 +252,8 @@ public class RDFVocabularyImportServiceAllCasesRdfExportTestIT extends Vocabular
         streamingResolution.execute(request, response);
         String actualResult = response.getContentAsString();
         ClassLoader classLoader = getClass().getClassLoader();
-        String expectedRDFResultString = IOUtils.toString(classLoader.getResourceAsStream("rdfExport/exportForTestDontPurgeMaintainMissingConceptsAndChangeStatusToDeprecatedRetired.rdf"));
+        String expectedRDFResultString = IOUtils.toString(classLoader.getResourceAsStream(
+                "rdfExport/exportForTestDontPurgeMaintainMissingConceptsAndChangeStatusToDeprecatedRetired.rdf"), StandardCharsets.UTF_8);
         Diff diff = new Diff(StringUtils.trimWhiteSpacesFromStringifiedXml(expectedRDFResultString), StringUtils.trimWhiteSpacesFromStringifiedXml(actualResult));
         assertFalse(diff.similar());
         DetailedDiff detDiff = new DetailedDiff(diff);
@@ -289,7 +293,8 @@ public class RDFVocabularyImportServiceAllCasesRdfExportTestIT extends Vocabular
         streamingResolution.execute(request, response);
         String actualResult = response.getContentAsString();
         ClassLoader classLoader = getClass().getClassLoader();
-        String expectedRDFResultString = IOUtils.toString(classLoader.getResourceAsStream("rdfExport/exportForTestDontPurgeMaintainMissingConceptsAndChangeStatusToDeprecatedSuperseded.rdf"));
+        String expectedRDFResultString = IOUtils.toString(classLoader.getResourceAsStream(
+                "rdfExport/exportForTestDontPurgeMaintainMissingConceptsAndChangeStatusToDeprecatedSuperseded.rdf"), StandardCharsets.UTF_8);
         Diff diff = new Diff(StringUtils.trimWhiteSpacesFromStringifiedXml(expectedRDFResultString), StringUtils.trimWhiteSpacesFromStringifiedXml(actualResult));
         assertFalse(diff.similar());
         DetailedDiff detDiff = new DetailedDiff(diff);
@@ -329,7 +334,8 @@ public class RDFVocabularyImportServiceAllCasesRdfExportTestIT extends Vocabular
         streamingResolution.execute(request, response);
         String actualResult = response.getContentAsString();
         ClassLoader classLoader = getClass().getClassLoader();
-        String expectedRDFResultString = IOUtils.toString(classLoader.getResourceAsStream("rdfExport/exportForTestPurgePerPredicateIgnoreMissingConcepts.rdf"));
+        String expectedRDFResultString = IOUtils.toString(classLoader.getResourceAsStream(
+                "rdfExport/exportForTestPurgePerPredicateIgnoreMissingConcepts.rdf"), StandardCharsets.UTF_8);
         Diff diff = new Diff(StringUtils.trimWhiteSpacesFromStringifiedXml(expectedRDFResultString), StringUtils.trimWhiteSpacesFromStringifiedXml(actualResult));
         assertFalse(diff.similar());
         DetailedDiff detDiff = new DetailedDiff(diff);
@@ -365,7 +371,8 @@ public class RDFVocabularyImportServiceAllCasesRdfExportTestIT extends Vocabular
         streamingResolution.execute(request, response);
         String actualResult = response.getContentAsString();
         ClassLoader classLoader = getClass().getClassLoader();
-        String expectedRDFResultString = IOUtils.toString(classLoader.getResourceAsStream("rdfExport/exportForTestPurgePerPredicateRemoveMissingConcepts.rdf"));
+        String expectedRDFResultString = IOUtils.toString(classLoader.getResourceAsStream(
+                "rdfExport/exportForTestPurgePerPredicateRemoveMissingConcepts.rdf"), StandardCharsets.UTF_8);
         Diff diff = new Diff(StringUtils.trimWhiteSpacesFromStringifiedXml(expectedRDFResultString), StringUtils.trimWhiteSpacesFromStringifiedXml(actualResult));
         assertFalse(diff.similar());
         DetailedDiff detDiff = new DetailedDiff(diff);
@@ -401,7 +408,8 @@ public class RDFVocabularyImportServiceAllCasesRdfExportTestIT extends Vocabular
         streamingResolution.execute(request, response);
         String actualResult = response.getContentAsString();
         ClassLoader classLoader = getClass().getClassLoader();
-        String expectedRDFResultString = IOUtils.toString(classLoader.getResourceAsStream("rdfExport/exportForTestPurgePerPredicateMaintainMissingConceptsAndChangeStatusToInvalid.rdf"));
+        String expectedRDFResultString = IOUtils.toString(classLoader.getResourceAsStream(
+                "rdfExport/exportForTestPurgePerPredicateMaintainMissingConceptsAndChangeStatusToInvalid.rdf"), StandardCharsets.UTF_8);
         Diff diff = new Diff(StringUtils.trimWhiteSpacesFromStringifiedXml(expectedRDFResultString), StringUtils.trimWhiteSpacesFromStringifiedXml(actualResult));
         assertFalse(diff.similar());
         DetailedDiff detDiff = new DetailedDiff(diff);
@@ -441,7 +449,8 @@ public class RDFVocabularyImportServiceAllCasesRdfExportTestIT extends Vocabular
         streamingResolution.execute(request, response);
         String actualResult = response.getContentAsString();
         ClassLoader classLoader = getClass().getClassLoader();
-        String expectedRDFResultString = IOUtils.toString(classLoader.getResourceAsStream("rdfExport/exportForTestPurgePerPredicateMaintainMissingConceptsAndChangeStatusToDeprecated.rdf"));
+        String expectedRDFResultString = IOUtils.toString(classLoader.getResourceAsStream(
+                "rdfExport/exportForTestPurgePerPredicateMaintainMissingConceptsAndChangeStatusToDeprecated.rdf"), StandardCharsets.UTF_8);
         Diff diff = new Diff(StringUtils.trimWhiteSpacesFromStringifiedXml(expectedRDFResultString), StringUtils.trimWhiteSpacesFromStringifiedXml(actualResult));
         assertFalse(diff.similar());
         DetailedDiff detDiff = new DetailedDiff(diff);
@@ -481,7 +490,8 @@ public class RDFVocabularyImportServiceAllCasesRdfExportTestIT extends Vocabular
         streamingResolution.execute(request, response);
         String actualResult = response.getContentAsString();
         ClassLoader classLoader = getClass().getClassLoader();
-        String expectedRDFResultString = IOUtils.toString(classLoader.getResourceAsStream("rdfExport/exportForTestPurgePerPredicateMaintainMissingConceptsAndChangeStatusToDeprecatedRetired.rdf"));
+        String expectedRDFResultString = IOUtils.toString(classLoader.getResourceAsStream(
+                "rdfExport/exportForTestPurgePerPredicateMaintainMissingConceptsAndChangeStatusToDeprecatedRetired.rdf"), StandardCharsets.UTF_8);
         Diff diff = new Diff(StringUtils.trimWhiteSpacesFromStringifiedXml(expectedRDFResultString), StringUtils.trimWhiteSpacesFromStringifiedXml(actualResult));
         assertFalse(diff.similar());
         DetailedDiff detDiff = new DetailedDiff(diff);
@@ -521,7 +531,8 @@ public class RDFVocabularyImportServiceAllCasesRdfExportTestIT extends Vocabular
         streamingResolution.execute(request, response);
         String actualResult = response.getContentAsString();
         ClassLoader classLoader = getClass().getClassLoader();
-        String expectedRDFResultString = IOUtils.toString(classLoader.getResourceAsStream("rdfExport/exportForTestPurgePerPredicateMaintainMissingConceptsAndChangeStatusToDeprecatedSuperseded.rdf"));
+        String expectedRDFResultString = IOUtils.toString(classLoader.getResourceAsStream(
+                "rdfExport/exportForTestPurgePerPredicateMaintainMissingConceptsAndChangeStatusToDeprecatedSuperseded.rdf"), StandardCharsets.UTF_8);
         Diff diff = new Diff(StringUtils.trimWhiteSpacesFromStringifiedXml(expectedRDFResultString), StringUtils.trimWhiteSpacesFromStringifiedXml(actualResult));
         assertFalse(diff.similar());
         DetailedDiff detDiff = new DetailedDiff(diff);
@@ -559,7 +570,8 @@ public class RDFVocabularyImportServiceAllCasesRdfExportTestIT extends Vocabular
         streamingResolution.execute(request, response);
         String actualResult = response.getContentAsString();
         ClassLoader classLoader = getClass().getClassLoader();
-        String expectedRDFResultString = IOUtils.toString(classLoader.getResourceAsStream("rdfExport/exportForTestPurgeAllVocabularyData.rdf"));
+        String expectedRDFResultString = IOUtils.toString(classLoader.getResourceAsStream(
+                "rdfExport/exportForTestPurgeAllVocabularyData.rdf"), StandardCharsets.UTF_8);
         Diff diff = new Diff(StringUtils.trimWhiteSpacesFromStringifiedXml(expectedRDFResultString), StringUtils.trimWhiteSpacesFromStringifiedXml(actualResult));
         assertFalse(diff.similar());
         DetailedDiff detDiff = new DetailedDiff(diff);
@@ -595,7 +607,8 @@ public class RDFVocabularyImportServiceAllCasesRdfExportTestIT extends Vocabular
         streamingResolution.execute(request, response);
         String actualResult = response.getContentAsString();
         ClassLoader classLoader = getClass().getClassLoader();
-        String expectedRDFResultString = IOUtils.toString(classLoader.getResourceAsStream("rdfExport/exportForTestDeleteAllVocabularyData.rdf"));
+        String expectedRDFResultString = IOUtils.toString(classLoader.getResourceAsStream(
+                "rdfExport/exportForTestDeleteAllVocabularyData.rdf"), StandardCharsets.UTF_8);
         Diff diff = new Diff(StringUtils.trimWhiteSpacesFromStringifiedXml(expectedRDFResultString), StringUtils.trimWhiteSpacesFromStringifiedXml(actualResult));
         assertFalse(diff.similar());
         DetailedDiff detDiff = new DetailedDiff(diff);

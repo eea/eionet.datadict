@@ -6,6 +6,8 @@ import eionet.datadict.services.io.UnzippedPhysicalFile;
 import eionet.datadict.services.io.ZippedFileDecompressor;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -93,7 +95,7 @@ public class ZippedFileDecompressorTestIT {
         try {
             in = uf.getInputStream();
             
-            return IOUtils.toString(in, "utf-8");
+            return IOUtils.toString(in, StandardCharsets.UTF_8);
         }
         finally {
             if (in != null) {

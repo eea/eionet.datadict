@@ -7,6 +7,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+
 import net.sourceforge.stripes.action.FileBean;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -75,7 +77,7 @@ public class FileBeanDecompressorTest {
         try {
             in = fileBean.getInputStream();
             
-            return IOUtils.toString(in, "utf-8");
+            return IOUtils.toString(in, StandardCharsets.UTF_8);
         }
         finally {
             if (in != null) {
