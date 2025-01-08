@@ -112,7 +112,7 @@ if (ds_id == null || ds_id.length()==0){ %>
 }
 
 String type = request.getParameter("str_type");
-if (type==null || type.length()==0)
+if (type == null || type.length() == 0 || !type.equals("detailed"))
     type = "simple";
 
 Connection conn = null;

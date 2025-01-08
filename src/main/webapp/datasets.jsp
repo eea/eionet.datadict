@@ -467,8 +467,8 @@
                             </tr>
                         </c:when>
                         <c:otherwise>
-                            <input type="hidden" name="regStatusFilter" value="false"/>
-                            <input type="hidden" name="regStatus" value="<%=requestedStatus%>">
+                            <input type="hidden" name="regStatusFilter" value="false" />
+                            <input type="hidden" name="regStatus" value="${fn:escapeXml(requestedStatus)}" />
                         </c:otherwise>
                     </c:choose>
                     <tr>
