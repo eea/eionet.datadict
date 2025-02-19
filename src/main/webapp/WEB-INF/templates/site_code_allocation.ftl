@@ -4,7 +4,7 @@ This e-mail is sent from test environment and only assigned testers received it.
 </#if>
 This is an automatically generated message to inform you about CDDA site code allocation.
 
-Please do not reply to this address. If you you think that you should not receive this e-mail, please contact Eionet helpdesk <helpdesk@eionet.europa.eu>.
+Please do not reply to this address. If you you think that you should not receive this e-mail, please contact Eionet Service Desk <ServiceDesk@eea.europa.eu>.
 
 ------
 Allocation information:

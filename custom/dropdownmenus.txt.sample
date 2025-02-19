@@ -3,7 +3,7 @@
         <ul id="dropdowns">
          <li><a href="http://www.eionet.europa.eu/services">Services</a>
           <ul>
-           <li><a href="http://nmc.eionet.europa.eu/">Helpdesk</a></li>
+           <li><a href="http://nmc.eionet.europa.eu/">Service Desk</a></li>
            <li><a href="http://eea.eionet.europa.eu/Public/irc/eionet-circle/Home/main">CIRCA</a></li>
            <li><a href="http://eea.eionet.europa.eu/Members/irc/eionet-circle/Home/central_dir_admin?fn=roles&amp;v=&amp;rd=1&amp;ud=1&amp;od=1">Roles (Restricted)</a></li>
            <li><a href="http://planner.eionet.europa.eu/">Workplan</a></li>

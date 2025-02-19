@@ -531,5 +531,15 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
             ]]>
         </sql>
       </changeSet>
-    </databaseChangeLog>
+
+    <changeSet author="stamojoh" id="seed-8">
+        <comment>service desk email update</comment>
+        <sql>
+            <![CDATA[
+                update HLP_AREA set HTML='<div id=\"box3\" class=\"TeaserBox\" width=\"302\">\n<h2>Support</h2>\n<p>\nIf you experience any problem using data dictionary, please let the Eionet Service Desk know immediately. The Service Desk can be reached by phone on +32 2 714 87 87 from Monday through Friday 9:00 to 17:00 CET.\n</p>\n<p>\nYou can also email the Service Desk at any time: <a href=\"mailto:ServiceDesk@eea.europa.eu\">ServiceDesk@eea.europa.eu</a>.\n</p>\n<p>\nDo not hesitate, we are here to help!\n</p>\n</div>' where AREA_ID="support" and SCREEN_ID="front_page";
+            ]]>
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>
 

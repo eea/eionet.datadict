@@ -3,7 +3,7 @@
         <ul id="dropdowns">
          <li><a href="https://www.eionet.europa.eu/menuservices">Services</a>
           <ul>
-           <li><a href="https://www.eionet.europa.eu/helpdesk">Helpdesk</a></li>
+           <li><a href="https://www.eionet.europa.eu/helpdesk">Service Desk</a></li>
            <li><a href="https://forum.eionet.europa.eu/">Forum</a></li>
            <li><a href="https://projects.eionet.europa.eu/">Projects</a></li>
            <li><a href="https://www.eionet.europa.eu/ldap-roles">Roles</a></li>

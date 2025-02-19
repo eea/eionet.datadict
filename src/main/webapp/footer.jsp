@@ -6,7 +6,7 @@
 		   title="Creative Commons Attribution License">
 		  <img alt="Creative Commons Attribution License"
 		      src="https://i.creativecommons.org/l/by/2.5/dk/80x15.png" /></a> |
-		<a href="mailto:helpdesk@eionet.europa.eu?subject=Feedback from the Data Dictionary website">Feedback</a>
+		<a href="mailto:ServiceDesk@eea.europa.eu?subject=Feedback from the Data Dictionary website">Feedback</a>
 	</p>
         <p>
         	<a href="http://www.eea.europa.eu">European Environment Agency</a>

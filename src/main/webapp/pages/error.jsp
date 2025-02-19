@@ -19,7 +19,7 @@
             </c:choose>
         </div>
         <div style="padding-top:1em">
-            Please contact <a href="mailto:helpdesk@eionet.europa.eu?subject=System error in ${ddfn:getProperty("app.displayName")}">Eionet helpdesk</a>
+            Please contact <a href="mailto:ServiceDesk@eea.europa.eu?subject=System error in ${ddfn:getProperty("app.displayName")}">Eionet Service Desk</a>
             or ${ddfn:getProperty("app.displayName")} administrators for more information about this error.
         </div>
 

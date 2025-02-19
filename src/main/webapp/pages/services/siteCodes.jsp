@@ -376,7 +376,7 @@
                                     <c:if test="${actionBean.allocateRightAsCountry && fn:length(actionBean.allocations) > 0}">
                                         <p>Limit for self-made allocations is <c:out value="${actionBean.maxAllocateAmount}"/> codes.
                                         You can still allocate up to <span style="color:red;"><c:out value="${actionBean.maxAllocateAmount - actionBean.allocations[0].unusedCodes}"/></span>
-                                        site codes. Please contact <a href="mailto:cdda.helpdesk@eionet.europa.eu">cdda.helpdesk@eionet.europa.eu</a> if you need more.</p>
+                                        site codes. Please contact <a href="mailto:ServiceDesk@eea.europa.eu">ServiceDesk@eea.europa.eu</a> if you need more.</p>
                                     </c:if>
                                 </td>
                             </tr>
@@ -402,7 +402,7 @@
                         <strong>Warning</strong>
                         <p>You have already allocated <strong><c:out value="${actionBean.allocations[0].unusedCodes}"/></strong> site codes.
                         You can’t allocate more by yourself.
-                        If you need more codes please contact <a href="mailto:cdda.helpdesk@eionet.europa.eu">cdda.helpdesk@eionet.europa.eu</a>
+                        If you need more codes please contact <a href="mailto:ServiceDesk@eea.europa.eu">ServiceDesk@eea.europa.eu</a>
                         with explanation. </p>
                     </div>
                     <button type="button" id="closeAllocateLink" style="margin-left:15em;">OK</button>
