@@ -193,7 +193,7 @@
                 </div>
                 <div id="pagefoot" style="max-width: none;">
                     <c:set var="feedbackMail" value="mailto:ServiceDesk@eea.europa.eu?subject=Feedback from the ${ddfn:getProperty('app.displayName')} website"/>
-                    <p><a href="mailto:cr@eionet.europa.eu">E-mail</a> | <a href="${ddfn:urlEncode(feedbackMail)}">Feedback</a></p>
+                    <p><a href="${ddfn:urlEncode(feedbackMail)}"> E-mail | Feedback</a></p>
                     <p><a href="https://www.eea.europa.eu/"><b>European Environment Agency</b></a>
                         <br/>Kgs. Nytorv 6, DK-1050 Copenhagen K, Denmark</p>
                 </div>
