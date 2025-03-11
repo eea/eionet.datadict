@@ -89,9 +89,7 @@
                                 </env>
                                 <wait>
                                     <tcp>
-                                        <!-- Use the following for windows hosts -->
-                                        <!-- <mode>direct</mode> -->
-                                        <mode>direct</mode>
+                                        <mode>mapped</mode>
                                         <ports>
                                             <port>3306</port>
                                         </ports>
