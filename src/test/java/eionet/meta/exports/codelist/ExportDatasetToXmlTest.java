@@ -5,23 +5,18 @@
  */
 package eionet.meta.exports.codelist;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import eionet.meta.dao.domain.DataElement;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
 import org.custommonkey.xmlunit.Diff;
 import org.custommonkey.xmlunit.XMLUnit;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.xml.sax.SAXException;
+
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 
 /**
  *
@@ -51,7 +46,7 @@ public class ExportDatasetToXmlTest {
     public void tearDown() {}
 
     @Test
-    public void dataset() throws JsonProcessingException, SAXException, IOException {
+    public void dataset() throws SAXException, IOException {
         List<eionet.meta.DataElement> elements = ExportMocks.dataset();
 
         // Type: ELM, TBL, DST
@@ -84,7 +79,7 @@ public class ExportDatasetToXmlTest {
     }
     
     @Test
-    public void emptyDataset() throws JsonProcessingException, SAXException, IOException {
+    public void emptyDataset() throws SAXException, IOException {
         List<eionet.meta.DataElement> elements = ExportMocks.dataset();
 
         // Type: ELM, TBL, DST

@@ -5,22 +5,17 @@
  */
 package eionet.meta.exports.codelist;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import eionet.meta.dao.domain.DataElement;
-import java.io.IOException;
-import java.util.List;
 import org.custommonkey.xmlunit.Diff;
 import org.custommonkey.xmlunit.XMLUnit;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.xml.sax.SAXException;
+
+import java.io.IOException;
+import java.util.List;
 
 /**
  *
@@ -50,7 +45,7 @@ public class ExportElementToXmlTest {
     public void tearDown() {}
 
     @Test
-    public void commonVocabularyValuesWithRelationships() throws JsonProcessingException, SAXException, IOException {
+    public void commonVocabularyValuesWithRelationships() throws SAXException, IOException {
         List<eionet.meta.DataElement> elements = ExportMocks.vocabularyCommonDataElement();
 
         // Type: ELM, TBL, DST
@@ -71,7 +66,7 @@ public class ExportElementToXmlTest {
     }
 
     @Test
-    public void uncommonVocabularyValuesWithRelationships() throws JsonProcessingException, SAXException, IOException {
+    public void uncommonVocabularyValuesWithRelationships() throws SAXException, IOException {
         List<eionet.meta.DataElement> elements = ExportMocks.vocabularyDataElement();
 
         // Type: ELM, TBL, DST
@@ -92,7 +87,7 @@ public class ExportElementToXmlTest {
     }
 
     @Test
-    public void commonVocabularyValues() throws JsonProcessingException, SAXException, IOException {
+    public void commonVocabularyValues() throws SAXException, IOException {
         List<eionet.meta.DataElement> elements = ExportMocks.vocabularyCommonDataElementSimple();
 
         // Type: ELM, TBL, DST
@@ -113,7 +108,7 @@ public class ExportElementToXmlTest {
     }
     
     @Test
-    public void commonFixedValues() throws JsonProcessingException, SAXException, IOException {
+    public void commonFixedValues() throws SAXException, IOException {
         List<eionet.meta.DataElement> elements = ExportMocks.commonFixedValueDataElement();
 
         // Type: ELM, TBL, DST
@@ -134,7 +129,7 @@ public class ExportElementToXmlTest {
     }
 
     @Test
-    public void uncommonFixedValues() throws JsonProcessingException, SAXException, IOException {
+    public void uncommonFixedValues() throws SAXException, IOException {
         List<eionet.meta.DataElement> elements = ExportMocks.uncommonFixedValueDataElement();
 
         // Type: ELM, TBL, DST
@@ -155,7 +150,7 @@ public class ExportElementToXmlTest {
     }
 
     @Test
-    public void quantitativeValues() throws JsonProcessingException, SAXException, IOException {
+    public void quantitativeValues() throws SAXException, IOException {
         List<eionet.meta.DataElement> elements = ExportMocks.quantitativeDataElement();
 
         // Type: ELM, TBL, DST

@@ -57,7 +57,7 @@ public class ExportLegacyElementToXmlTest {
     public void tearDown() {}
 
     @Test
-    public void quantitativeValues() throws JsonProcessingException, SAXException, IOException {
+    public void quantitativeValues() throws SAXException, IOException {
         List<eionet.meta.DataElement> elements = ExportMocks.quantitativeDataElement();
 
         // Type: ELM, TBL, DST
