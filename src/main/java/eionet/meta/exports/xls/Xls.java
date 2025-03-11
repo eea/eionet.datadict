@@ -180,20 +180,6 @@ public abstract class Xls implements XlsIF {
     }
 
     /**
-     *
-     */
-    protected void setCellTypes() {
-
-        cellTypes.put("string", new Integer(HSSFCell.CELL_TYPE_STRING));
-        cellTypes.put("boolean", new Integer(HSSFCell.CELL_TYPE_BOOLEAN));
-        cellTypes.put("float", new Integer(HSSFCell.CELL_TYPE_NUMERIC));
-        cellTypes.put("integer", new Integer(HSSFCell.CELL_TYPE_NUMERIC));
-        cellTypes.put("date", new Integer(HSSFCell.CELL_TYPE_STRING));
-        cellTypes.put("double", new Integer(HSSFCell.CELL_TYPE_NUMERIC));
-        cellTypes.put("decimal", new Integer(HSSFCell.CELL_TYPE_NUMERIC));
-    }
-
-    /**
      * http://poi.apache.org/apidocs/org/apache/poi/ss/usermodel/Workbook.html#createSheet(java.lang.String)
      * POI's SpreadsheetAPI silently truncates the input argument to 31 characters.
      */
