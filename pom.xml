@@ -71,7 +71,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <!-- Use the following for windows hosts -->
-                    <dockerHost>http://localhost:2375</dockerHost>
+                    <!-- <dockerHost>http://localhost:2375</dockerHost> -->
                     <filter>${valid.images}</filter>
                     <images>
                         <image>
