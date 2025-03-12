@@ -6,7 +6,6 @@ import eionet.meta.service.IJWTService;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import net.sf.json.JSONObject;
-import net.sourceforge.stripes.integration.spring.SpringBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

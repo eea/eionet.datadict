@@ -28,14 +28,9 @@ import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.exports.rdf.VocabularyXmlWriter;
 import eionet.meta.service.ISiteCodeService;
 import eionet.meta.service.IVocabularyService;
-import eionet.meta.service.data.SiteCodeFilter;
 import eionet.util.Props;
 import eionet.util.PropsIF;
-import net.sourceforge.stripes.action.DefaultHandler;
-import net.sourceforge.stripes.action.ErrorResolution;
-import net.sourceforge.stripes.action.Resolution;
-import net.sourceforge.stripes.action.StreamingResolution;
-import net.sourceforge.stripes.action.UrlBinding;
+import net.sourceforge.stripes.action.*;
 import net.sourceforge.stripes.integration.spring.SpringBean;
 
 import javax.servlet.http.HttpServletResponse;

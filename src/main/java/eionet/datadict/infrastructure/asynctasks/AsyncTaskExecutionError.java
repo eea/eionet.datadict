@@ -1,7 +1,5 @@
 package eionet.datadict.infrastructure.asynctasks;
 
-import org.apache.commons.lang.StringUtils;
-
 public class AsyncTaskExecutionError {
 
     private String message;

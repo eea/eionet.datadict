@@ -6,19 +6,14 @@
  */
 package eionet.meta.notif;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.security.GeneralSecurityException;
-import java.util.Base64;
-import java.util.Enumeration;
-import java.util.Hashtable;
-import java.util.Vector;
-
+import eionet.meta.DDRuntimeException;
+import eionet.meta.DataElement;
+import eionet.meta.Dataset;
+import eionet.meta.notif.util.RDFTriple;
+import eionet.meta.notif.util.XmlRpcCallThread;
+import eionet.util.Props;
+import eionet.util.PropsIF;
+import eionet.util.Util;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
@@ -29,19 +24,21 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 import org.apache.xmlrpc.XmlRpcClient;
-
-import eionet.meta.DDRuntimeException;
-import eionet.meta.DataElement;
-import eionet.meta.Dataset;
-import eionet.meta.notif.util.RDFTriple;
-import eionet.meta.notif.util.XmlRpcCallThread;
-import eionet.util.Props;
-import eionet.util.PropsIF;
-import eionet.util.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.security.GeneralSecurityException;
+import java.util.Base64;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Vector;
 
 /**
  * @author jaanus

@@ -1,19 +1,18 @@
 package eionet.datadict.web.asynctasks;
 
 import eionet.datadict.infrastructure.asynctasks.AsyncTask;
-import static eionet.datadict.web.asynctasks.VocabularyUndoCheckOutTask.RESULT_VOCABULARY_IDENTIFIER;
-import static eionet.datadict.web.asynctasks.VocabularyUndoCheckOutTask.RESULT_VOCABULARY_SET_IDENTIFIER;
 import eionet.meta.dao.IFolderDAO;
 import eionet.meta.dao.domain.Folder;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.dao.domain.VocabularyType;
 import eionet.meta.service.IVocabularyService;
-import java.util.HashMap;
-import java.util.Map;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 @Scope("prototype")

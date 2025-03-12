@@ -1,15 +1,9 @@
 package eionet.datadict.services.acl;
 
+import eionet.datadict.errors.UserAuthorizationException;
 import eionet.datadict.errors.UserExistsException;
 import eionet.datadict.errors.XmlMalformedException;
 import eionet.meta.DDUser;
-import eionet.datadict.errors.UserAuthorizationException;
-import org.xml.sax.SAXException;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.xpath.XPathExpressionException;
-import java.io.IOException;
 
 public interface AclService {
 

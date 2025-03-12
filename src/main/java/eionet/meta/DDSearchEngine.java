@@ -1,35 +1,16 @@
 package eionet.meta;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import eionet.datadict.errors.EmptyParameterException;
 import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.model.Attribute;
 import eionet.datadict.model.DataDictEntity;
 import eionet.datadict.services.AttributeService;
 import eionet.datadict.services.data.AttributeDataService;
-
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Types;
-import java.util.*;
-
-import eionet.meta.dao.domain.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
-
 import eionet.meta.dao.DAOException;
 import eionet.meta.dao.IAttributeDAO;
 import eionet.meta.dao.IVocabularyFolderDAO;
-import eionet.meta.service.IDataService;
-import eionet.meta.service.ISchemaService;
-import eionet.meta.service.IVocabularyService;
-import eionet.meta.service.IXmlConvService;
-import eionet.meta.service.ServiceException;
+import eionet.meta.dao.domain.*;
+import eionet.meta.service.*;
 import eionet.meta.service.data.SchemaConversionsData;
 import eionet.meta.spring.SpringApplicationContext;
 import eionet.util.Props;
@@ -39,6 +20,13 @@ import eionet.util.Util;
 import eionet.util.sql.ConnectionUtil;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+
+import java.io.IOException;
+import java.sql.*;
+import java.util.*;
 
 /**
  * Search engine.

@@ -21,31 +21,32 @@
 
 package eionet.meta.service;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-
+import eionet.meta.DDUser;
+import eionet.meta.dao.IDataElementDAO;
+import eionet.meta.dao.ISiteCodeDAO;
 import eionet.meta.dao.IVocabularyConceptDAO;
 import eionet.meta.dao.IVocabularyFolderDAO;
+import eionet.meta.dao.domain.FixedValue;
+import eionet.meta.dao.domain.SiteCodeStatus;
 import eionet.meta.dao.domain.StandardGenericStatus;
-import eionet.meta.service.data.*;
-import org.displaytag.properties.SortOrderEnum;
+import eionet.meta.service.data.AllocationResult;
+import eionet.meta.service.data.CountryAllocations;
+import eionet.meta.service.data.SiteCodeFilter;
+import eionet.meta.service.data.SiteCodeResult;
+import eionet.util.Props;
+import eionet.util.PropsIF;
+import eionet.util.SecurityUtil;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import eionet.meta.DDUser;
-import eionet.meta.dao.IDataElementDAO;
-import eionet.meta.dao.ISiteCodeDAO;
-import eionet.meta.dao.domain.FixedValue;
-import eionet.meta.dao.domain.SiteCodeStatus;
-import eionet.util.Props;
-import eionet.util.PropsIF;
-import eionet.util.SecurityUtil;
-import org.apache.commons.lang.StringUtils;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 /**
  * Site code service implementation.

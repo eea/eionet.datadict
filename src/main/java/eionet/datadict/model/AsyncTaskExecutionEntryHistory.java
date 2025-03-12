@@ -1,7 +1,5 @@
 package eionet.datadict.model;
 
-import java.util.Date;
-
 /**
  *
  * @author Vasilis Skiadas<vs@eworx.gr>

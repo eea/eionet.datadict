@@ -3,28 +3,24 @@ package eionet.datadict.security;
 import eionet.datadict.services.VerifyJWTTokenService;
 import eionet.datadict.services.impl.VerifyJWTTokenServiceImpl;
 import eionet.meta.DDUser;
-import eionet.meta.service.Auth0JWTServiceImpl;
-import eionet.meta.service.IJWTService;
-import eionet.meta.service.ServiceException;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.SecurityUtil;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpStatus;
+import org.springframework.util.AntPathMatcher;
+import org.springframework.web.filter.GenericFilterBean;
+
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import eionet.web.action.ErrorActionBean;
-import org.apache.commons.lang.StringUtils;
-import org.apache.http.HttpStatus;
-import org.springframework.util.AntPathMatcher;
-import org.springframework.web.filter.GenericFilterBean;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  *

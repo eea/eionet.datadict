@@ -1,27 +1,22 @@
 package eionet.datadict.services.impl;
 
-import eionet.datadict.errors.BadRequestException;
-import eionet.datadict.errors.EmptyParameterException;
-import eionet.datadict.errors.ResourceNotFoundException;
+import eionet.datadict.errors.*;
 import eionet.datadict.model.Attribute;
+import eionet.datadict.model.Attribute.ValueInheritanceMode;
+import eionet.datadict.model.DataDictEntity;
 import eionet.datadict.services.AttributeService;
 import eionet.datadict.services.acl.AclEntity;
 import eionet.datadict.services.acl.AclService;
 import eionet.datadict.services.acl.Permission;
 import eionet.datadict.services.data.AttributeDataService;
 import eionet.meta.DDUser;
-import eionet.datadict.errors.UserAuthenticationException;
-import eionet.datadict.errors.UserAuthorizationException;
-import eionet.datadict.model.Attribute.TargetEntity;
-import eionet.datadict.model.Attribute.ValueInheritanceMode;
-import eionet.datadict.model.DataDictEntity;
 import eionet.meta.dao.domain.VocabularyConcept;
-import java.util.List;
-import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 public class AttributeServiceImpl implements AttributeService {
