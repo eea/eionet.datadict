@@ -67,7 +67,7 @@
             <plugin>
                 <groupId>io.fabric8</groupId>
                 <artifactId>docker-maven-plugin</artifactId>
-                <version>0.45.1</version>
+                <version>0.26.0</version>
                 <extensions>true</extensions>
                 <configuration>
                     <!-- Use the following for windows hosts -->
@@ -89,6 +89,7 @@
                                 </env>
                                 <wait>
                                     <tcp>
+                                        <mode>direct</mode>
                                         <ports>
                                             <port>3306</port>
                                         </ports>
