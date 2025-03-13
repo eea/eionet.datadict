@@ -13,14 +13,15 @@
 xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 
     <changeSet author="roug" id="rev-1">
+        <validCheckSum>8:89063cc5da60c0dfaf0b7cf2f8d31a62</validCheckSum>
         <createTable tableName="ACL_ROWS">
             <column defaultValueNumeric="0" name="ACL_ID" type="INT">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValue="'object'" name="TYPE" type="enum('object','doc','dcc')">
+            <column defaultValue="object" name="TYPE" type="enum('object','doc','dcc')">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValue="'user'" name="ENTRY_TYPE" type="enum('owner','user','localgroup','other','foreign','unauthenticated','authenticated','mask')">
+            <column defaultValue="user" name="ENTRY_TYPE" type="enum('owner','user','localgroup','other','foreign','unauthenticated','authenticated','mask')">
                 <constraints nullable="false"/>
             </column>
             <column defaultValue="" name="PRINCIPAL" type="CHAR(16)">
@@ -58,6 +59,7 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
     </changeSet>
 
     <changeSet author="roug" id="rev-3">
+        <validCheckSum>8:164ae3bb395a3b33516b8d065b658915</validCheckSum>
         <createTable tableName="ATTRIBUTE">
             <column defaultValueNumeric="0" name="M_ATTRIBUTE_ID" type="INT UNSIGNED">
                 <constraints nullable="false"/>
@@ -68,7 +70,7 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
             <column name="VALUE" type="TEXT">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValue="'E'" name="PARENT_TYPE" type="enum('E','T','DS','SCH','SCS')">
+            <column defaultValue="E" name="PARENT_TYPE" type="enum('E','T','DS','SCH','SCS')">
                 <constraints nullable="false"/>
             </column>
         </createTable>
@@ -81,14 +83,15 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
     </changeSet>
 
     <changeSet author="roug" id="rev-4">
+        <validCheckSum>8:b60e93983053292cef2e12ad5b1dd2f5</validCheckSum>
         <createTable tableName="CACHE">
             <column defaultValueNumeric="0" name="OBJ_ID" type="INT UNSIGNED">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValue="'dst'" name="OBJ_TYPE" type="enum('dst','tbl','elm')">
+            <column defaultValue="dst" name="OBJ_TYPE" type="enum('dst','tbl','elm')">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValue="'pdf'" name="ARTICLE" type="enum('pdf','xls','xform','xmlinst')">
+            <column defaultValue="pdf" name="ARTICLE" type="enum('pdf','xls','xform','xmlinst')">
                 <constraints nullable="false"/>
             </column>
             <column name="FILENAME" type="VARCHAR(255)"/>
@@ -122,11 +125,12 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
     </changeSet>
 
     <changeSet author="roug" id="rev-6">
+        <validCheckSum>8:d432f73e67465cf0802ce725722d728e</validCheckSum>
         <createTable tableName="COMPLEX_ATTR_ROW">
             <column defaultValueNumeric="0" name="PARENT_ID" type="INT UNSIGNED">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValue="'E'" name="PARENT_TYPE" type="enum('E','C','DS','FV','T','SCH','SCS')">
+            <column defaultValue="E" name="PARENT_TYPE" type="enum('E','C','DS','FV','T','SCH','SCS')">
                 <constraints nullable="false"/>
             </column>
             <column defaultValueNumeric="0" name="M_COMPLEX_ATTR_ID" type="INT UNSIGNED">
@@ -146,8 +150,9 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
     </changeSet>
 
     <changeSet author="roug" id="rev-7">
+        <validCheckSum>8:52849d935ed3040bb72838742f257ae2</validCheckSum>
         <createTable tableName="DATAELEM">
-            <column defaultValue="'CH2'" name="TYPE" type="enum('CH1','CH2')">
+            <column defaultValue="CH2" name="TYPE" type="enum('CH1','CH2')">
                 <constraints nullable="false"/>
             </column>
             <column name="DATAELEM_ID" type="INT UNSIGNED">
@@ -160,10 +165,10 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
                 <constraints nullable="false"/>
             </column>
             <column name="WORKING_USER" type="VARCHAR(255)"/>
-            <column defaultValue="'N'" name="WORKING_COPY" type="enum('Y','N')">
+            <column defaultValue="N" name="WORKING_COPY" type="enum('Y','N')">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValue="'Incomplete'" name="REG_STATUS" type="enum('Recorded','Qualified','Released','Incomplete','Candidate')">
+            <column defaultValue="Incomplete" name="REG_STATUS" type="enum('Recorded','Qualified','Released','Incomplete','Candidate')">
                 <constraints nullable="false"/>
             </column>
             <column defaultValueNumeric="1" name="VERSION" type="INT(4) UNSIGNED">
@@ -178,8 +183,8 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
             <column defaultValue="" name="IDENTIFIER" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValue="NULL" name="GIS" type="enum('','class','subclass','subtype')"/>
-            <column defaultValue="'true'" name="IS_ROD_PARAM" type="enum('true','false')">
+            <column defaultValueComputed="NULL" name="GIS" type="enum('','class','subclass','subtype')"/>
+            <column defaultValue="true" name="IS_ROD_PARAM" type="enum('true','false')">
                 <constraints nullable="false"/>
             </column>
             <column name="CHECKEDOUT_COPY_ID" type="INT UNSIGNED"/>
@@ -190,6 +195,7 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
     </changeSet>
 
     <changeSet author="roug" id="rev-8">
+        <validCheckSum>8:6ddf214b4031c7f6b900f57ba3a1e249</validCheckSum>
         <createTable tableName="DATASET">
             <column name="DATASET_ID" type="INT UNSIGNED">
                 <constraints nullable="false" primaryKey="true"/>
@@ -203,10 +209,10 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
             <column name="VISUAL" type="TEXT"/>
             <column name="DETAILED_VISUAL" type="TEXT"/>
             <column name="WORKING_USER" type="VARCHAR(255)"/>
-            <column defaultValue="'N'" name="WORKING_COPY" type="enum('Y','N')">
+            <column defaultValue="N" name="WORKING_COPY" type="enum('Y','N')">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValue="'Incomplete'" name="REG_STATUS" type="enum('Recorded','Qualified','Released','Incomplete','Candidate')">
+            <column defaultValue="Incomplete" name="REG_STATUS" type="enum('Recorded','Qualified','Released','Incomplete','Candidate')">
                 <constraints nullable="false"/>
             </column>
             <column defaultValueNumeric="0" name="DATE" type="BIGINT">
@@ -234,11 +240,12 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
     </changeSet>
 
     <changeSet author="roug" id="rev-9">
+        <validCheckSum>8:2529e5f969865fef810c782f18c9dad1</validCheckSum>
         <createTable tableName="DOC">
             <column defaultValueNumeric="0" name="OWNER_ID" type="INT UNSIGNED">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValue="'dst'" name="OWNER_TYPE" type="enum('dst','tbl','elm')">
+            <column defaultValue="dst" name="OWNER_TYPE" type="enum('dst','tbl','elm')">
                 <constraints nullable="false"/>
             </column>
             <column defaultValue="" name="MD5_PATH" type="VARCHAR(32)">
@@ -275,6 +282,7 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
     </changeSet>
 
     <changeSet author="roug" id="rev-11">
+        <validCheckSum>8:89e570c622887cf3abd082d31d73eef9</validCheckSum>
         <createTable tableName="DS_TABLE">
             <column name="TABLE_ID" type="INT UNSIGNED">
                 <constraints nullable="false" primaryKey="true"/>
@@ -286,7 +294,7 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
                 <constraints nullable="false"/>
             </column>
             <column name="WORKING_USER" type="VARCHAR(255)"/>
-            <column defaultValue="'N'" name="WORKING_COPY" type="enum('Y','N')">
+            <column defaultValue="N" name="WORKING_COPY" type="enum('Y','N')">
                 <constraints nullable="false"/>
             </column>
             <column defaultValueNumeric="1" name="VERSION" type="INT(4) UNSIGNED">
@@ -343,6 +351,7 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
     </changeSet>
 
     <changeSet author="roug" id="rev-14">
+        <validCheckSum>8:cb9c82dcdf7a3e0bd65372c248c656a6</validCheckSum>
         <createTable tableName="FK_RELATION">
             <column name="REL_ID" type="INT UNSIGNED">
                 <constraints nullable="false" primaryKey="true"/>
@@ -353,8 +362,8 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
             <column defaultValueNumeric="0" name="B_ID" type="INT UNSIGNED">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValue="'1'" name="A_CARDIN" type="enum('0','1','+','*')"/>
-            <column defaultValue="'1'" name="B_CARDIN" type="enum('0','1','+','*')"/>
+            <column defaultValue="1" name="A_CARDIN" type="enum('0','1','+','*')"/>
+            <column defaultValue="1" name="B_CARDIN" type="enum('0','1','+','*')"/>
             <column name="DEFINITION" type="TEXT">
                 <constraints nullable="false"/>
             </column>
@@ -368,6 +377,7 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
     </changeSet>
 
     <changeSet author="roug" id="rev-15">
+        <validCheckSum>8:812a22842f37499e6127431612219d99</validCheckSum>
         <createTable tableName="FXV">
             <column name="FXV_ID" type="INT UNSIGNED">
                 <constraints nullable="false" primaryKey="true"/>
@@ -375,13 +385,13 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
             <column defaultValueNumeric="0" name="OWNER_ID" type="INT UNSIGNED">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValue="'elem'" name="OWNER_TYPE" type="enum('elem','attr')">
+            <column defaultValue="elem" name="OWNER_TYPE" type="enum('elem','attr')">
                 <constraints nullable="false"/>
             </column>
             <column name="VALUE" type="TEXT">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValue="'N'" name="IS_DEFAULT" type="enum('Y','N')">
+            <column defaultValue="N" name="IS_DEFAULT" type="enum('Y','N')">
                 <constraints nullable="false"/>
             </column>
             <column name="DEFINITION" type="TEXT">
@@ -495,6 +505,7 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
     </changeSet>
 
     <changeSet author="roug" id="rev-20">
+        <validCheckSum>8:680d5d0c75bce139b8d867042db8d8f3</validCheckSum>
         <createTable tableName="M_ATTRIBUTE">
             <column name="M_ATTRIBUTE_ID" type="INT UNSIGNED">
                 <constraints nullable="false" primaryKey="true"/>
@@ -502,7 +513,7 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
             <column defaultValue="" name="NAME" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValue="'M'" name="OBLIGATION" type="enum('M','O','C')">
+            <column defaultValue="M" name="OBLIGATION" type="enum('M','O','C')">
                 <constraints nullable="false"/>
             </column>
             <column name="DEFINITION" type="TEXT">
@@ -514,7 +525,7 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
             <column defaultValueNumeric="44" name="NAMESPACE_ID" type="INT UNSIGNED">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValue="'text'" name="DISP_TYPE" type="enum('text','textarea','select','image')"/>
+            <column defaultValue="text" name="DISP_TYPE" type="enum('text','textarea','select','image')"/>
             <column defaultValueNumeric="999" name="DISP_ORDER" type="INT(3) UNSIGNED">
                 <constraints nullable="false"/>
             </column>
@@ -527,14 +538,14 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
             <column defaultValueNumeric="1" name="DISP_HEIGHT" type="INT(3) UNSIGNED">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValue="'0'" name="DISP_MULTIPLE" type="enum('0','1')">
+            <column defaultValue="0" name="DISP_MULTIPLE" type="enum('0','1')">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValue="'0'" name="INHERIT" type="enum('0','1','2')">
+            <column defaultValue="0" name="INHERIT" type="enum('0','1','2')">
                 <constraints nullable="false"/>
             </column>
             <column defaultValueNumeric="0" name="LANGUAGE_USED" type="TINYINT(1)"/>
-            <column defaultValue="NULL" name="DATA_TYPE" type="enum('reference','','string','integer','decimal','boolean','dateTime','date')"/>
+            <column defaultValueComputed="NULL" name="DATA_TYPE" type="enum('reference','','string','integer','decimal','boolean','dateTime','date')"/>
             <column name="RDF_PROPERTY" type="VARCHAR(100)"/>
         </createTable>
         <modifySql dbms="mysql">
@@ -546,6 +557,7 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
     </changeSet>
 
     <changeSet author="roug" id="rev-21">
+        <validCheckSum>8:56afaa16ad5efd05fb21809b8910c789</validCheckSum>
         <createTable tableName="M_COMPLEX_ATTR">
             <column name="M_COMPLEX_ATTR_ID" type="INT UNSIGNED">
                 <constraints nullable="false" primaryKey="true"/>
@@ -553,7 +565,7 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
             <column defaultValue="" name="NAME" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValue="'O'" name="OBLIGATION" type="enum('M','O','C')">
+            <column defaultValue="O" name="OBLIGATION" type="enum('M','O','C')">
                 <constraints nullable="false"/>
             </column>
             <column name="DEFINITION" type="TEXT">
@@ -568,10 +580,10 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
             <column defaultValueNumeric="999" name="DISP_ORDER" type="INT(3) UNSIGNED">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValue="'7'" name="DISP_WHEN" type="enum('1','2','3','4','5','6','7')">
+            <column defaultValue="7" name="DISP_WHEN" type="enum('1','2','3','4','5','6','7')">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValue="'0'" name="INHERIT" type="enum('0','1','2')">
+            <column defaultValue="0" name="INHERIT" type="enum('0','1','2')">
                 <constraints nullable="false"/>
             </column>
             <column name="HARVESTER_ID" type="VARCHAR(225)"/>
@@ -585,6 +597,7 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
     </changeSet>
 
     <changeSet author="roug" id="rev-22">
+        <validCheckSum>8:00a0fabaac2c0ff84fc1e46b91609969</validCheckSum>
         <createTable tableName="M_COMPLEX_ATTR_FIELD">
             <column defaultValueNumeric="0" name="M_COMPLEX_ATTR_ID" type="INT UNSIGNED">
                 <constraints nullable="false"/>
@@ -601,7 +614,7 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
             <column defaultValueNumeric="0" name="POSITION" type="INT(2)">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValue="'0'" name="PRIORITY" type="enum('0','1')">
+            <column defaultValue="0" name="PRIORITY" type="enum('0','1')">
                 <constraints nullable="false"/>
             </column>
             <column name="HARV_ATTR_FLD_NAME" type="VARCHAR(200)"/>
@@ -660,6 +673,7 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
     </changeSet>
 
     <changeSet author="roug" id="rev-25">
+        <validCheckSum>8:2ddd3932a9b4093b95c03f9228addda0</validCheckSum>
         <createTable tableName="SCHEMA">
             <column name="SCHEMA_ID" type="INT UNSIGNED">
                 <constraints nullable="false" primaryKey="true"/>
@@ -671,7 +685,7 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
             <column name="CONTINUITY_ID" type="VARCHAR(36)">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValue="'Draft'" name="REG_STATUS" type="enum('Draft','Released')">
+            <column defaultValue="Draft" name="REG_STATUS" type="enum('Draft','Released')">
                 <constraints nullable="false"/>
             </column>
             <column defaultValueNumeric="0" name="WORKING_COPY" type="TINYINT(1)">
@@ -694,6 +708,7 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
     </changeSet>
 
     <changeSet author="roug" id="rev-26">
+        <validCheckSum>8:0d93f3d4ae84f724aec1e1bc746ce0b1</validCheckSum>
         <createTable tableName="SCHEMA_SET">
             <column name="SCHEMA_SET_ID" type="INT UNSIGNED">
                 <constraints nullable="false" primaryKey="true"/>
@@ -704,7 +719,7 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
             <column name="CONTINUITY_ID" type="VARCHAR(36)">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValue="'Draft'" name="REG_STATUS" type="enum('Draft','Released')">
+            <column defaultValue="Draft" name="REG_STATUS" type="enum('Draft','Released')">
                 <constraints nullable="false"/>
             </column>
             <column defaultValueNumeric="0" name="WORKING_COPY" type="TINYINT(1)">
@@ -727,6 +742,7 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
     </changeSet>
 
     <changeSet author="roug" id="rev-27">
+        <validCheckSum>8:38e25d34314a9d5b18d3eaedf888d54c</validCheckSum>
         <createTable tableName="T_SCHEMA">
             <column name="SCHEMA_ID" type="INT UNSIGNED">
                 <constraints nullable="false" primaryKey="true"/>
@@ -736,7 +752,7 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
             </column>
             <column name="SCHEMA_SET_ID" type="INT UNSIGNED"/>
             <column name="CONTINUITY_ID" type="VARCHAR(36)"/>
-            <column defaultValue="NULL" name="REG_STATUS" type="enum('Draft','Public draft','Released')"/>
+            <column defaultValueComputed="NULL" name="REG_STATUS" type="enum('Draft','Public draft','Released')"/>
             <column defaultValueNumeric="0" name="WORKING_COPY" type="TINYINT(1)">
                 <constraints nullable="false"/>
             </column>
@@ -760,6 +776,7 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
     </changeSet>
 
     <changeSet author="roug" id="rev-28">
+        <validCheckSum>8:b75118db8771f574aaac0b6e2339f939</validCheckSum>
         <createTable tableName="T_SCHEMA_SET">
             <column name="SCHEMA_SET_ID" type="INT UNSIGNED">
                 <constraints nullable="false" primaryKey="true"/>
@@ -770,7 +787,7 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
             <column name="CONTINUITY_ID" type="VARCHAR(36)">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValue="NULL" name="REG_STATUS" type="enum('Draft','Public draft','Released')"/>
+            <column defaultValueComputed="NULL" name="REG_STATUS" type="enum('Draft','Public draft','Released')"/>
             <column defaultValueNumeric="0" name="WORKING_COPY" type="TINYINT(1)">
                 <constraints nullable="false"/>
             </column>
@@ -791,6 +808,7 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
     </changeSet>
 
     <changeSet author="roug" id="rev-29">
+        <validCheckSum>8:e33d575fdcbb43eee208865b78882917</validCheckSum>
         <createTable tableName="T_SITE_CODE">
             <column name="SITE_CODE_ID" type="INT UNSIGNED">
                 <constraints nullable="false" primaryKey="true"/>
@@ -801,7 +819,7 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
             <column name="SITE_CODE" type="VARCHAR(100)"/>
             <column name="INITIAL_SITE_NAME" type="VARCHAR(200)"/>
             <column name="SITE_CODE_NAT" type="VARCHAR(30)"/>
-            <column defaultValue="'AVAILABLE'" name="STATUS" type="enum('AVAILABLE','ALLOCATED','ASSIGNED','DELETED','DISAPPEARED')">
+            <column defaultValue="AVAILABLE" name="STATUS" type="enum('AVAILABLE','ALLOCATED','ASSIGNED','DELETED','DISAPPEARED')">
                 <constraints nullable="false"/>
             </column>
             <column name="CC_ISO2" type="CHAR(2)"/>
@@ -870,6 +888,7 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
     </changeSet>
 
     <changeSet author="roug" id="rev-32">
+        <validCheckSum>8:8914e70db599f9bf98ed0e8754cf1883</validCheckSum>
         <createTable tableName="T_VOCABULARY_FOLDER">
             <column name="VOCABULARY_FOLDER_ID" type="INT UNSIGNED">
                 <constraints nullable="false" primaryKey="true"/>
@@ -883,7 +902,7 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
             <column name="LABEL" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column defaultValue="'Draft'" name="REG_STATUS" type="enum('Draft','Public draft','Released')">
+            <column defaultValue="Draft" name="REG_STATUS" type="enum('Draft','Public draft','Released')">
                 <constraints nullable="false"/>
             </column>
             <column defaultValueNumeric="0" name="WORKING_COPY" type="TINYINT(1)">
@@ -1839,6 +1858,7 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
     </changeSet>
 
   <changeSet author="enverveli" id="rev-138">
+      <validCheckSum>8:176c5344b1358a16ba28c5cc47232bf1</validCheckSum>
       <comment>Updates to introduce more status types for vocabulary concept. Includes followings:
           --> Add new column STATUS (enum) and update all obsolete concepts to invalid.
           --> Add new column STATUS_MODIFIED
@@ -1863,9 +1883,9 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
                   Default value = 145 = VALID.">
               <constraints nullable="false"/>
           </column>
-          <column name="STATUS_MODIFIED" defaultValue="NULL" type="DATETIME"/>
-          <column name="ACCEPTED_DATE" defaultValue="NULL" type="DATETIME"/>
-          <column name="NOT_ACCEPTED_DATE" defaultValue="NULL" type="DATETIME"/>
+          <column name="STATUS_MODIFIED" defaultValueComputed="NULL" type="DATETIME"/>
+          <column name="ACCEPTED_DATE" defaultValueComputed="NULL" type="DATETIME"/>
+          <column name="NOT_ACCEPTED_DATE" defaultValueComputed="NULL" type="DATETIME"/>
       </addColumn>
       <update tableName="VOCABULARY_CONCEPT">
           <column name="STATUS" valueNumeric="113"/>
