@@ -26,7 +26,9 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.*;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringWriter;
 
 @Service
 public class AclServiceImpl implements AclService {
@@ -125,15 +127,27 @@ public class AclServiceImpl implements AclService {
         }
     }
 
-    protected void writeResultToFile(Document document) throws TransformerException {
+    protected void writeResultToFile(Document document) throws TransformerException, IOException {
         DOMSource source = new DOMSource(document);
 
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
         Transformer transformer = transformerFactory.newTransformer();
         transformer.setOutputProperty(OutputKeys.INDENT, "yes");
         transformer.setOutputProperty(OutputKeys.METHOD, "xml");
-        StreamResult result = new StreamResult(AccessController.getAclProperties().getFileLocalgroups());
-        transformer.transform(source, result);
+
+        // use a StringWriter to capture the transformation output
+        StringWriter writer = new StringWriter();
+        StreamResult tempResult = new StreamResult(writer);
+        transformer.transform(source, tempResult);
+
+        // ensure a newline after XML declaration as the acl library isXmlFileWannabe function checks
+        // if the first line ends with ?> to identify xml files
+        String output = writer.toString().replaceFirst("\\?>", "?>\n");
+
+        // write the modified content to file
+        try (FileWriter fileWriter = new FileWriter(AccessController.getAclProperties().getFileLocalgroups())) {
+            fileWriter.write(output);
+        }
     }
 
     protected Node getGroupNode(String groupName, Document document) throws XPathExpressionException {
