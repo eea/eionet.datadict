@@ -94,7 +94,7 @@
                                             <port>3306</port>
                                         </ports>
                                     </tcp>
-                                    <time>10000</time>
+                                    <time>60000</time>
                                 </wait>
                                 <tmpfs>
                                     <mount>/var/lib/mysql:size=1G</mount>
