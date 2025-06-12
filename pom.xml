@@ -89,7 +89,7 @@
                                 </env>
                                 <wait>
                                     <tcp>
-                                        <mode>mapped</mode>
+                                        <mode>direct</mode>
                                         <ports>
                                             <port>3306</port>
                                         </ports>
