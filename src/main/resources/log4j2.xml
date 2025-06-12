@@ -34,7 +34,7 @@
         </RollingFile>
 
         <Gelf name="GELF" host="logcentral.eea.europa.eu" port="12201"
-              includeFullMessage="true" extractStackTrace="true" filterStackTrace="true"
+              extractStackTrace="true" filterStackTrace="true"
               originHost="${sys:env.dd.host}" />
     </Appenders>
     <Loggers>
