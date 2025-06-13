@@ -85,7 +85,7 @@
         <property name="dbProperties" ref="helpsDbProperties"/>
     </bean>
     
-    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+    <bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource"
         destroy-method="close" primary="true">
         <property name="driverClassName" value="${db.drv}" />
         <property name="url" value="${db.url}" />
@@ -98,12 +98,12 @@
         <property name="testOnBorrow" value="true" />
 
         <property name="minIdle" value="1"/>
-        <property name="maxActive" value="10"/>
-        <property name="maxWait" value="30000" />
+        <property name="maxTotal" value="10"/>
+        <property name="maxWaitMillis" value="30000" />
         <property name="validationQueryTimeout" value="10000"/>
     </bean>
 
-    <bean id="nonTxDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <bean id="nonTxDataSource" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="${db.drv}"/>
         <property name="url" value="${db.url}"/>
         <property name="username" value="${db.usr}"/>
@@ -114,12 +114,12 @@
         <property name="testOnBorrow" value="true"/>
 
         <property name="minIdle" value="1"/>
-        <property name="maxActive" value="10"/>
-        <property name="maxWait" value="30000" />
+        <property name="maxTotal" value="10"/>
+        <property name="maxWaitMillis" value="30000" />
         <property name="validationQueryTimeout" value="10000"/>
     </bean>
 
-    <bean id="mysqlSystemDatabase" class="org.apache.commons.dbcp.BasicDataSource"
+    <bean id="mysqlSystemDatabase" class="org.apache.commons.dbcp2.BasicDataSource"
           destroy-method="close">
         <property name="driverClassName" value="${db.drv}"/>
         <property name="url" value="${mysql.db}"/>
@@ -131,8 +131,8 @@
         <property name="testOnBorrow" value="true"/>
 
         <property name="minIdle" value="1"/>
-        <property name="maxActive" value="10"/>
-        <property name="maxWait" value="30000" />
+        <property name="maxTotal" value="10"/>
+        <property name="maxWaitMillis" value="30000" />
         <property name="validationQueryTimeout" value="10000"/>
     </bean>
 

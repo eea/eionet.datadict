@@ -103,7 +103,7 @@
     </bean>
 
 
-    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+    <bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource"
           destroy-method="close" primary="true">
         <property name="driverClassName" value="${db.drv}"/>
         <property name="url" value="${db.url}"/>
@@ -115,7 +115,7 @@
         <property name="testOnBorrow" value="true"/>
     </bean>
     
-    <bean id="nonTxDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <bean id="nonTxDataSource" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="${db.drv}"/>
         <property name="url" value="${db.url}"/>
         <property name="username" value="${db.usr}"/>
@@ -126,7 +126,7 @@
         <property name="testOnBorrow" value="true"/>
     </bean>
 
-    <bean id="mysqlSystemDatabase" class="org.apache.commons.dbcp.BasicDataSource"
+    <bean id="mysqlSystemDatabase" class="org.apache.commons.dbcp2.BasicDataSource"
           destroy-method="close">
         <property name="driverClassName" value="${db.drv}"/>
         <property name="url" value="${mysql.db}"/>

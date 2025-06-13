@@ -1,6 +1,6 @@
 package eionet.datadict.dal.connection;
 
-import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.stereotype.Component;
 
 @Component
