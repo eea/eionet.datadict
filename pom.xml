@@ -94,6 +94,7 @@
                                             <port>3306</port>
                                         </ports>
                                     </tcp>
+                                    <log>ready for connections</log>
                                     <time>60000</time>
                                 </wait>
                                 <tmpfs>
