@@ -92,11 +92,6 @@
         <property name="username" value="${db.usr}" />
         <property name="password" value="${db.psw}" />
 
-        <property name="connectionInitSqls">
-            <list>
-                <value> use datadict</value>
-            </list>
-        </property>
         <!-- The following two properties required because MySQL kills idle
             connections after 8 hours. -->
         <property name="validationQuery" value="SELECT 1" />
