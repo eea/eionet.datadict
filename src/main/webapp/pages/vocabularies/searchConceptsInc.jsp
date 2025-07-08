@@ -142,7 +142,7 @@
                     <label for="filterCH3Text"><span style="white-space:nowrap;">Vocabulary Concept</span></label>
                 </th>
                 <td class="simple_attr_value">
-                    <input class="smalltext" size="50" name="relatedConceptsFilter.text" id="filterCH3Text" value="${actionBean.relatedConceptsFilter.text}" placeholder="Search by concept identifier, label or definition"/>
+                    <input class="smalltext" size="50" name="relatedConceptsFilter.text" id="filterCH3Text" value="<c:out value='${actionBean.relatedConceptsFilter.text}'/>" placeholder="Search by concept identifier, label or definition"/>
                 </td>
             </tr>
             <tr>
@@ -280,7 +280,7 @@
                     <label for="filterText"><span style="white-space:nowrap;">Vocabulary Concept</span></label>
                 </th>
                 <td class="simple_attr_value">
-                    <input class="smalltext" size="50" name="relatedConceptsFilter.text" id="filterText" value="${actionBean.relatedConceptsFilter.text}" placeholder="Search by concept identifier, label or definition"/>
+                    <input class="smalltext" size="50" name="relatedConceptsFilter.text" id="filterText" value="<c:out value='${actionBean.relatedConceptsFilter.text}'/>" placeholder="Search by concept identifier, label or definition"/>
                 </td>
             </tr>
             <tr>

@@ -226,7 +226,7 @@ else {
                             <a class="helpButton" href="help.jsp?screen=dataset&amp;area=identifier"></a>
                         </td>
                         <td class="input">
-                            <input type="text" class="smalltext" size="59" name="idfier" value="<%=idfier%>" id="txtIdentifier" />
+                            <input type="text" class="smalltext" size="59" name="idfier" value="<%=Util.processForDisplay(idfier, true)%>" id="txtIdentifier" />
                         </td>
                     </tr>
 
@@ -353,7 +353,7 @@ else {
                                     for (int i=0; i<addCriteria.size(); i++) {
                                         Hashtable hash = (Hashtable)addCriteria.get(i);
                                     %>
-                                        <option value="<%=hash.get("id")%>"><%=hash.get("name")%></option><%
+                                        <option value="<%=hash.get("id")%>"><%=Util.processForDisplay((String) hash.get("name"), true)%></option><%
                                     }
                                     %>
                                 </select>

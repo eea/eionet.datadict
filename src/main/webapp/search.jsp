@@ -297,8 +297,8 @@ if (isDisplayOperations){
                     if (fk!=null && fk.equals("true") && sel_ds!=null && sel_ds.length()>0){
                         %>
                         <div style="display:none">
-                            <input type="hidden" name="dataset" value="<%=sel_ds%>"/>
-                            <input type="hidden" name="fk" value="<%=fk%>"/>
+                            <input type="hidden" name="dataset" value="<%=Util.processForDisplay(sel_ds, true)%>" />
+                            <input type="hidden" name="fk" value=<%=Util.processForDisplay(fk, true)%>" />
                         </div><%
                     }
                     %>
@@ -386,7 +386,7 @@ if (isDisplayOperations){
                             <a class="helpButton" href="help.jsp?screen=dataset&amp;area=identifier"></a>
                         </td>
                         <td class="input">
-                            <input type="text" class="smalltext" size="59" name="idfier" value="<%=idfier%>" id="txtIdentifier" />
+                            <input type="text" class="smalltext" size="59" name="idfier" value="<%=Util.processForDisplay(idfier, true)%>" id="txtIdentifier" />
                         </td>
                     </tr>
 
@@ -402,7 +402,7 @@ if (isDisplayOperations){
                             <td width="100"><b>
                                 <a href="attribute/edit/<%=attrID%>">
                                     <font color="black">Name</font></a></b>:</td>
-                            <td width="300"><input type="text" size="40" name="attr_<%=attrID%>" value="<%=attrValue%>"/></td>
+                            <td width="300"><input type="text" size="40" name="attr_<%=attrID%>" value="<%=Util.processForDisplay(attrValue, true)%>" /></td>
                         </tr>
                         <%
                     }
@@ -465,7 +465,7 @@ if (isDisplayOperations){
                                 <a href="attribute/edit/<%=attrID%>">
                                 <font color="black">Definition</font></a></b>:
                             </td>
-                            <td width="300"><input type="text" name="attr_<%=attrID%>" size="40"  value="<%=attrValue%>"/></td>
+                            <td width="300"><input type="text" name="attr_<%=attrID%>" size="40"  value="<%=Util.processForDisplay(attrValue, true)%>" /></td>
                         </tr>
                         <%
                     }
@@ -592,7 +592,7 @@ if (isDisplayOperations){
                                     for (int i=0; i<addCriteria.size(); i++) {
                                         Hashtable hash = (Hashtable)addCriteria.get(i);
                                     %>
-                                        <option value="<%=hash.get("id")%>"><%=hash.get("name")%></option><%
+                                        <option value="<%=hash.get("id")%>"><%=Util.processForDisplay((String) hash.get("name"), true)%></option><%
                                     }
                                     %>
                                 </select>
@@ -664,13 +664,13 @@ if (isDisplayOperations){
                         <%
                         String skipID = request.getParameter("skip_id");
                         if (skipID!=null && skipID.length()!=0){ %>
-                            <input type="hidden" name="skip_id" value="<%=skipID%>"/><%
+                            <input type="hidden" name="skip_id" value="<%=Util.processForDisplay(skipID, true)%>" /><%
                         }
 
                         String selected = request.getParameter("selected");
                         if (selected!=null && selected.length()!=0){
                             %>
-                            <input name='selected' type='hidden' value='<%=selected%>'/>
+                            <input name='selected' type='hidden' value="<%=Util.processForDisplay(selected, true)%>" />
                             <%
                         }
 
@@ -683,11 +683,11 @@ if (isDisplayOperations){
                         }
                         String strExclude = request.getParameter("exclude");
                         if (strExclude!=null){%>
-                            <input type="hidden" name="exclude" value="<%=strExclude%>"/><%
+                            <input type="hidden" name="exclude" value="<%=Util.processForDisplay(strExclude, true)%>"/><%
                         }
                         String skipTableID = request.getParameter("skip_table_id");
                         if (skipTableID!=null && skipTableID.length()>0){ %>
-                            <input type="hidden" name="skip_table_id" value="<%=skipTableID%>"/><%
+                            <input type="hidden" name="skip_table_id" value="<%=Util.processForDisplay(skipTableID, true)%>"/><%
                         }
                         if (fk!=null && fk.equals("true")){ %>
                             <input type="hidden" name="for_fk_use" value="true"/><%
