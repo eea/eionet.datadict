@@ -85,8 +85,8 @@
         <property name="dbProperties" ref="helpsDbProperties"/>
     </bean>
     
-    <bean id="dataSource" class="eionet.RetryingBasicDataSource" init-method="initializeWithRetry"
-          destroy-method="close" primary="true">
+    <bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource"
+        destroy-method="close" primary="true">
         <property name="driverClassName" value="${db.drv}" />
         <property name="url" value="${db.url}" />
         <property name="username" value="${db.usr}" />
