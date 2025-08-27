@@ -77,47 +77,73 @@ pipeline {
 stage('Start IT DB') {
   when { not { buildingTag() } }
   steps {
-    sh '''
-      set -euo pipefail
+    sh '''#!/usr/bin/env bash
+set -euo pipefail
 
-      # Clean up any leftover container from previous runs (ignore if missing)
-      docker rm -f it-mysql >/dev/null 2>&1 || true
+# Clean up any leftover container (ignore if missing)
+docker rm -f it-mysql >/dev/null 2>&1 || true
 
-      # Start a fresh MySQL 5.7 for tests
-      docker run -d --name it-mysql \
-        -e MYSQL_ROOT_PASSWORD=test \
-        -e MYSQL_DATABASE=app \
-        -e MYSQL_USER=app \
-        -e MYSQL_PASSWORD=app \
-        -p 3306:3306 \
-        mysql:5.7
+# Start a fresh MySQL 5.7 for integration tests
+docker run -d --name it-mysql \
+  -e MYSQL_ROOT_PASSWORD=test \
+  -e MYSQL_DATABASE=app \
+  -e MYSQL_USER=app \
+  -e MYSQL_PASSWORD=app \
+  -p 3306:3306 \
+  mysql:5.7
 
-      # Wait until MySQL responds to mysqladmin ping (max 300s)
-      timeout=300
-      start=$(date +%s)
-      until docker exec it-mysql mysqladmin ping -h127.0.0.1 -uroot -ptest --silent; do
-        now=$(date +%s)
-        elapsed=$(( now - start ))
-        if [ $elapsed -ge $timeout ]; then
-          echo "MySQL didn't become ready within ${timeout}s"
-          echo "---- docker ps (it-mysql) ----"
-          docker ps -a --filter "name=it-mysql"
-          echo "---- last 200 lines of it-mysql logs ----"
-          docker logs --tail=200 it-mysql || true
-          exit 1
-        fi
-        sleep 2
-      done
+# Portable host resolver (no external tools required)
+pick_host() {
+  local c1="" c2="" c3="172.17.0.1" c4="127.0.0.1"
+  if command -v ip >/dev/null 2>&1; then
+    c1="$(ip -4 route get 1.1.1.1 2>/dev/null | awk '{print $7; exit}')" || true
+  fi
+  c2="$(hostname -I 2>/dev/null | awk '{print $1}')" || true
+  for h in "$c1" "$c2" "$c3" "$c4"; do
+    [ -n "$h" ] || continue
+    # use Bash /dev/tcp to check if port 3306 is accepting connections
+    (exec 3<>/dev/tcp/"$h"/3306) >/dev/null 2>&1 && { echo "$h"; return 0; }
+  done
+  return 1
+}
 
-      echo "MySQL READY"
-    '''
-  }
-  post {
-    failure {
-      // Publish container logs to help diagnose slow/failed boot
-      sh 'docker logs it-mysql > it-mysql.log 2>&1 || true'
-      archiveArtifacts artifacts: 'it-mysql.log', fingerprint: true, onlyIfSuccessful: false
-    }
+HOST_IP="$(pick_host)" || {
+  echo "ERROR: cannot reach MySQL on any candidate host"; 
+  docker logs --tail=200 it-mysql || true
+  exit 1
+}
+echo "Resolved MySQL host for IT: $HOST_IP"
+
+# Wait until MySQL is ready: either the log says 'ready for connections'
+# OR TCP accepts connections steadily (3 consecutive checks). Timeout 300s.
+deadline=$((SECONDS+300))
+ok_tcp=0
+while (( SECONDS < deadline )); do
+  if docker logs it-mysql 2>&1 | grep -qi "ready for connections"; then
+    echo "MySQL READY (logs)"
+    break
+  fi
+  if (exec 3<>/dev/tcp/"$HOST_IP"/3306) >/dev/null 2>&1; then
+    ok_tcp=$((ok_tcp+1))
+  else
+    ok_tcp=0
+  fi
+  if (( ok_tcp >= 3 )); then
+    echo "MySQL READY (tcp)"
+    break
+  fi
+  sleep 2
+done
+
+if (( SECONDS >= deadline )); then
+  echo "MySQL didn't become ready within 300s"
+  echo "---- docker ps (it-mysql) ----"
+  docker ps -a --filter "name=it-mysql"
+  echo "---- last 200 lines of it-mysql logs ----"
+  docker logs --tail=200 it-mysql || true
+  exit 1
+fi
+'''
   }
 }
 
