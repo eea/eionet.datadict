@@ -78,25 +78,37 @@ pipeline {
         sh '''
           set -e
 
-          # --- Fix rapid: use the host IP instead of 127.0.0.1 for DB connections ---
-          # This makes the DB reachable when the Jenkins agent is not on the Docker host network namespace.
-          HOST_IP=$(ip -4 route get 1.1.1.1 | awk '{print $7; exit}')
+          # --- Portable host resolver for the published MySQL (no 'ip' dependency) ---
+          pick_host() {
+            # Prefer real host IP if 'ip' exists
+            if command -v ip >/dev/null 2>&1; then
+              C1="$(ip -4 route get 1.1.1.1 2>/dev/null | awk \'{print $7; exit}\')"
+            fi
+            # Fallbacks that often exist on minimal agents
+            C2="$(hostname -I 2>/dev/null | awk \'{print $1}\')"
+            # Docker bridge (often reachable when service is -p published)
+            C3="172.17.0.1"
+            # Final fallback: 127.0.0.1 (works when agent shares host netns)
+            C4="127.0.0.1"
 
-          # Build runtime JDBC URL against the discovered host IP; do NOT touch credentials.
+            for H in "$C1" "$C2" "$C3" "$C4"; do
+              [ -n "$H" ] || continue
+              # Check reachability using bash's /dev/tcp (no nc dependency)
+              (exec 3<>/dev/tcp/$H/3306) >/dev/null 2>&1 && { echo "$H"; return 0; }
+            done
+            return 1
+          }
+
+          HOST_IP="$(pick_host)" || { echo "ERROR: cannot reach MySQL on any candidate host"; exit 1; }
+          echo "Resolved MySQL host: $HOST_IP"
+
           RUNTIME_DB_URL="jdbc:mysql://${HOST_IP}:3306/app?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
           echo "Using SPRING_DATASOURCE_URL=${RUNTIME_DB_URL}"
 
-          # Expose DB connection for tests (leave username/password as you already configured)
           export SPRING_DATASOURCE_URL="$RUNTIME_DB_URL"
           export SPRING_DATASOURCE_USERNAME="$DB_USER"
           export SPRING_DATASOURCE_PASSWORD="$DB_PASS"
 
-          # Optional: quick connectivity check if 'nc' is available
-          if command -v nc >/dev/null 2>&1; then
-            nc -zv "${HOST_IP}" 3306 || true
-          fi
-
-          # Keep your existing goals/profiles
           mvn clean -B -V -P docker verify pmd:pmd pmd:cpd spotbugs:spotbugs checkstyle:checkstyle
         '''
       }
