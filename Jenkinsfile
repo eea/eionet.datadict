@@ -104,62 +104,63 @@ pipeline {
       }
     }
 
-    stage('Integration Tests') {
-      when { not { buildingTag() } }
-      tools {
-        maven 'maven3'
-        jdk 'Java8'
-      }
-      environment {
-        DB_USER = 'app'
-        DB_PASS = 'app'
-      }
-      steps {
-        sh '''
-          set -eux
+stage('Integration Tests') {
+  when { not { buildingTag() } }
+  tools {
+    maven 'maven3'
+    jdk 'Java8'
+  }
+  environment {
+    DB_USER = 'app'
+    DB_PASS = 'app'
+  }
+  steps {
+    sh '''
+      set -eux
 
-          # Resolve the host that exposes container port 3306 (portable, no extra deps)
-          pick_host() {
-            if command -v ip >/dev/null 2>&1; then
-              C1="$(ip -4 route get 1.1.1.1 2>/dev/null | awk '{print $7; exit}')"
-            fi
-            C2="$(hostname -I 2>/dev/null | awk '{print $1}')"
-            C3="172.17.0.1"
-            C4="127.0.0.1"
-            for H in "$C1" "$C2" "$C3" "$C4"; do
-              [ -n "$H" ] || continue
-              (exec 3<>/dev/tcp/$H/3306) >/dev/null 2>&1 && { echo "$H"; return 0; }
-            done
-            return 1
-          }
+      # Robust host resolver that works even with 'set -u'
+      pick_host() {
+        local c1="" c2="" c3="172.17.0.1" c4="127.0.0.1"
+        if command -v ip >/dev/null 2>&1; then
+          c1="$(ip -4 route get 1.1.1.1 2>/dev/null | awk '{print $7; exit}')" || true
+        fi
+        c2="$(hostname -I 2>/dev/null | awk '{print $1}')" || true
 
-          HOST_IP="$(pick_host)" || { echo "ERROR: cannot reach MySQL on any candidate host"; exit 1; }
-          echo "Resolved MySQL host for IT: $HOST_IP"
-
-          export SPRING_DATASOURCE_URL="jdbc:mysql://${HOST_IP}:3306/app?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
-          export SPRING_DATASOURCE_USERNAME="$DB_USER"
-          export SPRING_DATASOURCE_PASSWORD="$DB_PASS"
-
-          # Run only integration tests (skip unit tests here)
-          mvn -B -V -P docker -DskipUTs=true verify
-        '''
+        for h in "$c1" "$c2" "$c3" "$c4"; do
+          [ -n "$h" ] || continue
+          # reachability test without nc
+          (exec 3<>/dev/tcp/"$h"/3306) >/dev/null 2>&1 && { echo "$h"; return 0; }
+        done
+        return 1
       }
-      post {
-        always {
-          junit 'target/failsafe-reports/*.xml'
-          publishHTML target:[
-            allowMissing: true,
-            alwaysLinkToLastBuild: false,
-            keepAll: true,
-            reportDir: 'target/site/jacoco-it-cov-report',
-            reportFiles: 'index.html',
-            reportName: "Detailed IT Coverage Report"
-          ]
-          // cleanup the disposable DB
-          sh 'docker rm -f it-mysql || true'
-        }
-      }
+
+      HOST_IP="$(pick_host)" || { echo "ERROR: cannot reach MySQL on any candidate host"; exit 1; }
+      echo "Resolved MySQL host for IT: $HOST_IP"
+
+      export SPRING_DATASOURCE_URL="jdbc:mysql://${HOST_IP}:3306/app?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
+      export SPRING_DATASOURCE_USERNAME="$DB_USER"
+      export SPRING_DATASOURCE_PASSWORD="$DB_PASS"
+
+      # Run only integration tests (skip UTs here)
+      mvn -B -V -P docker -DskipUTs=true verify
+    '''
+  }
+  post {
+    always {
+      junit 'target/failsafe-reports/*.xml'
+      publishHTML target:[
+        allowMissing: true,
+        alwaysLinkToLastBuild: false,
+        keepAll: true,
+        reportDir: 'target/site/jacoco-it-cov-report',
+        reportFiles: 'index.html',
+        reportName: "Detailed IT Coverage Report"
+      ]
+      sh 'docker rm -f it-mysql || true'
     }
+  }
+}
+
 
     stage ('Sonarqube') {
       when { not { buildingTag() } }
