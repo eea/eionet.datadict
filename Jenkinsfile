@@ -13,6 +13,7 @@ pipeline {
   }
 
   stages {
+
     stage('Project Build') {
       tools {
         maven 'maven3'
@@ -22,7 +23,7 @@ pipeline {
         withCredentials([string(credentialsId: 'jenkins-maven-token', variable: 'GITHUB_TOKEN')]) {
           sh '''mkdir -p ~/.m2'''
           sh '''sed "s/TOKEN/$GITHUB_TOKEN/" m2.settings.tpl.xml > ~/.m2/settings.xml'''
-          // Build package fast (skip tests here)
+          // Fast build: skip tests here
           sh '''mvn clean -B -V verify -Dmaven.test.skip=true'''
         }
       }
@@ -33,7 +34,75 @@ pipeline {
       }
     }
 
-    // --- Unit tests: use embedded/in-memory DB (no external MySQL) ---
+    // Start a disposable MySQL for the whole UT+IT window (dynamic host port)
+    stage('Start Test DB') {
+      when { not { buildingTag() } }
+      steps {
+        sh '''#!/usr/bin/env bash
+set -euo pipefail
+
+docker rm -f it-mysql >/dev/null 2>&1 || true
+docker run -d --name it-mysql -P \
+  -e MYSQL_ROOT_PASSWORD=test \
+  -e MYSQL_DATABASE=app \
+  -e MYSQL_USER=app \
+  -e MYSQL_PASSWORD=app \
+  mysql:5.7
+
+# Extract the published host port for container 3306/tcp
+HOST_PORT="$(docker inspect -f '{{ (index (index .NetworkSettings.Ports "3306/tcp") 0).HostPort }}' it-mysql)"
+echo "$HOST_PORT" > mysql_host_port.txt
+
+# Resolve a host IP reachable from the agent
+pick_host() {
+  local c1="" c2="" c3="172.17.0.1" c4="127.0.0.1"
+  if command -v ip >/dev/null 2>&1; then
+    c1="$(ip -4 route get 1.1.1.1 2>/dev/null | awk '{print $7; exit}')" || true
+  fi
+  c2="$(hostname -I 2>/dev/null | awk '{print $1}')" || true
+  for h in "$c1" "$c2" "$c3" "$c4"; do
+    [ -n "$h" ] || continue
+    (exec 3<>/dev/tcp/"$h"/"$HOST_PORT") >/dev/null 2>&1 && { echo "$h"; return 0; }
+  done
+  return 1
+}
+HOST_IP="$(pick_host)" || {
+  echo "ERROR: cannot reach MySQL on any candidate host/port ${HOST_PORT}"
+  docker logs --tail=200 it-mysql || true
+  exit 1
+}
+echo "$HOST_IP" > mysql_host_ip.txt
+echo "MySQL published on ${HOST_IP}:${HOST_PORT}"
+
+# Wait until MySQL is actually ready (logs OR steady TCP)
+deadline=$((SECONDS+300))
+ok_tcp=0
+while (( SECONDS < deadline )); do
+  if docker logs it-mysql 2>&1 | grep -qi "ready for connections"; then
+    echo "MySQL READY (logs)"; break
+  fi
+  if (exec 3<>/dev/tcp/"$HOST_IP"/"$HOST_PORT") >/dev/null 2>&1; then
+    ok_tcp=$((ok_tcp+1))
+  else
+    ok_tcp=0
+  fi
+  if (( ok_tcp >= 3 )); then
+    echo "MySQL READY (tcp)"; break
+  fi
+  sleep 2
+done
+
+if (( SECONDS >= deadline )); then
+  echo "MySQL didn't become ready within 300s"
+  docker ps -a --filter "name=it-mysql" || true
+  docker logs --tail=200 it-mysql || true
+  exit 1
+fi
+'''
+      }
+    }
+
+    // Unit tests: use embedded/in-memory DB; do NOT touch the external DB here
     stage ('Unit Tests') {
       when { not { buildingTag() } }
       tools {
@@ -41,15 +110,11 @@ pipeline {
         jdk 'Java8'
       }
       steps {
-        sh '''
-          set -eux
-          # Run ONLY unit tests with embedded DB config
-          mvn -B -V -Denv=unittest -DskipITs=true clean test
-
-          # Static analysis and unit coverage report
-          mvn -B -V -Denv=unittest -DskipITs=true \
-            pmd:pmd pmd:cpd spotbugs:spotbugs checkstyle:checkstyle jacoco:report
-        '''
+        sh '''#!/usr/bin/env bash
+set -eux
+mvn -B -V -Denv=unittest -DskipITs=true clean test
+mvn -B -V -Denv=unittest -DskipITs=true pmd:pmd pmd:cpd spotbugs:spotbugs checkstyle:checkstyle jacoco:report
+'''
       }
       post {
         always {
@@ -74,7 +139,8 @@ pipeline {
       }
     }
 
-    // --- Integration tests: let the POM (docker-maven-plugin) start/stop MySQL ---
+    // Integration tests: reuse the same DB and pass required Spring test.* properties.
+    // Also skip any docker-maven-plugin DB to avoid a second MySQL.
     stage('Integration Tests') {
       when { not { buildingTag() } }
       tools {
@@ -82,16 +148,37 @@ pipeline {
         jdk 'Java8'
       }
       steps {
-        sh '''
-          set -eux
-          # Run ONLY integration tests; the POM starts mysql:5.7 and maps a host port
-          mvn -B -V -Denv=jenkins -DskipUTs=true verify
-        '''
+        sh '''#!/usr/bin/env bash
+set -euo pipefail
+
+HOST_IP="$(cat mysql_host_ip.txt)"
+HOST_PORT="$(cat mysql_host_port.txt)"
+IT_JDBC_URL="jdbc:mysql://${HOST_IP}:${HOST_PORT}/app?useUnicode=true&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
+
+echo "Using IT DB: ${IT_JDBC_URL}"
+
+# Provide both the generic Spring DS envs (if code reads them)
+# and the explicit properties your tests expect (test.mysql.*).
+export SPRING_DATASOURCE_URL="${IT_JDBC_URL}"
+export SPRING_DATASOURCE_USERNAME="app"
+export SPRING_DATASOURCE_PASSWORD="app"
+
+# Optional: guard against previous Maven PATH issues by printing versions
+mvn -version || true
+java -version || true
+
+# Run ONLY ITs; skip UTs; and prevent docker-maven-plugin from starting its own DB
+mvn -B -V -Denv=jenkins -DskipUTs=true -Ddocker.skip=true -DskipDocker=true \
+  -Dtest.mysql.url="${IT_JDBC_URL}" \
+  -Dtest.mysql.user=app \
+  -Dtest.mysql.username=app \
+  -Dtest.mysql.password=app \
+  verify
+'''
       }
       post {
         always {
           junit 'target/failsafe-reports/*.xml'
-          // IT and merged coverage HTML reports (allowMissing in case of failures)
           publishHTML target:[
             allowMissing: true,
             alwaysLinkToLastBuild: false,
@@ -169,23 +256,18 @@ pipeline {
 
   post {
     always {
+      // Always clean the DB container at the end of the pipeline
+      sh 'docker rm -f it-mysql >/dev/null 2>&1 || true'
+
       cleanWs(cleanWhenAborted: true, cleanWhenFailure: true, cleanWhenNotBuilt: true, cleanWhenSuccess: true, cleanWhenUnstable: true, deleteDirs: true)
 
       script {
         def url = "${env.BUILD_URL}/display/redirect"
         def status = currentBuild.currentResult
         def subject = "${status}: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'"
-        def summary = "${subject} (${url})"
         def details = """<h1>${env.JOB_NAME} - Build #${env.BUILD_NUMBER} - ${status}</h1>
                          <p>Check console output at <a href="${url}">${env.JOB_BASE_NAME} - #${env.BUILD_NUMBER}</a></p>
                       """
-
-        def color = '#FFFF00'
-        if (status == 'SUCCESS') {
-          color = '#00FF00'
-        } else if (status == 'FAILURE') {
-          color = '#FF0000'
-        }
 
         withCredentials([string(credentialsId: 'eworx-email-list', variable: 'EMAIL_LIST')]) {
           emailext(
