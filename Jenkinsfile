@@ -13,7 +13,6 @@ pipeline {
   }
 
   stages {
-
     stage('Project Build') {
       tools {
         maven 'maven3'
@@ -23,8 +22,8 @@ pipeline {
         withCredentials([string(credentialsId: 'jenkins-maven-token', variable: 'GITHUB_TOKEN')]) {
           sh '''mkdir -p ~/.m2'''
           sh '''sed "s/TOKEN/$GITHUB_TOKEN/" m2.settings.tpl.xml > ~/.m2/settings.xml'''
-          // Fast build: skip tests here
-          sh '''mvn clean -B -V verify -Dmaven.test.skip=true'''
+          // Fast build: do NOT touch integration phases, do NOT let POM's docker-maven-plugin run.
+          sh '''mvn -B -V -DskipTests=true -Ddocker.skip=true -DskipDocker=true clean package'''
         }
       }
       post {
@@ -34,7 +33,7 @@ pipeline {
       }
     }
 
-    // Start a disposable MySQL for the whole UT+IT window (dynamic host port)
+    // Start a disposable MySQL for the whole UT+IT window (random published port)
     stage('Start Test DB') {
       when { not { buildingTag() } }
       steps {
@@ -47,13 +46,27 @@ docker run -d --name it-mysql -P \
   -e MYSQL_DATABASE=app \
   -e MYSQL_USER=app \
   -e MYSQL_PASSWORD=app \
-  mysql:5.7
+  mysql:5.7 >/dev/null
 
-# Extract the published host port for container 3306/tcp
-HOST_PORT="$(docker inspect -f '{{ (index (index .NetworkSettings.Ports "3306/tcp") 0).HostPort }}' it-mysql)"
+# --- wait until Docker publishes a host port for 3306/tcp ---
+HOST_PORT=""
+for i in $(seq 1 60); do
+  MAP="$(docker port it-mysql 3306/tcp 2>/dev/null || true)"
+  if [ -n "$MAP" ]; then
+    HOST_PORT="$(echo "$MAP" | sed -E 's/.*:([0-9]+)$/\\1/' | tail -n1)"
+  fi
+  [ -n "$HOST_PORT" ] && break
+  sleep 1
+done
+if [ -z "$HOST_PORT" ]; then
+  echo "ERROR: could not determine published port for 3306/tcp"
+  docker ps -a --filter "name=it-mysql" || true
+  docker logs --tail=200 it-mysql || true
+  exit 1
+fi
 echo "$HOST_PORT" > mysql_host_port.txt
 
-# Resolve a host IP reachable from the agent
+# --- resolve a reachable host IP from the agent and verify TCP ---
 pick_host() {
   local c1="" c2="" c3="172.17.0.1" c4="127.0.0.1"
   if command -v ip >/dev/null 2>&1; then
@@ -67,14 +80,14 @@ pick_host() {
   return 1
 }
 HOST_IP="$(pick_host)" || {
-  echo "ERROR: cannot reach MySQL on any candidate host/port ${HOST_PORT}"
+  echo "ERROR: cannot reach MySQL on any candidate host for port ${HOST_PORT}"
   docker logs --tail=200 it-mysql || true
   exit 1
 }
 echo "$HOST_IP" > mysql_host_ip.txt
 echo "MySQL published on ${HOST_IP}:${HOST_PORT}"
 
-# Wait until MySQL is actually ready (logs OR steady TCP)
+# --- wait until server is ready (logs OR steady TCP) ---
 deadline=$((SECONDS+300))
 ok_tcp=0
 while (( SECONDS < deadline )); do
@@ -91,7 +104,6 @@ while (( SECONDS < deadline )); do
   fi
   sleep 2
 done
-
 if (( SECONDS >= deadline )); then
   echo "MySQL didn't become ready within 300s"
   docker ps -a --filter "name=it-mysql" || true
@@ -102,7 +114,7 @@ fi
       }
     }
 
-    // Unit tests: use embedded/in-memory DB; do NOT touch the external DB here
+    // UNIT TESTS: use embedded/in-memory DB (no external MySQL needed)
     stage ('Unit Tests') {
       when { not { buildingTag() } }
       tools {
@@ -139,8 +151,8 @@ mvn -B -V -Denv=unittest -DskipITs=true pmd:pmd pmd:cpd spotbugs:spotbugs checks
       }
     }
 
-    // Integration tests: reuse the same DB and pass required Spring test.* properties.
-    // Also skip any docker-maven-plugin DB to avoid a second MySQL.
+    // INTEGRATION TESTS: reuse the same MySQL and pass the properties your tests expect.
+    // Also skip any docker-maven-plugin DB to avoid a second MySQL from the POM.
     stage('Integration Tests') {
       when { not { buildingTag() } }
       tools {
@@ -156,18 +168,11 @@ HOST_PORT="$(cat mysql_host_port.txt)"
 IT_JDBC_URL="jdbc:mysql://${HOST_IP}:${HOST_PORT}/app?useUnicode=true&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
 
 echo "Using IT DB: ${IT_JDBC_URL}"
-
-# Provide both the generic Spring DS envs (if code reads them)
-# and the explicit properties your tests expect (test.mysql.*).
 export SPRING_DATASOURCE_URL="${IT_JDBC_URL}"
 export SPRING_DATASOURCE_USERNAME="app"
 export SPRING_DATASOURCE_PASSWORD="app"
 
-# Optional: guard against previous Maven PATH issues by printing versions
-mvn -version || true
-java -version || true
-
-# Run ONLY ITs; skip UTs; and prevent docker-maven-plugin from starting its own DB
+# Only integration tests; skip UTs; prevent docker-maven-plugin from spawning another DB
 mvn -B -V -Denv=jenkins -DskipUTs=true -Ddocker.skip=true -DskipDocker=true \
   -Dtest.mysql.url="${IT_JDBC_URL}" \
   -Dtest.mysql.user=app \
@@ -256,7 +261,7 @@ mvn -B -V -Denv=jenkins -DskipUTs=true -Ddocker.skip=true -DskipDocker=true \
 
   post {
     always {
-      // Always clean the DB container at the end of the pipeline
+      // Clean DB container at the very end (safe if missing)
       sh 'docker rm -f it-mysql >/dev/null 2>&1 || true'
 
       cleanWs(cleanWhenAborted: true, cleanWhenFailure: true, cleanWhenNotBuilt: true, cleanWhenSuccess: true, cleanWhenUnstable: true, deleteDirs: true)
@@ -268,7 +273,6 @@ mvn -B -V -Denv=jenkins -DskipUTs=true -Ddocker.skip=true -DskipDocker=true \
         def details = """<h1>${env.JOB_NAME} - Build #${env.BUILD_NUMBER} - ${status}</h1>
                          <p>Check console output at <a href="${url}">${env.JOB_BASE_NAME} - #${env.BUILD_NUMBER}</a></p>
                       """
-
         withCredentials([string(credentialsId: 'eworx-email-list', variable: 'EMAIL_LIST')]) {
           emailext(
             to: "$EMAIL_LIST",
