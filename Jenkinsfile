@@ -13,6 +13,7 @@ pipeline {
   }
 
   stages {
+
     stage('Project Build') {
       tools {
         maven 'maven3'
@@ -22,8 +23,8 @@ pipeline {
         withCredentials([string(credentialsId: 'jenkins-maven-token', variable: 'GITHUB_TOKEN')]) {
           sh '''mkdir -p ~/.m2'''
           sh '''sed "s/TOKEN/$GITHUB_TOKEN/" m2.settings.tpl.xml > ~/.m2/settings.xml'''
-          // Fast build: do NOT touch integration phases, do NOT let POM's docker-maven-plugin run.
-          sh '''mvn -B -V -DskipTests=true -Ddocker.skip=true -DskipDocker=true clean package'''
+          // Fast build: skip tests here
+          sh '''mvn -B -V -Dmaven.test.skip=true clean package'''
         }
       }
       post {
@@ -33,88 +34,7 @@ pipeline {
       }
     }
 
-    // Start a disposable MySQL for the whole UT+IT window (random published port)
-    stage('Start Test DB') {
-      when { not { buildingTag() } }
-      steps {
-        sh '''#!/usr/bin/env bash
-set -euo pipefail
-
-docker rm -f it-mysql >/dev/null 2>&1 || true
-docker run -d --name it-mysql -P \
-  -e MYSQL_ROOT_PASSWORD=test \
-  -e MYSQL_DATABASE=app \
-  -e MYSQL_USER=app \
-  -e MYSQL_PASSWORD=app \
-  mysql:5.7 >/dev/null
-
-# --- wait until Docker publishes a host port for 3306/tcp ---
-HOST_PORT=""
-for i in $(seq 1 60); do
-  MAP="$(docker port it-mysql 3306/tcp 2>/dev/null || true)"
-  if [ -n "$MAP" ]; then
-    HOST_PORT="$(echo "$MAP" | sed -E 's/.*:([0-9]+)$/\\1/' | tail -n1)"
-  fi
-  [ -n "$HOST_PORT" ] && break
-  sleep 1
-done
-if [ -z "$HOST_PORT" ]; then
-  echo "ERROR: could not determine published port for 3306/tcp"
-  docker ps -a --filter "name=it-mysql" || true
-  docker logs --tail=200 it-mysql || true
-  exit 1
-fi
-echo "$HOST_PORT" > mysql_host_port.txt
-
-# --- resolve a reachable host IP from the agent and verify TCP ---
-pick_host() {
-  local c1="" c2="" c3="172.17.0.1" c4="127.0.0.1"
-  if command -v ip >/dev/null 2>&1; then
-    c1="$(ip -4 route get 1.1.1.1 2>/dev/null | awk '{print $7; exit}')" || true
-  fi
-  c2="$(hostname -I 2>/dev/null | awk '{print $1}')" || true
-  for h in "$c1" "$c2" "$c3" "$c4"; do
-    [ -n "$h" ] || continue
-    (exec 3<>/dev/tcp/"$h"/"$HOST_PORT") >/dev/null 2>&1 && { echo "$h"; return 0; }
-  done
-  return 1
-}
-HOST_IP="$(pick_host)" || {
-  echo "ERROR: cannot reach MySQL on any candidate host for port ${HOST_PORT}"
-  docker logs --tail=200 it-mysql || true
-  exit 1
-}
-echo "$HOST_IP" > mysql_host_ip.txt
-echo "MySQL published on ${HOST_IP}:${HOST_PORT}"
-
-# --- wait until server is ready (logs OR steady TCP) ---
-deadline=$((SECONDS+300))
-ok_tcp=0
-while (( SECONDS < deadline )); do
-  if docker logs it-mysql 2>&1 | grep -qi "ready for connections"; then
-    echo "MySQL READY (logs)"; break
-  fi
-  if (exec 3<>/dev/tcp/"$HOST_IP"/"$HOST_PORT") >/dev/null 2>&1; then
-    ok_tcp=$((ok_tcp+1))
-  else
-    ok_tcp=0
-  fi
-  if (( ok_tcp >= 3 )); then
-    echo "MySQL READY (tcp)"; break
-  fi
-  sleep 2
-done
-if (( SECONDS >= deadline )); then
-  echo "MySQL didn't become ready within 300s"
-  docker ps -a --filter "name=it-mysql" || true
-  docker logs --tail=200 it-mysql || true
-  exit 1
-fi
-'''
-      }
-    }
-
-    // UNIT TESTS: use embedded/in-memory DB (no external MySQL needed)
+    // Unit tests use embedded/in-memory config. No external DB here.
     stage ('Unit Tests') {
       when { not { buildingTag() } }
       tools {
@@ -122,11 +42,12 @@ fi
         jdk 'Java8'
       }
       steps {
-        sh '''#!/usr/bin/env bash
-set -eux
-mvn -B -V -Denv=unittest -DskipITs=true clean test
-mvn -B -V -Denv=unittest -DskipITs=true pmd:pmd pmd:cpd spotbugs:spotbugs checkstyle:checkstyle jacoco:report
-'''
+        sh '''
+          set -eux
+          mvn -B -V -Denv=unittest -DskipITs=true clean test
+          mvn -B -V -Denv=unittest -DskipITs=true \
+            pmd:pmd pmd:cpd spotbugs:spotbugs checkstyle:checkstyle jacoco:report
+        '''
       }
       post {
         always {
@@ -151,8 +72,7 @@ mvn -B -V -Denv=unittest -DskipITs=true pmd:pmd pmd:cpd spotbugs:spotbugs checks
       }
     }
 
-    // INTEGRATION TESTS: reuse the same MySQL and pass the properties your tests expect.
-    // Also skip any docker-maven-plugin DB to avoid a second MySQL from the POM.
+    // Integration tests: let the POM (docker-maven-plugin) start/stop MySQL.
     stage('Integration Tests') {
       when { not { buildingTag() } }
       tools {
@@ -160,26 +80,17 @@ mvn -B -V -Denv=unittest -DskipITs=true pmd:pmd pmd:cpd spotbugs:spotbugs checks
         jdk 'Java8'
       }
       steps {
-        sh '''#!/usr/bin/env bash
-set -euo pipefail
-
-HOST_IP="$(cat mysql_host_ip.txt)"
-HOST_PORT="$(cat mysql_host_port.txt)"
-IT_JDBC_URL="jdbc:mysql://${HOST_IP}:${HOST_PORT}/app?useUnicode=true&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
-
-echo "Using IT DB: ${IT_JDBC_URL}"
-export SPRING_DATASOURCE_URL="${IT_JDBC_URL}"
-export SPRING_DATASOURCE_USERNAME="app"
-export SPRING_DATASOURCE_PASSWORD="app"
-
-# Only integration tests; skip UTs; prevent docker-maven-plugin from spawning another DB
-mvn -B -V -Denv=jenkins -DskipUTs=true -Ddocker.skip=true -DskipDocker=true \
-  -Dtest.mysql.url="${IT_JDBC_URL}" \
-  -Dtest.mysql.user=app \
-  -Dtest.mysql.username=app \
-  -Dtest.mysql.password=app \
-  verify
-'''
+        // Optional Log4j2 safety knobs to avoid NPE 'age' during init; harmless if unused.
+        withEnv([
+          "MAVEN_OPTS=${env.MAVEN_OPTS} -DqueryLogRetentionDays=14 -DqueryLogRetainAll=false -DlogFilePath=${env.WORKSPACE}/it-logs"
+        ]) {
+          sh '''
+            set -eux
+            mkdir -p "$WORKSPACE/it-logs"
+            # Run ONLY ITs; do NOT skip Docker here (plugin must bring up MySQL & wire props).
+            mvn -B -V -Denv=jenkins -DskipUTs=true verify
+          '''
+        }
       }
       post {
         always {
@@ -252,37 +163,4 @@ mvn -B -V -Denv=jenkins -DskipUTs=true -Ddocker.skip=true -DskipDocker=true \
         node(label: 'docker') {
           withCredentials([string(credentialsId: 'eea-jenkins-token', variable: 'GITHUB_TOKEN'),
                            usernamePassword(credentialsId: 'jekinsdockerhub', usernameVariable: 'DOCKERHUB_USER', passwordVariable: 'DOCKERHUB_PASS')]) {
-            sh '''docker pull eeacms/gitflow; docker run -i --rm --name="$BUILD_TAG-release"  -e GIT_BRANCH="$BRANCH_NAME" -e GIT_NAME="$GIT_NAME" -e DOCKERHUB_REPO="$registry" -e GIT_TOKEN="$GITHUB_TOKEN" -e DOCKERHUB_USER="$DOCKERHUB_USER" -e DOCKERHUB_PASS="$DOCKERHUB_PASS"  -e RANCHER_CATALOG_PATHS="$datadictTemplate" -e GITFLOW_BEHAVIOR="RUN_ON_TAG" eeacms/gitflow'''
-          }
-        }
-      }
-    }
-  }
-
-  post {
-    always {
-      // Clean DB container at the very end (safe if missing)
-      sh 'docker rm -f it-mysql >/dev/null 2>&1 || true'
-
-      cleanWs(cleanWhenAborted: true, cleanWhenFailure: true, cleanWhenNotBuilt: true, cleanWhenSuccess: true, cleanWhenUnstable: true, deleteDirs: true)
-
-      script {
-        def url = "${env.BUILD_URL}/display/redirect"
-        def status = currentBuild.currentResult
-        def subject = "${status}: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'"
-        def details = """<h1>${env.JOB_NAME} - Build #${env.BUILD_NUMBER} - ${status}</h1>
-                         <p>Check console output at <a href="${url}">${env.JOB_BASE_NAME} - #${env.BUILD_NUMBER}</a></p>
-                      """
-        withCredentials([string(credentialsId: 'eworx-email-list', variable: 'EMAIL_LIST')]) {
-          emailext(
-            to: "$EMAIL_LIST",
-            subject: '$DEFAULT_SUBJECT',
-            body: details,
-            attachLog: true,
-            compressLog: true,
-          )
-        }
-      }
-    }
-  }
-}
+            sh '''docker pull eeacms/gitflow; docker run -i --rm --name="$BUILD_TAG-release"  -e GIT_BRANCH="$BRANCH_NAME" -e GIT_NAME="$GIT_NAME" -e_
