@@ -1,6 +1,3 @@
-// Jenkinsfile — eionet.datadict
-// NOTE: Comments are in English as requested.
-
 pipeline {
   agent {
     node { label "docker-host" }
@@ -16,7 +13,6 @@ pipeline {
   }
 
   stages {
-
     stage('Project Build') {
       tools {
         maven 'maven3'
@@ -26,8 +22,8 @@ pipeline {
         withCredentials([string(credentialsId: 'jenkins-maven-token', variable: 'GITHUB_TOKEN')]) {
           sh '''mkdir -p ~/.m2'''
           sh '''sed "s/TOKEN/$GITHUB_TOKEN/" m2.settings.tpl.xml > ~/.m2/settings.xml'''
-          // Build package (skip tests here)
-          sh '''mvn -B -V -Dmaven.test.skip=true clean verify'''
+          // Build package fast (skip tests here)
+          sh '''mvn clean -B -V verify -Dmaven.test.skip=true'''
         }
       }
       post {
@@ -37,62 +33,84 @@ pipeline {
       }
     }
 
-    stage('Unit Tests') {
+    // --- Unit tests: use embedded/in-memory DB (no external MySQL) ---
+    stage ('Unit Tests') {
+      when { not { buildingTag() } }
       tools {
         maven 'maven3'
         jdk 'Java8'
       }
       steps {
-        // IMPORTANT:
-        // - Do NOT start any DB here; unit tests use their own embedded DB (env=unittest).
-        // - Explicitly skip ITs so Failsafe doesn't run in this stage.
         sh '''
           set -eux
-          mvn -B -V -Denv=unittest -DskipITs=true test pmd:pmd pmd:cpd spotbugs:spotbugs checkstyle:checkstyle
+          # Run ONLY unit tests with embedded DB config
+          mvn -B -V -Denv=unittest -DskipITs=true clean test
+
+          # Static analysis and unit coverage report
+          mvn -B -V -Denv=unittest -DskipITs=true \
+            pmd:pmd pmd:cpd spotbugs:spotbugs checkstyle:checkstyle jacoco:report
         '''
       }
       post {
         always {
-          // Collect only UNIT test results in this stage
           junit 'target/surefire-reports/*.xml'
+          recordCoverage(tools: [[parser: 'JACOCO']],
+            id: 'jacoco', name: 'JaCoCo Coverage',
+            sourceCodeRetention: 'EVERY_BUILD',
+            ignoreParsingErrors: true,
+            qualityGates: [
+              [threshold: 5.0, metric: 'LINE', baseline: 'PROJECT', unstable: true],
+              [threshold: 5.0, metric: 'BRANCH', baseline: 'PROJECT', unstable: true]
+            ])
+          publishHTML target:[
+            allowMissing: false,
+            alwaysLinkToLastBuild: false,
+            keepAll: true,
+            reportDir: 'target/site/jacoco-unit-cov-report',
+            reportFiles: 'index.html',
+            reportName: "Detailed UNIT Coverage Report"
+          ]
         }
       }
     }
-    
-stage('Integration Tests') {
-  when { not { buildingTag() } }
-  tools {
-    maven 'maven3'
-    jdk 'Java8'
-  }
-  steps {
-    withEnv([
-      // Make sure Log4j2 has all the properties it needs during ITs
-      "MAVEN_OPTS=${env.MAVEN_OPTS} -DqueryLogRetentionDays=14 -DqueryLogRetainAll=false -DlogFilePath=${env.WORKSPACE}/it-logs"
-    ]) {
-      sh '''
-        set -eux
-        mkdir -p "$WORKSPACE/it-logs"
 
-        # Run only ITs; UTs already ran in the previous stage
-        mvn -B -V -Denv=jenkins -DskipUTs=true verify
-      '''
+    // --- Integration tests: let the POM (docker-maven-plugin) start/stop MySQL ---
+    stage('Integration Tests') {
+      when { not { buildingTag() } }
+      tools {
+        maven 'maven3'
+        jdk 'Java8'
+      }
+      steps {
+        sh '''
+          set -eux
+          # Run ONLY integration tests; the POM starts mysql:5.7 and maps a host port
+          mvn -B -V -Denv=jenkins -DskipUTs=true verify
+        '''
+      }
+      post {
+        always {
+          junit 'target/failsafe-reports/*.xml'
+          // IT and merged coverage HTML reports (allowMissing in case of failures)
+          publishHTML target:[
+            allowMissing: true,
+            alwaysLinkToLastBuild: false,
+            keepAll: true,
+            reportDir: 'target/site/jacoco-it-cov-report',
+            reportFiles: 'index.html',
+            reportName: "Detailed IT Coverage Report"
+          ]
+          publishHTML target:[
+            allowMissing: true,
+            alwaysLinkToLastBuild: false,
+            keepAll: true,
+            reportDir: 'target/site/jacoco-merged-cov-report',
+            reportFiles: 'index.html',
+            reportName: "Detailed Merged Coverage Report"
+          ]
+        }
+      }
     }
-  }
-  post {
-    always {
-      junit 'target/failsafe-reports/*.xml'
-      publishHTML target:[
-        allowMissing: false,
-        alwaysLinkToLastBuild: false,
-        keepAll: true,
-        reportDir: 'target/site/jacoco-it-cov-report',
-        reportFiles: 'index.html',
-        reportName: "Detailed IT Coverage Report"
-      ]
-    }
-  }
-}
 
     stage ('Sonarqube') {
       when { not { buildingTag() } }
@@ -140,15 +158,9 @@ stage('Integration Tests') {
       when { buildingTag() }
       steps {
         node(label: 'docker') {
-          withCredentials([
-            string(credentialsId: 'eea-jenkins-token', variable: 'GITHUB_TOKEN'),
-            usernamePassword(credentialsId: 'jekinsdockerhub', usernameVariable: 'DOCKERHUB_USER', passwordVariable: 'DOCKERHUB_PASS')
-          ]) {
-            sh '''docker pull eeacms/gitflow; docker run -i --rm --name="$BUILD_TAG-release" \
-              -e GIT_BRANCH="$BRANCH_NAME" -e GIT_NAME="$GIT_NAME" \
-              -e DOCKERHUB_REPO="$registry" -e GIT_TOKEN="$GITHUB_TOKEN" \
-              -e DOCKERHUB_USER="$DOCKERHUB_USER" -e DOCKERHUB_PASS="$DOCKERHUB_PASS" \
-              -e RANCHER_CATALOG_PATHS="$datadictTemplate" -e GITFLOW_BEHAVIOR="RUN_ON_TAG" eeacms/gitflow'''
+          withCredentials([string(credentialsId: 'eea-jenkins-token', variable: 'GITHUB_TOKEN'),
+                           usernamePassword(credentialsId: 'jekinsdockerhub', usernameVariable: 'DOCKERHUB_USER', passwordVariable: 'DOCKERHUB_PASS')]) {
+            sh '''docker pull eeacms/gitflow; docker run -i --rm --name="$BUILD_TAG-release"  -e GIT_BRANCH="$BRANCH_NAME" -e GIT_NAME="$GIT_NAME" -e DOCKERHUB_REPO="$registry" -e GIT_TOKEN="$GITHUB_TOKEN" -e DOCKERHUB_USER="$DOCKERHUB_USER" -e DOCKERHUB_PASS="$DOCKERHUB_PASS"  -e RANCHER_CATALOG_PATHS="$datadictTemplate" -e GITFLOW_BEHAVIOR="RUN_ON_TAG" eeacms/gitflow'''
           }
         }
       }
