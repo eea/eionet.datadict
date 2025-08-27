@@ -13,7 +13,6 @@ pipeline {
   }
 
   stages {
-
     stage('Project Build') {
       tools {
         maven 'maven3'
@@ -23,7 +22,7 @@ pipeline {
         withCredentials([string(credentialsId: 'jenkins-maven-token', variable: 'GITHUB_TOKEN')]) {
           sh '''mkdir -p ~/.m2'''
           sh '''sed "s/TOKEN/$GITHUB_TOKEN/" m2.settings.tpl.xml > ~/.m2/settings.xml'''
-          // Build fast: skip all tests here
+          // Fast packaging; no tests here
           sh '''mvn -B -V -Dmaven.test.skip=true clean package'''
         }
       }
@@ -34,7 +33,7 @@ pipeline {
       }
     }
 
-    // === UNIT TESTS ===
+    // --- UNIT TESTS: embedded/in-memory; do NOT start or point to MySQL here ---
     stage('Unit Tests') {
       when { not { buildingTag() } }
       tools {
@@ -44,7 +43,7 @@ pipeline {
       steps {
         sh '''#!/usr/bin/env bash
 set -eux
-# --- Log4j2 expects these as ENV VARs (see repo README) ---
+# Log4j2 expects env vars (not -D system properties)
 export logFilePath="$WORKSPACE/unit-logs"
 export queryLogRetainAll=false
 export queryLogRetentionDays=14
@@ -52,7 +51,7 @@ mkdir -p "$logFilePath"
 
 mvn -B -V -Denv=unittest -DskipITs=true clean test
 
-# optional static analysis + unit coverage
+# Static analysis + unit coverage
 mvn -B -V -Denv=unittest -DskipITs=true \
   pmd:pmd pmd:cpd spotbugs:spotbugs checkstyle:checkstyle jacoco:report
 '''
@@ -65,7 +64,7 @@ mvn -B -V -Denv=unittest -DskipITs=true \
             sourceCodeRetention: 'EVERY_BUILD',
             ignoreParsingErrors: true,
             qualityGates: [
-              [threshold: 5.0, metric: 'LINE',   baseline: 'PROJECT', unstable: true],
+              [threshold: 5.0, metric: 'LINE', baseline: 'PROJECT', unstable: true],
               [threshold: 5.0, metric: 'BRANCH', baseline: 'PROJECT', unstable: true]
             ])
           publishHTML target:[
@@ -80,8 +79,7 @@ mvn -B -V -Denv=unittest -DskipITs=true \
       }
     }
 
-    // === INTEGRATION TESTS ===
-    // Let POM's docker-maven-plugin manage MySQL; we only provide ENV for log4j2.
+    // --- INTEGRATION TESTS: let the POM (docker-maven-plugin) handle MySQL ---
     stage('Integration Tests') {
       when { not { buildingTag() } }
       tools {
@@ -91,12 +89,17 @@ mvn -B -V -Denv=unittest -DskipITs=true \
       steps {
         sh '''#!/usr/bin/env bash
 set -eux
+# Log4j2 env for IT (avoids IfLastModified NPEs)
 export logFilePath="$WORKSPACE/it-logs"
 export queryLogRetainAll=false
 export queryLogRetentionDays=14
 mkdir -p "$logFilePath"
 
-mvn -B -V -Denv=jenkins -DskipUTs=true verify
+# IMPORTANT:
+# - Enable the docker profile so the POM spins up MySQL for IT.
+# - Use env=jenkins so tests load the correct properties bundle.
+# - Do NOT set SPRING_DATASOURCE_* or test.mysql.* here; let the build wire them.
+mvn -B -V -P docker -Denv=jenkins -DskipUTs=true verify
 '''
       }
       post {
@@ -162,9 +165,15 @@ mvn -B -V -Denv=jenkins -DskipUTs=true verify
       when { buildingTag() }
       steps {
         node(label: 'docker') {
-          withCredentials([string(credentialsId: 'eea-jenkins-token', variable: 'GITHUB_TOKEN'),
-                           usernamePassword(credentialsId: 'jekinsdockerhub', usernameVariable: 'DOCKERHUB_USER', passwordVariable: 'DOCKERHUB_PASS')]) {
-            sh '''docker pull eeacms/gitflow; docker run -i --rm --name="$BUILD_TAG-release"  -e GIT_BRANCH="$BRANCH_NAME" -e GIT_NAME="$GIT_NAME" -e DOCKERHUB_REPO="$registry" -e GIT_TOKEN="$GITHUB_TOKEN" -e DOCKERHUB_USER="$DOCKERHUB_USER" -e DOCKERHUB_PASS="$DOCKERHUB_PASS"  -e RANCHER_CATALOG_PATHS="$datadictTemplate" -e GITFLOW_BEHAVIOR="RUN_ON_TAG" eeacms/gitflow'''
+          withCredentials([
+            string(credentialsId: 'eea-jenkins-token', variable: 'GITHUB_TOKEN'),
+            usernamePassword(credentialsId: 'jekinsdockerhub', usernameVariable: 'DOCKERHUB_USER', passwordVariable: 'DOCKERHUB_PASS')
+          ]) {
+            sh '''docker pull eeacms/gitflow; docker run -i --rm --name="$BUILD_TAG-release" \
+              -e GIT_BRANCH="$BRANCH_NAME" -e GIT_NAME="$GIT_NAME" \
+              -e DOCKERHUB_REPO="$registry" -e GIT_TOKEN="$GITHUB_TOKEN" \
+              -e DOCKERHUB_USER="$DOCKERHUB_USER" -e DOCKERHUB_PASS="$DOCKERHUB_PASS" \
+              -e RANCHER_CATALOG_PATHS="$datadictTemplate" -e GITFLOW_BEHAVIOR="RUN_ON_TAG" eeacms/gitflow'''
           }
         }
       }
