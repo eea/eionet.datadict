@@ -23,7 +23,7 @@ pipeline {
         withCredentials([string(credentialsId: 'jenkins-maven-token', variable: 'GITHUB_TOKEN')]) {
           sh '''mkdir -p ~/.m2'''
           sh '''sed "s/TOKEN/$GITHUB_TOKEN/" m2.settings.tpl.xml > ~/.m2/settings.xml'''
-          // Fast build: skip tests here
+          // Fast build: skip all tests here
           sh '''mvn -B -V -Dmaven.test.skip=true clean package'''
         }
       }
@@ -34,7 +34,7 @@ pipeline {
       }
     }
 
-    // Unit tests use embedded/in-memory config. No external DB here.
+    // UNIT TESTS use embedded/in-memory DB only; no external MySQL here.
     stage ('Unit Tests') {
       when { not { buildingTag() } }
       tools {
@@ -72,7 +72,8 @@ pipeline {
       }
     }
 
-    // Integration tests: let the POM (docker-maven-plugin) start/stop MySQL.
+    // INTEGRATION TESTS: let the POM (docker-maven-plugin) manage MySQL and wiring.
+    // IMPORTANT: do NOT set MAVEN_OPTS here; pass -D props directly to mvn.
     stage('Integration Tests') {
       when { not { buildingTag() } }
       tools {
@@ -80,17 +81,21 @@ pipeline {
         jdk 'Java8'
       }
       steps {
-        // Optional Log4j2 safety knobs to avoid NPE 'age' during init; harmless if unused.
-        withEnv([
-          "MAVEN_OPTS=${env.MAVEN_OPTS} -DqueryLogRetentionDays=14 -DqueryLogRetainAll=false -DlogFilePath=${env.WORKSPACE}/it-logs"
-        ]) {
-          sh '''
-            set -eux
-            mkdir -p "$WORKSPACE/it-logs"
-            # Run ONLY ITs; do NOT skip Docker here (plugin must bring up MySQL & wire props).
-            mvn -B -V -Denv=jenkins -DskipUTs=true verify
-          '''
-        }
+        sh '''#!/usr/bin/env bash
+set -eux
+mkdir -p "$WORKSPACE/it-logs"
+
+# Useful diagnostics
+mvn -version
+java -version
+
+# Run only IT; POM handles DB startup/teardown and test properties.
+mvn -B -V -Denv=jenkins -DskipUTs=true \
+  -DqueryLogRetentionDays=14 \
+  -DqueryLogRetainAll=false \
+  -DlogFilePath="$WORKSPACE/it-logs" \
+  verify
+'''
       }
       post {
         always {
@@ -180,7 +185,6 @@ pipeline {
         def details = """<h1>${env.JOB_NAME} - Build #${env.BUILD_NUMBER} - ${status}</h1>
                          <p>Check console output at <a href="${url}">${env.JOB_BASE_NAME} - #${env.BUILD_NUMBER}</a></p>
                       """
-
         withCredentials([string(credentialsId: 'eworx-email-list', variable: 'EMAIL_LIST')]) {
           emailext(
             to: "$EMAIL_LIST",
