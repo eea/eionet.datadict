@@ -74,35 +74,52 @@ pipeline {
     }
 
     // ---------- INTEGRATION TESTS: start MySQL and run ITs separately ----------
-    stage('Start IT DB') {
-      when { not { buildingTag() } }
-      steps {
-        sh '''
-          set -e
-          docker rm -f it-mysql || true
-          docker run -d --name it-mysql \
-            -e MYSQL_ROOT_PASSWORD=test \
-            -e MYSQL_DATABASE=app \
-            -e MYSQL_USER=app \
-            -e MYSQL_PASSWORD=app \
-            -p 3306:3306 \
-            mysql:5.7
+stage('Start IT DB') {
+  when { not { buildingTag() } }
+  steps {
+    sh '''
+      set -euo pipefail
 
-          # wait for readiness (max 120s)
-          SECS=0
-          until docker logs it-mysql 2>&1 | grep -qi "ready for connections"; do
-            if [ $SECS -ge 120 ]; then
-              echo "MySQL not ready in 120s"
-              docker logs --tail=200 it-mysql || true
-              exit 1
-            fi
-            sleep 2
-            SECS=$((SECS+2))
-          done
-          echo "MySQL READY"
-        '''
-      }
+      # Clean up any leftover container from previous runs (ignore if missing)
+      docker rm -f it-mysql >/dev/null 2>&1 || true
+
+      # Start a fresh MySQL 5.7 for tests
+      docker run -d --name it-mysql \
+        -e MYSQL_ROOT_PASSWORD=test \
+        -e MYSQL_DATABASE=app \
+        -e MYSQL_USER=app \
+        -e MYSQL_PASSWORD=app \
+        -p 3306:3306 \
+        mysql:5.7
+
+      # Wait until MySQL responds to mysqladmin ping (max 300s)
+      timeout=300
+      start=$(date +%s)
+      until docker exec it-mysql mysqladmin ping -h127.0.0.1 -uroot -ptest --silent; do
+        now=$(date +%s)
+        elapsed=$(( now - start ))
+        if [ $elapsed -ge $timeout ]; then
+          echo "MySQL didn't become ready within ${timeout}s"
+          echo "---- docker ps (it-mysql) ----"
+          docker ps -a --filter "name=it-mysql"
+          echo "---- last 200 lines of it-mysql logs ----"
+          docker logs --tail=200 it-mysql || true
+          exit 1
+        fi
+        sleep 2
+      done
+
+      echo "MySQL READY"
+    '''
+  }
+  post {
+    failure {
+      // Publish container logs to help diagnose slow/failed boot
+      sh 'docker logs it-mysql > it-mysql.log 2>&1 || true'
+      archiveArtifacts artifacts: 'it-mysql.log', fingerprint: true, onlyIfSuccessful: false
     }
+  }
+}
 
 stage('Integration Tests') {
   when { not { buildingTag() } }
