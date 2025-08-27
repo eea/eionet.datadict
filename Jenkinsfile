@@ -23,7 +23,7 @@ pipeline {
         withCredentials([string(credentialsId: 'jenkins-maven-token', variable: 'GITHUB_TOKEN')]) {
           sh '''mkdir -p ~/.m2'''
           sh '''sed "s/TOKEN/$GITHUB_TOKEN/" m2.settings.tpl.xml > ~/.m2/settings.xml'''
-          // Fast build: skip all tests here
+          // Build fast: skip all tests here
           sh '''mvn -B -V -Dmaven.test.skip=true clean package'''
         }
       }
@@ -34,20 +34,28 @@ pipeline {
       }
     }
 
-    // UNIT TESTS use embedded/in-memory DB only; no external MySQL here.
-    stage ('Unit Tests') {
+    // === UNIT TESTS ===
+    stage('Unit Tests') {
       when { not { buildingTag() } }
       tools {
         maven 'maven3'
         jdk 'Java8'
       }
       steps {
-        sh '''
-          set -eux
-          mvn -B -V -Denv=unittest -DskipITs=true clean test
-          mvn -B -V -Denv=unittest -DskipITs=true \
-            pmd:pmd pmd:cpd spotbugs:spotbugs checkstyle:checkstyle jacoco:report
-        '''
+        sh '''#!/usr/bin/env bash
+set -eux
+# --- Log4j2 expects these as ENV VARs (see repo README) ---
+export logFilePath="$WORKSPACE/unit-logs"
+export queryLogRetainAll=false
+export queryLogRetentionDays=14
+mkdir -p "$logFilePath"
+
+mvn -B -V -Denv=unittest -DskipITs=true clean test
+
+# optional static analysis + unit coverage
+mvn -B -V -Denv=unittest -DskipITs=true \
+  pmd:pmd pmd:cpd spotbugs:spotbugs checkstyle:checkstyle jacoco:report
+'''
       }
       post {
         always {
@@ -57,7 +65,7 @@ pipeline {
             sourceCodeRetention: 'EVERY_BUILD',
             ignoreParsingErrors: true,
             qualityGates: [
-              [threshold: 5.0, metric: 'LINE', baseline: 'PROJECT', unstable: true],
+              [threshold: 5.0, metric: 'LINE',   baseline: 'PROJECT', unstable: true],
               [threshold: 5.0, metric: 'BRANCH', baseline: 'PROJECT', unstable: true]
             ])
           publishHTML target:[
@@ -72,8 +80,8 @@ pipeline {
       }
     }
 
-    // INTEGRATION TESTS: let the POM (docker-maven-plugin) manage MySQL and wiring.
-    // IMPORTANT: do NOT set MAVEN_OPTS here; pass -D props directly to mvn.
+    // === INTEGRATION TESTS ===
+    // Let POM's docker-maven-plugin manage MySQL; we only provide ENV for log4j2.
     stage('Integration Tests') {
       when { not { buildingTag() } }
       tools {
@@ -83,18 +91,12 @@ pipeline {
       steps {
         sh '''#!/usr/bin/env bash
 set -eux
-mkdir -p "$WORKSPACE/it-logs"
+export logFilePath="$WORKSPACE/it-logs"
+export queryLogRetainAll=false
+export queryLogRetentionDays=14
+mkdir -p "$logFilePath"
 
-# Useful diagnostics
-mvn -version
-java -version
-
-# Run only IT; POM handles DB startup/teardown and test properties.
-mvn -B -V -Denv=jenkins -DskipUTs=true \
-  -DqueryLogRetentionDays=14 \
-  -DqueryLogRetainAll=false \
-  -DlogFilePath="$WORKSPACE/it-logs" \
-  verify
+mvn -B -V -Denv=jenkins -DskipUTs=true verify
 '''
       }
       post {
@@ -120,7 +122,7 @@ mvn -B -V -Denv=jenkins -DskipUTs=true \
       }
     }
 
-    stage ('Sonarqube') {
+    stage('Sonarqube') {
       when { not { buildingTag() } }
       tools {
         maven 'maven3'
@@ -136,17 +138,11 @@ mvn -B -V -Denv=jenkins -DskipUTs=true \
       }
     }
 
-    stage ('Docker build and push') {
-      when {
-        environment name: 'CHANGE_ID', value: ''
-      }
+    stage('Docker build and push') {
+      when { environment name: 'CHANGE_ID', value: '' }
       steps {
         script {
-          if (env.BRANCH_NAME == 'master') {
-            tagName = 'latest'
-          } else {
-            tagName = "$BRANCH_NAME"
-          }
+          if (env.BRANCH_NAME == 'master') { tagName = 'latest' } else { tagName = "$BRANCH_NAME" }
           def date = sh(returnStdout: true, script: 'echo $(date "+%Y-%m-%dT%H%M")').trim()
           dockerImage = docker.build("$registry:$tagName", "--no-cache .")
           docker.withRegistry('', 'eeajenkins') {
@@ -178,21 +174,13 @@ mvn -B -V -Denv=jenkins -DskipUTs=true \
   post {
     always {
       cleanWs(cleanWhenAborted: true, cleanWhenFailure: true, cleanWhenNotBuilt: true, cleanWhenSuccess: true, cleanWhenUnstable: true, deleteDirs: true)
-
       script {
         def url = "${env.BUILD_URL}/display/redirect"
         def status = currentBuild.currentResult
         def details = """<h1>${env.JOB_NAME} - Build #${env.BUILD_NUMBER} - ${status}</h1>
-                         <p>Check console output at <a href="${url}">${env.JOB_BASE_NAME} - #${env.BUILD_NUMBER}</a></p>
-                      """
+                         <p>Check console output at <a href="${url}">${env.JOB_BASE_NAME} - #${env.BUILD_NUMBER}</a></p>"""
         withCredentials([string(credentialsId: 'eworx-email-list', variable: 'EMAIL_LIST')]) {
-          emailext(
-            to: "$EMAIL_LIST",
-            subject: '$DEFAULT_SUBJECT',
-            body: details,
-            attachLog: true,
-            compressLog: true,
-          )
+          emailext(to: "$EMAIL_LIST", subject: '$DEFAULT_SUBJECT', body: details, attachLog: true, compressLog: true)
         }
       }
     }
