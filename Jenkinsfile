@@ -76,12 +76,27 @@ pipeline {
       }
       steps {
         sh '''
-          # expose DB connection for tests (adjust if your project uses different vars/properties)
-          export SPRING_DATASOURCE_URL="$DB_URL"
+          set -e
+
+          # --- Fix rapid: use the host IP instead of 127.0.0.1 for DB connections ---
+          # This makes the DB reachable when the Jenkins agent is not on the Docker host network namespace.
+          HOST_IP=$(ip -4 route get 1.1.1.1 | awk '{print $7; exit}')
+
+          # Build runtime JDBC URL against the discovered host IP; do NOT touch credentials.
+          RUNTIME_DB_URL="jdbc:mysql://${HOST_IP}:3306/app?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
+          echo "Using SPRING_DATASOURCE_URL=${RUNTIME_DB_URL}"
+
+          # Expose DB connection for tests (leave username/password as you already configured)
+          export SPRING_DATASOURCE_URL="$RUNTIME_DB_URL"
           export SPRING_DATASOURCE_USERNAME="$DB_USER"
           export SPRING_DATASOURCE_PASSWORD="$DB_PASS"
 
-          # keep the docker profile if you still need it; DB is already up
+          # Optional: quick connectivity check if 'nc' is available
+          if command -v nc >/dev/null 2>&1; then
+            nc -zv "${HOST_IP}" 3306 || true
+          fi
+
+          # Keep your existing goals/profiles
           mvn clean -B -V -P docker verify pmd:pmd pmd:cpd spotbugs:spotbugs checkstyle:checkstyle
         '''
       }
