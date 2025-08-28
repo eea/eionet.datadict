@@ -14,123 +14,202 @@ pipeline {
 
   stages {
     stage('Project Build') {
-      tools {
-        maven 'maven3'
-        jdk 'Java8'
-      }
+      tools { maven 'maven3'; jdk 'Java8' }
       steps {
         withCredentials([string(credentialsId: 'jenkins-maven-token', variable: 'GITHUB_TOKEN')]) {
           sh '''mkdir -p ~/.m2'''
           sh '''sed "s/TOKEN/$GITHUB_TOKEN/" m2.settings.tpl.xml > ~/.m2/settings.xml'''
-          // Fast packaging; no tests here
+          // Fast packaging (no tests here)
           sh '''mvn -B -V -Dmaven.test.skip=true clean package'''
         }
       }
       post {
-        success {
-          archiveArtifacts artifacts: 'target/*.war', fingerprint: true
-        }
+        success { archiveArtifacts artifacts: 'target/*.war', fingerprint: true }
       }
     }
 
-    // --- UNIT TESTS: embedded/in-memory; do NOT start or point to MySQL here ---
+    // --- UNIT TESTS: embedded/in-memory; no external DB ---
     stage('Unit Tests') {
       when { not { buildingTag() } }
-      tools {
-        maven 'maven3'
-        jdk 'Java8'
-      }
+      tools { maven 'maven3'; jdk 'Java8' }
       steps {
         sh '''#!/usr/bin/env bash
 set -eux
-# Log4j2 expects env vars (not -D system properties)
+# Optional: log4j2 env to avoid noisy init in tests
 export logFilePath="$WORKSPACE/unit-logs"
 export queryLogRetainAll=false
 export queryLogRetentionDays=14
 mkdir -p "$logFilePath"
 
 mvn -B -V -Denv=unittest -DskipITs=true clean test
-
-# Static analysis + unit coverage
-mvn -B -V -Denv=unittest -DskipITs=true \
-  pmd:pmd pmd:cpd spotbugs:spotbugs checkstyle:checkstyle jacoco:report
+mvn -B -V -Denv=unittest -DskipITs=true pmd:pmd pmd:cpd spotbugs:spotbugs checkstyle:checkstyle jacoco:report
 '''
       }
       post {
         always {
           junit 'target/surefire-reports/*.xml'
-          recordCoverage(tools: [[parser: 'JACOCO']],
+          recordCoverage(
+            tools: [[parser: 'JACOCO']],
             id: 'jacoco', name: 'JaCoCo Coverage',
             sourceCodeRetention: 'EVERY_BUILD',
             ignoreParsingErrors: true,
             qualityGates: [
               [threshold: 5.0, metric: 'LINE', baseline: 'PROJECT', unstable: true],
               [threshold: 5.0, metric: 'BRANCH', baseline: 'PROJECT', unstable: true]
-            ])
+            ]
+          )
           publishHTML target:[
-            allowMissing: false,
-            alwaysLinkToLastBuild: false,
-            keepAll: true,
-            reportDir: 'target/site/jacoco-unit-cov-report',
-            reportFiles: 'index.html',
+            allowMissing: false, alwaysLinkToLastBuild: false, keepAll: true,
+            reportDir: 'target/site/jacoco-unit-cov-report', reportFiles: 'index.html',
             reportName: "Detailed UNIT Coverage Report"
           ]
         }
       }
     }
 
-    // --- INTEGRATION TESTS: let the POM (docker-maven-plugin) handle MySQL ---
+    // --- START DB FOR INTEGRATION TESTS (dynamic host port) ---
+    stage('Start IT DB') {
+      when { not { buildingTag() } }
+      steps {
+        sh '''#!/usr/bin/env bash
+set -Eeuo pipefail
+
+# Clean previous container if any
+docker rm -f it-mysql >/dev/null 2>&1 || true
+
+# Start MySQL 5.7 with a RANDOM published host port for 3306
+docker run -d --name it-mysql -P \
+  -e MYSQL_ROOT_PASSWORD=test \
+  -e MYSQL_DATABASE=app \
+  -e MYSQL_USER=app \
+  -e MYSQL_PASSWORD=app \
+  mysql:5.7 >/dev/null
+
+# Find the published host port (e.g., 327xx) for container's 3306/tcp
+HOST_PORT=""
+for i in $(seq 1 60); do
+  MAP="$(docker port it-mysql 3306/tcp 2>/dev/null || true)"
+  if [ -n "$MAP" ]; then
+    HOST_PORT="$(echo "$MAP" | sed -E 's/.*:([0-9]+)$/\\1/' | tail -n1)"
+  fi
+  [ -n "$HOST_PORT" ] && break
+  sleep 1
+done
+if [ -z "$HOST_PORT" ]; then
+  echo "ERROR: could not determine published port for 3306/tcp"
+  docker ps -a --filter "name=it-mysql" || true
+  docker logs --tail=200 it-mysql || true
+  exit 1
+fi
+
+# Pick a reachable host IP from the agent and verify TCP to ${HOST_PORT}
+pick_host() {
+  local c1="" c2="" c3="172.17.0.1" c4="127.0.0.1"
+  if command -v ip >/dev/null 2>&1; then
+    c1="$(ip -4 route get 1.1.1.1 2>/dev/null | awk '{print $7; exit}')" || true
+  fi
+  c2="$(hostname -I 2>/dev/null | awk '{print $1}')" || true
+  for h in "$c1" "$c2" "$c3" "$c4"; do
+    [ -n "$h" ] || continue
+    (exec 3<>/dev/tcp/"$h"/"$HOST_PORT") >/dev/null 2>&1 && { echo "$h"; return 0; }
+  done
+  return 1
+}
+HOST_IP="$(pick_host)" || {
+  echo "ERROR: cannot reach MySQL on any candidate host for port ${HOST_PORT}"
+  docker logs --tail=200 it-mysql || true
+  exit 1
+}
+
+# Wait until server is ready (logs OR steady TCP), max 300s
+deadline=$((SECONDS+300)); ok_tcp=0
+while (( SECONDS < deadline )); do
+  if docker logs it-mysql 2>&1 | grep -qi "ready for connections"; then
+    echo "MySQL READY (logs)"; break
+  fi
+  if (exec 3<>/dev/tcp/"$HOST_IP"/"$HOST_PORT") >/dev/null 2>&1; then
+    ok_tcp=$((ok_tcp+1))
+  else
+    ok_tcp=0
+  fi
+  if (( ok_tcp >= 3 )); then
+    echo "MySQL READY (tcp)"; break
+  fi
+  sleep 2
+done
+if (( SECONDS >= deadline )); then
+  echo "MySQL didn't become ready within 300s"
+  docker ps -a --filter "name=it-mysql" || true
+  docker logs --tail=200 it-mysql || true
+  exit 1
+fi
+
+# Persist connection details for the next stage
+echo "$HOST_IP" > .itdb_host
+echo "$HOST_PORT" > .itdb_port
+echo "MySQL for IT on ${HOST_IP}:${HOST_PORT}"
+'''
+      }
+    }
+
+    // --- INTEGRATION TESTS: connect to the DB started above ---
     stage('Integration Tests') {
       when { not { buildingTag() } }
-      tools {
-        maven 'maven3'
-        jdk 'Java8'
-      }
+      tools { maven 'maven3'; jdk 'Java8' }
       steps {
         sh '''#!/usr/bin/env bash
 set -eux
-# Log4j2 env for IT (avoids IfLastModified NPEs)
+
+HOST_IP="$(cat .itdb_host)"
+HOST_PORT="$(cat .itdb_port)"
+IT_JDBC_URL="jdbc:mysql://${HOST_IP}:${HOST_PORT}/app?useUnicode=true&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
+echo "Using IT DB: ${IT_JDBC_URL}"
+
+# Some tests read Spring DS envs; others use test.mysql.* placeholders
+export SPRING_DATASOURCE_URL="${IT_JDBC_URL}"
+export SPRING_DATASOURCE_USERNAME="app"
+export SPRING_DATASOURCE_PASSWORD="app"
+
+# Log4j2 env for IT (its config uses ${env:...})
 export logFilePath="$WORKSPACE/it-logs"
 export queryLogRetainAll=false
 export queryLogRetentionDays=14
 mkdir -p "$logFilePath"
 
 # IMPORTANT:
-# - Enable the docker profile so the POM spins up MySQL for IT.
-# - Use env=jenkins so tests load the correct properties bundle.
-# - Do NOT set SPRING_DATASOURCE_* or test.mysql.* here; let the build wire them.
-mvn -B -V -P docker -Denv=jenkins -DskipUTs=true verify
+# - Run ONLY ITs here (skip UTs).
+# - Disable any docker-maven-plugin/database in the POM to avoid a second DB.
+# - Provide explicit test.mysql.* properties expected by the Spring test context.
+mvn -B -V -Denv=jenkins -DskipUTs=true -Ddocker.skip=true -DskipDocker=true -P '!docker' \
+  -Dtest.mysql.url="${IT_JDBC_URL}" \
+  -Dtest.mysql.user=app \
+  -Dtest.mysql.username=app \
+  -Dtest.mysql.password=app \
+  verify
 '''
       }
       post {
         always {
           junit 'target/failsafe-reports/*.xml'
           publishHTML target:[
-            allowMissing: true,
-            alwaysLinkToLastBuild: false,
-            keepAll: true,
-            reportDir: 'target/site/jacoco-it-cov-report',
-            reportFiles: 'index.html',
+            allowMissing: true, alwaysLinkToLastBuild: false, keepAll: true,
+            reportDir: 'target/site/jacoco-it-cov-report', reportFiles: 'index.html',
             reportName: "Detailed IT Coverage Report"
           ]
           publishHTML target:[
-            allowMissing: true,
-            alwaysLinkToLastBuild: false,
-            keepAll: true,
-            reportDir: 'target/site/jacoco-merged-cov-report',
-            reportFiles: 'index.html',
+            allowMissing: true, alwaysLinkToLastBuild: false, keepAll: true,
+            reportDir: 'target/site/jacoco-merged-cov-report', reportFiles: 'index.html',
             reportName: "Detailed Merged Coverage Report"
           ]
+          // Clean disposable DB after IT
+          sh 'docker rm -f it-mysql || true'
         }
       }
     }
 
-    stage('Sonarqube') {
+    stage ('Sonarqube') {
       when { not { buildingTag() } }
-      tools {
-        maven 'maven3'
-        jdk 'Java17'
-      }
+      tools { maven 'maven3'; jdk 'Java17' }
       steps {
         script {
           withSonarQubeEnv('Sonarqube') {
@@ -141,7 +220,7 @@ mvn -B -V -P docker -Denv=jenkins -DskipUTs=true verify
       }
     }
 
-    stage('Docker build and push') {
+    stage ('Docker build and push') {
       when { environment name: 'CHANGE_ID', value: '' }
       steps {
         script {
@@ -155,9 +234,7 @@ mvn -B -V -P docker -Denv=jenkins -DskipUTs=true verify
         }
       }
       post {
-        always {
-          sh "docker rmi $registry:$tagName | docker images $registry:$tagName"
-        }
+        always { sh "docker rmi $registry:$tagName | docker images $registry:$tagName" }
       }
     }
 
@@ -182,7 +259,12 @@ mvn -B -V -P docker -Denv=jenkins -DskipUTs=true verify
 
   post {
     always {
-      cleanWs(cleanWhenAborted: true, cleanWhenFailure: true, cleanWhenNotBuilt: true, cleanWhenSuccess: true, cleanWhenUnstable: true, deleteDirs: true)
+      // Safety cleanup in case IT post didn't run
+      sh 'docker rm -f it-mysql >/dev/null 2>&1 || true'
+
+      cleanWs(cleanWhenAborted: true, cleanWhenFailure: true, cleanWhenNotBuilt: true,
+              cleanWhenSuccess: true, cleanWhenUnstable: true, deleteDirs: true)
+
       script {
         def url = "${env.BUILD_URL}/display/redirect"
         def status = currentBuild.currentResult
