@@ -182,7 +182,7 @@ mkdir -p "$logFilePath"
 # - Provide explicit test.mysql.* properties expected by the Spring test context.
 mvn -B -V -Denv=jenkins -DskipUTs=true -Ddocker.skip=true -DskipDocker=true -P '!docker' \
   -Dtest.mysql.url="${IT_JDBC_URL}" \
-  -Dtest.mysql.user=app \
+  -Dtest.mysql.usr=app \
   -Dtest.mysql.username=app \
   -Dtest.mysql.password=app \
   verify
