@@ -1116,16 +1116,16 @@ public class VocabularyServiceTestIT extends UnitilsJUnit4 {
         filter.setWordMatch(true);
         VocabularyConceptResult result = vocabularyService.searchVocabularyConcepts(filter);
 
-        assertEquals(result.getTotalItems(), 1);
+        assertEquals(1, result.getTotalItems());
 
         filter.setText("YZ");
         // filter.setWordMatch(false);
         result = vocabularyService.searchVocabularyConcepts(filter);
-        assertEquals(result.getTotalItems(), 0);
+        assertEquals(0, result.getTotalItems());
 
         filter.setWordMatch(false);
         result = vocabularyService.searchVocabularyConcepts(filter);
-        assertEquals(result.getTotalItems(), 1);
+        assertEquals(1, result.getTotalItems());
     }
 
     @Test
@@ -1136,22 +1136,22 @@ public class VocabularyServiceTestIT extends UnitilsJUnit4 {
         // word match
         filter.setWordMatch(true);
         VocabularyResult result = vocabularyService.searchVocabularies(filter);
-        assertEquals(result.getTotalItems(), 0);
+        assertEquals(0, result.getTotalItems());
 
         filter.setWordMatch(false);
         result = vocabularyService.searchVocabularies(filter);
-        assertEquals(result.getTotalItems(), 1);
+        assertEquals(1, result.getTotalItems());
 
         filter.setText("thisisit");
         // word match0
         filter.setWordMatch(true);
         result = vocabularyService.searchVocabularies(filter);
-        assertEquals(result.getTotalItems(), 1);
+        assertEquals(1, result.getTotalItems());
 
         filter.setText("csv");
 
         result = vocabularyService.searchVocabularies(filter);
-        assertEquals(result.getTotalItems(), 1);
+        assertEquals(1, result.getTotalItems());
     }
 
     @Test
