@@ -1,9 +1,5 @@
 package eionet.datadict.services.impl;
 
-import com.github.springtestdbunit.DbUnitTestExecutionListener;
-import com.github.springtestdbunit.annotation.DatabaseOperation;
-import com.github.springtestdbunit.annotation.DatabaseSetup;
-import com.github.springtestdbunit.annotation.DatabaseTearDown;
 import eionet.config.ApplicationTestContext;
 import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.errors.XmlExportException;

@@ -1,14 +1,8 @@
 package eionet.datadict.dal;
 
-import com.github.springtestdbunit.DbUnitTestExecutionListener;
-import com.github.springtestdbunit.annotation.DatabaseOperation;
-import com.github.springtestdbunit.annotation.DatabaseSetup;
-import com.github.springtestdbunit.annotation.DatabaseTearDown;
 import eionet.config.ApplicationTestContext;
 import eionet.datadict.model.DatasetTable;
 import eionet.datadict.model.Namespace;
-import java.util.List;
-
 import eionet.meta.service.DBUnitHelper;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -21,6 +15,8 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+
+import java.util.List;
 
 /**
  *

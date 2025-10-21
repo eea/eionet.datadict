@@ -1,9 +1,5 @@
 package eionet.datadict.web;
 
-import com.github.springtestdbunit.DbUnitTestExecutionListener;
-import com.github.springtestdbunit.annotation.DatabaseOperation;
-import com.github.springtestdbunit.annotation.DatabaseSetup;
-import com.github.springtestdbunit.annotation.DatabaseTearDown;
 import eionet.config.ApplicationTestContext;
 import eionet.datadict.util.StringUtils;
 import eionet.meta.service.DBUnitHelper;

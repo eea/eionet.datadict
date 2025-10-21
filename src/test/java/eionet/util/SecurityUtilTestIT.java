@@ -1,32 +1,28 @@
 package eionet.util;
 
+import com.github.springtestdbunit.DbUnitTestExecutionListener;
+import com.github.springtestdbunit.annotation.DatabaseOperation;
+import com.github.springtestdbunit.annotation.DatabaseSetup;
+import com.github.springtestdbunit.annotation.DatabaseTearDown;
+import eionet.config.ApplicationTestContext;
 import eionet.meta.DDUser;
 import eionet.meta.FakeUser;
 import org.easymock.EasyMock;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import eionet.config.ApplicationTestContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.util.CollectionUtils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import java.util.ArrayList;
+
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
-
-import com.github.springtestdbunit.DbUnitTestExecutionListener;
-import com.github.springtestdbunit.annotation.DatabaseSetup;
-import com.github.springtestdbunit.annotation.DatabaseTearDown;
-import com.github.springtestdbunit.annotation.DatabaseOperation;
-import org.junit.Ignore;
-
-import java.util.ArrayList;
 
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -38,7 +34,7 @@ import java.util.ArrayList;
         value = "classpath:seed-acldata.xml")
 @DatabaseTearDown(type = DatabaseOperation.DELETE_ALL,
         value = "classpath:seed-acldata.xml")
-public class SecurityUtilTestIT   {
+public class SecurityUtilTestIT {
 
     private DDUser user1;
     private DDUser user2;

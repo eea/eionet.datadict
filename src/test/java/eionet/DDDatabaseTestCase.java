@@ -85,7 +85,7 @@ public abstract class DDDatabaseTestCase extends DatabaseTestCase {
                 Props.getProperty(PropsIF.DBPSW));
 
 
-       DatabaseConnection dbConn = new DatabaseConnection(jdbcConn,"datadict");
+        DatabaseConnection dbConn = new DatabaseConnection(jdbcConn,"datadict");
         dbConn.getConfig().setProperty(DatabaseConfig.PROPERTY_DATATYPE_FACTORY, new MySqlDataTypeFactory());
         dbConn.getConfig().setProperty(DatabaseConfig.PROPERTY_METADATA_HANDLER, new MySqlMetadataHandler());
 

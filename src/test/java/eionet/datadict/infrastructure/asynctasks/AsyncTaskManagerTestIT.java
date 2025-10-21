@@ -10,8 +10,6 @@ import eionet.datadict.model.enums.Enumerations;
 import eionet.datadict.web.asynctasks.VocabularyRdfImportFromUrlTask;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.IVocabularyImportService;
-import java.util.List;
-import java.util.Map;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -22,6 +20,9 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -38,11 +39,9 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
             value ="classpath:seed-datasetIT.xml")
 public class AsyncTaskManagerTestIT {
     
-     @Autowired
+    @Autowired
     private AsyncTaskManager asyncTaskManager;
-    
-    
-    
+
     @Test
     @Ignore
     public void testScheduleRDFVocabularyImportFromUrlTask() throws InterruptedException{

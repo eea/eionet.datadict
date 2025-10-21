@@ -1,9 +1,5 @@
 package eionet.datadict.dal;
 
-import com.github.springtestdbunit.DbUnitTestExecutionListener;
-import com.github.springtestdbunit.annotation.DatabaseOperation;
-import com.github.springtestdbunit.annotation.DatabaseSetup;
-import com.github.springtestdbunit.annotation.DatabaseTearDown;
 import eionet.config.ApplicationTestContext;
 import eionet.datadict.model.Attribute;
 import eionet.datadict.model.Attribute.DisplayType;
@@ -13,20 +9,10 @@ import eionet.datadict.model.Attribute.ValueInheritanceMode;
 import eionet.datadict.model.DataDictEntity;
 import eionet.datadict.model.Namespace;
 import eionet.datadict.model.RdfNamespace;
-import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import eionet.meta.service.DBUnitHelper;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -34,6 +20,13 @@ import org.springframework.test.context.TestExecutionListeners;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
 import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
+
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {ApplicationTestContext.class})
