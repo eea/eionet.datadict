@@ -13,7 +13,7 @@ import eionet.meta.dao.DAOException;
 import eionet.meta.dao.INamespaceDAO;
 import eionet.meta.service.data.NamespaceFilter;
 import eionet.meta.service.data.NamespaceResult;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.displaytag.properties.SortOrderEnum;
 
 /**

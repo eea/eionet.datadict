@@ -4,7 +4,7 @@ import eionet.doc.io.FileStorageInfoProvider;
 import eionet.meta.DDRuntimeException;
 import eionet.util.Props;
 import java.io.IOException;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 

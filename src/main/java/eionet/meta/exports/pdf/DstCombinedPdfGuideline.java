@@ -5,7 +5,7 @@ import java.io.OutputStream;
 import java.sql.Connection;
 import java.util.ArrayList;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;

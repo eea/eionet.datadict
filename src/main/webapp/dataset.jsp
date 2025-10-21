@@ -1,7 +1,7 @@
 <%@page import="eionet.meta.dao.domain.VocabularyFolder"%>
 <%@page import="eionet.meta.dao.domain.VocabularyConcept"%>
 <%@page import="eionet.datadict.model.DataDictEntity"%>
-<%@page import="org.apache.commons.lang.StringUtils"%>
+<%@page import="org.apache.commons.lang3.StringUtils"%>
 <%@page import="eionet.meta.notif.Subscriber"%>
 <%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,eionet.util.sql.ConnectionUtil"%>
 <%@ taglib prefix="stripes" uri="http://stripes.sourceforge.net/stripes.tld"%>

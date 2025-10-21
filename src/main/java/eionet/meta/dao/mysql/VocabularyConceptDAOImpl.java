@@ -29,7 +29,7 @@ import eionet.meta.service.data.VocabularyConceptFilter.BoundElementFilterResult
 import eionet.meta.service.data.VocabularyConceptResult;
 import eionet.util.Util;
 import eionet.util.sql.SQL;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.ParameterizedPreparedStatementSetter;
 import org.springframework.jdbc.core.RowCallbackHandler;
@@ -105,6 +105,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
 
         if (StringUtils.isNotEmpty(filter.getText())) {
             if (filter.isWordMatch()) {
+                //params.put("text", "\\\\b" + filter.getText() + "\\\\b");
                 params.put("text", "[[:<:]]" + filter.getText() + "[[:>:]]");
                 sql.append("and (c.NOTATION REGEXP :text ");
                 sql.append("or c.LABEL REGEXP :text ");

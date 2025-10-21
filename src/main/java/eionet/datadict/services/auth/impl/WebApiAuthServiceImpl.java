@@ -10,7 +10,7 @@ import eionet.meta.service.ServiceException;
 import eionet.util.PropsIF;
 import java.util.Calendar;
 import net.sf.json.JSONObject;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

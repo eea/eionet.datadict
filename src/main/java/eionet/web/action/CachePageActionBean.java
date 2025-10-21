@@ -15,7 +15,7 @@ import eionet.util.PropsIF;
 import eionet.util.sql.ConnectionUtil;
 import net.sourceforge.stripes.action.*;
 import net.sourceforge.stripes.integration.spring.SpringBean;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
 import java.util.*;

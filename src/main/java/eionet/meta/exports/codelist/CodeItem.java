@@ -13,7 +13,7 @@ import eionet.util.PredicateFiltering;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Help object to encapsulate both Fixed and Vocabulary Value Code Items

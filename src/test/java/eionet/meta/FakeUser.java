@@ -2,7 +2,7 @@ package eionet.meta;
 
 import java.sql.Connection;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import eionet.util.sql.ConnectionUtil;
 

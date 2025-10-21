@@ -22,7 +22,7 @@
 package eionet.meta.service.data;
 
 import eionet.meta.dao.domain.RegStatus;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Filter for searching vocabularies.

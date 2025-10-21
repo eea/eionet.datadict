@@ -1,7 +1,7 @@
 <%@page import="eionet.meta.dao.domain.DataElement"%>
 <%@page import="java.util.List"%>
 <%@page import="java.util.HashMap"%>
-<%@page contentType="text/html;charset=UTF-8" import="eionet.meta.DDUser,eionet.util.Util,org.apache.commons.lang.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="eionet.meta.DDUser,eionet.util.Util,org.apache.commons.lang3.*"%>
 <%@ include file="/pages/common/taglibs.jsp"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 

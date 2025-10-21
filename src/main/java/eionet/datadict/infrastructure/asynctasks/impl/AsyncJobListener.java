@@ -7,7 +7,7 @@ import eionet.datadict.infrastructure.asynctasks.AsyncTaskExecutionError;
 import eionet.datadict.model.AsyncTaskExecutionEntry;
 import eionet.datadict.model.AsyncTaskExecutionStatus;
 import java.util.Date;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.JobListener;
@@ -73,7 +73,7 @@ public class AsyncJobListener implements JobListener {
         }
         else {
             status = AsyncTaskExecutionStatus.FAILED;
-            result = new AsyncTaskExecutionError(jee.getCause().getMessage(), ExceptionUtils.getFullStackTrace(jee.getCause()));
+            result = new AsyncTaskExecutionError(jee.getCause().getMessage(), ExceptionUtils.getStackTrace(jee.getCause()));
         }
         
         entry.setExecutionStatus(status);

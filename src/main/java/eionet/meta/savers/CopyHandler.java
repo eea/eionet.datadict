@@ -14,7 +14,7 @@ import java.util.Map.Entry;
 
 import javax.servlet.ServletContext;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DDUser;

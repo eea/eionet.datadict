@@ -10,7 +10,7 @@ import eionet.util.PropsIF;
 import java.io.File;
 import java.util.List;
 import javax.annotation.PostConstruct;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -6,7 +6,7 @@ import java.util.EnumSet;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 @Table(name="M_ATTRIBUTE")
 public class Attribute {

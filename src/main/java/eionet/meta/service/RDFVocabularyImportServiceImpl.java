@@ -31,7 +31,7 @@ import eionet.meta.imp.CreateVocabularyRDFImportHandler;
 import eionet.meta.imp.VocabularyRDFImportHandler;
 import eionet.util.Props;
 import eionet.util.PropsIF;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openrdf.rio.ParseErrorListener;
 import org.openrdf.rio.ParserConfig;
 import org.openrdf.rio.RDFParser;

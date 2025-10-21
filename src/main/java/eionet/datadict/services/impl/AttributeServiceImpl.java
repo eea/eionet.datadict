@@ -11,7 +11,7 @@ import eionet.datadict.services.acl.Permission;
 import eionet.datadict.services.data.AttributeDataService;
 import eionet.meta.DDUser;
 import eionet.meta.dao.domain.VocabularyConcept;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

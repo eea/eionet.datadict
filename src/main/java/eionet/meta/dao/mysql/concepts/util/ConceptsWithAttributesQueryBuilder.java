@@ -3,7 +3,7 @@ package eionet.meta.dao.mysql.concepts.util;
 import eionet.meta.dao.domain.StandardGenericStatus;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  *

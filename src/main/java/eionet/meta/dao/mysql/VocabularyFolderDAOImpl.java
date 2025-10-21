@@ -25,8 +25,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
-import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
@@ -657,6 +657,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
 
         if (StringUtils.isNotEmpty(filter.getText())) {
             if (filter.isWordMatch()) {
+                //params.put("text", "\\\\b" + filter.getText() + "\\\\b");
                 params.put("text", "[[:<:]]" + filter.getText() + "[[:>:]]");
                 sql.append("AND (v.LABEL REGEXP :text ");
                 sql.append("or v.IDENTIFIER REGEXP :text) ");
@@ -696,6 +697,7 @@ public class VocabularyFolderDAOImpl extends GeneralDAOImpl implements IVocabula
         // related concepts text:
         if (StringUtils.isNotEmpty(filter.getConceptText())) {
             if (filter.isWordMatch()) {
+                //params.put("text", "\\\\b" + filter.getConceptText() + "\\\\b");
                 params.put("text", "[[:<:]]" + filter.getConceptText() + "[[:>:]]");
                 sql.append(" AND EXISTS (SELECT 1 FROM VOCABULARY_CONCEPT vc WHERE vc.VOCABULARY_ID = v.VOCABULARY_ID ");
                 sql.append(" AND (vc.LABEL REGEXP :conceptText OR vc.IDENTIFIER REGEXP :conceptText ");

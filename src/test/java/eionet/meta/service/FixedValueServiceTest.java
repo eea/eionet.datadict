@@ -8,7 +8,7 @@ import eionet.meta.dao.domain.DataElement;
 import eionet.meta.dao.domain.FixedValue;
 import eionet.meta.dao.domain.SimpleAttribute;
 import eionet.meta.service.impl.FixedValuesServiceImpl;
-import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;

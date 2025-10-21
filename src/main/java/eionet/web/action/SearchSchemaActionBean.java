@@ -30,7 +30,7 @@ import eionet.meta.service.data.SchemaFilter;
 import eionet.meta.service.data.SchemasResult;
 import net.sourceforge.stripes.action.*;
 import net.sourceforge.stripes.integration.spring.SpringBean;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.displaytag.properties.SortOrderEnum;
 
 import java.util.ArrayList;

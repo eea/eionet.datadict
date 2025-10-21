@@ -8,7 +8,7 @@ package eionet.meta;
 
 import eionet.util.Util;
 import java.util.Comparator;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  *

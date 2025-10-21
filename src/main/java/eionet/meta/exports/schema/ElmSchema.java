@@ -3,7 +3,7 @@ package eionet.meta.exports.schema;
 import java.io.PrintWriter;
 import java.util.Vector;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DataElement;

@@ -11,7 +11,7 @@ import com.meterware.servletunit.ServletUnitClient;
 import eionet.rpcserver.servlets.XmlRpcRouter;
 import eionet.DDDatabaseTestCase;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 

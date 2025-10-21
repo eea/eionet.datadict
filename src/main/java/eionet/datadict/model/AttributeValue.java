@@ -3,7 +3,7 @@ package eionet.datadict.model;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 @Table(name="ATTRIBUTE")
 public class AttributeValue {

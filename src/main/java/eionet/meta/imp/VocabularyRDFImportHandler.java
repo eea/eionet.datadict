@@ -37,7 +37,7 @@ import java.util.Set;
 import eionet.datadict.model.enums.Enumerations;
 import net.sourceforge.stripes.util.StringUtil;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openrdf.model.Literal;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;

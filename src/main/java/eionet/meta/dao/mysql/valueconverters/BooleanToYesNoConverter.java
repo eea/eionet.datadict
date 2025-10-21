@@ -1,6 +1,6 @@
 package eionet.meta.dao.mysql.valueconverters;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  *

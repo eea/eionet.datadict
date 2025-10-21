@@ -25,7 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Standard generic status which is compatible with: http://inspire.ec.europa.eu/registry/status/ and based on the principles in ISO

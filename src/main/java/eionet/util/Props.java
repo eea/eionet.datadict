@@ -13,9 +13,9 @@ import eionet.propertyplaceholderresolver.ConfigurationPropertyResolverImpl;
 import eionet.propertyplaceholderresolver.UnresolvedPropertyException;
 import eionet.propertyplaceholderresolver.util.ConfigurationLoadException;
 import java.util.HashSet;
-import org.apache.commons.lang.LocaleUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberUtils;
+import org.apache.commons.lang3.LocaleUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

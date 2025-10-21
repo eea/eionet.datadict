@@ -5,7 +5,7 @@ import java.util.Map.Entry;
 
 import junit.framework.TestCase;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 
 import eionet.util.sql.SQL;

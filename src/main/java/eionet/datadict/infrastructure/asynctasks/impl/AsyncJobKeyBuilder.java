@@ -1,7 +1,7 @@
 package eionet.datadict.infrastructure.asynctasks.impl;
 
 import java.util.UUID;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.quartz.JobKey;
 import org.springframework.stereotype.Service;
 

@@ -32,7 +32,7 @@ import eionet.util.SecurityUtil;
 import net.sourceforge.stripes.action.*;
 import net.sourceforge.stripes.integration.spring.SpringBean;
 import net.sourceforge.stripes.validation.ValidationMethod;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.displaytag.properties.SortOrderEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -27,8 +27,8 @@
 
     <function>
         <description>
-            Delegates the call to org.apache.commons.lang.StringUtils.join(Object[], String) or
-            org.apache.commons.lang.StringUtils.join(Collection, String) if the first input parameter
+            Delegates the call to org.apache.commons.lang3.StringUtils.join(Object[], String) or
+            org.apache.commons.lang3.StringUtils.join(Collection, String) if the first input parameter
             is an instance of Object[] or Collection respectively. If the first input parameter is null,
             returns an empty string. If it is a String, returns that string.
         </description>

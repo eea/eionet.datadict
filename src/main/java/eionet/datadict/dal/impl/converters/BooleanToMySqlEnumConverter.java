@@ -1,7 +1,7 @@
 package eionet.datadict.dal.impl.converters;
 
 import eionet.datadict.util.data.DataConverter;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class BooleanToMySqlEnumConverter implements DataConverter<Boolean, String> {
 

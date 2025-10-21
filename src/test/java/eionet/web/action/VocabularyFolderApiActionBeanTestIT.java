@@ -17,7 +17,7 @@ import eionet.web.action.uiservices.impl.ErrorPageServiceImpl;
 import net.sourceforge.stripes.action.ActionBean;
 import net.sourceforge.stripes.mock.MockRoundtrip;
 import net.sourceforge.stripes.mock.MockServletContext;
-import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.junit.After;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

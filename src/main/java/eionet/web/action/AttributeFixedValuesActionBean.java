@@ -9,7 +9,7 @@ import eionet.web.action.fixedvalues.AttributeFixedValuesViewModelBuilder;
 import eionet.web.action.fixedvalues.FixedValuesViewModel;
 import net.sourceforge.stripes.action.*;
 import net.sourceforge.stripes.integration.spring.SpringBean;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  *

@@ -17,7 +17,7 @@ import eionet.meta.DsTable;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.Util;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public abstract class Xls implements XlsIF {
 

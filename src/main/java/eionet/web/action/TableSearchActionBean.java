@@ -36,7 +36,7 @@ import eionet.meta.service.data.TableResult;
 import java.util.Collections;
 import java.util.List;
 import net.sourceforge.stripes.action.ForwardResolution;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.displaytag.properties.SortOrderEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,5 +1,5 @@
 <%@page import="eionet.util.Props"%>
-<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,eionet.util.sql.ConnectionUtil,org.apache.commons.lang.StringUtils"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.Util,eionet.util.sql.ConnectionUtil,org.apache.commons.lang3.StringUtils"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <%@ include file="/pages/common/taglibs.jsp"%>
 <%!private static final String ATTR_PREFIX = "attr_";%>

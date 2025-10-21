@@ -34,7 +34,7 @@ import eionet.meta.service.IVocabularyService;
 import eionet.meta.service.ServiceException;
 import eionet.meta.spring.SpringApplicationContext;
 import eionet.util.Util;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import eionet.meta.exports.VocabularyOutputHelper;
 import eionet.meta.service.data.SiteCode;

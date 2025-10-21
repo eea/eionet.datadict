@@ -7,7 +7,7 @@ import eionet.datadict.services.io.ClassPathResourceFileProvider;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  *

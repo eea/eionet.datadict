@@ -6,7 +6,7 @@ import eionet.meta.DDUser;
 import eionet.util.Props;
 import eionet.util.PropsIF;
 import eionet.util.SecurityUtil;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.GenericFilterBean;

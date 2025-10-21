@@ -31,7 +31,7 @@ import java.util.List;
 
 import eionet.meta.service.data.SiteCode;
 import eionet.meta.service.data.SiteCodeResult;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import au.com.bytecode.opencsv.CSVWriter;
 import eionet.meta.dao.domain.DataElement;

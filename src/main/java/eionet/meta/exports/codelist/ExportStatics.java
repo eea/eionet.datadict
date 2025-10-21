@@ -5,7 +5,7 @@
  */
 package eionet.meta.exports.codelist;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 
 
 /**

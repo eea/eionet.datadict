@@ -1,7 +1,7 @@
 package eionet.datadict.infrastructure.asynctasks.impl;
 
 import java.util.Arrays;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class DummyTaskResult {
 

@@ -20,8 +20,8 @@ import net.sourceforge.stripes.mock.MockServletContext;
 import net.sourceforge.stripes.util.bean.BeanUtil;
 import net.sourceforge.stripes.validation.ValidationErrors;
 
-import org.apache.commons.lang.CharEncoding;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.CharEncoding;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.web.context.ContextLoaderListener;

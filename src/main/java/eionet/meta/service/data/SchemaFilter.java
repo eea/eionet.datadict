@@ -23,7 +23,7 @@ package eionet.meta.service.data;
 
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import eionet.meta.dao.domain.Attribute;
 

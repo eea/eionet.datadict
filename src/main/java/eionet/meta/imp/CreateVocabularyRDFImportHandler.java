@@ -3,7 +3,7 @@ package eionet.meta.imp;
 import eionet.meta.dao.domain.VocabularyType;
 import java.security.MessageDigest;
 import java.util.List;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Statement;
 import org.openrdf.model.URI;

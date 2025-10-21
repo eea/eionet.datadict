@@ -33,7 +33,7 @@ import eionet.util.PropsIF;
 import eionet.util.SecurityUtil;
 import eionet.util.sql.ConnectionUtil;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

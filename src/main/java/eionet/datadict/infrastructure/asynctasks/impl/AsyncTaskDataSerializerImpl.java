@@ -7,7 +7,7 @@ import eionet.datadict.infrastructure.asynctasks.AsyncTaskDataSerializer;
 import eionet.datadict.infrastructure.asynctasks.AsyncTaskDataSerializerException;
 import java.io.IOException;
 import java.util.Map;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.quartz.JobExecutionException;
 import org.springframework.stereotype.Service;
 

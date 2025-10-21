@@ -50,9 +50,9 @@ import javax.servlet.http.HttpServletResponse;
 import net.sourceforge.stripes.action.ActionBean;
 import net.sourceforge.stripes.action.UrlBinding;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -697,7 +697,7 @@ public final class Util {
      * Return's a throwable's stack trace in a string.
      */
     public static String getStack(Throwable t) {
-        return ExceptionUtils.getFullStackTrace(t);
+        return ExceptionUtils.getStackTrace(t);
     }
 
     /*
