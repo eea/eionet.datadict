@@ -17,6 +17,7 @@
         <checkstyle.config.location>${basedir}/doc/checkstyle.xml</checkstyle.config.location>
         <sesame.openrdf.version>2.7.10</sesame.openrdf.version>
         <jackson-version>2.18.3</jackson-version>
+        <docker.it.skip>false</docker.it.skip>
     </properties>
 
     <version>1.0-SNAPSHOT</version>
@@ -107,7 +108,7 @@
                 <executions>
                     <execution>
                         <configuration>
-                            <skip>${maven.test.skip}</skip>
+                            <skip>${docker.it.skip}</skip>
                         </configuration>
                         <id>start</id>
                         <phase>pre-integration-test</phase>
@@ -119,7 +120,7 @@
                     </execution>
                     <execution>
                         <configuration>
-                            <skip>${maven.test.skip}</skip>
+                            <skip>${docker.it.skip}</skip>
                         </configuration>
                         <id>stop</id>
                         <phase>post-integration-test</phase>

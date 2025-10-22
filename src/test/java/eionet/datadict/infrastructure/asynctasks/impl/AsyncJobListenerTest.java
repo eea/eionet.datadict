@@ -158,7 +158,7 @@ public class AsyncJobListenerTest {
         AsyncTaskExecutionError capturedError = errorCaptor.getValue();
         
         assertThat(capturedError.getMessage(), is(equalTo(jee.getCause().getMessage())));
-        assertThat(capturedError.getTechnicalDetails(), is(equalTo(ExceptionUtils.getFullStackTrace(jee.getCause()))));
+        assertThat(capturedError.getTechnicalDetails(), is(equalTo(ExceptionUtils.getStackTrace(jee.getCause()))));
     }
     
 }

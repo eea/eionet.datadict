@@ -17,10 +17,19 @@ pipeline {
       tools { maven 'maven3'; jdk 'Java8' }
       steps {
         withCredentials([string(credentialsId: 'jenkins-maven-token', variable: 'GITHUB_TOKEN')]) {
-          sh '''mkdir -p ~/.m2'''
-          sh '''sed "s/TOKEN/$GITHUB_TOKEN/" m2.settings.tpl.xml > ~/.m2/settings.xml'''
-          // Fast packaging (no tests here)
-          sh '''mvn -B -V -Dmaven.test.skip=true clean package'''
+          sh '''#!/usr/bin/env bash
+set -eux
+mkdir -p ~/.m2
+sed "s/TOKEN/$GITHUB_TOKEN/" m2.settings.tpl.xml > ~/.m2/settings.xml
+
+export logFilePath="$WORKSPACE/build-logs"
+export queryLogRetainAll=false
+export queryLogRetentionDays=30d
+mkdir -p "$logFilePath"
+
+# Fast packaging (no tests here)
+mvn -B -V -Dmaven.test.skip=true clean package
+'''
         }
       }
       post {
@@ -38,7 +47,7 @@ set -eux
 # Optional: log4j2 env to avoid noisy init in tests
 export logFilePath="$WORKSPACE/unit-logs"
 export queryLogRetainAll=false
-export queryLogRetentionDays=14
+export queryLogRetentionDays=14d
 mkdir -p "$logFilePath"
 
 mvn -B -V -Denv=unittest -DskipITs=true clean test
@@ -77,63 +86,29 @@ set -Eeuo pipefail
 # Clean previous container if any
 docker rm -f it-mysql >/dev/null 2>&1 || true
 
-# Start MySQL 5.7 with a RANDOM published host port for 3306
-docker run -d --name it-mysql -P \
-  -e MYSQL_ROOT_PASSWORD=test \
-  -e MYSQL_DATABASE=app \
+MYSQL_IMAGE="mysql:5.7"
+docker pull "$MYSQL_IMAGE" >/dev/null
+
+# Start MySQL 5.7 on default bridge network
+docker run -d --name it-mysql \
+  -e MYSQL_ROOT_PASSWORD=12345 \
+  -e MYSQL_ROOT_HOST=% \
+  -e MYSQL_DATABASE=datadict \
   -e MYSQL_USER=app \
   -e MYSQL_PASSWORD=app \
-  mysql:5.7 >/dev/null
+  -e MYSQL_ALLOW_EMPTY_PASSWORD=no \
+  "$MYSQL_IMAGE" >/dev/null
 
-# Find the published host port (e.g., 327xx) for container's 3306/tcp
-HOST_PORT=""
-for i in $(seq 1 60); do
-  MAP="$(docker port it-mysql 3306/tcp 2>/dev/null || true)"
-  if [ -n "$MAP" ]; then
-    HOST_PORT="$(echo "$MAP" | sed -E 's/.*:([0-9]+)$/\\1/' | tail -n1)"
-  fi
-  [ -n "$HOST_PORT" ] && break
-  sleep 1
-done
-if [ -z "$HOST_PORT" ]; then
-  echo "ERROR: could not determine published port for 3306/tcp"
-  docker ps -a --filter "name=it-mysql" || true
-  docker logs --tail=200 it-mysql || true
-  exit 1
-fi
-
-# Pick a reachable host IP from the agent and verify TCP to ${HOST_PORT}
-pick_host() {
-  local c1="" c2="" c3="172.17.0.1" c4="127.0.0.1"
-  if command -v ip >/dev/null 2>&1; then
-    c1="$(ip -4 route get 1.1.1.1 2>/dev/null | awk '{print $7; exit}')" || true
-  fi
-  c2="$(hostname -I 2>/dev/null | awk '{print $1}')" || true
-  for h in "$c1" "$c2" "$c3" "$c4"; do
-    [ -n "$h" ] || continue
-    (exec 3<>/dev/tcp/"$h"/"$HOST_PORT") >/dev/null 2>&1 && { echo "$h"; return 0; }
-  done
-  return 1
-}
-HOST_IP="$(pick_host)" || {
-  echo "ERROR: cannot reach MySQL on any candidate host for port ${HOST_PORT}"
-  docker logs --tail=200 it-mysql || true
-  exit 1
-}
-
-# Wait until server is ready (logs OR steady TCP), max 300s
-deadline=$((SECONDS+300)); ok_tcp=0
+# Wait until the server is ready, max 300s
+deadline=$((SECONDS+300))
 while (( SECONDS < deadline )); do
   if docker logs it-mysql 2>&1 | grep -qi "ready for connections"; then
-    echo "MySQL READY (logs)"; break
+    echo "MySQL READY (logs)"
+    break
   fi
-  if (exec 3<>/dev/tcp/"$HOST_IP"/"$HOST_PORT") >/dev/null 2>&1; then
-    ok_tcp=$((ok_tcp+1))
-  else
-    ok_tcp=0
-  fi
-  if (( ok_tcp >= 3 )); then
-    echo "MySQL READY (tcp)"; break
+  if docker exec it-mysql mysqladmin ping -h127.0.0.1 -p12345 --silent >/dev/null 2>&1; then
+    echo "MySQL READY (mysqladmin)"
+    break
   fi
   sleep 2
 done
@@ -144,9 +119,38 @@ if (( SECONDS >= deadline )); then
   exit 1
 fi
 
+HOST_IP=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' it-mysql)
+HOST_PORT="3306"
+NETWORK_NAME=$(docker inspect -f '{{range $name, $conf := .NetworkSettings.Networks}}{{$name}}{{end}}' it-mysql)
+
+echo "Waiting for application user availability"
+ready_app=0
+for i in $(seq 1 60); do
+  if docker exec it-mysql mysql -h127.0.0.1 -uroot -p12345 -e 'SELECT 1' >/dev/null 2>&1; then
+    if docker exec it-mysql mysql -h127.0.0.1 -uapp -papp -Ddatadict -e 'SELECT 1' >/dev/null 2>&1; then
+      ready_app=1
+      break
+    fi
+  fi
+  sleep 2
+done
+if [ "$ready_app" -ne 1 ]; then
+  echo "ERROR: MySQL application user is not ready after waiting"
+  docker logs --tail=200 it-mysql || true
+  exit 1
+fi
+
+echo "Verifying connectivity from Jenkins via client container"
+if ! docker run --rm --network "$NETWORK_NAME" mysql:5.7 mysql -h "$HOST_IP" -P "$HOST_PORT" -uapp -papp -e 'SELECT 1' >/dev/null 2>&1; then
+  echo "ERROR: Jenkins client container cannot reach MySQL ${HOST_IP}:${HOST_PORT}"
+  docker logs --tail=200 it-mysql || true
+  exit 1
+fi
+
 # Persist connection details for the next stage
 echo "$HOST_IP" > .itdb_host
 echo "$HOST_PORT" > .itdb_port
+echo "$NETWORK_NAME" > .itdb_network
 echo "MySQL for IT on ${HOST_IP}:${HOST_PORT}"
 '''
       }
@@ -162,8 +166,16 @@ set -eux
 
 HOST_IP="$(cat .itdb_host)"
 HOST_PORT="$(cat .itdb_port)"
-IT_JDBC_URL="jdbc:mysql://${HOST_IP}:${HOST_PORT}/app?useUnicode=true&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
+NETWORK_NAME="$(cat .itdb_network)"
+IT_JDBC_URL="jdbc:mysql://${HOST_IP}:${HOST_PORT}/datadict?useUnicode=true&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
+MYSQL_SYS_URL="jdbc:mysql://${HOST_IP}:${HOST_PORT}/mysql?useUnicode=true&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
 echo "Using IT DB: ${IT_JDBC_URL}"
+echo "Verifying MySQL connectivity from Jenkins agent"
+docker run --rm --network "$NETWORK_NAME" mysql:5.7 mysql -h "${HOST_IP}" -P "${HOST_PORT}" -uapp -papp -e 'SELECT 1' >/dev/null 2>&1 || {
+  echo "ERROR: Jenkins agent cannot reach MySQL ${HOST_IP}:${HOST_PORT}"
+  docker logs --tail=200 it-mysql || true
+  exit 1
+}
 
 # Some tests read Spring DS envs; others use test.mysql.* placeholders
 export SPRING_DATASOURCE_URL="${IT_JDBC_URL}"
@@ -173,7 +185,7 @@ export SPRING_DATASOURCE_PASSWORD="app"
 # Log4j2 env for IT (its config uses ${env:...})
 export logFilePath="$WORKSPACE/it-logs"
 export queryLogRetainAll=false
-export queryLogRetentionDays=14
+export queryLogRetentionDays=14d
 mkdir -p "$logFilePath"
 
 # IMPORTANT:
@@ -181,10 +193,17 @@ mkdir -p "$logFilePath"
 # - Disable any docker-maven-plugin/database in the POM to avoid a second DB.
 # - Provide explicit test.mysql.* properties expected by the Spring test context.
 mvn -B -V -Denv=jenkins -DskipUTs=true -Ddocker.skip=true -DskipDocker=true -P '!docker' \
-  -Dtest.mysql.url="${IT_JDBC_URL}" \
-  -Dtest.mysql.usr=app \
-  -Dtest.mysql.username=app \
-  -Dtest.mysql.password=app \
+  -Ddocker.host.address="${HOST_IP}" \
+  -Dmysql.port="${HOST_PORT}" \
+  -Dtest.mysql.url="${MYSQL_SYS_URL}" \
+  -Dtest.mysql.usr=root \
+  -Dtest.mysql.username=root \
+  -Dtest.mysql.password=12345 \
+  -Dtest.mysql.psw=12345 \
+  -Dtest.db.jdbcurl="${IT_JDBC_URL}" \
+  -Dtest.db.user=app \
+  -Dtest.db.password=app \
+  -Ddocker.it.skip=true \
   verify
 '''
       }

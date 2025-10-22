@@ -1,6 +1,8 @@
 <Configuration>
     <Properties>
-        <Property name="basePath">${env:logFilePath}/logs</Property>
+        <Property name="basePath">${env:logFilePath:-${sys:user.home}/datadict}/logs</Property>
+        <Property name="retainAll">${env:queryLogRetainAll:-false}</Property>
+        <Property name="retentionAge">${env:queryLogRetentionDays:-30d}</Property>
     </Properties>
 
     <Appenders>
@@ -26,9 +28,9 @@
             </Policies>
             <DefaultRolloverStrategy max="20">
                 <!--    testMode - boolean - If true, files are not deleted but instead a message is printed to the status -->
-                <Delete basePath="${env:logFilePath}/logs/" maxDepth="1" testMode="${env:queryLogRetainAll}">
+                <Delete basePath="${basePath}/" maxDepth="1" testMode="${retainAll}">
                     <IfFileName glob="datadictLogs_*.log.gz"/>
-                    <IfLastModified age="${env:queryLogRetentionDays}"/>
+                    <IfLastModified age="${retentionAge}"/>
                 </Delete>
             </DefaultRolloverStrategy>
         </RollingFile>
