@@ -41,7 +41,9 @@ public class MrProperTestIT extends DDDatabaseTestCase {
 
     public void test_rls_nowc() throws Exception {
         Class.forName(Props.getProperty(PropsIF.DBDRV));
-        Connection conn = getConnection().getConnection();
+        Connection conn =
+                DriverManager.getConnection(Props.getProperty(PropsIF.DBURL), Props.getProperty(PropsIF.DBUSR),
+                        Props.getProperty(PropsIF.DBPSW));
 
         MrProper mrProper = null;
 
@@ -62,6 +64,6 @@ public class MrProperTestIT extends DDDatabaseTestCase {
 
         expected.add("Releasing locked objects was <b>OK!</b>");
         TestCase.assertEquals(expected, mrProper.getResponse());
-
+        conn.close();
     }
 }
