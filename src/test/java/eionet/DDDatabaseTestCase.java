@@ -7,7 +7,11 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
 
 import junit.framework.TestResult;
 import org.dbunit.DatabaseTestCase;
@@ -90,6 +94,7 @@ public abstract class DDDatabaseTestCase extends DatabaseTestCase {
         dbConn.getConfig().setProperty(DatabaseConfig.PROPERTY_METADATA_HANDLER, new MySqlMetadataHandler());
 
         dbConn.getConfig().setPropertiesByString(properties);
+        OPEN_CONNECTIONS.add(jdbcConn);
         return dbConn;
     }
 
@@ -116,6 +121,36 @@ public abstract class DDDatabaseTestCase extends DatabaseTestCase {
 
     protected boolean isMethodMarkedToBeIgnored(Method method){
        return method.getDeclaredAnnotation(Ignore.class)!=null ?true :false;
+    }
+
+    private static final Set<Connection> OPEN_CONNECTIONS = Collections.synchronizedSet(new HashSet<>());
+
+    @Override
+    protected void tearDown() throws Exception {
+        OPEN_CONNECTIONS.removeIf(c -> {
+            try {
+                return c.isClosed();
+            } catch (SQLException e) {
+                return false;
+            }
+        });
+        System.out.println("Open connections after " + getName() + ": " + OPEN_CONNECTIONS.size());
+
+        try {
+            for (Connection conn : OPEN_CONNECTIONS) {
+                if (conn != null && !conn.isClosed()) {
+                    try {
+                        conn.close();
+                    } catch (Exception e) {
+                        LOGGER.warn("Error closing DB connection", e);
+                    }
+                }
+            }
+            OPEN_CONNECTIONS.clear();
+            System.out.println("Open connections after CLEAR " + getName() + ": " + OPEN_CONNECTIONS.size());
+        } finally {
+            super.tearDown();
+        }
     }
 
 }
