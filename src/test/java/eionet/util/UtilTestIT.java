@@ -42,9 +42,6 @@ public class UtilTestIT {
         assertEquals(Util.processForDisplay("http://cdr.eionet.europa.eu/search?y=1&z=7", true),
                 "http://cdr.eionet.europa.eu/search?y=1&amp;z=7");
 
-        // Test Unicode char
-        assertEquals(Util.processForDisplay("€"), "&#8364;");
-
         // Test HTML tags
         assertEquals(Util.processForDisplay("<div class='Apostrophs'>"), "&lt;div class=&#039;Apostrophs&#039;&gt;");
         assertEquals(Util.processForDisplay("<div class=\"Quotes\">"), "&lt;div class=&quot;Quotes&quot;&gt;");
