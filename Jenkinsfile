@@ -167,7 +167,7 @@ set -eux
 HOST_IP="$(cat .itdb_host)"
 HOST_PORT="$(cat .itdb_port)"
 NETWORK_NAME="$(cat .itdb_network)"
-IT_JDBC_URL="jdbc:mysql://${HOST_IP}:${HOST_PORT}/datadict?useUnicode=true&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&sessionVariables=sql_mode=''"
+IT_JDBC_URL="jdbc:mysql://${HOST_IP}:${HOST_PORT}/datadict?useUnicode=true&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&sessionVariables=sql_mode%3D%27%27"
 MYSQL_SYS_URL="jdbc:mysql://${HOST_IP}:${HOST_PORT}/mysql?useUnicode=true&characterEncoding=UTF-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC"
 echo "Using IT DB: ${IT_JDBC_URL}"
 echo "Verifying MySQL connectivity from Jenkins agent"
