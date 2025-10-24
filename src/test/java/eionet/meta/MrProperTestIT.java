@@ -22,7 +22,7 @@ public class MrProperTestIT extends DDDatabaseTestCase {
     /**
      * This test comes from MrProper.java. It appears to be irrelevant to the class
      */
-    public static void test_hashsets() {
+    public void test_hashsets() {
         HashSet set = new HashSet();
 
         HashMap hash1 = new HashMap();
@@ -39,11 +39,9 @@ public class MrProperTestIT extends DDDatabaseTestCase {
         TestCase.assertTrue(set.contains(hash2));
     }
 
-    public static void test_rls_nowc() throws Exception {
+    public void test_rls_nowc() throws Exception {
         Class.forName(Props.getProperty(PropsIF.DBDRV));
-        Connection conn =
-                DriverManager.getConnection(Props.getProperty(PropsIF.DBURL), Props.getProperty(PropsIF.DBUSR),
-                        Props.getProperty(PropsIF.DBPSW));
+        Connection conn = getConnection().getConnection();
 
         MrProper mrProper = null;
 
