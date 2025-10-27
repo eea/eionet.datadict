@@ -57,16 +57,6 @@ mvn -B -V -Denv=unittest -DskipITs=true pmd:pmd pmd:cpd spotbugs:spotbugs checks
       post {
         always {
           junit 'target/surefire-reports/*.xml'
-          recordCoverage(
-            tools: [[parser: 'JACOCO']],
-            id: 'jacoco', name: 'JaCoCo Coverage',
-            sourceCodeRetention: 'EVERY_BUILD',
-            ignoreParsingErrors: true,
-            qualityGates: [
-              [threshold: 5.0, metric: 'LINE', baseline: 'PROJECT', unstable: true],
-              [threshold: 5.0, metric: 'BRANCH', baseline: 'PROJECT', unstable: true]
-            ]
-          )
           publishHTML target:[
             allowMissing: false, alwaysLinkToLastBuild: false, keepAll: true,
             reportDir: 'target/site/jacoco-unit-cov-report', reportFiles: 'index.html',
@@ -220,6 +210,16 @@ mvn -B -V -Denv=jenkins -DskipUTs=true -Ddocker.skip=true -DskipDocker=true -P '
             reportDir: 'target/site/jacoco-merged-cov-report', reportFiles: 'index.html',
             reportName: "Detailed Merged Coverage Report"
           ]
+          recordCoverage(
+              tools: [[parser: 'JACOCO']],
+              id: 'jacoco', name: 'JaCoCo Coverage',
+              sourceCodeRetention: 'EVERY_BUILD',
+              ignoreParsingErrors: true,
+              qualityGates: [
+                [threshold: 5.0, metric: 'LINE', baseline: 'PROJECT', unstable: true],
+                [threshold: 5.0, metric: 'BRANCH', baseline: 'PROJECT', unstable: true]
+              ]
+            )
           // Clean disposable DB after IT
           sh 'docker rm -f it-mysql || true'
         }
