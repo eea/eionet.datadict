@@ -195,6 +195,8 @@ mvn -B -V -Denv=jenkins -DskipUTs=true -Ddocker.skip=true -DskipDocker=true -P '
   -Dtest.db.password=app \
   -Ddocker.it.skip=true \
   verify
+
+mvn -B -V -Dmaven.test.skip=true -DskipUTs=true clean verify
 '''
       }
       post {
