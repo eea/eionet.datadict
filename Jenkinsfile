@@ -195,8 +195,6 @@ mvn -B -V -Denv=jenkins -DskipUTs=true -Ddocker.skip=true -DskipDocker=true -P '
   -Dtest.db.password=app \
   -Ddocker.it.skip=true \
   verify
-
-mvn -B -V -Dmaven.test.skip=true -DskipUTs=true clean verify
 '''
       }
       post {
@@ -224,6 +222,8 @@ mvn -B -V -Dmaven.test.skip=true -DskipUTs=true clean verify
             )
           // Clean disposable DB after IT
           sh 'docker rm -f it-mysql || true'
+          // produce final war using default env
+          sh 'mvn -B -V -Dmaven.test.skip=true -DskipUTs=true clean verify'
         }
       }
     }
