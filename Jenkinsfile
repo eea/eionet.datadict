@@ -33,7 +33,10 @@ mvn -B -V -Dmaven.test.skip=true clean package
         }
       }
       post {
-        success { archiveArtifacts artifacts: 'target/*.war', fingerprint: true }
+        success {
+          archiveArtifacts artifacts: 'target/*.war', fingerprint: true
+          stash includes: 'target/*.war', name: 'app-war'
+        }
       }
     }
 
@@ -222,8 +225,6 @@ mvn -B -V -Denv=jenkins -DskipUTs=true -Ddocker.skip=true -DskipDocker=true -P '
             )
           // Clean disposable DB after IT
           sh 'docker rm -f it-mysql || true'
-          // produce final war using default env
-          sh 'mvn -B -V -Dmaven.test.skip=true -DskipUTs=true clean verify'
         }
       }
     }
@@ -244,6 +245,7 @@ mvn -B -V -Denv=jenkins -DskipUTs=true -Ddocker.skip=true -DskipDocker=true -P '
     stage ('Docker build and push') {
       when { environment name: 'CHANGE_ID', value: '' }
       steps {
+        unstash 'app-war'
         script {
           if (env.BRANCH_NAME == 'master') { tagName = 'latest' } else { tagName = "$BRANCH_NAME" }
           def date = sh(returnStdout: true, script: 'echo $(date "+%Y-%m-%dT%H%M")').trim()
