@@ -103,7 +103,7 @@
                 %>
 
                 var selected = document.forms["form1"].collect_elems.value;
-                if (url != null) url = url + "&selected=" + selected;
+                if (url != null) url = url + "&selected=" + encodeURIComponent(selected);
 
                 wAdd = window.open(url,"Search","height=800,width=1200,status=yes,toolbar=no,scrollbars=yes,resizable=yes,menubar=no,location=no");
                 if (window.focus){
@@ -165,7 +165,7 @@
 
         <%
 
-        collect_elems.append(delemID + "|");
+        collect_elems.append(delemID);
         for (int i=0; elems!=null && i<elems.size(); i++){
 
             Hashtable fkRel  = (Hashtable)elems.get(i);
@@ -182,7 +182,7 @@
             if (fkElmID==null || fkElmID.length()==0)
                 continue;
 
-            collect_elems.append(fkElmID + "|");
+            collect_elems.append("|" + fkElmID);
 
             %>
             <tr>
