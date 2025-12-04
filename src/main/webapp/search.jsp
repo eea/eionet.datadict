@@ -298,7 +298,7 @@ if (isDisplayOperations){
                         %>
                         <div style="display:none">
                             <input type="hidden" name="dataset" value="<%=Util.processForDisplay(sel_ds, true)%>" />
-                            <input type="hidden" name="fk" value=<%=Util.processForDisplay(fk, true)%>" />
+                            <input type="hidden" name="fk" value="<%=Util.processForDisplay(fk, true)%>" />
                         </div><%
                     }
                     %>
