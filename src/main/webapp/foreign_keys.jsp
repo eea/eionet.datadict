@@ -78,6 +78,11 @@
         conn = ConnectionUtil.getConnection();
         DDSearchEngine searchEngine = new DDSearchEngine(conn, "");
         DataElementDAOImpl dao = searchEngine.getSpringContext().getBean(DataElementDAOImpl.class);
+        if (!dao.dataElementExists(Integer.parseInt(delemID))) {
+            request.setAttribute("DD_ERR_MSG", "Invalid identifier: delem_id");
+            request.getRequestDispatcher("error.jsp").forward(request, response);
+            return;
+        }
         eionet.meta.dao.domain.DataElement element = dao.getDataElement(Integer.parseInt(delemID));
         elems = searchEngine.getFKRelationsElm(delemID, dstID);
         StringBuffer collect_elems = new StringBuffer();
