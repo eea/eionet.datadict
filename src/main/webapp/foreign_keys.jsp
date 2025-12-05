@@ -1,4 +1,4 @@
-<%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,eionet.util.sql.ConnectionUtil,org.apache.commons.lang3.math.NumberUtils"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,eionet.util.sql.ConnectionUtil,org.apache.commons.lang3.math.NumberUtils,eionet.meta.dao.mysql.DataElementDAOImpl"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -39,7 +39,6 @@
         return;
     }
 
-    String delemName = request.getParameter("delem_name");
     String dstID = request.getParameter("ds_id");
 
     // handle POST request
@@ -78,6 +77,8 @@
     try {
         conn = ConnectionUtil.getConnection();
         DDSearchEngine searchEngine = new DDSearchEngine(conn, "");
+        DataElementDAOImpl dao = searchEngine.getSpringContext().getBean(DataElementDAOImpl.class);
+        eionet.meta.dao.domain.DataElement element = dao.getDataElement(Integer.parseInt(delemID));
         elems = searchEngine.getFKRelationsElm(delemID, dstID);
         StringBuffer collect_elems = new StringBuffer();
 %>
@@ -134,7 +135,7 @@
 <form accept-charset="UTF-8" id="form1" method="post" action="foreign_keys.jsp">
 
     <h1>Foreign keys associated with
-    <em><a href="<%=request.getContextPath()%>/dataelements/<%=delemID%>/edit"><%=Util.processForDisplay(delemName)%></a></em>.
+    <em><a href="<%=request.getContextPath()%>/dataelements/<%=delemID%>/edit"><%=Util.processForDisplay(element.getShortName())%></a></em>.
 </h1>
 
     <table cellspacing="0" cellpadding="0" style="width:auto;clear:right;margin-top:20px" class="datatable">
@@ -208,7 +209,7 @@
     <div style="display:none">
         <input type="hidden" name="mode" value="delete"/>
         <input type="hidden" name="delem_id" value="<%=Util.processForDisplay(delemID, true)%>"/>
-        <input type="hidden" name="delem_name" value="<%=Util.processForDisplay(delemName, true)%>"/>
+        <input type="hidden" name="delem_name" value="<%=Util.processForDisplay(element.getShortName(), true)%>"/>
         <input type="hidden" name="ds_id" value="<%=Util.processForDisplay(dstID, true)%>"/>
 
         <input type="hidden" name="a_id" value="<%=Util.processForDisplay(delemID, true)%>"/>
