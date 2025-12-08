@@ -101,7 +101,6 @@ public class SQLTransaction implements Transaction {
      */
     @Override
     public void commit() throws DAOException {
-
         if (savepoint == null) {
             throw new IllegalStateException("Transaction not yet started!");
         }
@@ -134,7 +133,6 @@ public class SQLTransaction implements Transaction {
      */
     @Override
     public void close() {
-
         if (conn != null) {
             try {
                 conn.close();
@@ -150,8 +148,12 @@ public class SQLTransaction implements Transaction {
     public void end() {
         try {
             if (conn != null && savepoint != null) {
-                conn.releaseSavepoint(savepoint);
+                // only nested transactions should release the savepoint
+                if (isRunningInAnotherTransaction) {
+                    conn.releaseSavepoint(savepoint);
+                }
                 savepoint = null;
+                // only top-level transactions should restore autocommit
                 if (!isRunningInAnotherTransaction) {
                     conn.setAutoCommit(true);
                 }
@@ -167,7 +169,6 @@ public class SQLTransaction implements Transaction {
      * @throws SQLException
      */
     public Connection getConnection() throws SQLException {
-
         if (savepoint == null) {
             throw new IllegalStateException("Transaction not yet started!");
         } else {
@@ -180,7 +181,6 @@ public class SQLTransaction implements Transaction {
      * @param transaction
      */
     public static void rollback(SQLTransaction transaction) {
-
         if (transaction != null) {
             transaction.rollback();
         }
@@ -191,7 +191,6 @@ public class SQLTransaction implements Transaction {
      * @param transaction
      */
     public static void end(SQLTransaction transaction) {
-
         if (transaction != null) {
             transaction.end();
         }
@@ -199,7 +198,6 @@ public class SQLTransaction implements Transaction {
     /**
      */
     public static void main(String[] args) throws ClassNotFoundException {
-
         Connection conn = null;
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
