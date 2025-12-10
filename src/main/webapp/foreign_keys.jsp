@@ -1,4 +1,4 @@
-<%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,eionet.util.sql.ConnectionUtil,org.apache.commons.lang3.math.NumberUtils,eionet.meta.dao.mysql.DataElementDAOImpl"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,eionet.util.sql.ConnectionUtil,org.apache.commons.lang3.math.NumberUtils,eionet.meta.dao.mysql.DataElementDAOImpl,eionet.meta.dao.domain.DataSet"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -40,6 +40,17 @@
     }
 
     String dstID = request.getParameter("ds_id");
+    if (dstID == null || dstID.length() == 0) {
+        request.setAttribute("DD_ERR_MSG", "Missing request parameter: ds_id");
+        request.getRequestDispatcher("error.jsp").forward(request, response);
+        return;
+    }
+
+    if (!(NumberUtils.toInt(dstID) > 0)) {
+        request.setAttribute("DD_ERR_MSG", "Invalid identifier: ds_id");
+        request.getRequestDispatcher("error.jsp").forward(request, response);
+        return;
+    }
 
     // handle POST request
     if (request.getMethod().equals("POST")) {
@@ -84,6 +95,17 @@
             return;
         }
         eionet.meta.dao.domain.DataElement element = dao.getDataElement(Integer.parseInt(delemID));
+
+        DataSet parentDataSet = dao.getParentDataSet(element.getId());
+
+        if (user == null || parentDataSet == null || parentDataSet.getId() != NumberUtils.toInt(dstID) ||
+                !parentDataSet.isWorkingCopy() || parentDataSet.getWorkingUser() == null ||
+                !parentDataSet.getWorkingUser().equals(user.getUserName())) {
+            request.setAttribute("DD_ERR_MSG", "You have no permissions to modify foreign keys relations.");
+            request.getRequestDispatcher("error.jsp").forward(request, response);
+            return;
+        }
+
         elems = searchEngine.getFKRelationsElm(delemID, dstID);
         StringBuffer collect_elems = new StringBuffer();
 %>
