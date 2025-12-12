@@ -9,28 +9,27 @@
     request.setCharacterEncoding("UTF-8");
     
     DDUser user = SecurityUtil.getUser(request);
-    if (user==null || !SecurityUtil.hasPerm(user, "/import", "x")){ %>
+    if (user == null || !SecurityUtil.hasPerm(user, "/import", "x")) { %>
         <b>Not allowed!</b><%
         return;
     }
     
     String mode = request.getParameter("mode");
-    if (mode==null || mode.trim().length()==0){
+    if (mode == null || mode.trim().length() == 0){
         mode = "DST";
-    }
-    else if (!mode.equals("FXV")){ %>
+    } else if (!mode.equals("FXV")) { %>
         <b>Unknown mode!</b><%
     }
     
     String delem_id = request.getParameter("delem_id");
-    if (mode.equals("FXV")){
-        if (delem_id==null || delem_id.length()==0){%>
+    if (mode.equals("FXV")) {
+        if (delem_id == null || delem_id.length() == 0) {%>
             <b>Missing data element ID in fixed values import mode!</b><%
         }
     }
     
     String elmName = request.getParameter("short_name");
-    if (elmName==null || elmName.length()==0) elmName = "?";
+    if (elmName == null || elmName.length() == 0) elmName = "?";
 %>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
@@ -40,21 +39,19 @@
     // <![CDATA[
 
     function submitForm(){
-
         var radio = "";
         var type = "";
 
-        for (var i=0; i<document.forms["Upload"].elements.length; i++){
+        for (var i = 0; i < document.forms["Upload"].elements.length; i++) {
             var o = document.forms["Upload"].elements[i];
-            if (o.name == "fileORurl"){
-                if (o.checked == true){
+            if (o.name == "fileORurl") {
+                if (o.checked == true) {
                     radio = o.value;
                     //break;
-
                 }
             }
                 
-            if (o.name == "type"){
+            if (o.name == "type") {
                 type = o.value;
                 //break;
             }
@@ -64,21 +61,21 @@
         var file = document.forms["Upload"].elements["file_input"].value;
         var ok = true;
 
-        if (radio == "url"){
-            if (url == ""){
+        if (radio == "url") {
+            if (url == "") {
                 alert("URL is not specified, there is nothing to import!");
                 ok = false;
             }
         }
         
-        if (radio == "file"){
-            if (file == ""){
+        if (radio == "file") {
+            if (file == "") {
                 alert("File location is not specified, there is nothing to import!");
                 ok = false;
             }
         }
 
-        if (ok == true){
+        if (ok == true) {
             var qryStr = "?fileORurl=" + radio + "&url_input=" + url + "&type=" + type;
             <%
             if (mode.equals("FXV")) { %>
@@ -122,7 +119,7 @@
     </p>
 
         <%
-        if (mode.equals("FXV")){ %>
+        if (mode.equals("FXV")) { %>
             <p>
                     <span class="attention">
                         You have chosen to import fixed values (i.e. codes)<br/> for the
@@ -163,7 +160,7 @@
                         </td>
                     </tr>
                 </table>
-            </form>    
+            </form>
 </div> <!-- workarea -->
 </div> <!-- container -->
 <%@ include file="footer.jsp" %>
