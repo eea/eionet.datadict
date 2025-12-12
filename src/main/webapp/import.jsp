@@ -1,4 +1,4 @@
-<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.meta.exports.schema.*,eionet.util.Util,eionet.util.sql.ConnectionUtil"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.meta.exports.schema.*,eionet.util.Util,org.apache.commons.lang3.math.NumberUtils"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <%
@@ -7,29 +7,43 @@
     response.setHeader("Expires", Util.getExpiresDateString());
 
     request.setCharacterEncoding("UTF-8");
-    
+
     DDUser user = SecurityUtil.getUser(request);
-    if (user == null || !SecurityUtil.hasPerm(user, "/import", "x")) { %>
-        <b>Not allowed!</b><%
+    if (user == null || !SecurityUtil.hasPerm(user, "/import", "x")) {
+        request.setAttribute("DD_ERR_MSG", "You have no permission to import data!");
+        request.getRequestDispatcher("error.jsp").forward(request, response);
         return;
     }
-    
+
     String mode = request.getParameter("mode");
-    if (mode == null || mode.trim().length() == 0){
+    if (mode == null || mode.trim().length() == 0) {
         mode = "DST";
-    } else if (!mode.equals("FXV")) { %>
-        <b>Unknown mode!</b><%
     }
-    
+
+    if (!"DST".equals(mode) && !"FXV".equals(mode)) {
+        request.setAttribute("DD_ERR_MSG", "Invalid parameter: mode");
+        request.getRequestDispatcher("error.jsp").forward(request, response);
+        return;
+    }
+
     String delem_id = request.getParameter("delem_id");
     if (mode.equals("FXV")) {
-        if (delem_id == null || delem_id.length() == 0) {%>
-            <b>Missing data element ID in fixed values import mode!</b><%
+        if (delem_id == null || delem_id.length() == 0) {
+            request.setAttribute("DD_ERR_MSG", "Missing request parameter: delem_id");
+            request.getRequestDispatcher("error.jsp").forward(request, response);
+            return;
+        }
+        if (!(NumberUtils.toInt(delem_id) > 0)) {
+            request.setAttribute("DD_ERR_MSG", "Invalid identifier: delem_id");
+            request.getRequestDispatcher("error.jsp").forward(request, response);
+            return;
         }
     }
-    
+
     String elmName = request.getParameter("short_name");
-    if (elmName == null || elmName.length() == 0) elmName = "?";
+    if (elmName == null || elmName.length() == 0) {
+        elmName = "?";
+    }
 %>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
@@ -38,52 +52,46 @@
     <script type="text/javascript">
     // <![CDATA[
 
-    function submitForm(){
+    function submitForm() {
         var radio = "";
         var type = "";
 
         for (var i = 0; i < document.forms["Upload"].elements.length; i++) {
             var o = document.forms["Upload"].elements[i];
-            if (o.name == "fileORurl") {
-                if (o.checked == true) {
-                    radio = o.value;
-                    //break;
-                }
+            if (o.name === "fileORurl" && o.checked === true) {
+                radio = o.value;
             }
-                
-            if (o.name == "type") {
+
+            if (o.name === "type") {
                 type = o.value;
-                //break;
             }
         }
-        
+
         var url = document.forms["Upload"].elements["url_input"].value;
         var file = document.forms["Upload"].elements["file_input"].value;
         var ok = true;
 
-        if (radio == "url") {
-            if (url == "") {
-                alert("URL is not specified, there is nothing to import!");
-                ok = false;
-            }
-        }
-        
-        if (radio == "file") {
-            if (file == "") {
-                alert("File location is not specified, there is nothing to import!");
-                ok = false;
-            }
+        if (radio === "url" && url === "") {
+            alert("URL is not specified, there is nothing to import!");
+            ok = false;
         }
 
-        if (ok == true) {
-            var qryStr = "?fileORurl=" + radio + "&url_input=" + url + "&type=" + type;
+        if (radio === "file" && file === "") {
+            alert("File location is not specified, there is nothing to import!");
+            ok = false;
+        }
+
+        if (ok === true) {
+            var qryStr = "?fileORurl=" + encodeURIComponent(radio)
+                        + "&url_input=" + encodeURIComponent(url)
+                        + "&type=" + encodeURIComponent(type);
             <%
             if (mode.equals("FXV")) { %>
                 qryStr = qryStr + "&delem_id=<%=delem_id%>";<%
             }
             %>
-            
-            document.forms["Upload"].action = document.forms["Upload"].action + encodeURI(qryStr);
+
+            document.forms["Upload"].action = document.forms["Upload"].action + qryStr;
             document.forms["Upload"].submit();
         }
     }
@@ -123,7 +131,7 @@
             <p>
                     <span class="attention">
                         You have chosen to import fixed values (i.e. codes)<br/> for the
-                        <a href="<%=request.getContextPath()%>/dataelements/<%=delem_id%>"><%=Util.processForDisplay(elmName)%></a> element!
+                        <a href="<%=request.getContextPath()%>/dataelements/<%=delem_id%>"><%=Util.processForDisplay(elmName, true)%></a> element!
                     </span>
             </p><%
         }
@@ -152,11 +160,11 @@
                     <tr>
                         <td></td>
                         <td>
-                            <% if (user!=null){ %>
+                            <% if (user != null) { %>
                                 <input name="SUBMIT" type="button" class="mediumbuttonb" value="Import" onclick="submitForm()" onkeypress="submitForm()"/>&nbsp;&nbsp;
                             <%}%>
                             <input name="RESET" type="reset" class="mediumbuttonb" value="Clear"/>
-                            <input type="hidden" name="type" value="<%=mode%>"/>
+                            <input type="hidden" name="type" value="<%=Util.processForDisplay(mode, true)%>"/>
                         </td>
                     </tr>
                 </table>
