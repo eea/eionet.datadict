@@ -91,7 +91,7 @@
             }
             %>
 
-            document.forms["Upload"].action = document.forms["Upload"].action + qryStr;
+            document.forms["Upload"].action = "Import" + qryStr;
             document.forms["Upload"].submit();
         }
     }

@@ -19,6 +19,7 @@ public class GetImportResults extends HttpServlet {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GetImportResults.class);
 
+    @Override
     protected void service(HttpServletRequest req, HttpServletResponse res)
                                 throws ServletException, IOException {
 
