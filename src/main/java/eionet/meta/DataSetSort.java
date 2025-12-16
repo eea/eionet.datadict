@@ -15,44 +15,27 @@ import org.apache.commons.lang3.StringUtils;
  * @author js
  */
 public enum DataSetSort {
-    
+
     NAME, SHORT_NAME, STATUS, ID;
 
     public Comparator<Dataset> getComparator(final boolean descending) {
-        if (this == ID) {
-            return new Comparator<Dataset>() {
-                @Override
-                public int compare(Dataset d1, Dataset d2) {
-                    return descending ? -Integer.valueOf(d1.getID()).compareTo(Integer.valueOf(d2.getID())) : 
-                            Integer.valueOf(d1.getID()).compareTo(Integer.valueOf(d2.getID()));
-                }
-            };
+        final Comparator<Dataset> comparator;
+        switch (this) {
+            case ID:
+                comparator = Comparator.comparingInt(d -> Integer.parseInt(d.getID()));
+                break;
+            case STATUS:
+                comparator = Comparator.comparing(d -> Util.getStatusSortString(d.getStatus()));
+                break;
+            case SHORT_NAME:
+                comparator = Comparator.comparing(Dataset::getShortName, String.CASE_INSENSITIVE_ORDER);
+                break;
+            case NAME:
+            default:
+                comparator = Comparator.comparing(Dataset::getName, String.CASE_INSENSITIVE_ORDER);
+                break;
         }
-        if (this == STATUS) {
-            return new Comparator<Dataset>() {
-                @Override
-                public int compare(Dataset d1, Dataset d2) {
-                    return descending ? -Util.getStatusSortString(d1.getStatus()).compareTo(Util.getStatusSortString(d2.getStatus())) :
-                            Util.getStatusSortString(d1.getStatus()).compareTo(Util.getStatusSortString(d2.getStatus()));
-                }
-            };
-        }
-        if (this == SHORT_NAME) {
-            return new Comparator<Dataset>() {
-                @Override
-                public int compare(Dataset d1, Dataset d2) {
-                     return descending ? -d1.getShortName().compareToIgnoreCase(d2.getShortName()) :
-                        d1.getShortName().compareToIgnoreCase(d2.getShortName());
-                }
-            };
-        }
-        return new Comparator<Dataset>() {
-            @Override
-            public int compare(Dataset d1, Dataset d2) {
-                return descending ? -d1.getName().compareToIgnoreCase(d2.getName()) :
-                        d1.getName().compareToIgnoreCase(d2.getName());
-            }
-        };
+        return descending ? comparator.reversed() : comparator;
     }
 
     public static DataSetSort fromString(String name) {
