@@ -1,4 +1,4 @@
-<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.meta.exports.schema.*,eionet.util.Util"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.meta.exports.schema.*,eionet.util.Util,org.apache.commons.lang3.math.NumberUtils"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%
@@ -9,9 +9,11 @@ response.setHeader("Expires", Util.getExpiresDateString());
 request.setCharacterEncoding("UTF-8");
 
 String dstID = request.getParameter("ds_id");
-if (dstID==null || dstID.length()==0) throw new ServletException("Dataset ID is missing!");
+if (dstID == null || dstID.isEmpty()) throw new ServletException("Dataset ID is missing!");
+if (NumberUtils.toInt(dstID) <= 0) throw new ServletException("Invalid Dataset ID!");
+
 String idf = request.getParameter("idf");
-if (idf==null || idf.length()==0) throw new ServletException("Dataset Identifier is missing!");
+if (idf == null || idf.isEmpty()) throw new ServletException("Dataset Identifier is missing!");
 %>
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
@@ -21,14 +23,13 @@ if (idf==null || idf.length()==0) throw new ServletException("Dataset Identifier
     // <![CDATA[
     
         function submitForm(){
-            
-            var f = document.forms["form1"].elements["file"].value;
-            if (f==null || f.length==0){
-                alert("You must provide at least the file!");
+            const f = document.forms["form1"].elements["file"].value;
+            if (f == null || f.length === 0) {
+                alert("You must select a file!");
                 return;
             }
             
-            qryStr = "ds_id=<%=dstID%>&idf=<%=idf%>&title=" + document.forms["form1"].elements["title"].value + "&file=" + f;
+            const qryStr = "ds_id=<%=Util.processForDisplay(dstID, true)%>&idf=<%=Util.processForDisplay(idf, true)%>&title=" + document.forms["form1"].elements["title"].value + "&file=" + f;
             document.forms["form1"].action = document.forms["form1"].action + "?" + encodeURI(qryStr);
             document.forms["form1"].submit();
         }
