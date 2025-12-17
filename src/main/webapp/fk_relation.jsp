@@ -40,6 +40,12 @@ if (request.getMethod().equals("POST")) {
         try {
             FKHandler handler = new FKHandler(userConn, request, getServletContext());
             handler.execute();
+
+            if (mode.equals("delete")) {
+                response.sendRedirect(history.getBackUrl());
+            } else {
+                response.sendRedirect(currentUrl);
+            }
         } catch (Exception e) {
             String msg = e.getMessage();
 
@@ -54,13 +60,8 @@ if (request.getMethod().equals("POST")) {
             request.setAttribute("DD_ERR_BACK_LINK", backLink);
 
             request.getRequestDispatcher("error.jsp").forward(request, response);
-        }
-    }
 
-    if (mode.equals("delete")) {
-        response.sendRedirect(history.getBackUrl());
-    } else {
-        response.sendRedirect(currentUrl);
+        }
     }
     return;
 }
@@ -68,6 +69,11 @@ if (request.getMethod().equals("POST")) {
 try (Connection conn = ConnectionUtil.getConnection()) { // start the whole page try block
     DDSearchEngine searchEngine = new DDSearchEngine(conn, "");
     Hashtable fkRel = searchEngine.getFKRelation(relID);
+    if (fkRel == null || fkRel.isEmpty()) {
+        request.setAttribute("DD_ERR_MSG", "No foreign key relation found.");
+        request.getRequestDispatcher("error.jsp").forward(request, response);
+        return;
+    }
     String disabled = user == null ? "disabled" : "";
 %>
 
