@@ -201,8 +201,8 @@ String disabled = user == null ? "disabled" : "";
             </tr>
     </table>
     <div style="display:none">
-        <input type="hidden" name="rel_id" value="<%=relID%>"/>
-        <input type="hidden" name="mode" value="<%=mode%>"/>
+        <input type="hidden" name="rel_id" value="<%=Util.processForDisplay(relID, true)%>"/>
+        <input type="hidden" name="mode" value="<%=Util.processForDisplay(mode, true)%>"/>
     </div>
     </form>
 </div> <!-- workarea -->
