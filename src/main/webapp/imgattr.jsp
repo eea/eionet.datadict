@@ -46,35 +46,30 @@
     if (objType.equals("E")) {
         titleType = " element";
         titleLink = request.getContextPath() + "/dataelements/" + objID + "/edit";
-    }
-    else if (objType.equals("T")) {
+    } else if (objType.equals("T")) {
         titleType = " table";
         titleLink = request.getContextPath() + "/tables/" + objID;
-    }
-    else if (objType.equals("DS")) {
+    } else if (objType.equals("DS")) {
         request.setAttribute("DD_ERR_MSG", "Images not allowed for datasets. Use data model instead.");
         request.getRequestDispatcher("error.jsp").forward(request, response);
         return;
-    }
-    else if (objType.equals(DElemAttribute.ParentType.SCHEMA_SET.toString())) {
+    } else if (objType.equals(DElemAttribute.ParentType.SCHEMA_SET.toString())) {
         titleType = " schema set";
         titleLink = request.getContextPath() + SchemaSetActionBean.class.getAnnotation(UrlBinding.class).value() + "?edit=&schemaSet.id=" + objID;
     }
 
-    Connection conn = null;
-
     // the whole page's try block
-    try {
-        conn = ConnectionUtil.getConnection();
-        DDSearchEngine searchEngine = new DDSearchEngine(conn, "");
-        Vector attrs = searchEngine.getAttributes(objID, objType);
+    try (Connection conn = ConnectionUtil.getConnection()) {
+        try {
+            DDSearchEngine searchEngine = new DDSearchEngine(conn, "");
+            Vector attrs = searchEngine.getAttributes(objID, objType);
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
-    <head>
-        <%@ include file="headerinfo.jsp" %>
-        <title>Data Dictionary</title>
-        <script type="text/javascript">
+<head>
+    <%@ include file="headerinfo.jsp" %>
+    <title>Data Dictionary</title>
+    <script type="text/javascript">
         // <![CDATA[
         function submitForm(mode) {
             if (mode == 'remove') {
@@ -87,7 +82,7 @@
             var radio
             var o;
 
-            for (var i=0; i<document.forms["Upload"].elements.length; i++) {
+            for (var i = 0; i < document.forms["Upload"].elements.length; i++) {
                 o = document.forms["Upload"].elements[i];
                 if (o.name == "fileORurl") {
                     if (o.checked == true) {
@@ -132,135 +127,145 @@
                 document.forms["Upload"].submit();
             }
         }
+
         // ]]>
-        </script>
-    </head>
-    <body>
-        <div id="container">
-            <jsp:include page="nlocation.jsp" flush="true">
-                <jsp:param name="name" value="Image attribute"/>
-                <jsp:param name="helpscreen" value="img_attr"/>
-            </jsp:include>
-            <c:set var="currentSection" value="dataElements" />
-            <%@ include file="/pages/common/navigation.jsp" %>
+    </script>
+</head>
+<body>
+<div id="container">
+    <jsp:include page="nlocation.jsp" flush="true">
+        <jsp:param name="name" value="Image attribute"/>
+        <jsp:param name="helpscreen" value="img_attr"/>
+    </jsp:include>
+    <c:set var="currentSection" value="dataElements"/>
+    <%@ include file="/pages/common/navigation.jsp" %>
 
-            <div id="workarea" style="clear:right;">
-                <h1>
-                    <%=Util.processForDisplay(attrName)%> of <a href="<%=Util.processForDisplay(titleLink, true)%>"><%=Util.processForDisplay(objName, true)%></a> <%=Util.processForDisplay(titleType)%>
-                </h1>
-                <div id="drop-operations">
-                    <ul>
-                        <li class="back"><a href="<%=Util.processForDisplay(titleLink, true)%>">Back to the <%=titleType%></a></li>
-                    </ul>
-                </div>
-    
-                <form id="Upload" action="ImgUpload" method="post" enctype="multipart/form-data">
-                    <table cellspacing="0" style="width:auto;margin-top:10px">
-                        <tr>
-                            <td align="left" style="padding-right:5">
-                                <input type="radio" name="fileORurl" value="file" checked="checked"/>&nbsp;File:
-                            </td>
-                            <td align="left">
-                                <input type="file" class="smalltext" name="file_input" size="40"/>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td align="left" style="padding-right:5">
-                                <input type="radio" class="smalltext" name="fileORurl" value="url"/>&nbsp;URL:
-                            </td>
-                            <td align="left">
-                                <input type="text" class="smalltext" name="url_input" size="52"/>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td align="left">
-                                <input name="SUBMIT" type="button" class="mediumbuttonb" value="Add" onclick="submitForm('upload')" onkeypress="submitForm('upload')"/>&nbsp;&nbsp;
-                                <input name="REMOVE" type="button" class="mediumbuttonb" value="Remove selected" onclick="submitForm('remove')" onkeypress="submitForm('remove')"/>
-                            </td>
-                        </tr>
-                        <tr><td colspan="2">&nbsp;</td></tr>
-                    </table>
-                    <table width="auto" cellspacing="0">
+    <div id="workarea" style="clear:right;">
+        <h1>
+            <%=Util.processForDisplay(attrName)%> of <a
+                href="<%=Util.processForDisplay(titleLink, true)%>"><%=Util.processForDisplay(objName, true)%>
+        </a> <%=Util.processForDisplay(titleType)%>
+        </h1>
+        <div id="drop-operations">
+            <ul>
+                <li class="back"><a href="<%=Util.processForDisplay(titleLink, true)%>">Back to the <%=titleType%>
+                </a></li>
+            </ul>
+        </div>
 
-                        <%
-                        boolean found = false;
-                        int displayed = 0;
-                        for (int i=0; attrs!=null && i<attrs.size(); i++){
-                            DElemAttribute attr = (DElemAttribute)attrs.get(i);
-                            if (attr.getID().equals(attrID)){
-                                Vector values = attr.getValues();
-                                for (int j=0; values!=null && j<values.size(); j++){
-                                    found = true;
-                                    String value = (String)values.get(j);
-                                    if (displayed==0){ %>
-                                        <tr><td colspan="2">Please note that you can only add images of JPG, GIF and PNG!</td></tr> <%
-                                    }
-                                    %>
-                                    <tr>
-                                        <td valign="top">
-                                            <input type="checkbox" name="file_name" value="<%=Util.processForDisplay(value, true)%>"/>
-                                        </td>
-                                        <td align="left" style="border:1px solid black;padding:5px">
-                                            <img src="visuals/<%=Util.processForDisplay(value, true)%>" alt="The registered image file could not be found. Use the checkbox and 'Remove selected' button to remove it and then upload again."/>
-                                        </td>
-                                    </tr>
-                                    <tr height="10"><td colspan="2">&nbsp;</td></tr> <%
-                                    displayed++;
-                                }
+        <form id="Upload" action="ImgUpload" method="post" enctype="multipart/form-data">
+            <table cellspacing="0" style="width:auto;margin-top:10px">
+                <tr>
+                    <td align="left" style="padding-right:5">
+                        <input type="radio" name="fileORurl" value="file" checked="checked"/>&nbsp;File:
+                    </td>
+                    <td align="left">
+                        <input type="file" class="smalltext" name="file_input" size="40"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="left" style="padding-right:5">
+                        <input type="radio" class="smalltext" name="fileORurl" value="url"/>&nbsp;URL:
+                    </td>
+                    <td align="left">
+                        <input type="text" class="smalltext" name="url_input" size="52"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td align="left">
+                        <input name="SUBMIT" type="button" class="mediumbuttonb" value="Add"
+                               onclick="submitForm('upload')" onkeypress="submitForm('upload')"/>&nbsp;&nbsp;
+                        <input name="REMOVE" type="button" class="mediumbuttonb" value="Remove selected"
+                               onclick="submitForm('remove')" onkeypress="submitForm('remove')"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">&nbsp;</td>
+                </tr>
+            </table>
+            <table width="auto" cellspacing="0">
+
+                <%
+                    boolean found = false;
+                    int displayed = 0;
+                    for (int i = 0; attrs != null && i < attrs.size(); i++) {
+                        DElemAttribute attr = (DElemAttribute) attrs.get(i);
+                        if (attr.getID().equals(attrID)) {
+                            Vector values = attr.getValues();
+                            for (int j = 0; values != null && j < values.size(); j++) {
+                                found = true;
+                                String value = (String) values.get(j);
+                                if (displayed == 0) { %>
+                <tr>
+                    <td colspan="2">Please note that you can only add images of JPG, GIF and PNG!</td>
+                </tr>
+                <%
+                    }
+                %>
+                <tr>
+                    <td valign="top">
+                        <input type="checkbox" name="file_name" value="<%=Util.processForDisplay(value, true)%>"/>
+                    </td>
+                    <td align="left" style="border:1px solid black;padding:5px">
+                        <img src="visuals/<%=Util.processForDisplay(value, true)%>"
+                             alt="The registered image file could not be found. Use the checkbox and 'Remove selected' button to remove it and then upload again."/>
+                    </td>
+                </tr>
+                <tr height="10">
+                    <td colspan="2">&nbsp;</td>
+                </tr>
+                <%
+                                displayed++;
                             }
                         }
+                    }
 
-                        if (!found){%>
-                            <tr>
-                                <td align="left" colspan="2">
-                                    <b>
-                                        No images found! You can add by using the form above.<br/>
-                                        Please note that you can only add images of JPG, GIF or PNG.
-                                    </b>
-                                </td>
-                            </tr><%
-                        }
-                        %>
-                    </table>
+                    if (!found) {%>
+                <tr>
+                    <td align="left" colspan="2">
+                        <b>
+                            No images found! You can add by using the form above.<br/>
+                            Please note that you can only add images of JPG, GIF or PNG.
+                        </b>
+                    </td>
+                </tr>
+                <%
+                    }
+                %>
+            </table>
 
-                    <div style="display:none">
-                        <input type="hidden" name="obj_id" value="<%=objID%>"/>
-                        <input type="hidden" name="obj_type" value="<%=objType%>"/>
-                        <input type="hidden" name="attr_id" value="<%=attrID%>"/>
+            <div style="display:none">
+                <input type="hidden" name="obj_id" value="<%=objID%>"/>
+                <input type="hidden" name="obj_type" value="<%=objType%>"/>
+                <input type="hidden" name="attr_id" value="<%=attrID%>"/>
 
-                        <input type="hidden" name="mode" value="add"/>
+                <input type="hidden" name="mode" value="add"/>
 
-                        <input type="hidden" name="redir_url" value="imgattr.jsp?<%=Util.processForDisplay(request.getQueryString(), true)%>"/>
-                    </div>
-                </form>
-            </div> <!-- workarea -->
-        </div> <!-- container -->
-        <%@ include file="footer.jsp" %>
-    </body>
+                <input type="hidden" name="redir_url"
+                       value="imgattr.jsp?<%=Util.processForDisplay(request.getQueryString(), true)%>"/>
+            </div>
+        </form>
+    </div> <!-- workarea -->
+</div> <!-- container -->
+<%@ include file="footer.jsp" %>
+</body>
 </html>
 <%
-// end the whole page try block
-}
-catch (Exception e) {
-    if (response.isCommitted()) {
-        e.printStackTrace(System.out);
-    } else {
-        String msg = e.getMessage();
-        ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
-        e.printStackTrace(new PrintStream(bytesOut));
-        String trace = bytesOut.toString(response.getCharacterEncoding());
-        request.setAttribute("DD_ERR_MSG", msg);
-        request.setAttribute("DD_ERR_TRC", trace);
-        request.getRequestDispatcher("error.jsp").forward(request, response);
-        return;
-    }
-}
-finally {
-    try { 
-        if (conn!=null) {
-            conn.close();
+    // end the whole page try block
+    } catch (Exception e) {
+        if (response.isCommitted()) {
+            e.printStackTrace(System.out);
+        } else {
+            String msg = e.getMessage();
+            ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
+            e.printStackTrace(new PrintStream(bytesOut));
+            String trace = bytesOut.toString(response.getCharacterEncoding());
+            request.setAttribute("DD_ERR_MSG", msg);
+            request.setAttribute("DD_ERR_TRC", trace);
+            request.getRequestDispatcher("error.jsp").forward(request, response);
+            return;
         }
-    } catch (SQLException e) {}
-}
+    }
+} catch (SQLException e) {}
 %>
