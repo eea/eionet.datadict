@@ -15,7 +15,7 @@
     // POST request not allowed for anybody who hasn't logged in
     if (request.getMethod().equals("POST") && user==null) {
         request.setAttribute("DD_ERR_MSG", "You have no permission to POST data!");
-        request.getRequestDispatcher("error.jsp?class=popup").forward(request, response);
+        request.getRequestDispatcher("error.jsp").forward(request, response);
         return;
     }
 
@@ -23,19 +23,19 @@
     String objID = request.getParameter("obj_id");
     if (objID == null || objID.length()==0) {
         request.setAttribute("DD_ERR_MSG", "Missing request parameter: obj_id");
-        request.getRequestDispatcher("error.jsp?class=popup").forward(request, response);
+        request.getRequestDispatcher("error.jsp").forward(request, response);
         return;
     }
     String objType = request.getParameter("obj_type");
     if (objType==null || objType.length()==0) {
         request.setAttribute("DD_ERR_MSG", "Missing request parameter: obj_type");
-        request.getRequestDispatcher("error.jsp?class=popup").forward(request, response);
+        request.getRequestDispatcher("error.jsp").forward(request, response);
         return;
     }
     String attrID = request.getParameter("attr_id");
     if (attrID==null || attrID.length()==0) {
         request.setAttribute("DD_ERR_MSG", "Missing request parameter: attr_id");
-        request.getRequestDispatcher("error.jsp?class=popup").forward(request, response);
+        request.getRequestDispatcher("error.jsp").forward(request, response);
         return;
     }
     String objName = request.getParameter("obj_name");
@@ -53,7 +53,7 @@
     }
     else if (objType.equals("DS")) {
         request.setAttribute("DD_ERR_MSG", "Images not allowed for datasets. Use data model instead.");
-        request.getRequestDispatcher("error.jsp?class=popup").forward(request, response);
+        request.getRequestDispatcher("error.jsp").forward(request, response);
         return;
     }
     else if (objType.equals(DElemAttribute.ParentType.SCHEMA_SET.toString())) {
@@ -252,7 +252,7 @@ catch (Exception e) {
         String trace = bytesOut.toString(response.getCharacterEncoding());
         request.setAttribute("DD_ERR_MSG", msg);
         request.setAttribute("DD_ERR_TRC", trace);
-        request.getRequestDispatcher("error.jsp?class=popup").forward(request, response);
+        request.getRequestDispatcher("error.jsp").forward(request, response);
         return;
     }
 }
