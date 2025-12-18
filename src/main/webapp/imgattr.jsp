@@ -1,4 +1,4 @@
-<%@page contentType="text/html;charset=UTF-8" import="eionet.meta.*,java.sql.*,java.util.*,java.io.*,eionet.util.sql.ConnectionUtil,eionet.util.*,eionet.web.action.*,net.sourceforge.stripes.action.UrlBinding"%>
+<%@page contentType="text/html;charset=UTF-8" import="eionet.meta.*,java.sql.*,java.util.*,java.io.*,eionet.util.sql.ConnectionUtil,eionet.util.*,eionet.web.action.*,net.sourceforge.stripes.action.UrlBinding,org.apache.commons.lang3.math.NumberUtils"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
 <%
@@ -13,7 +13,7 @@
     DDUser user = SecurityUtil.getUser(request);
 
     // POST request not allowed for anybody who hasn't logged in
-    if (request.getMethod().equals("POST") && user==null) {
+    if (request.getMethod().equals("POST") && user == null) {
         request.setAttribute("DD_ERR_MSG", "You have no permission to POST data!");
         request.getRequestDispatcher("error.jsp").forward(request, response);
         return;
@@ -21,26 +21,36 @@
 
     // get vital request parameters
     String objID = request.getParameter("obj_id");
-    if (objID == null || objID.length()==0) {
+    if (objID == null || objID.isEmpty()) {
         request.setAttribute("DD_ERR_MSG", "Missing request parameter: obj_id");
         request.getRequestDispatcher("error.jsp").forward(request, response);
         return;
     }
+    if (NumberUtils.toInt(objID) <= 0) {
+        request.setAttribute("DD_ERR_MSG", "Invalid identifier: obj_id");
+        request.getRequestDispatcher("error.jsp").forward(request, response);
+        return;
+    }
     String objType = request.getParameter("obj_type");
-    if (objType==null || objType.length()==0) {
+    if (objType == null || objType.isEmpty()) {
         request.setAttribute("DD_ERR_MSG", "Missing request parameter: obj_type");
         request.getRequestDispatcher("error.jsp").forward(request, response);
         return;
     }
     String attrID = request.getParameter("attr_id");
-    if (attrID==null || attrID.length()==0) {
+    if (attrID == null || attrID.isEmpty()) {
         request.setAttribute("DD_ERR_MSG", "Missing request parameter: attr_id");
         request.getRequestDispatcher("error.jsp").forward(request, response);
         return;
     }
+    if (NumberUtils.toInt(attrID) <= 0) {
+        request.setAttribute("DD_ERR_MSG", "Invalid identifier: attr_id");
+        request.getRequestDispatcher("error.jsp").forward(request, response);
+        return;
+    }
+
     String objName = request.getParameter("obj_name");
     String attrName = request.getParameter("attr_name");
-
     String titleLink = "";
     String titleType = "";
     if (objType.equals("E")) {
@@ -56,6 +66,10 @@
     } else if (objType.equals(DElemAttribute.ParentType.SCHEMA_SET.toString())) {
         titleType = " schema set";
         titleLink = request.getContextPath() + SchemaSetActionBean.class.getAnnotation(UrlBinding.class).value() + "?edit=&schemaSet.id=" + objID;
+    } else {
+        request.setAttribute("DD_ERR_MSG", "Invalid request parameter: obj_type");
+        request.getRequestDispatcher("error.jsp").forward(request, response);
+        return;
     }
 
     // the whole page's try block
