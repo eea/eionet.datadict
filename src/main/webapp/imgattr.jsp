@@ -242,11 +242,10 @@
                     }
                 %>
             </table>
-
             <div style="display:none">
-                <input type="hidden" name="obj_id" value="<%=objID%>"/>
-                <input type="hidden" name="obj_type" value="<%=objType%>"/>
-                <input type="hidden" name="attr_id" value="<%=attrID%>"/>
+                <input type="hidden" name="obj_id" value="<%=Util.processForDisplay(objID, true)%>"/>
+                <input type="hidden" name="obj_type" value="<%=Util.processForDisplay(objType, true)%>"/>
+                <input type="hidden" name="attr_id" value="<%=Util.processForDisplay(attrID, true)%>"/>
 
                 <input type="hidden" name="mode" value="add"/>
 
