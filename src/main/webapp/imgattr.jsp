@@ -72,53 +72,47 @@
     <script type="text/javascript">
         // <![CDATA[
         function submitForm(mode) {
-            if (mode == 'remove') {
+            if (mode === 'remove') {
                 document.forms["Upload"].elements["mode"].value = "remove";
                 document.forms["Upload"].encoding = "application/x-www-form-urlencoded";
                 document.forms["Upload"].submit();
                 return;
             }
 
-            var radio
-            var o;
+            let radio;
+            let o;
 
-            for (var i = 0; i < document.forms["Upload"].elements.length; i++) {
+            for (let i = 0; i < document.forms["Upload"].elements.length; i++) {
                 o = document.forms["Upload"].elements[i];
-                if (o.name == "fileORurl") {
-                    if (o.checked == true) {
-                        radio = o.value;
-                        //break;
-                    }
+                if (o.name === "fileORurl" && o.checked) {
+                    radio = o.value;
                 }
             }
 
-            var url = document.forms["Upload"].elements["url_input"].value;
-            var file = document.forms["Upload"].elements["file_input"].value;
-            var ok = true;
+            const url = document.forms["Upload"].elements["url_input"].value;
+            const file = document.forms["Upload"].elements["file_input"].value;
+            let ok = true;
 
-            if (radio == "url") {
-                if (url == "") {
-                    alert("URL is not specified, there is nothing to add!");
-                    ok = false;
-                }
-            }
-            if (radio == "file") {
-                if (file == "") {
-                    alert("File location is not specified, there is nothing to add!");
-                    ok = false;
-                }
+            if (radio === "url" && url === "") {
+                alert("URL is not specified, there is nothing to add!");
+                ok = false;
             }
 
-            if (ok == true) {
-                var trailer = "?fileORurl=" + radio + "&url_input=" + url + "&file_input=" + file;
+            if (radio === "file" && file === "") {
+                alert("File location is not specified, there is nothing to add!");
+                ok = false;
+            }
+
+            if (ok) {
+                let trailer = "?fileORurl=" + radio + "&url_input=" + url + "&file_input=" + file;
                 trailer = trailer + "&obj_id=" + document.forms["Upload"].elements["obj_id"].value;
 
-                var oType = document.forms["Upload"].elements["obj_type"];
+                let oType = document.forms["Upload"].elements["obj_type"];
                 if (oType != null) {
                     trailer = trailer + "&obj_type=" + oType.value;
                 }
 
-                var oAttrID = document.forms["Upload"].elements["attr_id"];
+                let oAttrID = document.forms["Upload"].elements["attr_id"];
                 if (oAttrID != null) {
                     trailer = trailer + "&attr_id=" + oAttrID.value;
                 }
