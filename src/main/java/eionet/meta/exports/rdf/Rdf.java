@@ -31,7 +31,6 @@ import eionet.meta.service.ITableService;
 import eionet.meta.spring.SpringApplicationContext;
 import eionet.util.Props;
 import eionet.util.PropsIF;
-import java.util.LinkedList;
 
 /**
  *

@@ -7,8 +7,6 @@ import eionet.datadict.errors.XmlMalformedException;
 import eionet.datadict.services.acl.AclEntity;
 import eionet.datadict.services.acl.AclService;
 import eionet.datadict.services.acl.Permission;
-import eionet.datadict.web.GroupsController;
-import eionet.datadict.web.UserUtils;
 import eionet.meta.DDUser;
 import eionet.util.SecurityUtil;
 import org.springframework.stereotype.Service;
@@ -163,8 +161,7 @@ public class AclServiceImpl implements AclService {
     protected Document getDocument() throws ParserConfigurationException, SAXException, IOException {
         File file = new File(AccessController.getAclProperties().getFileLocalgroups());
 
-        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory
-                .newInstance();
+        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
         return documentBuilder.parse(file);
     }

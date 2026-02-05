@@ -11,7 +11,6 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.LinkedHashMap;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServlet;
@@ -45,19 +44,7 @@ public class ImgUpload extends HttpServlet {
      * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, java.io.IOException {
-
         doPost(req, res);
-    }
-
-    /**
-     *
-     * @param req
-     * @param res
-     * @throws ServletException
-     * @throws java.io.IOException
-     */
-    protected void processRequest(HttpServletRequest req, HttpServletResponse res) throws ServletException, java.io.IOException {
-
     }
 
     /*
@@ -66,13 +53,11 @@ public class ImgUpload extends HttpServlet {
      * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, java.io.IOException {
-
         req.setCharacterEncoding("UTF-8");
 
         Connection conn = null;
 
         res.setContentType("text/html");
-        ServletContext ctx = getServletContext();
         HttpSession session = req.getSession();
         String qryStr = (String) session.getAttribute(QRYSTR_ATTR);
         if (Util.isEmpty(qryStr))
@@ -196,7 +181,6 @@ public class ImgUpload extends HttpServlet {
 
         try {
             // set up the file to write to
-
             File file = new File(visualsPath + fileName);
             if (file.exists()) {
                 String msg = "A file with such a name already " + "exists! Choose another name.";
@@ -210,7 +194,6 @@ public class ImgUpload extends HttpServlet {
             RandomAccessFile raFile = new RandomAccessFile(file, "rw");
 
             // set up the stream to read from and call file writer
-
             InputStream in = null;
             if (sUrl != null) {
                 URL url = new URL(sUrl);
@@ -271,19 +254,16 @@ public class ImgUpload extends HttpServlet {
      * @throws Exception
      */
     private void writeToFile(RandomAccessFile raFile, InputStream in) throws Exception {
-
         byte[] buf = new byte[BUF_SIZE];
         int i;
         while ((i = in.read(buf, 0, buf.length)) != -1) {
             raFile.write(buf, 0, i);
         }
-
         raFile.close();
         in.close();
     }
 
     private void writeToFile(RandomAccessFile raFile, ServletInputStream in, String boundary) throws Exception {
-
         byte[] buf = new byte[BUF_SIZE];
         int i;
 
@@ -306,7 +286,6 @@ public class ImgUpload extends HttpServlet {
                 byte[] bs = bout.toByteArray();
                 if (bs != null && bs.length >= 4) {
                     if (bs[bs.length - 1] == 10 && bs[bs.length - 2] == 13 && bs[bs.length - 3] == 10 && bs[bs.length - 4] == 13) {
-
                         fileStart = true;
                     }
                 }
@@ -355,7 +334,6 @@ public class ImgUpload extends HttpServlet {
             if (vsImage == null)
                 throw new Exception();
         } catch (Exception e) {
-
             // reset old properties
             if (propToolkit != null)
                 System.setProperty("awt.toolkit", propToolkit);
@@ -368,22 +346,4 @@ public class ImgUpload extends HttpServlet {
         }
     }
 
-    public static void main(String[] args) {
-
-    }
 }
-
-/*
- * class PJAThread extends Thread {
- *
- * private String absPath = null; private boolean wasOK = false;
- *
- * PJAThread(String absPath) { super(); this.absPath = absPath; }
- *
- * public void run() {
- *
- * try { ImgUpload.checkPJA(absPath); wasOK = true; } catch (Exception e) { File file = new File(absPath); file.renameTo(new
- * File(absPath + ".rmv")); } }
- *
- * public boolean success() { return wasOK; } }
- */
