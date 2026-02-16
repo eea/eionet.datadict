@@ -640,7 +640,7 @@
                         <input type="hidden" name="type" value="DST"/>
                         <!-- collect all the attributes already used in criterias -->
                         <input type="hidden" name="collect_attrs" value="<%=Util.processForDisplay(collect_attrs.toString(), true)%>"/>
-                        <input type="hidden" name="ctx" value="${ctx}"/>
+                        <input type="hidden" name="ctx" value="${fn:escapeXml(ctx)}"/>
                     </div>
                 </div>
             </form>
