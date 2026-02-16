@@ -11,37 +11,33 @@ private Vector attrs = null;
 private Vector def_attrs = null;
 private Vector attr_ids = null;
 ServletContext ctx = null;
-private String sel_attr = null;
 private Hashtable inputAttributes=null;
 
 private String getAttributeIdByName(String name){
-
-    for (int i=0; i<attrs.size(); i++){
-        DElemAttribute attr = (DElemAttribute)attrs.get(i);
-        if (attr.getName().equalsIgnoreCase(name))
+    for (int i = 0; i < attrs.size(); i++){
+        DElemAttribute attr = (DElemAttribute) attrs.get(i);
+        if (attr.getName().equalsIgnoreCase(name)) {
             return attr.getID();
+        }
     }
-
     return null;
 }
 
 private String getAttributeNameById(String id){
-
-    for (int i=0; i<attrs.size(); i++){
+    for (int i = 0; i < attrs.size(); i++){
         DElemAttribute attr = (DElemAttribute)attrs.get(i);
-        if (attr.getID().equals(id))
+        if (attr.getID().equals(id)) {
             return attr.getShortName();
+        }
     }
-
     return null;
 }
 
 private String setDefaultAttrs(String name){
-
     String id = getAttributeIdByName(name);
-    if (id!=null)
+    if (id != null) {
         def_attrs.add(id);
-
+    }
     return null;
 }
 %>
@@ -66,7 +62,9 @@ private String setDefaultAttrs(String name){
     DDSearchEngine searchEngine = new DDSearchEngine(conn, "");
 
     attrs = searchEngine.getDElemAttributes();
-    if (attrs == null) attrs = new Vector();
+    if (attrs == null) {
+        attrs = new Vector();
+    }
 
     attr_ids = new Vector();
     def_attrs = new Vector();
@@ -90,22 +88,36 @@ private String setDefaultAttrs(String name){
     String search_precision = request.getParameter("search_precision");
     String contextParam = request.getParameter("ctx");
 
-
-    String submitForm=null;
-    if (contextParam != null && contextParam.equals(POPUP))
+    String submitForm = null;
+    if (contextParam != null && contextParam.equals(POPUP)) {
         submitForm = "pick_table.jsp";
-    else
+    } else {
         submitForm = "search_results_tbl.jsp";
+    }
 
-    if (sel_attr == null) sel_attr="";
-    if (sel_type == null) sel_type="";
-    if (short_name == null) short_name="";
-    if (idfier == null) idfier="";
-    if (full_name == null) full_name="";
-    if (definition == null) definition="";
-    if (search_precision == null) search_precision="substr";
+    if (sel_attr == null) {
+        sel_attr = "";
+    }
+    if (sel_type == null) {
+        sel_type = "";
+    }
+    if (short_name == null) {
+        short_name = "";
+    }
+    if (idfier == null) {
+        idfier = "";
+    }
+    if (full_name == null) {
+        full_name = "";
+    }
+    if (definition == null) {
+        definition = "";
+    }
+    if (search_precision == null) {
+        search_precision = "substr";
+    }
 
-    ///get inserted attributes
+    // get inserted attributes
     String input_attr;
     inputAttributes = new Hashtable();
     for (int i=0; i<attrs.size(); i++){
@@ -113,15 +125,14 @@ private String setDefaultAttrs(String name){
         String attr_id = attribute.getID();
 
         input_attr = request.getParameter("attr_" + attr_id);
-        if (input_attr!=null){
+        if (input_attr != null) {
             inputAttributes.put(attr_id, input_attr);
             attr_ids.add(attr_id);
         }
     }
-    if (contextParam == null || !contextParam.equals(POPUP)){
+    if (contextParam == null || !contextParam.equals(POPUP)) {
         %><%@ include file="history.jsp"%><%
     }
-
 %>
 
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
@@ -132,26 +143,25 @@ private String setDefaultAttrs(String name){
     // <![CDATA[
         attrWindow=null;
 
-        function submitForm(action){
-
-            document.forms["form1"].action=action;
+        function submitForm(action) {
+            document.forms["form1"].action = action;
             document.forms["form1"].submit();
         }
 
-        function selAttr(id, type){
-            document.forms["form1"].sel_attr.value=id;
-            document.forms["form1"].sel_type.value=type;
+        function selAttr(id, type) {
+            document.forms["form1"].sel_attr.value = id;
+            document.forms["form1"].sel_type.value = type;
             submitForm('search_table.jsp');
 
         }
 
-        function onLoad(){
+        function onLoad() {
             <%
-                if (search_precision != null){
+                if (search_precision != null) {
                 %>
                     var sPrecision = '<%=search_precision%>';
                     var o = document.forms["form1"].search_precision;
-                    for (i=0; o!=null && i<o.length; i++){
+                    for (i=0; o != null && i < o.length; i++){
                         if (o[i].value == sPrecision){
                             o[i].checked = true;
                             break;
@@ -166,8 +176,8 @@ private String setDefaultAttrs(String name){
 </head>
 
 <%
-boolean isPopup = (contextParam == null || !contextParam.equals(POPUP))==false;
-if (!isPopup){
+boolean isPopup = (contextParam == null || !contextParam.equals(POPUP)) == false;
+if (!isPopup) {
     %>
     <body onload="onLoad()">
     <div id="container">
@@ -177,8 +187,7 @@ if (!isPopup){
     </jsp:include>
     <c:set var="currentSection" value="tables" />
     <%@ include file="/pages/common/navigation.jsp" %><%
-}
-else {
+} else {
     %>
     <body class="popup" onload="onLoad()">
     <div id="pagehead">
@@ -251,16 +260,18 @@ else {
 
                     <%
                     // get default attributes, which are always on the page (defined above)
-                    if (def_attrs!=null) {
-                        for (int i=0; i < def_attrs.size(); i++){
-                            attrID = (String)def_attrs.get(i);
+                    if (def_attrs != null) {
+                        for (int i = 0; i < def_attrs.size(); i++) {
+                            attrID = (String) def_attrs.get(i);
                             attrValue = inputAttributes.containsKey(attrID) ? (String)inputAttributes.get(attrID) : "";
 
                             attrName = getAttributeNameById(attrID);
 
-                            if (inputAttributes.containsKey(attrID)) inputAttributes.remove(attrID);
+                            if (inputAttributes.containsKey(attrID)) {
+                                inputAttributes.remove(attrID);
+                            }
 
-                            if (attrID!=null){
+                            if (attrID != null) {
                                 collect_attrs.append(attrID + "|");
                                 displayedCriteria.add(attrID);
                                 %>
@@ -278,9 +289,9 @@ else {
                         }
                     }
                     // get attributes selected from picked list (get the ids from url)
-                    if (attr_ids!=null){
-                        for (int i=0; i < attr_ids.size(); i++){
-                            attrID = (String)attr_ids.get(i);
+                    if (attr_ids != null) {
+                        for (int i = 0; i < attr_ids.size(); i++) {
+                            attrID = (String) attr_ids.get(i);
 
                             if (!inputAttributes.containsKey(attrID)) continue;
                             if (sel_type.equals("remove") && attrID.equals(sel_attr)) continue;
@@ -288,7 +299,9 @@ else {
                             attrName = getAttributeNameById(attrID);
 
                             attrValue = inputAttributes.containsKey(attrID) ? (String)inputAttributes.get(attrID) : "";
-                            if (attrValue == null) attrValue="";
+                            if (attrValue == null) {
+                                attrValue = "";
+                            }
                             collect_attrs.append(attrID + "|");
                             displayedCriteria.add(attrID);
                             %>
@@ -306,8 +319,8 @@ else {
                         }
                     }
                     // add the last selection
-                    if (sel_type!=null && sel_attr!=null){
-                        if (sel_type.equals("add")){
+                    if (sel_type != null && sel_attr != null){
+                        if (sel_type.equals("add")) {
                             attrID = sel_attr;
                             collect_attrs.append(attrID + "|");
                             displayedCriteria.add(attrID);
@@ -328,13 +341,13 @@ else {
                     }
 
                     Vector addCriteria = new Vector();
-                    for (int i=0; attrs!=null && i<attrs.size(); i++) {
-
+                    for (int i = 0; attrs != null && i < attrs.size(); i++) {
                         DElemAttribute attribute = (DElemAttribute)attrs.get(i);
-                        if (!attribute.displayFor("TBL"))
+                        if (!attribute.displayFor("TBL")) {
                             continue;
+                        }
 
-                        if (!displayedCriteria.contains(attribute.getID())){
+                        if (!displayedCriteria.contains(attribute.getID())) {
                             Hashtable hash = new Hashtable();
                             hash.put("id", attribute.getID());
                             hash.put("name", attribute.getShortName());
@@ -342,7 +355,7 @@ else {
                         }
                     }
 
-                    if (addCriteria.size()>0 && !isPopup) {
+                    if (addCriteria.size() > 0 && !isPopup) {
                         %>
                         <tr>
                             <td></td>
@@ -350,8 +363,8 @@ else {
                                 <select name="add_criteria" id="add_criteria" onchange="selAttr(this.options[this.selectedIndex].value, 'add')">
                                     <option value="">Add criteria</option>
                                     <%
-                                    for (int i=0; i<addCriteria.size(); i++) {
-                                        Hashtable hash = (Hashtable)addCriteria.get(i);
+                                    for (int i = 0; i < addCriteria.size(); i++) {
+                                        Hashtable hash = (Hashtable) addCriteria.get(i);
                                     %>
                                         <option value="<%=hash.get("id")%>"><%=Util.processForDisplay((String) hash.get("name"), true)%></option><%
                                     }
@@ -398,7 +411,10 @@ else {
 // end the whole page try block
 }
 finally {
-    try { if (conn!=null) conn.close();
+    try {
+        if (conn!=null) {
+            conn.close();
+        }
     } catch (SQLException e) {}
 }
 %>
