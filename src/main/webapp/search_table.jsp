@@ -1,4 +1,4 @@
-<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.util.sql.ConnectionUtil,eionet.util.*"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.util.sql.ConnectionUtil,eionet.util.*,org.apache.commons.text.StringEscapeUtils"%>
 <%@ include file="/pages/common/taglibs.jsp"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
@@ -120,8 +120,8 @@ private String setDefaultAttrs(String name){
     // get inserted attributes
     String input_attr;
     inputAttributes = new Hashtable();
-    for (int i=0; i<attrs.size(); i++){
-        DElemAttribute attribute = (DElemAttribute)attrs.get(i);
+    for (int i=0; i < attrs.size(); i++){
+        DElemAttribute attribute = (DElemAttribute) attrs.get(i);
         String attr_id = attribute.getID();
 
         input_attr = request.getParameter("attr_" + attr_id);
@@ -156,20 +156,14 @@ private String setDefaultAttrs(String name){
         }
 
         function onLoad() {
-            <%
-                if (search_precision != null) {
-                %>
-                    var sPrecision = '<%=search_precision%>';
-                    var o = document.forms["form1"].search_precision;
-                    for (i=0; o != null && i < o.length; i++){
-                        if (o[i].value == sPrecision){
-                            o[i].checked = true;
-                            break;
-                        }
-                    }
-                <%
+            const sPrecision = '<%=StringEscapeUtils.escapeEcmaScript(search_precision)%>';
+            const o = document.forms["form1"].search_precision;
+            for (i = 0; o != null && i < o.length; i++) {
+                if (o[i].value === sPrecision) {
+                    o[i].checked = true;
+                    break;
                 }
-            %>
+            }
         }
     // ]]>
     </script>
