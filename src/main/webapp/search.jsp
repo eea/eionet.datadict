@@ -11,37 +11,33 @@ private Vector def_attrs = null;
 private Vector attr_ids = null;
 private Vector namespaces = null;
 ServletContext ctx = null;
-private String sel_attr = null;
 private Hashtable inputAttributes=null;
 
-private String getAttributeIdByName(String name){
-
-    for (int i=0; i<attrs.size(); i++){
+private String getAttributeIdByName(String name) {
+    for (int i = 0; i < attrs.size(); i++){
         DElemAttribute attr = (DElemAttribute)attrs.get(i);
-        if (attr.getName().equalsIgnoreCase(name))
+        if (attr.getName().equalsIgnoreCase(name)) {
             return attr.getID();
+        }
     }
-
     return null;
 }
 
-private String getAttributeNameById(String id){
-
-    for (int i=0; i<attrs.size(); i++){
+private String getAttributeNameById(String id) {
+    for (int i = 0; i < attrs.size(); i++) {
         DElemAttribute attr = (DElemAttribute)attrs.get(i);
-        if (attr.getID().equals(id))
+        if (attr.getID().equals(id)) {
             return attr.getShortName();
+        }
     }
-
     return null;
 }
 
-private String setDefaultAttrs(String name){
-
+private String setDefaultAttrs(String name) {
     String id = getAttributeIdByName(name);
-    if (id!=null)
+    if (id != null) {
         def_attrs.add(id);
-
+    }
     return null;
 }
 
@@ -58,7 +54,7 @@ private String setDefaultAttrs(String name){
 
     ctx = getServletContext();
 
-    //Feedback messages
+    // Feedback messages
     String feedbackValue = null;
     if (request.getParameter("feedback") != null && request.getParameter("feedback").equals("delete")) {
         feedbackValue = "Deletion successful!";
@@ -76,10 +72,14 @@ private String setDefaultAttrs(String name){
     DDSearchEngine searchEngine = new DDSearchEngine(conn, "");
 
     attrs = searchEngine.getDElemAttributes();
-    if (attrs == null) attrs = new Vector();
+    if (attrs == null) {
+        attrs = new Vector();
+    }
 
     namespaces = searchEngine.getNamespaces();
-    if (namespaces == null) namespaces = new Vector();
+    if (namespaces == null) {
+        namespaces = new Vector();
+    }
 
     attr_ids = new Vector();
     def_attrs = new Vector();
@@ -88,7 +88,6 @@ private String setDefaultAttrs(String name){
     setDefaultAttrs("Definition");
     setDefaultAttrs("Keywords");
     setDefaultAttrs("EEAissue");
-
 
     String attrID = null;
     String attrValue = null;
@@ -105,29 +104,42 @@ private String setDefaultAttrs(String name){
     String sel_ds = request.getParameter("dataset");
     String search_precision = request.getParameter("search_precision");
 
-    if (sel_attr == null) sel_attr="";
-    if (sel_type == null) sel_type="";
-    if (short_name == null) short_name="";
-    if (idfier == null) idfier="";
-    if (type == null) type="";
-    if (sel_ds == null) sel_ds="";
-    if (search_precision == null) search_precision="substr";
+    if (sel_attr == null) {
+        sel_attr = "";
+    }
+    if (sel_type == null) {
+        sel_type = "";
+    }
+    if (short_name == null) {
+        short_name = "";
+    }
+    if (idfier == null) {
+        idfier = "";
+    }
+    if (type == null) {
+        type = "";
+    }
+    if (sel_ds == null) {
+        sel_ds = "";
+    }
+    if (search_precision == null) {
+        search_precision = "substr";
+    }
 
-
-    ///get inserted attributes
+    // get inserted attributes
     String input_attr;
     inputAttributes = new Hashtable();
-    for (int i=0; i<attrs.size(); i++){
+    for (int i = 0; i < attrs.size(); i++) {
         DElemAttribute attribute = (DElemAttribute)attrs.get(i);
         String attr_id = attribute.getID();
 
         input_attr = request.getParameter("attr_" + attr_id);
-        if (input_attr!=null){
+        if (input_attr != null) {
             inputAttributes.put(attr_id, input_attr);
             attr_ids.add(attr_id);
         }
     }
-    if (contextParam == null || !contextParam.equals(POPUP)){
+    if (contextParam == null || !contextParam.equals(POPUP)) {
         %><%@ include file="history.jsp"%><%
     }
 
@@ -143,26 +155,24 @@ private String setDefaultAttrs(String name){
 
         attrWindow=null;
 
-        function submitForm(action){
-
-            document.forms["form1"].action=action;
+        function submitForm(action) {
+            document.forms["form1"].action = action;
             document.forms["form1"].submit();
         }
 
-        function selAttr(id, type){
-            document.forms["form1"].sel_attr.value=id;
-            document.forms["form1"].sel_type.value=type;
+        function selAttr(id, type) {
+            document.forms["form1"].sel_attr.value = id;
+            document.forms["form1"].sel_type.value = type;
             submitForm('search.jsp');
         }
 
-        function onLoad(){
-
+        function onLoad() {
             <%
             if (type != null){
                 %>
                 var sType = '<%=type%>';
                 var o = document.forms["form1"].type;
-                for (i=0; o!=null && i<o.options.length; i++){
+                for (i = 0; o != null && i < o.options.length; i++) {
                     if (o.options[i].value == sType){
                         o.selectedIndex = i;
                         break;
@@ -171,12 +181,12 @@ private String setDefaultAttrs(String name){
                 <%
             }
 
-            if (search_precision != null){
+            if (search_precision != null) {
                 %>
                 var sPrecision = '<%=search_precision%>';
                 var o = document.forms["form1"].search_precision;
-                for (i=0; o!=null && i<o.length; i++){
-                    if (o[i].value == sPrecision){
+                for (i = 0; o != null && i < o.length; i++) {
+                    if (o[i].value == sPrecision) {
                         o[i].checked = true;
                         break;
                     }
@@ -185,43 +195,43 @@ private String setDefaultAttrs(String name){
             }
             %>
 
-            if (document.forms["form1"].snoncom && document.forms["form1"].snoncom.checked)
+            if (document.forms["form1"].snoncom && document.forms["form1"].snoncom.checked) {
                 changeFormStateForNonCommon();
-            else if (document.forms["form1"].scom&& document.forms["form1"].scom.checked)
+            } else if (document.forms["form1"].scom&& document.forms["form1"].scom.checked) {
                 changeFormStateForCommon();
+            }
         }
 
-        function changeFormStateForCommon(){
+        function changeFormStateForCommon() {
             document.forms["form1"].dataset_idf.selectedIndex = 0;
             document.forms["form1"].dataset_idf.disabled = true;
 
-            if (document.forms["form1"].wrk_copies){
+            if (document.forms["form1"].wrk_copies) {
                 <%
-                if (isPopup){ %>
+                if (isPopup) { %>
                     document.forms["form1"].wrk_copies.disabled = true;<%
-                }
-                else{ %>
+                } else { %>
                     document.forms["form1"].wrk_copies.disabled = false;<%
                 }
                 %>
             }
 
-            if (document.forms["form1"].reg_status)
+            if (document.forms["form1"].reg_status) {
                 document.forms["form1"].reg_status.disabled = false;
-
+            }
         }
 
-        function changeFormStateForNonCommon(){
-
+        function changeFormStateForNonCommon() {
             document.forms["form1"].dataset_idf.disabled = false;
 
-            if (document.forms["form1"].wrk_copies){
+            if (document.forms["form1"].wrk_copies) {
                 document.forms["form1"].wrk_copies.checked = false;
                 document.forms["form1"].wrk_copies.disabled = true;
             }
 
-            if (document.forms["form1"].reg_status)
+            if (document.forms["form1"].reg_status) {
                 document.forms["form1"].reg_status.disabled = true;
+            }
         }
 
     // ]]>
@@ -230,14 +240,15 @@ private String setDefaultAttrs(String name){
 
 <%
 StringBuffer bodyAttrs = new StringBuffer("onload=\"onLoad()\"");
-if (isPopup)
+if (isPopup) {
     bodyAttrs.append(" class=\"popup\"");
+}
 %>
 
 <body <%=bodyAttrs.toString()%>>
 
 <%
-if (!isPopup){
+if (!isPopup) {
     %>
     <div id="container">
     <jsp:include page="nlocation.jsp" flush="true">
@@ -247,9 +258,7 @@ if (!isPopup){
     <c:set var="currentSection" value="dataElements" />
     <%@ include file="/pages/common/navigation.jsp" %>
     <div id="workarea">
-<%
-}
-else{ %>
+<% } else{ %>
     <div id="pagehead">
         <a href="/"><img src="images/eea-print-logo.gif" alt="Logo" id="logo" /></a>
         <div id="networktitle">Eionet</div>
@@ -262,18 +271,18 @@ else{ %>
 }
 
 boolean isDisplayOperations = isPopup;
-if (isDisplayOperations==false)
-    isDisplayOperations = user!=null && SecurityUtil.hasPerm(user, "/elements", "i");
-if (isDisplayOperations){
+if (isDisplayOperations == false) {
+    isDisplayOperations = user != null && SecurityUtil.hasPerm(user, "/elements", "i");
+}
+if (isDisplayOperations) {
     %>
     <div id="drop-operations">
         <ul>
             <%
-            if (isPopup){ %>
+            if (isPopup) { %>
                 <li class="close"><a href="javascript:window.close();">Close</a></li>
                 <li class="help"><a class="helpButton" href="help.jsp?screen=search_element&amp;area=pagehelp" title="Get some help on this page">Page help</a></li><%
-            }
-            else if (user!=null && SecurityUtil.hasPerm(user, "/elements", "i")){
+            }  else if (user != null && SecurityUtil.hasPerm(user, "/elements", "i")) {
                 %>
                 <li class="add"><a title="Add a definition of a new common element" href="<%=request.getContextPath()%>/dataelements/add/?common=true">New common element</a></li><%
             }
@@ -294,7 +303,7 @@ if (isDisplayOperations){
                 <form id="form1" action="search_results.jsp" method="get">
                     <%
                     String fk = request.getParameter("fk");
-                    if (fk!=null && fk.equals("true") && sel_ds!=null && sel_ds.length()>0){
+                    if (fk != null && fk.equals("true") && sel_ds != null && sel_ds.length()>0) {
                         %>
                         <div style="display:none">
                             <input type="hidden" name="dataset" value="<%=Util.processForDisplay(sel_ds, true)%>" />
@@ -306,10 +315,10 @@ if (isDisplayOperations){
                     <table class="filter">
 
                     <%
-                    boolean commonOnly = request.getParameter("common")!=null;
-                    boolean nonCommonOnly = request.getParameter("noncommon")!=null;
+                    boolean commonOnly = request.getParameter("common") != null;
+                    boolean nonCommonOnly = request.getParameter("noncommon") != null;
 
-                    if (request.getParameter("link")==null){
+                    if (request.getParameter("link") == null) {
                         %>
                         <tr>
                             <td class="label">
@@ -329,7 +338,7 @@ if (isDisplayOperations){
                         </tr><%
                     }
 
-                    if (!(fk!=null && fk.equals("true") && sel_ds!=null && sel_ds.length()>0) && commonOnly==false){
+                    if (!(fk != null && fk.equals("true") && sel_ds != null && sel_ds.length()>0) && commonOnly == false) {
                         %>
                         <tr>
                             <td class="label">
@@ -341,9 +350,9 @@ if (isDisplayOperations){
                                     <option value="">All</option>
                                     <%
                                     Vector datasets = searchEngine.getDatasets();
-                                    for (int i=0; datasets!=null && i<datasets.size(); i++){
-                                        Dataset ds = (Dataset)datasets.get(i);
-                                        String selected = (sel_ds!=null && sel_ds.equals(ds.getID())) ? "selected" : "";
+                                    for (int i = 0; datasets != null && i < datasets.size(); i++) {
+                                        Dataset ds = (Dataset) datasets.get(i);
+                                        String selected = (sel_ds != null && sel_ds.equals(ds.getID())) ? "selected" : "";
                                         %>
                                         <option <%=selected%> value="<%=ds.getIdentifier()%>"><%=Util.processForDisplay(ds.getShortName())%></option>
                                         <%
@@ -408,7 +417,7 @@ if (isDisplayOperations){
                     }
                     */
                     attrID = getAttributeIdByName("Language");
-                    if (attrID!=null){
+                    if (attrID != null) {
                         %>
                         <tr valign="top">
                             <td align="right" style="padding-right:10">
@@ -458,7 +467,7 @@ if (isDisplayOperations){
                     attrValue = inputAttributes.containsKey(attrID) ? (String)inputAttributes.get(attrID) : "";
                     if (inputAttributes.containsKey(attrID)) inputAttributes.remove(attrID);
 
-                    if (attrID!=null){
+                    if (attrID!=null) {
                         %>
                         <tr valign="top">
                             <td width="100"><b>
@@ -485,16 +494,17 @@ if (isDisplayOperations){
                     */
 
                     //get default attributes, which are always on the page (defined above)
-                    if (def_attrs!=null){
-                        for (int i=0; i < def_attrs.size(); i++){
-                            attrID = (String)def_attrs.get(i);
+                    if (def_attrs != null) {
+                        for (int i = 0; i < def_attrs.size(); i++) {
+                            attrID = (String) def_attrs.get(i);
                             attrValue = inputAttributes.containsKey(attrID) ? (String)inputAttributes.get(attrID) : "";
-
                             attrName = getAttributeNameById(attrID);
 
-                            if (inputAttributes.containsKey(attrID)) inputAttributes.remove(attrID);
+                            if (inputAttributes.containsKey(attrID)) {
+                                inputAttributes.remove(attrID);
+                            }
 
-                            if (attrID!=null){
+                            if (attrID != null) {
                                 collect_attrs.append(attrID + "|");
                                 displayedCriteria.add(attrID);
                                 %>
@@ -512,9 +522,9 @@ if (isDisplayOperations){
                         }
                     }
                     // get attributes selected from picked list (get the ids from url)
-                    if (attr_ids!=null){
-                        for (int i=0; i < attr_ids.size(); i++){
-                            attrID = (String)attr_ids.get(i);
+                    if (attr_ids != null) {
+                        for (int i = 0; i < attr_ids.size(); i++) {
+                            attrID = (String) attr_ids.get(i);
 
                             if (!inputAttributes.containsKey(attrID)) continue;
                             if (sel_type.equals("remove") && attrID.equals(sel_attr)) continue;
@@ -540,8 +550,8 @@ if (isDisplayOperations){
                         }
                     }
                     // add the last selection
-                    if (sel_type!=null && sel_attr!=null){
-                        if (sel_type.equals("add")){
+                    if (sel_type != null && sel_attr != null) {
+                        if (sel_type.equals("add")) {
                             attrID = sel_attr;
                             collect_attrs.append(attrID + "|");
                             displayedCriteria.add(attrID);
@@ -562,15 +572,14 @@ if (isDisplayOperations){
                     }
 
                     Vector addCriteria = new Vector();
-                    for (int i=0; attrs!=null && i<attrs.size(); i++) {
+                    for (int i = 0; attrs != null && i < attrs.size(); i++) {
                         DElemAttribute attribute = (DElemAttribute)attrs.get(i);
 
                         if (type.equals("")) {
                             if (!attribute.displayFor("CH1") && !attribute.displayFor("CH2") && !attribute.displayFor("CH3")) {
                                 continue;
                             }
-                        }
-                        else if (!attribute.displayFor(type)) {
+                        } else if (!attribute.displayFor(type)) {
                             continue;
                         }
                         if (!displayedCriteria.contains(attribute.getID())) {
@@ -589,7 +598,7 @@ if (isDisplayOperations){
                                 <select name="add_criteria" id="add_criteria" onchange="selAttr(this.options[this.selectedIndex].value, 'add')">
                                     <option value="">Add criteria</option>
                                     <%
-                                    for (int i=0; i<addCriteria.size(); i++) {
+                                    for (int i = 0; i < addCriteria.size(); i++) {
                                         Hashtable hash = (Hashtable)addCriteria.get(i);
                                     %>
                                         <option value="<%=hash.get("id")%>"><%=Util.processForDisplay((String) hash.get("name"), true)%></option><%
@@ -610,7 +619,7 @@ if (isDisplayOperations){
                     </tr>
 
                     <%
-                    if (!commonOnly && !nonCommonOnly){ %>
+                    if (!commonOnly && !nonCommonOnly) { %>
                         <tr>
                             <td class="label">Class</td>
                             <td class="input bordered">
@@ -621,8 +630,8 @@ if (isDisplayOperations){
                     }
 
                     // if authenticated user, enable to get working copies only
-                    if (user!=null){
-                        if (fk==null || !fk.equals("true")){ %>
+                    if (user != null) {
+                        if (fk == null || !fk.equals("true")) { %>
                             <tr>
                                 <td class="label"><label for="wrk_copies">Working copies only</label></td>
                                 <td class="input bordered">
@@ -630,13 +639,12 @@ if (isDisplayOperations){
                                     <label for="wrk_copies" class="smallfont">Yes</label>
                                 </td>
                             </tr> <%
-                        }
-                        else{ %>
+                        } else { %>
                             <input type="hidden" name="wrk_copies" id="wrk_copies" value="true"/><%
                         }
                     }
 
-                    if (fk==null || !fk.equals("true")){ %>
+                    if (fk == null || !fk.equals("true")) { %>
                         <tr>
                             <td class="label"><label for="incl_histver">Include historic versions</label></td>
                             <td class="input bordered">
@@ -663,40 +671,39 @@ if (isDisplayOperations){
 
                         <%
                         String skipID = request.getParameter("skip_id");
-                        if (skipID!=null && skipID.length()!=0){ %>
+                        if (skipID != null && skipID.length() != 0) { %>
                             <input type="hidden" name="skip_id" value="<%=Util.processForDisplay(skipID, true)%>" /><%
                         }
 
                         String selected = request.getParameter("selected");
-                        if (selected!=null && selected.length()!=0){
+                        if (selected != null && selected.length() != 0) {
                             %>
                             <input name='selected' type='hidden' value="<%=Util.processForDisplay(selected, true)%>" />
                             <%
                         }
 
-                        if (commonOnly){ %>
+                        if (commonOnly) { %>
                             <input type="hidden" name="common" value="true"/><%
                         }
 
-                        if (nonCommonOnly){ %>
+                        if (nonCommonOnly) { %>
                             <input type="hidden" name="common" value="false"/><%
                         }
                         String strExclude = request.getParameter("exclude");
-                        if (strExclude!=null){%>
+                        if (strExclude != null) {%>
                             <input type="hidden" name="exclude" value="<%=Util.processForDisplay(strExclude, true)%>"/><%
                         }
                         String skipTableID = request.getParameter("skip_table_id");
-                        if (skipTableID!=null && skipTableID.length()>0){ %>
+                        if (skipTableID != null && skipTableID.length() > 0) { %>
                             <input type="hidden" name="skip_table_id" value="<%=Util.processForDisplay(skipTableID, true)%>"/><%
                         }
-                        if (fk!=null && fk.equals("true")){ %>
+                        if (fk != null && fk.equals("true")) { %>
                             <input type="hidden" name="for_fk_use" value="true"/><%
                         }
-                    if (request.getParameter("link")!=null){
+                        if (request.getParameter("link") != null) {
                             if (request.getParameter("link").equals("tableElement")) { %>
                                 <input type="hidden" name="reg_status" value="Candidate,Recorded,Qualified,Released,Retired,Superseded"/>
-                            <%
-                            } else {%>
+                            <%} else {%>
                                 <input  type = "hidden" name = "reg_status" value = "Candidate,Recorded,Qualified,Released," /> 
                             <%}
                         }
@@ -706,7 +713,7 @@ if (isDisplayOperations){
             </form>
         </div> <!-- workarea -->
     <%
-    if (!isPopup){
+    if (!isPopup) {
         %>
         </div> <!-- container -->
         <%@ include file="footer.jsp" %><%
@@ -719,7 +726,10 @@ if (isDisplayOperations){
 // end the whole page try block
 }
 finally {
-    try { if (conn!=null) conn.close();
+    try {
+        if (conn != null) {
+            conn.close();
+        }
     } catch (SQLException e) {}
 }
 %>
