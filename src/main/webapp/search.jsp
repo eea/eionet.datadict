@@ -1,4 +1,4 @@
-<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.util.*,eionet.util.sql.ConnectionUtil"%>
+<%@page contentType="text/html;charset=UTF-8" import="java.util.*,java.sql.*,eionet.meta.*,eionet.util.*,eionet.util.sql.ConnectionUtil,org.apache.commons.text.StringEscapeUtils"%>
 <%@ include file="/pages/common/taglibs.jsp"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 
@@ -167,33 +167,23 @@ private String setDefaultAttrs(String name) {
         }
 
         function onLoad() {
-            <%
-            if (type != null){
-                %>
-                var sType = '<%=type%>';
-                var o = document.forms["form1"].type;
-                for (i = 0; o != null && i < o.options.length; i++) {
-                    if (o.options[i].value == sType){
-                        o.selectedIndex = i;
-                        break;
-                    }
+            const sType = '<%=StringEscapeUtils.escapeEcmaScript(type)%>';
+            var o = document.forms["form1"].type;
+            for (i = 0; o != null && i < o.options.length; i++) {
+                if (o.options[i].value === sType) {
+                    o.selectedIndex = i;
+                    break;
                 }
-                <%
             }
 
-            if (search_precision != null) {
-                %>
-                var sPrecision = '<%=search_precision%>';
-                var o = document.forms["form1"].search_precision;
-                for (i = 0; o != null && i < o.length; i++) {
-                    if (o[i].value == sPrecision) {
-                        o[i].checked = true;
-                        break;
-                    }
+            const sPrecision = '<%=StringEscapeUtils.escapeEcmaScript(search_precision)%>';
+            var o = document.forms["form1"].search_precision;
+            for (i = 0; o != null && i < o.length; i++) {
+                if (o[i].value === sPrecision) {
+                    o[i].checked = true;
+                    break;
                 }
-                <%
             }
-            %>
 
             if (document.forms["form1"].snoncom && document.forms["form1"].snoncom.checked) {
                 changeFormStateForNonCommon();
