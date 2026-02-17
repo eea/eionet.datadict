@@ -1,7 +1,5 @@
 <%@page import="eionet.meta.dao.domain.VocabularyConcept"%>
 <%@page import="eionet.datadict.model.DataDictEntity"%>
-<%@page import="eionet.acl.AccessControlListIF"%>
-<%@page import="eionet.acl.AccessController"%>
 <%@page import="eionet.meta.dao.mysql.DataElementDAOImpl"%>
 <%@page import="eionet.meta.dao.domain.InferenceRule"%>
 <%@page import="eionet.meta.notif.Subscriber"%>
@@ -730,7 +728,7 @@
                                 request, response);
                         return;
                     }
-                    // redircet user to his working copy of this element (if such exists)
+                    // redirect user to his working copy of this element (if such exists)
                     String workingCopyID = verMan.getWorkingCopyID(dataElement);
                     if (workingCopyID!=null && workingCopyID.length()>0){
                         response.sendRedirect(request.getContextPath() + "/dataelements/" + workingCopyID);
