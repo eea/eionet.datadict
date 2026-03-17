@@ -11,8 +11,6 @@
                 <Pattern>[%d] - [%p] [%c:%L] [u:%X{username}] [si:%X{sessionId}] [%tn] [tid:%tid] : %m%n</Pattern>
             </PatternLayout>
         </Console>
-        <!-- Configure the Sentry appender, overriding the logging threshold to the WARN level -->
-        <Sentry name="Sentry" />
 
         <RollingFile name="fileLogger"
                      fileName="${basePath}/datadictLogs.log"
@@ -62,7 +60,6 @@
             <AppenderRef ref="console" />
             <AppenderRef ref="GELF" level="info" />
             <AppenderRef ref="fileLogger" level="info" />
-            <AppenderRef ref="Sentry" level="warn" />
         </Root>
     </Loggers>
 </Configuration>
