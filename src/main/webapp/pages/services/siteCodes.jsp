@@ -121,7 +121,7 @@
 
         <p>
         CDDA is main European inventory of nationally designated protected areas and it provides data for
-        <a href="https://www.wdpa.org/">World Database on Protected Areas (WDPA)</a>.
+        <a href="https://www.protectedplanet.net/en/thematic-areas/wdpa">World Database on Protected Areas (WDPA)</a>.
         In order to keep identification of the CDDA site records compatible with the WDPA,
         the EEA agreed to use the site identifier code list maintained by the WDPA.
         Whenever it is needed the WDPA provides free codes from the codelist to the EEA.
