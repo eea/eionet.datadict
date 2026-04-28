@@ -1,9 +1,8 @@
 
         <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
 
-        <link rel="stylesheet" type="text/css" href="https://www.eionet.europa.eu/styles/eionet2007/print.css" media="print" />
-        <link rel="stylesheet" type="text/css" href="https://www.eionet.europa.eu/styles/eionet2007/handheld.css" media="handheld" />
-        <link rel="stylesheet" type="text/css" href="https://www.eionet.europa.eu/styles/eionet2007/screen.css" media="screen" />
+        <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/css/handheld.css" media="handheld" />
+        <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/css/screen.css" media="screen" />
         <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/css/eionet2007.css" media="screen"/>
         <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/css/print.css" media="print" />
         <link rel="stylesheet" type="text/css" href="<%=request.getContextPath()%>/css/smoothness/jquery-ui-1.8.16.custom.css"  />
