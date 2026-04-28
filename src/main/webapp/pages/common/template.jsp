@@ -90,9 +90,6 @@
                     <div id="sitetagline">This service is part of Reportnet</div>
                 </div> <!-- pagehead -->
 
-                <div id="menuribbon">
-                </div>
-
                 <div class="breadcrumbtrail">
                     <div class="breadcrumbhead">You are here:</div>
                     <div class="breadcrumbitem eionetaccronym">

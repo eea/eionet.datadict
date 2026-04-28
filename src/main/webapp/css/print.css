@@ -12,7 +12,7 @@
 }
 
 #leftcolumn, #rightcolumn, #tabbedmenu,
-#menuribbon, #toolribbon, #operations {
+#toolribbon, #operations {
 	display:none     
 }
 

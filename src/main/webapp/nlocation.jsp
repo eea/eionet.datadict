@@ -42,10 +42,6 @@ ServletContext ctx = getServletContext();
     <%@ include file="pagehead.jsp" %>
 </div> <!-- pagehead -->
 
-
-<div id="menuribbon">
-<%--    <%@ include file="dropdownmenus.txt" %>--%>
-</div>
 <div class="breadcrumbtrail">
     <div class="breadcrumbhead">You are here:</div>
     <div class="breadcrumbitem eionetaccronym"><a href="https://www.eionet.europa.eu">Eionet</a></div>
