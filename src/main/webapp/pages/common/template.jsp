@@ -18,6 +18,7 @@
             <link rel="stylesheet" type="text/css" href="<c:url value="/css/handheld.css" />" media="handheld" />
             <link rel="stylesheet" type="text/css" href="<c:url value="/css/screen.css" />" media="screen" title="Eionet 2007 style" />
             <link rel="stylesheet" type="text/css" href="<c:url value="/css/eionet2007.css" />" media="screen" title="Eionet 2007 style"/>
+            <link rel="stylesheet" type="text/css" href="<c:url value="/css/print.css" />" media="print" />
             <link rel="shortcut icon" href="<c:url value="/favicon.ico" />" type="image/x-icon" />
 
             <link type="text/css" href="<c:url value="/css/smoothness/jquery-ui-1.8.16.custom.css" />" rel="stylesheet" />
