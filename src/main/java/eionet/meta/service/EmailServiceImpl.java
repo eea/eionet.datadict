@@ -21,10 +21,7 @@
 
 package eionet.meta.service;
 
-import eionet.datadict.services.LdapService;
-import eionet.directory.DirServiceException;
 import eionet.meta.dao.ISiteCodeDAO;
-import eionet.meta.dao.LdapDaoException;
 import eionet.meta.notif.SiteCodeAddedNotification;
 import eionet.meta.notif.SiteCodeAllocationNotification;
 import eionet.meta.service.data.AllocationResult;
@@ -35,7 +32,6 @@ import eionet.util.PropsIF;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -50,7 +46,6 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Map;
 
 /**
@@ -65,19 +60,6 @@ public class EmailServiceImpl implements IEmailService {
     /** Placeholder for country code. */
     private static final String COUNTRY_CODE_PLACEHOLDER = "[iso_country_code]";
 
-    /** Placeholder for member or collaborative country abbreviation. */
-    private static final String MC_CC_PLACEHOLDER = "[mc_or_cc]";
-
-    /** Member country string in LDAP role. */
-    private static final String MC = "mc";
-
-    /** Collaborative country string in LDAP role. */
-    private static final String CC = "cc";
-
-    /** List of member countries. Keep it here just for backuping LDAP roles checking request. */
-    private static final String[] MC_COUNTRIES = { "at", "be", "bg", "ch", "cy", "cz", "de", "dk", "ee", "es", "fi", "fr", "gb",
-        "gr", "hu", "ie", "is", "it", "li", "lt", "lu", "lv", "mt", "nl", "no", "pl", "pt", "ro", "se", "si", "sk", "tr" };
-
     /** Freemarker template engine configuration. */
     @Autowired
     private Configuration configuration;
@@ -89,9 +71,6 @@ public class EmailServiceImpl implements IEmailService {
     /** Site Code DAO. */
     @Autowired
     private ISiteCodeDAO siteCodeDao;
-
-    @Autowired
-    private LdapService ldapService;
 
     /**
      * {@inheritDoc}
@@ -210,62 +189,15 @@ public class EmailServiceImpl implements IEmailService {
     }
 
     /**
-     * Parse LDAP role e-mail addresses and replace country code and member/collaborative country abbreviations.
+     * Parse e-mail addresses and replace country code
      *
      * @param country
      * @return
-     * @throws DirServiceException
      */
     private String[] parseRoleAddresses(String country) {
         String recipients = Props.getRequiredProperty(PropsIF.SITE_CODE_ALLOCATE_NOTIFICATION_TO);
         recipients = StringUtils.replace(recipients, COUNTRY_CODE_PLACEHOLDER, country.toLowerCase());
-        String[] to = StringUtils.split(recipients, ",");
-
-        for (int i = 0; i < to.length; i++) {
-            if (to[i].contains(MC_CC_PLACEHOLDER)) {
-                // test if it is member country
-                String roleId = StringUtils.substringBefore(to[i], "@");
-                String mcRoleId = StringUtils.replace(roleId, MC_CC_PLACEHOLDER, MC);
-                if (roleExists(mcRoleId)) {
-                    to[i] = StringUtils.replace(to[i], MC_CC_PLACEHOLDER, MC);
-                    continue;
-                }
-                // test if it is collaborative country country
-                String ccRoleId = StringUtils.replace(roleId, MC_CC_PLACEHOLDER, CC);
-                if (roleExists(ccRoleId)) {
-                    to[i] = StringUtils.replace(to[i], MC_CC_PLACEHOLDER, CC);
-                }
-                // could not
-                if (to[i].contains(MC_CC_PLACEHOLDER)) {
-                    if (ArrayUtils.contains(MC_COUNTRIES, country.toLowerCase())) {
-                        to[i] = StringUtils.replace(to[i], MC_CC_PLACEHOLDER, MC);
-                    } else {
-                        to[i] = StringUtils.replace(to[i], MC_CC_PLACEHOLDER, CC);
-                    }
-                }
-            }
-        }
-
-        return to;
+        return StringUtils.split(recipients, ",");
     }
 
-    /**
-     * Check if role exists in LDAP.
-     *
-     * @param roleId
-     * @return true if role is present.
-     */
-    private boolean roleExists(String roleId) {
-        try {
-            Hashtable<String, Object> role = ldapService.getRoleInfo(roleId);
-            if (role != null) {
-                return true;
-            } else {
-                return false;
-            }
-        } catch (LdapDaoException e) {
-            // role does not exist
-            return false;
-        }
-    }
 }
