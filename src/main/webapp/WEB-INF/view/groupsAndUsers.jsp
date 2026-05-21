@@ -37,7 +37,7 @@
         <jsp:param name="name" value="Admin tools"/>
         <jsp:param name="helpscreen" value="admin_tools"/>
     </jsp:include>
-    <c:set var="currentSection" value="groups" />
+    <c:set var="currentSection" value="administration" />
     <%@ include file="/pages/common/navigation.jsp" %>
     <div id="workarea">
         <table id="groupsAndUsers" class="table border">
