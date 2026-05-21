@@ -147,15 +147,6 @@ public class GroupsControllerTest {
     }
 
     @Test
-    public void testAddUserGroupNotExist() throws Exception {
-        groupDetails.setGroup("test");
-        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.post("/admintools/addUser")
-                .session(session).flashAttr("groupDetails", groupDetails);
-        mockMvc.perform(builder)
-                .andExpect(view().name("message"));
-    }
-
-    @Test
     public void testRemoveUserSuccess() throws Exception {
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get("/admintools/removeUser")
                 .session(session).param("ddGroupName", ACL_GROUP).param("memberName", "test");

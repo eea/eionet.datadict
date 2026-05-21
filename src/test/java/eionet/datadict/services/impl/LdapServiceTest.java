@@ -29,7 +29,6 @@ public class LdapServiceTest {
     private List<String> users;
     private static final String USER = "maria";
     private static final String ACL_GROUP = "dd_admin";
-    private static final String ROLE_NAME = "testRole";
 
     @Before
     public void setUp() {

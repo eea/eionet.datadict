@@ -3,7 +3,6 @@ package eionet.datadict.dal.ldap;
 import eionet.datadict.model.LdapRole;
 import eionet.meta.dao.LdapDaoException;
 
-import java.util.Hashtable;
 import java.util.List;
 
 public interface LdapRoleDao {
@@ -14,6 +13,6 @@ public interface LdapRoleDao {
      * @return
      * @throws Exception
      */
-    public List<LdapRole> findUserRoles(String user) throws LdapDaoException;
+    List<LdapRole> findUserRoles(String user) throws LdapDaoException;
 
 }
