@@ -16,26 +16,17 @@
     <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
-    <script src="../../groupsAndUsersTable.js" type="text/javascript"></script>
     <script>
         $(function() {
-            $("#ch" ).autocomplete({
-                source: "ldapOptions",
-                minLength: 5
+            $('#groupsAndUsers').DataTable({
+                "order": [[1, "asc"]]
             });
 
-            $("#ch").autocomplete("widget").attr('style', 'max-height: 100px; overflow-y: auto; overflow-x: hidden;')
-        });
+            $('.dataTables_length').addClass('bs-select');
 
-        $(document).ready(function(){
+
             $('#myBtn').click(function(){
                 $('#myForm').toggle(500);
-            });
-        });
-
-        $(document).ready(function(){
-            $('#mySecondBtn').click(function(){
-                $('#mySecondForm').toggle(500);
             });
         });
     </script>
@@ -52,7 +43,7 @@
         <table id="groupsAndUsers" class="table border">
             <thead>
             <tr>
-                <th>User/Ldap group</th>
+                <th>User</th>
                 <th>DD Group</th>
                 <th>Action</th>
             </tr>
@@ -65,18 +56,9 @@
                         <c:param name="memberName" value="${member}" />
                     </c:url>
                     <tr>
-                        <c:choose>
-                            <c:when test='${fn:startsWith(member, "cn=")}'>
-                                <td>${member}</td>
-                                <td>${ddGroup}</td>
-                                <td style="cursor: pointer;"><a class="text-info" style="text-decoration: underline" href="${removeUser}">Remove</a> / <span class="details-control text-info" style="text-decoration: underline">Show users</span></td>
-                            </c:when>
-                            <c:otherwise>
-                                <td>${member}</td>
-                                <td>${ddGroup}</td>
-                                <td style="cursor: pointer;"><a class="text-info" style="text-decoration: underline" href="${removeUser}">Remove</a></td>
-                            </c:otherwise>
-                        </c:choose>
+                        <td>${member}</td>
+                        <td>${ddGroup}</td>
+                        <td style="cursor: pointer;"><a class="text-info" style="text-decoration: underline" href="${removeUser}">Remove</a></td>
                     </tr>
                 </c:forEach>
             </c:forEach>
@@ -84,14 +66,8 @@
         </table>
         <button id="myBtn" class="btn btn-info" style="margin-bottom:5px">Add User</button></br></br>
         <form:form id="myForm" style="display:none" action="${pageContext.request.contextPath}/v2/admintools/addUser" modelAttribute="groupDetails" method="post">
-            <form:select path="groupNameOptionOne" items="${ddGroups}"/>
+            <form:select path="group" items="${ddGroups}"/>
             <form:input path="userName" placeholder="Enter user name"/>
-            <input type="submit" class="btn btn-info" name="submit" value="Submit"/>
-        </form:form>
-        <button id="mySecondBtn" class="btn btn-info" style="margin-bottom:5px">Add LDAP Group</button></br></br>
-        <form:form id="mySecondForm" style="display:none" action="${pageContext.request.contextPath}/v2/admintools/addUser" modelAttribute="groupDetails" method="post">
-            <form:select path="groupNameOptionTwo" items="${ddGroups}"/>
-            <form:input id="ch" path="ldapGroupName" placeholder="Enter LDAP group name"/>
             <input type="submit" class="btn btn-info" name="submit" value="Submit"/>
         </form:form>
     </div> <!-- workarea -->

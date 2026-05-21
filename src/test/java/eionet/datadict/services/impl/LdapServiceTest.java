@@ -52,26 +52,7 @@ public class LdapServiceTest {
     @Test(expected = LdapDaoException.class)
     public void testGetUserLdapRolesException() throws LdapDaoException {
         when(ldapRoleDao.findUserRoles(anyString())).thenThrow(LdapDaoException.class);
-        List<LdapRole> results = ldapServiceImpl.getUserLdapRoles(USER);
+        ldapServiceImpl.getUserLdapRoles(USER);
     }
 
-    @Test
-    public void testGetAllLdapRolesSuccess() throws Exception {
-        when(ldapRoleDao.findAllRoles()).thenReturn(ldapRoleList);
-        List<LdapRole> results = ldapServiceImpl.getAllLdapRoles();
-        Assert.assertEquals(ldapRoleList, results);
-    }
-
-    @Test(expected = LdapDaoException.class)
-    public void testGetAllLdapRolesException() throws LdapDaoException {
-        when(ldapRoleDao.findAllRoles()).thenThrow(LdapDaoException.class);
-        List<LdapRole> results = ldapServiceImpl.getAllLdapRoles();
-    }
-
-    @Test
-    public void testGetRoleUsersSuccess() throws LdapDaoException {
-        when(ldapRoleDao.findRoleUsers(anyString())).thenReturn(users);
-        List<String> results = ldapServiceImpl.getRoleUsers(ROLE_NAME);
-        Assert.assertEquals(users, results);
-    }
 }

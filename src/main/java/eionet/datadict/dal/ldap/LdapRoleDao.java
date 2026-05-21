@@ -16,26 +16,4 @@ public interface LdapRoleDao {
      */
     public List<LdapRole> findUserRoles(String user) throws LdapDaoException;
 
-    /**
-     * fetches all ldap roles
-     * @return
-     * @throws Exception
-     */
-    public List<LdapRole> findAllRoles() throws LdapDaoException;
-
-    /**
-     * fetches users that belong to role roleName
-     * @param roleName
-     * @return
-     * @throws LdapDaoException
-     */
-    public List<String> findRoleUsers(String roleName) throws LdapDaoException;
-
-    /**
-     * fetches information of ldap role
-     * @param roleName
-     * @return
-     * @throws LdapDaoException
-     */
-    Hashtable<String, Object> getRoleInfo(String roleName) throws LdapDaoException;
 }

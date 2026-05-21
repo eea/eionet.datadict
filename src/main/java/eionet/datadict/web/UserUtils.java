@@ -92,11 +92,7 @@ public class UserUtils {
     }
 
     public static Hashtable<String, Vector<String>> fetchGroupsAndUsers(boolean init) throws AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException {
-        Hashtable<String, Vector<String>> results;
-        if (init) {
-            return getAclOperationsService().getRefreshedGroupsAndUsersHashTable(true);
-        }
-        return getAclOperationsService().getRefreshedGroupsAndUsersHashTable(false);
+        return getAclOperationsService().getRefreshedGroupsAndUsersHashTable(init);
     }
 
     public static AclOperationsService getAclOperationsService() {

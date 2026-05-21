@@ -2,24 +2,15 @@ package eionet.datadict.web.viewmodel;
 
 public class GroupDetails {
 
-    private String groupNameOptionOne;
-
+    private String group;
     private String userName;
 
-    private String groupNameOptionTwo;
-
-    private String ldapGroupName;
-
-    public GroupDetails() {
-
+    public String getGroup() {
+        return group;
     }
 
-    public String getGroupNameOptionOne() {
-        return groupNameOptionOne;
-    }
-
-    public void setGroupNameOptionOne(String groupNameOptionOne) {
-        this.groupNameOptionOne = groupNameOptionOne;
+    public void setGroup(String group) {
+        this.group = group;
     }
 
     public String getUserName() {
@@ -30,19 +21,4 @@ public class GroupDetails {
         this.userName = userName;
     }
 
-    public String getGroupNameOptionTwo() {
-        return groupNameOptionTwo;
-    }
-
-    public void setGroupNameOptionTwo(String groupNameOptionTwo) {
-        this.groupNameOptionTwo = groupNameOptionTwo;
-    }
-
-    public String getLdapGroupName() {
-        return ldapGroupName;
-    }
-
-    public void setLdapGroupName(String ldapGroupName) {
-        this.ldapGroupName = ldapGroupName;
-    }
 }

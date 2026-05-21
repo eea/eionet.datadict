@@ -3,21 +3,21 @@
  * License Version 1.1 (the "License"); you may not use this file
  * except in compliance with the License. You may obtain a copy of
  * the License at http://www.mozilla.org/MPL/
- *
+ * <p>
  * Software distributed under the License is distributed on an "AS
  * IS" basis, WITHOUT WARRANTY OF ANY KIND, either express or
  * implied. See the License for the specific language governing
  * rights and limitations under the License.
- *
+ * <p>
  * The Original Code is "EINRC-6 / Data Dictionary Project".
- *
+ * <p>
  * The Initial Developer of the Original Code is TietoEnator.
  * The Original Code code was developed for the European
  * Environment Agency (EEA) under the IDA/EINRC framework contract.
- *
+ * <p>
  * Copyright (C) 2000-2002 by European Environment Agency.  All
  * Rights Reserved.
- *
+ * <p>
  * Original Code: Jaanus Heinlaid (TietoEnator)
  */
 
@@ -26,7 +26,6 @@ package eionet.meta;
 import eionet.acl.*;
 import eionet.datadict.model.LdapRole;
 import eionet.datadict.services.LdapService;
-import eionet.directory.DirectoryService;
 import eionet.meta.spring.SpringApplicationContext;
 import eionet.util.Props;
 import eionet.util.PropsIF;
@@ -42,7 +41,6 @@ import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Vector;
 
 /**
  *
@@ -51,13 +49,7 @@ import java.util.Vector;
  */
 public class DDUser {
 
-    /** */
     private static final Logger LOGGER = LoggerFactory.getLogger(DDUser.class);
-
-    /** */
-    public static final String ACL_UPDATE_PRM = "u";
-    public static final String ACL_SERVICE_NAME = "/";
-
 
     /**
      * permission to view MS Access template.
@@ -76,9 +68,6 @@ public class DDUser {
 
     protected ArrayList<String> groupResults = null;
 
-    /**
-     *
-     */
     public DDUser() {
     }
 
@@ -86,14 +75,9 @@ public class DDUser {
         this.username = userName;
         this.authented = authenticated;
     }
-    
-    /**
-     *
-     */
+
     public boolean authenticate(String userName, String userPwd) {
-
         invalidate();
-
         try {
             String masterPwdHash = Props.getProperty(PropsIF.DD_MASTER_PASSWORD_HASH);
 
@@ -115,61 +99,22 @@ public class DDUser {
         } catch (Exception e) {
             LOGGER.error(e.toString(), e);
         }
-
         return authented;
     }
 
-    /**
-     *
-     * @return
-     */
     public boolean isAuthentic() {
         return authented;
     }
 
-    /**
-     *
-     * @param role
-     * @return
-     */
-    public boolean isUserInRole(String role) {
-
-        boolean b = false;
-        if (roles == null) {
-            getUserRoles();
-        }
-
-        for (int i = 0; i < roles.length; i++) {
-            if (roles[i].equals(role)) {
-                b = true;
-            }
-        }
-
-        return b;
-    }
-
-    /**
-     *
-     * @return
-     */
     public String getFullName() {
         return fullName;
     }
 
-    /**
-     *
-     * @return
-     */
     public String getUserName() {
         return username;
     }
 
-    /**
-     *
-     * @return
-     */
     public Connection getConnection() {
-
         try {
             return ConnectionUtil.getConnection();
         } catch (Exception e) {
@@ -177,12 +122,7 @@ public class DDUser {
         }
     }
 
-    /**
-     *
-     * @return
-     */
     public String[] getUserRoles() {
-
         if (roles == null) {
             try {
                 List<String> ldRoles = new ArrayList<>();
@@ -196,10 +136,9 @@ public class DDUser {
                 LOGGER.debug("Found " + roles.length + " roles for user (" + username + ")");
             } catch (Exception e) {
                 LOGGER.error("Unable to get any role for loggedin user (" + username + "). DirServiceException: " + e.getMessage());
-                roles = new String[] {};
+                roles = new String[]{};
             }
         }
-
         return roles;
     }
 
@@ -207,10 +146,6 @@ public class DDUser {
         return SpringApplicationContext.getBean(LdapService.class);
     }
 
-    /**
-     *
-     *
-     */
     public void invalidate() {
         authented = false;
         username = null;
@@ -218,27 +153,9 @@ public class DDUser {
         groupResults = null;
     }
 
-    /**
-     *
-     */
     @Override
     public String toString() {
         return (username == null ? "" : username);
-    }
-
-    /**
-     *
-     * @param name
-     * @return
-     * @throws SignOnException
-     */
-    private AccessControlListIF getAcl(String name) throws SignOnException {
-
-        if (acls == null) {
-            acls = AccessController.getAcls();
-        }
-
-        return (AccessControlListIF) acls.get(name);
     }
 
     /**
@@ -252,7 +169,6 @@ public class DDUser {
      * @return
      */
     public static boolean hasPermission(HttpSession session, String aclPath, String permission) {
-
         // if no session given, simply return false
         if (session == null) {
             return false;
@@ -283,7 +199,6 @@ public class DDUser {
      * @return
      */
     public static boolean hasPermission(String userName, String aclPath, String permission) {
-
         // consider missing ACL path or permission to be a programming error
         if (StringUtils.isBlank(aclPath) || StringUtils.isBlank(permission)) {
             throw new IllegalArgumentException("ACL path and permission must not be blank!");
@@ -308,7 +223,6 @@ public class DDUser {
                 LOGGER.error(soe.toString(), soe);
             }
         }
-
         return result;
     }
 
@@ -346,4 +260,5 @@ public class DDUser {
     public void setLocalUser(boolean localUser) {
         this.localUser = localUser;
     }
+
 }

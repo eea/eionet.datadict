@@ -53,14 +53,7 @@ import java.util.List;
  */
 public final class SecurityUtil {
 
-    /** */
     public static final String REMOTEUSER = "eionet.util.SecurityUtil.user";
-
-    /** */
-    private static String casLoginUrl;
-    private static String casServerName;
-
-    /** logger. */
     private static final Logger LOGGER = LoggerFactory.getLogger(SecurityUtil.class);
 
     /**
@@ -74,8 +67,7 @@ public final class SecurityUtil {
     /**
      * Returns current user, or null, if the current session does not have user attached to it.
      */
-    public static final DDUser getUser(HttpServletRequest request) {
-
+    public static DDUser getUser(HttpServletRequest request) {
         HttpSession session = request.getSession();
         DDUser user = session == null ? null : (DDUser) session.getAttribute(REMOTEUSER);
         String sessionId = getSessionId(session);
@@ -112,7 +104,7 @@ public final class SecurityUtil {
         }
     }
 
-    protected static void setUserGroupResults(DDUser user, HttpSession session) {
+    private static void setUserGroupResults(DDUser user, HttpSession session) {
         try {
             UserUtils userUtils = new UserUtils();
             ArrayList<String> results = userUtils.getUserOrGroup(user.getUserName(), false, session);
@@ -202,55 +194,25 @@ public final class SecurityUtil {
 
     /**
      *
-     * @param usr
-     * @param aclPath
-     * @param prm
-     * @return
-     * @throws Exception
-     */
-    public static boolean hasChildPerm(String usr, String aclPath, String prm) throws Exception {
-        HashMap acls = AccessController.getAcls();
-        Iterator aclNames = acls.keySet().iterator();
-        AccessControlListIF acl;
-        while (aclNames.hasNext()) {
-            String aclName = (String) aclNames.next();
-            if (aclName.startsWith(aclPath)) {
-                acl = (AccessControlListIF) acls.get(aclName);
-                if (acl.checkPermission(usr, prm)) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     *
      * @param request
      * @return
      */
     public static String getLoginURL(HttpServletRequest request) {
-
         // Legacy login mechanism. Used if the application is configured to not use Central Authentication Service (CAS).
-        //String result = "javascript:login('" + request.getContextPath() + "')";
+        // String result = "javascript:login('" + request.getContextPath() + "')";
         String result = request.getContextPath() + "/" + LoginServlet.LOGIN_JSP;
 
         boolean rememberAfterLoginUrl = false;
         if (Props.isUseCentralAuthenticationService()) {
-
             CASFilterConfig casFilterConfig = CASFilterConfig.getInstance();
             if (casFilterConfig != null) {
-
                 String casLoginUrl = casFilterConfig.getInitParameter(CASFilter.LOGIN_INIT_PARAM);
                 if (casLoginUrl != null) {
-
                     String casServerName = casFilterConfig.getInitParameter(CASFilter.SERVERNAME_INIT_PARAM);
                     if (casServerName == null) {
                         throw new DDRuntimeException("If " + CASFilter.LOGIN_INIT_PARAM
                                 + " context parameter has been specified, so must be " + CASFilter.SERVERNAME_INIT_PARAM);
                     }
-
                     rememberAfterLoginUrl = true;
                     try {
                         result =
@@ -271,14 +233,12 @@ public final class SecurityUtil {
         }
 
         if (rememberAfterLoginUrl) {
-
             String requestURL = request.getRequestURL().toString();
             if (requestURL != null && !AfterCASLoginServlet.isSkipUrl(requestURL)) {
 
                 request.getSession().setAttribute(AfterCASLoginServlet.AFTER_LOGIN_ATTR_NAME, buildAfterLoginURL(request));
             }
         }
-
         return result;
     }
 
@@ -288,24 +248,19 @@ public final class SecurityUtil {
      * @return
      */
     public static String getLogoutURL(HttpServletRequest request) {
-
         // The default result used when the application is configured to not use Central Authentication Service (CAS).
         String result = request.getContextPath();
 
         if (Props.isUseCentralAuthenticationService()) {
-
             CASFilterConfig casFilterConfig = CASFilterConfig.getInstance();
             if (casFilterConfig != null) {
-
                 String casLoginUrl = casFilterConfig.getInitParameter(CASFilter.LOGIN_INIT_PARAM);
                 if (casLoginUrl != null) {
-
                     String casServerName = casFilterConfig.getInitParameter(CASFilter.SERVERNAME_INIT_PARAM);
                     if (casServerName == null) {
                         throw new DDRuntimeException("If " + CASFilter.LOGIN_INIT_PARAM
                                 + " context parameter has been specified, so must be " + CASFilter.SERVERNAME_INIT_PARAM);
                     }
-
                     try {
                         result =
                                 casLoginUrl.replaceFirst("/login", "/logout")
@@ -321,6 +276,7 @@ public final class SecurityUtil {
 
         return result;
     }
+
     public static String getLogoutURLForLocalUserAccount(HttpServletRequest request) {
         String result = request.getContextPath();
         if(result.isEmpty()){
@@ -328,33 +284,7 @@ public final class SecurityUtil {
         }
         return result;
     }
-    /**
-     *
-     * @return
-     */
-    private static String getUrlWithContextPath(HttpServletRequest request) {
 
-        StringBuffer url = new StringBuffer(request.getScheme());
-        url.append("://").append(request.getServerName());
-        if (request.getServerPort() > 0) {
-            url.append(":").append(request.getServerPort());
-        }
-        url.append(request.getContextPath());
-        return url.toString();
-    }
-
-    /**
-     * @return the rEMOTEUSER
-     */
-    public static String getREMOTEUSER() {
-        return REMOTEUSER;
-    }
-
-    /**
-     *
-     * @param request
-     * @return
-     */
     public static String buildAfterLoginURL(HttpServletRequest request) {
 
         String requestUri = (String) request.getAttribute("javax.servlet.forward.request_uri");
@@ -380,12 +310,11 @@ public final class SecurityUtil {
      * @return List of ISO2 country codes in upper codes. Null if user object or parentRoles are null.
      */
     public static List<String> getUserCountriesFromRoles(DDUser dduser, String[] parentRoles) {
-
         if (dduser == null || dduser.getUserRoles() == null || parentRoles == null) {
             return null;
         }
 
-        List<String> countries = new ArrayList<String>();
+        List<String> countries = new ArrayList<>();
 
         for (String role : dduser.getUserRoles()) {
             for (String parentRole : parentRoles) {
@@ -415,4 +344,5 @@ public final class SecurityUtil {
         }
         return sessionId;
     }
+
 }

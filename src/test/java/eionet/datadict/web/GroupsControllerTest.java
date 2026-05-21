@@ -66,7 +66,6 @@ public class GroupsControllerTest {
         setGroupDetails();
         UserUtils.setDdGroupsAndUsers(groupsAndUsers);
         when(ldapService.getUserLdapRoles(anyString())).thenReturn(ldapRoles);
-        when(ldapService.getAllLdapRoles()).thenReturn(ldapRoles);
         when(user.isAuthentic()).thenReturn(true);
         when(user.hasPermission(anyString(), anyString())).thenReturn(true);
         Mockito.doNothing().when(groupsController).refreshUserGroupResults(any(HttpServletRequest.class));
@@ -75,7 +74,7 @@ public class GroupsControllerTest {
 
     private void setGroupDetails() {
         groupDetails = new GroupDetails();
-        groupDetails.setLdapGroupName("testRole");
+        groupDetails.setGroup("testRole");
     }
 
     private void setRoleNames() {
@@ -131,22 +130,7 @@ public class GroupsControllerTest {
     }
 
     @Test
-    public void testGetLdapListSuccess() throws Exception {
-        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.get("/admintools/ldapOptions")
-                .param("term", "test");
-        mockMvc.perform(builder)
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    public void testGetAllLdapRolesSuccess() throws LdapDaoException {
-        List<String> result = groupsController.getAllLdapRoles();
-        assertEquals(roles, result);
-    }
-
-    @Test
     public void testAddUserSuccess() throws Exception {
-        when(ldapService.getAllLdapRoles()).thenReturn(ldapRoles);
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.post("/admintools/addUser")
                 .session(session).flashAttr("groupDetails", groupDetails);
         mockMvc.perform(builder)
@@ -164,7 +148,7 @@ public class GroupsControllerTest {
 
     @Test
     public void testAddUserGroupNotExist() throws Exception {
-        groupDetails.setLdapGroupName("test");
+        groupDetails.setGroup("test");
         MockHttpServletRequestBuilder builder = MockMvcRequestBuilders.post("/admintools/addUser")
                 .session(session).flashAttr("groupDetails", groupDetails);
         mockMvc.perform(builder)

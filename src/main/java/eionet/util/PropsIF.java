@@ -250,10 +250,6 @@ public interface PropsIF {
 
     String LDAP_ROLE_NAME = "ldap.attr.rolename";
 
-    String LDAP_DESCRIPTION = "ldap.attr.roledescription";
-
-    String LDAP_ATTR_MAIL = "ldap.attr.mail";
-
     String EXCLUDED_COUNTY_CODES = "env.dd.countryCodes.excluded";
 
     String UNS_URL = "env.uns.url";

@@ -4,8 +4,6 @@ import eionet.datadict.errors.AclLibraryAccessControllerModifiedException;
 import eionet.datadict.errors.AclPropertiesInitializationException;
 import eionet.datadict.errors.UserExistsException;
 import eionet.datadict.errors.XmlMalformedException;
-import eionet.datadict.model.LdapRole;
-import eionet.datadict.services.LdapService;
 import eionet.datadict.services.acl.AclService;
 import eionet.datadict.web.viewmodel.GroupDetails;
 import eionet.meta.DDUser;
@@ -19,14 +17,16 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Set;
+import java.util.Vector;
 
 @Controller
 @RequestMapping("/admintools")
 public class GroupsController {
 
     private AclService aclService;
-    private LdapService ldapService;
     /** */
     public static final String REMOTEUSER = "eionet.util.SecurityUtil.user";
 
@@ -34,9 +34,8 @@ public class GroupsController {
     private static final Logger LOGGER = LoggerFactory.getLogger(GroupsController.class);
 
     @Autowired
-    public GroupsController(AclService aclService, LdapService ldapService) {
+    public GroupsController(AclService aclService) {
         this.aclService = aclService;
-        this.ldapService = ldapService;
     }
 
     @GetMapping("/list")
@@ -49,8 +48,8 @@ public class GroupsController {
             model.addAttribute("msgOne", PageErrorConstants.FORBIDDEN_ACCESS + " Admin tools");
             return "message";
         }
-        Hashtable<String, Vector<String>> ddGroupsAndUsers = new Hashtable<>();
-        if (UserUtils.getDdGroupsAndUsers()!=null) {
+        Hashtable<String, Vector<String>> ddGroupsAndUsers;
+        if (UserUtils.getDdGroupsAndUsers() != null) {
             ddGroupsAndUsers = UserUtils.getDdGroupsAndUsers();
         } else {
             ddGroupsAndUsers = UserUtils.fetchGroupsAndUsers(false);
@@ -64,26 +63,6 @@ public class GroupsController {
         return "groupsAndUsers";
     }
 
-    @RequestMapping(value = "/ldapOptions")
-    @ResponseBody
-    public List<String> getLdapList(@RequestParam(value="term", required = false, defaultValue="") String term) throws LdapDaoException {
-        List<String> ldapRoleNames = getAllLdapRoles();
-        List<String> results = new ArrayList<>();
-        for (String roleName : ldapRoleNames) {
-            if (roleName.startsWith(term)) {
-                results.add(roleName);
-            }
-        }
-        return results;
-    }
-
-    protected synchronized List<String> getAllLdapRoles() throws LdapDaoException {
-        List<String> ldapRoleNames = new ArrayList<>();
-        List<LdapRole> ldapRoles = ldapService.getAllLdapRoles();
-        ldapRoles.forEach(role->ldapRoleNames.add(role.getName()));
-        return ldapRoleNames;
-    }
-
     @PostMapping("/addUser")
     public String addUser(@ModelAttribute("groupDetails") GroupDetails groupDetails, Model model, HttpServletRequest request)
             throws UserExistsException, XmlMalformedException, LdapDaoException, AclLibraryAccessControllerModifiedException, AclPropertiesInitializationException {
@@ -91,16 +70,7 @@ public class GroupsController {
             model.addAttribute("msgOne", PageErrorConstants.PERMISSION_REQUIRED);
             return "message";
         }
-        if (groupDetails.getGroupNameOptionOne()!=null) {
-            aclService.addUserToAclGroup(groupDetails.getUserName(), groupDetails.getGroupNameOptionOne());
-        } else {
-            List<String> ldapRoles = getAllLdapRoles();
-            if (!ldapRoles.contains(groupDetails.getLdapGroupName())) {
-                model.addAttribute("msgOne", LDAP_GROUP_NOT_EXIST);
-                return "message";
-            }
-            aclService.addUserToAclGroup(groupDetails.getLdapGroupName(), groupDetails.getGroupNameOptionTwo());
-        }
+        aclService.addUserToAclGroup(groupDetails.getUserName(), groupDetails.getGroup());
         refreshUserGroupResults(request);
         return "redirect:/v2/admintools/list";
     }
@@ -126,28 +96,6 @@ public class GroupsController {
             user.setGroupResults(results);
             session.setAttribute(REMOTEUSER, user);
         }
-    }
-
-    @PostMapping(value ="/roleUsers/{ldapGroup}")
-    @ResponseBody
-    public String getLdapRoleUsers(@PathVariable String ldapGroup) {
-        List<String> users;
-        try {
-            users = ldapService.getRoleUsers(ldapGroup);
-        } catch (LdapDaoException e) {
-            return "Unable to retrieve users of ldap role " + ldapGroup;
-        }
-        String result = "";
-        if (users !=null && users.size()>0) {
-            for (String user : users) {
-                if (!result.equals("")) {
-                    result += ", ";
-                }
-                result += user;
-            }
-            return result;
-        }
-        return "No users found for ldap role " + ldapGroup;
     }
 
     @ExceptionHandler({UserExistsException.class, XmlMalformedException.class, AclLibraryAccessControllerModifiedException.class})

@@ -29,19 +29,4 @@ public class LdapServiceImpl implements LdapService {
         return ldapRoles;
     }
 
-    @Override
-    public List<LdapRole> getAllLdapRoles() throws LdapDaoException {
-        ldapRoles = ldapRoleDao.findAllRoles();
-        return ldapRoles;
-    }
-
-    @Override
-    public List<String> getRoleUsers(String roleName) throws LdapDaoException {
-        return ldapRoleDao.findRoleUsers(roleName);
-    }
-
-    @Override
-    public Hashtable<String, Object> getRoleInfo(String roleName) throws LdapDaoException {
-        return ldapRoleDao.getRoleInfo(roleName);
-    }
 }
