@@ -116,8 +116,8 @@ public class VocabularyServiceImpl implements IVocabularyService {
      */
     public static final String ADMS_STATUS = "adms:status";
 
-    public static final String ACCEPTED_STATUS="accepted";
-    public static final String NOT_ACCEPTED_STATUS="notAccepted";
+    public static final String ACCEPTED_STATUS = "accepted";
+    public static final String NOT_ACCEPTED_STATUS = "notAccepted";
 
     /**
      * {@inheritDoc}
@@ -1195,7 +1195,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
             result.setElementAttributes(vocabularyConceptsDataElementValues.get(conceptId));
             return result;
         } catch (IncorrectResultSizeDataAccessException e) {
-            ServiceException se = new ServiceException("Vocabulary concept \"" + conceptIdentifier + "\" not found!", e);
+            ServiceException se = new ServiceException("Vocabulary concept \"" + conceptIdentifier + "\" not found!");
             se.setErrorParameter(ErrorActionBean.ERROR_TYPE_KEY, ErrorActionBean.ErrorType.NOT_FOUND_404);
             throw se;
         } catch (Exception e) {
@@ -1720,7 +1720,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
         for (VocabularyConcept concept : concepts) {
             List<List<DataElement>> elems = concept.getElementAttributes();
             for (List<DataElement> elemMeta : elems) {
-                if(elemMeta.size()>0) {
+                if (elemMeta.size() > 0) {
                     dataElementsIds.add(elemMeta.get(0).getId());
                 }
             }
@@ -1797,9 +1797,9 @@ public class VocabularyServiceImpl implements IVocabularyService {
         existingConcept.setElementAttributes(vocabularyConceptsDataElementValues.get(conceptId));
         List<List<DataElement>> existingConceptElements = existingConcept.getElementAttributes();
         List<DataElement> existingConceptAdmsStatusElements = new ArrayList<>();
-        if (existingConceptElements!=null) {
+        if (existingConceptElements != null) {
             for (List<DataElement> values : existingConceptElements) {
-                if (values!=null) {
+                if (values != null) {
                     for (DataElement element : values) {
                         if (element != null && element.getIdentifier() != null && element.getIdentifier().equals(ADMS_STATUS)) {
                             existingConceptAdmsStatusElements.add(element);
@@ -1812,13 +1812,13 @@ public class VocabularyServiceImpl implements IVocabularyService {
         List<List<DataElement>> elements = vocabularyConcept.getElementAttributes();
         if (elements != null) {
             for (List<DataElement> values : elements) {
-                if (values!=null) {
+                if (values != null) {
                     for (DataElement element : values) {
-                        if (element!=null && element.getIdentifier()!=null && element.getIdentifier().equals(ADMS_STATUS) && element.getRelatedConceptId()!=null) {
+                        if (element != null && element.getIdentifier() != null && element.getIdentifier().equals(ADMS_STATUS) && element.getRelatedConceptId() != null) {
                             VocabularyConcept relatedConcept = this.getVocabularyConcept(element.getRelatedConceptId());
-                            if (existingConceptAdmsStatusElements.size()>0) {
+                            if (existingConceptAdmsStatusElements.size() > 0) {
                                 for (DataElement existingElem : existingConceptAdmsStatusElements) {
-                                    if (existingElem.getRelatedConceptIdentifier()!=null && !existingElem.getRelatedConceptIdentifier().equals(relatedConcept.getIdentifier())) {
+                                    if (existingElem.getRelatedConceptIdentifier() != null && !existingElem.getRelatedConceptIdentifier().equals(relatedConcept.getIdentifier())) {
                                         if (relatedConcept.getIdentifier().equals(NOT_ACCEPTED_STATUS)) {
                                             vocabularyConcept.setNotAcceptedDate(new Date());
                                             vocabularyConcept.setAcceptedDate(null);

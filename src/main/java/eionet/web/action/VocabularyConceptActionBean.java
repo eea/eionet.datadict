@@ -151,25 +151,20 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
      */
     private List<String> excludedVocSetLabels;
 
-    /**
-     * View action.
-     *
-     * @return
-     * @throws ServiceException
-     */
+    // View action
     @DefaultHandler
-    public Resolution view() throws ServiceException {
+    public Resolution view() {
         // to be removed if Stripes is upgraded to 1.5.8
         handleConceptIdentifier();
-
-        vocabularyFolder =
-                vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
-                        vocabularyFolder.isWorkingCopy());
-        vocabularyConcept = vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), getConceptIdentifier(), false);
-        validateView();
-
-        // LOGGER.debug("Element attributes: " + vocabularyConcept.getElementAttributes().size());
-
+        try {
+            vocabularyFolder =
+                    vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
+                            vocabularyFolder.isWorkingCopy());
+            vocabularyConcept = vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), getConceptIdentifier(), false);
+            validateView();
+        } catch (ServiceException e) {
+            return createErrorResolution((ErrorActionBean.ErrorType) e.getErrorParameters().get(ErrorActionBean.ERROR_TYPE_KEY), e.getMessage());
+        }
         return new ForwardResolution(VIEW_VOCABULARY_CONCEPT_JSP);
     }
 
@@ -191,25 +186,22 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         }
     }
 
-    /**
-     * Display edit form action.
-     *
-     * @return
-     * @throws ServiceException
-     */
-    public Resolution edit() throws ServiceException {
+    // Display edit form action
+    public Resolution edit() {
         // to be removed if Stripes is upgraded to 1.5.8
         handleConceptIdentifier();
+        try {
+            vocabularyFolder =
+                    vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
+                            vocabularyFolder.isWorkingCopy());
+            vocabularyConcept = vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), getConceptIdentifier(), true);
 
-        vocabularyFolder =
-                vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),
-                        vocabularyFolder.isWorkingCopy());
-        vocabularyConcept = vocabularyService.getVocabularyConcept(vocabularyFolder.getId(), getConceptIdentifier(), true);
-
-        validateView();
-        initElemVocabularyNames();
-        initBeans();
-
+            validateView();
+            initElemVocabularyNames();
+            initBeans();
+        } catch (ServiceException e) {
+            return createErrorResolution((ErrorActionBean.ErrorType) e.getErrorParameters().get(ErrorActionBean.ERROR_TYPE_KEY), e.getMessage());
+        }
         editDivId = null;
 
         return new ForwardResolution(EDIT_VOCABULARY_CONCEPT_JSP);
@@ -388,8 +380,6 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
      * @throws ServiceException if search fails
      */
     public Resolution searchConcepts() throws ServiceException {
-
-        String realRequestPath = getRequestedPath(getContext().getRequest());
         setConceptIdentifier(vocabularyConcept.getIdentifier());
 
         vocabularyFolder =
@@ -565,10 +555,14 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
     private void validateView() throws ServiceException {
         if (vocabularyFolder.isWorkingCopy() || vocabularyFolder.isDraftStatus()) {
             if (getUser() == null) {
-                throw new ServiceException("User must be logged in");
+                ServiceException se = new ServiceException("User must be logged in");
+                se.setErrorParameter(ErrorActionBean.ERROR_TYPE_KEY, ErrorActionBean.ErrorType.NOT_AUTHENTICATED_401);
+                throw se;
             } else {
                 if (vocabularyFolder.isWorkingCopy() && !isUserWorkingCopy()) {
-                    throw new ServiceException("Illegal user for viewing this working copy");
+                    ServiceException se = new ServiceException("Illegal user for viewing this working copy");
+                    se.setErrorParameter(ErrorActionBean.ERROR_TYPE_KEY, ErrorActionBean.ErrorType.FORBIDDEN_403);
+                    throw se;
                 }
             }
         }
