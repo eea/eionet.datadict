@@ -6,6 +6,7 @@
 <permissions>
 <permission id="xmli"/>
 <permission id="i"/>
+<permission id="xfrm"/>
 <permission id="c"/>
 <permission id="x"/>
 <permission id="w"/>
@@ -26,6 +27,7 @@
 <entry type="object">
 <principal id="xmlgroup" type="localgroup"/>
 <permissions>
+<permission id="xfrm"/>
 <permission id="w"/>
 <permission id="u"/>
 <permission id="v"/>
@@ -73,6 +75,7 @@
 <permissions>
 <permission id="xmli"/>
 <permission id="i"/>
+<permission id="xfrm"/>
 <permission id="c"/>
 <permission id="x"/>
 <permission id="w"/>

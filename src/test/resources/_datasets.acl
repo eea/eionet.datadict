@@ -6,6 +6,7 @@
 <permissions>
 <permission id="xmli"/>
 <permission id="i"/>
+<permission id="xfrm"/>
 <permission id="c"/>
 <permission id="x"/>
 <permission id="w"/>
