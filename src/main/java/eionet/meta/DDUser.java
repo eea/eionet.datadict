@@ -51,12 +51,6 @@ public class DDUser {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DDUser.class);
 
-    /**
-     * permission to view MS Access template.
-     */
-    public static final String MSACCESS_ADVANCED_PRM = "amsa";
-
-    /** */
     protected boolean authented = false;
     protected String username = null;
     protected String password = null;

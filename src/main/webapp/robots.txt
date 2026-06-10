@@ -17,7 +17,6 @@ Disallow: /Import
 Disallow: /GetImportResults
 Disallow: /CodelistServlet
 Disallow: /GetTableDef
-Disallow: /GetMdb
 Disallow: /Subscribe
 Disallow: /GetOds
 Disallow: /GetDbf/

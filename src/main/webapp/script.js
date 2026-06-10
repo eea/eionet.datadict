@@ -262,23 +262,6 @@ function setDatasetExcelXMLDownloadLinksVisibility(contextPath,datasetId) {
         });
 }
 
-
-function setDatasetMsAccessDownloadLinksVisibility(contextPath,datasetId) {
-        var checked = $('#msAccessDownloadOption').is(':checked');
-        $.ajax({
-            type: "GET",
-            url: contextPath+'/v2/dataset/'+datasetId+'/allowMsAccessDownload/'+checked,
-            success: function (data) {
-                alert('Value successfully updated.');
-                window.location.reload(true);
-            },
-            error: function () {
-                alert('An error occurred. Please try again later.');
-            }
-        });
-        return false;
-}
-
 function setDatasetDisplayLinkVisibility(event,contextPath, datasetId,elementId) {
     event.preventDefault();
     var isChecked= $('#'+elementId).is(':checked');

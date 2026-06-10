@@ -90,9 +90,6 @@ public interface PropsIF {
     String GENERAL_SCHEMA_URI = "dd.generalSchemaUri";
     String MULTIVAL_DELIM_ATTR = "dd.multiValueDelimAttrName";
 
-    /** */
-    String DATASET_MS_ACCESS_TEMPLTAE = "datasetMSAccessTemplate";
-
     /**
      * Full path to the root directory of DD's file store.
      */

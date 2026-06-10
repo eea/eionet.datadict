@@ -247,7 +247,6 @@
         boolean imgVisual = false;
         boolean editPrm = false;
         boolean editReleasedPrm = false;
-        boolean advancedAccess = false;
         boolean canCheckout = false;
         boolean canNewVersion = false;
         boolean adminToolsAuthority = false;
@@ -285,7 +284,6 @@
                 workingUser = dataset.getWorkingUser();
                 editPrm = user!=null && SecurityUtil.hasPerm(user, "/datasets/" + dataset.getIdentifier(), "u");
                 editReleasedPrm = user!=null && SecurityUtil.hasPerm(user, "/datasets/" + dataset.getIdentifier(), "er");
-                advancedAccess = SecurityUtil.hasPerm(user != null ? user : null, "/datasets/" + dataset.getIdentifier(), DDUser.MSACCESS_ADVANCED_PRM);
 
                 if (regStatus.equalsIgnoreCase("Superseded")){
                     successorId = dataset.getSuccessorId();
@@ -887,9 +885,6 @@ else if (mode.equals("add"))
                                     boolean dispXLSwithValidationMetadata = dataset!=null && dataset.getDeserializedDisplayDownloadLinks().get(Dataset.DISPLAY_DOWNLOAD_LINKS.XLS_VALIDATION_METADATA);
                                     String checkedXLSwithValidationMetadata = dataset.getDeserializedDisplayDownloadLinks().get(Dataset.DISPLAY_DOWNLOAD_LINKS.XLS_VALIDATION_METADATA)? "checked='checked'" : "";
 
-                                    boolean dispAdvancedAccess = dataset!=null && dataset.getDeserializedDisplayDownloadLinks().get(Dataset.DISPLAY_DOWNLOAD_LINKS.ADVANCED_ACCESS);
-                                    String checkedAdvancedAccess = dataset!=null && dataset.getDeserializedDisplayDownloadLinks().get(Dataset.DISPLAY_DOWNLOAD_LINKS.ADVANCED_ACCESS)? "checked='checked'" : "";
-
                                     boolean dispCSVcodeLists = dataset!=null && dataset.getDeserializedDisplayDownloadLinks().get(Dataset.DISPLAY_DOWNLOAD_LINKS.CODELISTS_CSV);
                                     String checkedCSVcodeLists = dataset!=null && dataset.getDeserializedDisplayDownloadLinks().get(Dataset.DISPLAY_DOWNLOAD_LINKS.CODELISTS_CSV)? "checked='checked'" : "";
 
@@ -1110,59 +1105,6 @@ else if (mode.equals("add"))
                                                         <%
                                                     }
                                                  }
-                                                  // MS Access link
-                                                    if (user!=null && SecurityUtil.hasPerm(user, "/datasets", "u")) { %>
-                                                        <li>
-                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetMdb?dstID=<%=ds_id%>&amp;vmdonly=true" class="access" onclick="return warnDatasetStatus('<%=regStatus%>', 'download')">
-                                                                Create validation metadata for MS Access template
-                                                                <% if(user!=null && SecurityUtil.hasPerm(user, "/datasets", "u")){ %>
-                                                                <input type="checkbox" name="disp_create_links" value="XLS_VALIDATION_METADATA" <%=checkedXLSwithValidationMetadata%> id="XLS_VALIDATION_METADATA" onclick="setDatasetDisplayLinkVisibility(event,'<%=request.getContextPath()%>',<%=ds_id%>,this.id)" />
-                                                                <%}
-                                                                %>
-                                                            </a>
-                                                            <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=access"></a>
-                                                        </li><%
-                                                    }
-                                                    // MS Access link
-                                                   if(user==null ||(user!=null && !SecurityUtil.hasPerm(user, "/datasets", "u")) ){
-                                                    if (dispXLSwithValidationMetadata) { %>
-                                                        <li>
-                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetMdb?dstID=<%=ds_id%>&amp;vmdonly=true" class="access" onclick="return warnDatasetStatus('<%=regStatus%>', 'download')">
-                                                                Create validation metadata for MS Access template
-                                                            </a>
-                                                            <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=access"></a>
-                                                        </li><%
-                                                    }
-                                                  }
-
-                                                    // Advanced MS Access template generation link
-                                                    if (user!=null && SecurityUtil.hasPerm(user, "/datasets", "u")) { %>
-                                                        %>
-                                                        <li>
-                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetMSAccess?dstID=<%=ds_id%>" class="access" onclick="return warnDatasetStatus('<%=regStatus%>', 'download')">
-                                                                Create advanced MS Access template
-                                                                <% if(user!=null && SecurityUtil.hasPerm(user, "/datasets", "u")){ %>
-                                                                <input type="checkbox" name="disp_create_links" value="ADVANCED_ACCESS" <%=checkedAdvancedAccess%> id="ADVANCED_ACCESS" onclick="setDatasetDisplayLinkVisibility(event,'<%=request.getContextPath()%>',<%=ds_id%>,this.id)" />
-                                                                <%}
-                                                                %>
-                                                            </a>
-                                                            <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=advancedMSAccess"></a>
-                                                        </li><%
-                                                    }
-
-                                                    // Advanced MS Access template generation link
-                                                   if(user==null ||(user!=null && !SecurityUtil.hasPerm(user, "/datasets", "u")) ){
-
-                                                    if (dispAdvancedAccess) {
-                                                        %>
-                                                        <li>
-                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetMSAccess?dstID=<%=ds_id%>" class="access" onclick="return warnDatasetStatus('<%=regStatus%>', 'download')">
-                                                                Create advanced MS Access template
-                                                            </a>
-                                                            <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=advancedMSAccess"></a>
-                                                        </li><%
-                                                    }
-                                                  }
                                                     // codelists CSV
                                                     if (user!=null && SecurityUtil.hasPerm(user, "/datasets", "u")) { %>
                                                         <li>
@@ -1260,10 +1202,6 @@ else if (mode.equals("add"))
                                                      <li>
                                                          <a style="padding: 0px !important;">  <input type="checkbox" name="incl_histver" id="excelXMLDownloadOption"  <%=(dataset.getAllowExcelXMLDownload() ? "checked":"")%>  onclick="setDatasetExcelXMLDownloadLinksVisibility('<%=request.getContextPath()%>',<%=ds_id%>)" />
                                                        Show the links for downloading Excel templates and XML schemas for this dataset.  </a></li>
-                                                    <li>
-                                                         <a style="padding: 0px !important;">     <input type="checkbox" name="incl_histver" id="msAccessDownloadOption" <%=(dataset.getAllowMSAccessDownload() ? "checked":"")%> onclick="setDatasetMsAccessDownloadLinksVisibility('<%=request.getContextPath()%>',<%=ds_id%>)"/>
-                                                       Show the link "Create advanced MS Access template" for this dataset.  </a>
-                                                    </li>
                                                 </ul--%>
 
                                                <%

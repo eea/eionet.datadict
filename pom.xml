@@ -527,13 +527,6 @@
                 </includes>
             </resource>
             <resource>
-                <directory>${basedir}/msaccess</directory>
-                <targetPath>msaccess</targetPath>
-                <includes>
-                    <include>*.*</include>
-                </includes>
-            </resource>
-            <resource>
                 <directory>${basedir}/opendoc</directory>
                 <targetPath>opendoc</targetPath>
                 <includes>
@@ -868,12 +861,6 @@
             <groupId>com.lowagie</groupId>
             <artifactId>itext</artifactId>
             <version>2.1.7</version>
-        </dependency>
-        <!--A library to handle MsAccess-->
-        <dependency>
-            <groupId>com.healthmarketscience.jackcess</groupId>
-            <artifactId>jackcess</artifactId>
-            <version>1.2.1</version>
         </dependency>
         <!-- This package is used by Dbf class in Dbf.java file. The class is responsible for generating dataset table in dBase format. -->
         <dependency>

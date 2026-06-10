@@ -456,14 +456,6 @@
         <servlet-class>eionet.meta.exports.xmlmeta.TblXmlMetaServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>MdbServlet</servlet-name>
-        <servlet-class>eionet.meta.exports.mdb.MdbServlet</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>MSAccessServlet</servlet-name>
-        <servlet-class>eionet.meta.exports.msaccess.MSAccessServlet</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>Subscribe</servlet-name>
         <servlet-class>eionet.meta.notif.Subscriber</servlet-class>
     </servlet>
@@ -565,14 +557,6 @@
     <servlet-mapping>
         <servlet-name>GetTableDef</servlet-name>
         <url-pattern>/GetTableDef</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>MdbServlet</servlet-name>
-        <url-pattern>/GetMdb</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>MSAccessServlet</servlet-name>
-        <url-pattern>/GetMSAccess</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>Subscribe</servlet-name>
