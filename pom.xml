@@ -854,12 +854,6 @@
             <artifactId>itext</artifactId>
             <version>2.1.7</version>
         </dependency>
-        <!-- This package is used by Dbf class in Dbf.java file. The class is responsible for generating dataset table in dBase format. -->
-        <dependency>
-            <groupId>com.linuxense</groupId>
-            <artifactId>javadbf</artifactId>
-            <version>0.4.0</version>
-        </dependency>
         <!--PJA package is used for image uploading (see file: ImgUpload.java) and Pdf generation (see file: PdfUtil.java). PJAToolkit class is used in both examples.-->
         <dependency>
             <groupId>com.eteks</groupId>

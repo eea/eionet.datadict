@@ -460,10 +460,6 @@
         <servlet-class>eionet.meta.notif.Subscriber</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>DbfServlet</servlet-name>
-        <servlet-class>eionet.meta.exports.dbf.DbfServlet</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>RdfServlet</servlet-name>
         <servlet-class>eionet.meta.exports.rdf.RdfServlet</servlet-class>
     </servlet>
@@ -557,10 +553,6 @@
     <servlet-mapping>
         <servlet-name>Subscribe</servlet-name>
         <url-pattern>/Subscribe</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>DbfServlet</servlet-name>
-        <url-pattern>/GetDbf/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>RdfServlet</servlet-name>

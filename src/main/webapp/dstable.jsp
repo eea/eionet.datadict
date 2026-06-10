@@ -777,20 +777,6 @@ else if (mode.equals("add"))
                                                     </stripes:link>
                                                 </li><%
                                             }
-
-                                            // TESTING the link for creating dBase II format
-                                            if (user!=null){
-                                                String userName = user.getUserName();
-                                                if (userName.equals("roug") || userName.equals("heinlja") || userName.equals("cryan")) {
-                                                    %>
-                                                    <li>
-                                                        <a rel="nofollow" href="<%=request.getContextPath()%>/GetDbf/<%=dsTable.getID()%>" class="dbf">
-                                                            Create dBaseII
-                                                        </a>
-                                                    </li>
-                                                    <%
-                                                }
-                                            }
                                         %>
                                         </ul>
                                     </div>
