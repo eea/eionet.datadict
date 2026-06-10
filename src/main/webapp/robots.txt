@@ -9,7 +9,6 @@ Disallow: /GetSchema
 Disallow: /GetContainerSchema
 Disallow: /GetPrintout
 Disallow: /GetXmlInstance
-Disallow: /GetXForm
 Disallow: /GetXls
 Disallow: /ImgUpload
 Disallow: /DsVisualUpload

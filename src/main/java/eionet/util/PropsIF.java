@@ -51,10 +51,6 @@ public interface PropsIF {
 
     String UNI_FONT = "pdf.uni-font";
 
-    String XFORMS_NSS = "xforms.nss";
-    String XFORMS_NS = "xforms.ns";
-    String XFORM_TEMPLATE_URL = "xforms.templ.url";
-
     String XLS_SCHEMA_URL = "xls.schema-url";
     String XLS_SCHEMA_URL_SHEET = "xls.schema-url-sheet";
     String XLS_DROPDOWN_FXV_SHEET = "xls.schema-dropdown-fxv-sheet";

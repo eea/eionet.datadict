@@ -701,7 +701,7 @@ else if (mode.equals("add"))
             <!-- main table inside div -->
             <!--=======================-->
 
-                            <!-- schema, MS Excel template, XForm, XmlInst, etc -->
+                            <!-- schema, MS Excel template, XmlInst, etc -->
                             <%
                             if (mode.equals("view")) {
 
