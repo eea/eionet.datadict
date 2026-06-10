@@ -70,7 +70,6 @@ public interface PropsIF {
 
     String TEMP_FILE_PATH = "general.temp-file-path";
     String DOC_PATH = "general.doc-path";
-    String OPENDOC_ODS_PATH = "opendoc.ods.path";
 
     /** */
     String SCREEN_NAME = "documentation.screen-name";

@@ -707,11 +707,10 @@ else if (mode.equals("add"))
 
                                 boolean dispAll = editDstPrm;
                                 boolean dispXLS = dataset!=null && dataset.displayCreateLink("XLS");
-                                boolean dispODS = dataset!=null && dataset.displayCreateLink("ODS");
                                 boolean dispXmlSchema = dataset!=null && dataset.displayCreateLink("XMLSCHEMA");
                                 boolean dispXmlInstance = user!=null && SecurityUtil.hasPerm(user, "/", "xmli");
 
-                                if (dispAll || dispXLS || dispXmlSchema || dispXmlInstance || dispODS){
+                                if (dispAll || dispXLS || dispXmlSchema || dispXmlInstance){
                                     %>
                                     <script type="text/javascript">
                                         $(function() {
@@ -757,16 +756,6 @@ else if (mode.equals("add"))
                                                     <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=table&amp;area=excel_dropdown"></a>
                                                 </li>
                                                 <%
-                                            }
-
-                                            // OpenDocument spreadsheet template link
-                                            if (dispAll || dispODS){ %>
-                                                <li>
-                                                    <a rel="nofollow" href="<%=request.getContextPath()%>/GetOds?type=tbl&amp;id=<%=tableID%>" class="open-doc">
-                                                        Create an OpenDocument spreadsheet template for this table
-                                                    </a>
-                                                    <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=table&amp;area=ods"></a>
-                                                </li><%
                                             }
 
                                             // codelist

@@ -1,21 +1,17 @@
 package eionet.meta;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import eionet.util.Props;
+import eionet.util.PropsIF;
+
 import java.io.IOException;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Vector;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import eionet.util.Props;
-import eionet.util.PropsIF;
-
-/*
- *
- */
 public class Dataset implements Comparable {
 
-    /** */
     private String id = null;
     private String shortName = null;
     private String version = null;
@@ -44,15 +40,12 @@ public class Dataset implements Comparable {
     private String successorId = null;
 
 
-
     private String serializedDisplayDownloadLinks;
-    /** */
     private String user;
 
+    private Map<DISPLAY_DOWNLOAD_LINKS, Boolean> deserializedDisplayDownloadLinks = this.initializeDiSplayDownloadLinksMap();
 
-    private Map<DISPLAY_DOWNLOAD_LINKS,Boolean> deserializedDisplayDownloadLinks = this.initializeDiSplayDownloadLinksMap();
-
-    public  enum DISPLAY_DOWNLOAD_LINKS{
+    public enum DISPLAY_DOWNLOAD_LINKS {
         PDF(""),
         XML_SCHEMA(""),
         XML_SCHEMA_OLD_STRUCTURE(""),
@@ -61,23 +54,20 @@ public class Dataset implements Comparable {
         XLS_VALIDATION_METADATA(""),
         MS_EXCEL_OLD_STRUCTURE(""),
         MS_EXCEL_DROPDOWN_BOXES(""),
-        ADVANCED_ACCESS(""),
         CODELISTS_CSV(""),
         CODELISTS_XML("");
 
         private String value;
-        DISPLAY_DOWNLOAD_LINKS(String value){
-            this.value=value;
+
+        DISPLAY_DOWNLOAD_LINKS(String value) {
+            this.value = value;
         }
-        public String getValue(){
+
+        public String getValue() {
             return value;
         }
     }
 
-
-    /*
-     *
-     */
     public Dataset(String id, String shortName, String version) {
         this.id = id;
         this.shortName = shortName;
@@ -266,8 +256,6 @@ public class Dataset implements Comparable {
             createLinkWeights.put("XLS", new Integer(2));
             createLinkWeights.put("XMLINST", new Integer(4));
             createLinkWeights.put("XMLSCHEMA", new Integer(8));
-            createLinkWeights.put("MDB", new Integer(16));
-            createLinkWeights.put("ODS", new Integer(32));
         }
 
         return createLinkWeights;
@@ -286,25 +274,14 @@ public class Dataset implements Comparable {
         this.sortOrder = sortOrder;
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see java.lang.Object#toString()
-     */
     public String toString() {
         return this.sortString;
     }
 
-    /*
-     *
-     */
     public int compareTo(Object o) {
         return this.sortOrder * this.sortString.compareTo(o.toString());
     }
 
-    /*
-     *
-     */
     public String getReferenceURL() {
 
         if (getIdentifier() == null) {
@@ -322,18 +299,10 @@ public class Dataset implements Comparable {
         return buf.toString();
     }
 
-    /**
-     *
-     * @return
-     */
     public String getCheckedoutCopyID() {
         return checkedoutCopyID;
     }
 
-    /**
-     *
-     * @param checkedoutCopyID
-     */
     public void setCheckedoutCopyID(String checkedoutCopyID) {
         this.checkedoutCopyID = checkedoutCopyID;
     }
@@ -345,41 +314,22 @@ public class Dataset implements Comparable {
     public void setSuccessorId(String successorId) {
         this.successorId = successorId;
     }
-    
-    
 
-    /**
-     *
-     * @return
-     */
     public String getWorkingUser() {
         return workingUser;
     }
 
-    /**
-     *
-     * @param workingUser
-     */
     public void setWorkingUser(String workingUser) {
         this.workingUser = workingUser;
     }
 
-    /**
-     * @return the user
-     */
     public String getUser() {
         return user;
     }
 
-    /**
-     * @param user
-     *            the user to set
-     */
     public void setUser(String user) {
         this.user = user;
     }
-
-
 
     public String getSerializedDisplayDownloadLinks() {
         return serializedDisplayDownloadLinks;
@@ -392,37 +342,37 @@ public class Dataset implements Comparable {
     public Map<DISPLAY_DOWNLOAD_LINKS, Boolean> getDeserializedDisplayDownloadLinks() {
         return deserializedDisplayDownloadLinks;
     }
- 
+
     public void setDesirializedDisplayDownloadLinks(Map<DISPLAY_DOWNLOAD_LINKS, Boolean> deserializedDisplayDownloadLinks) {
         this.deserializedDisplayDownloadLinks = deserializedDisplayDownloadLinks;
     }
 
     public void setDesirializedDisplayDownloadLinksFromSerializedMap(String serializedDisplayDownloadLinks) throws IOException {
-        if(serializedDisplayDownloadLinks==null ||serializedDisplayDownloadLinks.isEmpty()){
-                  //case when it is the first time that the new  mechanism for Display DownloadLinks is used for this Dataset
+        if (serializedDisplayDownloadLinks == null || serializedDisplayDownloadLinks.isEmpty()) {
+            //case when it is the first time that the new  mechanism for Display DownloadLinks is used for this Dataset
             for (Dataset.DISPLAY_DOWNLOAD_LINKS value : Dataset.DISPLAY_DOWNLOAD_LINKS.values()) {
                 this.deserializedDisplayDownloadLinks.put(value, true);
             }
-            return; 
-        } 
-        ObjectMapper mapper = new ObjectMapper(); 
+            return;
+        }
+        ObjectMapper mapper = new ObjectMapper();
         Map<String, String> results = mapper.readValue(serializedDisplayDownloadLinks, Map.class);
         Map<Dataset.DISPLAY_DOWNLOAD_LINKS, Boolean> databaseValues = new LinkedHashMap<>();
         for (DISPLAY_DOWNLOAD_LINKS value : DISPLAY_DOWNLOAD_LINKS.values()) {
             String enumasName = value.name();
             Object res = results.get(enumasName);
-            if (res != null) { 
+            if (res != null) {
                 this.deserializedDisplayDownloadLinks.put(value, res.toString().equals("true") ? true : false);
-            }    
-        }    
-    }       
+            }
+        }
+    }
 
     private Map<DISPLAY_DOWNLOAD_LINKS, Boolean> initializeDiSplayDownloadLinksMap() {
         Map<DISPLAY_DOWNLOAD_LINKS, Boolean> map = new LinkedHashMap<>();
         for (DISPLAY_DOWNLOAD_LINKS value : DISPLAY_DOWNLOAD_LINKS.values()) {
             map.put(value, true);
-        } 
+        }
         return map;
-
     }
+
 }

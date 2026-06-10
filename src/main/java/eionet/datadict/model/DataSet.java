@@ -2,11 +2,14 @@ package eionet.datadict.model;
 
 import eionet.meta.dao.domain.DatasetRegStatus;
 
-import java.util.*;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 
 @Table(name = "DATASET")
 public class DataSet implements AttributeOwner {
@@ -33,14 +36,14 @@ public class DataSet implements AttributeOwner {
     private String user;
     private Namespace correspondingNS;
     private String deleted;
-    private Integer dispCreateLinks =-1;
+    private Integer dispCreateLinks = -1;
     private Integer checkedOutCopyId;
 
     private String serializedDisplayDownloadLinks;
 
-    private Map<DISPLAY_DOWNLOAD_LINKS,Boolean> deserializedDisplayDownloadLinks = this.initializeDiSplayDownloadLinksMap();
+    private Map<DISPLAY_DOWNLOAD_LINKS, Boolean> deserializedDisplayDownloadLinks = this.initializeDiSplayDownloadLinksMap();
 
-    public  enum DISPLAY_DOWNLOAD_LINKS{
+    public enum DISPLAY_DOWNLOAD_LINKS {
         PDF(""),
         XML_SCHEMA(""),
         XML_SCHEMA_OLD_STRUCTURE(""),
@@ -49,19 +52,21 @@ public class DataSet implements AttributeOwner {
         XLS_VALIDATION_METADATA(""),
         MS_EXCEL_OLD_STRUCTURE(""),
         MS_EXCEL_DROPDOWN_BOXES(""),
-        ADVANCED_ACCESS(""),
         CODELISTS_CSV(""),
         CODELISTS_XML("");
 
         private String value;
-        DISPLAY_DOWNLOAD_LINKS(String value){
-            this.value=value;
+
+        DISPLAY_DOWNLOAD_LINKS(String value) {
+            this.value = value;
         }
-        public String getValue(){
+
+        public String getValue() {
             return value;
         }
-        public void setValue(String value){
-            this.value=value;
+
+        public void setValue(String value) {
+            this.value = value;
         }
     }
 
@@ -73,6 +78,7 @@ public class DataSet implements AttributeOwner {
     public DataSet(Integer id) {
         this.id = id;
     }
+
     public static final Map<String, Integer> createLinkWeights;
 
     static {
@@ -81,8 +87,6 @@ public class DataSet implements AttributeOwner {
         createLinkWeights.put("XLS", new Integer(2));
         createLinkWeights.put("XMLINST", new Integer(4));
         createLinkWeights.put("XMLSCHEMA", new Integer(8));
-        createLinkWeights.put("MDB", new Integer(16));
-        createLinkWeights.put("ODS", new Integer(32));
     }
 
     @Override
@@ -268,8 +272,6 @@ public class DataSet implements AttributeOwner {
     public void setAttributes(Set<Attribute> attributes) {
         this.attributes = attributes;
     }
-
-
 
 
     private Map<DISPLAY_DOWNLOAD_LINKS, Boolean> initializeDiSplayDownloadLinksMap() {

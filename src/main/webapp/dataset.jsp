@@ -892,23 +892,10 @@ else if (mode.equals("add"))
                                     boolean dispXMLcodeLists = dataset!=null && dataset.getDeserializedDisplayDownloadLinks().get(Dataset.DISPLAY_DOWNLOAD_LINKS.CODELISTS_XML);
                                     String checkedXMLcodeLists = dataset!=null && dataset.getDeserializedDisplayDownloadLinks().get(Dataset.DISPLAY_DOWNLOAD_LINKS.CODELISTS_XML)? "checked='checked'" : "";
 
-
-
-                                    //For old XLS (MS EXCEL Template, another field on the dataset.
-
-
-                                    boolean dispODS = dataset!=null && dataset.displayCreateLink("ODS");
-                                    boolean dispMDB = dataset!=null && dataset.displayCreateLink("MDB");
-
-
-
                                     boolean dispDocs = docs!=null && docs.size()>0;
                                //     String checkedXLS = dataset.displayCreateLink("XLS") ? "checked='checked'" : "";
 
-                                    String checkedODS = dataset.displayCreateLink("ODS") ? "checked='checked'" : "";
-                                    String checkedMDB = dataset.displayCreateLink("MDB") ? "checked='checked'" : "";
-
-                                    if (dispAll || dispPDF || dispXLS || dispXmlSchema || dispXmlInstance || dispDocs || dispMDB || dispODS) {
+                                    if (dispAll || dispPDF || dispXLS || dispXmlSchema || dispXmlInstance || dispDocs) {
                                         %>
                                             <script type="text/javascript">
                                                 $(function() {
@@ -1193,10 +1180,7 @@ else if (mode.equals("add"))
                                                              <a style="padding: 0px !important;"> <input type="checkbox" name="disp_create_links" value="XMLSCHEMA" id="XMLSCHEMADisplayCreateLink" <%=checkedXmlSchema%> onclick="setDatasetDisplayLinkVisibility('<%=request.getContextPath()%>',<%=ds_id%>)"/>
                                                                 The definition on XML Schema format</a>
                                                             </li>
-                                                           <li>
-                                                             <a style="padding: 0px !important;"> <input type="checkbox" name="disp_create_links" value="ODS" id="ODScreateLink" <%=checkedODS%> onclick="setDatasetDisplayLinkVisibility('<%=request.getContextPath()%>',<%=ds_id%>)"/>
-                                                                OpenDocument spreadsheet</a>
-                                                           </li--%>
+                                                           %>
 
                                                 <%--ul>
                                                      <li>

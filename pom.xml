@@ -527,14 +527,6 @@
                 </includes>
             </resource>
             <resource>
-                <directory>${basedir}/opendoc</directory>
-                <targetPath>opendoc</targetPath>
-                <includes>
-                    <include>*.*</include>
-                    <include>ods/*.*</include>
-                </includes>
-            </resource>
-            <resource>
                 <directory>${basedir}</directory>
                 <includes>
                     <include>VERSION.txt</include>

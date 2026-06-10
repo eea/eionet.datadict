@@ -283,11 +283,10 @@ function setDatasetDisplayLinkVisibility(event,contextPath, datasetId,elementId)
     var pdfChecked = $('#PDFDisplayCreateLink').is(':checked');
     var XlsChecked = $('#XLSDisplayCreateLink').is(':checked');
     var XmlSchemaChecked = $('#XMLSCHEMADisplayCreateLink').is(':checked');
-    var OdsChecked = $('#ODScreateLink').is(':checked');
 
     $.ajax({
         type: "GET",
-        url: contextPath + '/v2/dataset/' + datasetId + '/updateDispCreateLinks?' + "PDF=" + pdfChecked + "&XLS=" + XlsChecked + "&ODS=" + OdsChecked + "&XMLSCHEMA=" + XmlSchemaChecked,
+        url: contextPath + '/v2/dataset/' + datasetId + '/updateDispCreateLinks?' + "PDF=" + pdfChecked + "&XLS=" + XlsChecked + "&XMLSCHEMA=" + XmlSchemaChecked,
         success: function (data) {
             alert('Value successfully updated.');
             window.location.reload(true);

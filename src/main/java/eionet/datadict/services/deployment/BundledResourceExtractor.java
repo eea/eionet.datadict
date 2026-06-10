@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 public class BundledResourceExtractor {
     
     protected static final String ACL_FOLDER_NAME = "acl";
-    protected static final String OPENDOC_FOLDER_HOME = "opendoc";
     protected static final String VERSION_FILE = "VERSION.txt";
     protected static final String TEMP_FOLDER = "tmp";
     
@@ -40,7 +39,6 @@ public class BundledResourceExtractor {
         }
 
         extractAclFiles();
-        extractOpenDocFiles();
         extractVersionFile();
         createTempFolder();
     }
@@ -63,15 +61,6 @@ public class BundledResourceExtractor {
             
             // Other files must be copied only if they do not exist in destination folder.
             this.copyFileToDirectoryIfNotExists(sourceFile, directory);
-        }
-    }
-
-    protected void extractOpenDocFiles() throws IOException {
-        File directory = FileUtils.getFile(appHomeDirectory, OPENDOC_FOLDER_HOME, "ods");
-        File[] files = classPathResourceProvider.getDirectoryFiles(OPENDOC_FOLDER_HOME);
-        
-        for (File file : files) {
-            this.copyDirectory(file, directory);
         }
     }
 
