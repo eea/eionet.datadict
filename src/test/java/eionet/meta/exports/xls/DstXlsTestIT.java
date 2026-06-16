@@ -19,8 +19,7 @@ public class DstXlsTestIT extends TblXlsTestIT {
         fxvSheetValues =
                 new String[][] { {"5", "6"}, {"Ultra-oligotrophic", "Oligotrophic", "Mesotrophic", "Eutrophic", "Hypertrophic"}};
         fxvIdentifier = new String[] {"ND_TrendAnnValue", "ND_TrophicState"};
-        classInstanceUnderTest = new DstXls(searchEngine, baos, true);
-        classInstanceUnderTestWithoutDD = new DstXls(searchEngine, baos, false);
+        classInstanceUnderTest = new DstXls(searchEngine, baos);
         objId = "4";
     }
 

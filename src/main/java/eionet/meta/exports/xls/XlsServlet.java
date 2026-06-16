@@ -1,15 +1,5 @@
 package eionet.meta.exports.xls;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.sql.Connection;
-import java.util.HashSet;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import eionet.meta.DDSearchEngine;
 import eionet.meta.exports.CachableIF;
 import eionet.util.Props;
@@ -18,6 +8,15 @@ import eionet.util.Util;
 import eionet.util.sql.ConnectionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.sql.Connection;
+import java.util.HashSet;
 
 public class XlsServlet extends HttpServlet {
 
@@ -33,7 +32,6 @@ public class XlsServlet extends HttpServlet {
 
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-
         OutputStream os = null;
         Connection conn = null;
 
@@ -49,18 +47,13 @@ public class XlsServlet extends HttpServlet {
                 throw new Exception("Missing object type or object type invalid!");
             }
 
-            String action = req.getParameter("obj_act");
-            String  newSchemaParameter = req.getParameter("new_schema");
-            boolean dropDownAction = !Util.isEmpty(action) && action.equals("dd"); // if no action sent or invalid action send
-                                                                                 // ignore it
-            
-            boolean newSchema = true;                                                                     
-            if(!Util.isEmpty(newSchemaParameter)){
-              newSchema = Boolean.parseBoolean(newSchemaParameter);
-             }
-                                                                                  
-                                                                                  
-            // ServletContext ctx = getServletContext();
+            String newSchemaParameter = req.getParameter("new_schema");
+
+            boolean newSchema = true;
+            if (!Util.isEmpty(newSchemaParameter)) {
+                newSchema = Boolean.parseBoolean(newSchemaParameter);
+            }
+
             String cachePath = Props.getProperty(PropsIF.DOC_PATH);
 
             // get the DB connection
@@ -70,17 +63,17 @@ public class XlsServlet extends HttpServlet {
             os = res.getOutputStream();
 
             XlsIF xls = null;
-            
+
             if (type.equals("dst")) {
-                xls = new DstXls(searchEngine, os, dropDownAction,newSchema);
-                
+                xls = new DstXls(searchEngine, os, newSchema);
+
                 ((CachableIF) xls).setCachePath(cachePath);
-                
+
             } else {
-                xls = new TblXls(searchEngine, os, dropDownAction,newSchema);
+                xls = new TblXls(searchEngine, os, newSchema);
                 ((CachableIF) xls).setCachePath(cachePath);
             }
-            
+
             xls.create(id);
             res.setContentType("application/vnd.ms-excel");
             StringBuffer buf = new StringBuffer("attachment; filename=\"").append(xls.getName()).append("\"");

@@ -748,15 +748,6 @@ else if (mode.equals("add"))
                                                     <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=table&amp;area=excel"></a>
                                                 </li>
                                             <% }
-                                            if ((dispAll || dispXLS) && user != null) { %>
-                                                <li>
-                                                    <a rel="nofollow" href="<%=request.getContextPath()%>/GetXls?obj_type=tbl&amp;obj_act=dd&amp;obj_id=<%=tableID%>" class="excel">
-                                                        Create an MS Excel template for this table with drop-down boxes (BETA)
-                                                    </a>
-                                                    <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=table&amp;area=excel_dropdown"></a>
-                                                </li>
-                                                <%
-                                            }
 
                                             // codelist
                                             if (dispAll || dispXmlSchema){ %>

@@ -56,8 +56,7 @@ public class TblXlsTestIT extends DDDatabaseTestCase {
         dataSheetValues = new String[][] {{"ND_TrophicState", "ND_AvgValue", "ND_TrendWintValue"}};
         fxvIdentifier = new String[] {"ND_TrophicState"};
         fxvSheetValues = new String[][] {{"Ultra-oligotrophic", "Oligotrophic", "Mesotrophic", "Eutrophic", "Hypertrophic"}};
-        classInstanceUnderTest = new TblXls(searchEngine, baos, true);
-        classInstanceUnderTestWithoutDD = new TblXls(searchEngine, baos, false);
+        classInstanceUnderTest = new TblXls(searchEngine, baos);
         objId = "7";
     }
 

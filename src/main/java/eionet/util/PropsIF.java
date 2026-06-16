@@ -53,7 +53,6 @@ public interface PropsIF {
 
     String XLS_SCHEMA_URL = "xls.schema-url";
     String XLS_SCHEMA_URL_SHEET = "xls.schema-url-sheet";
-    String XLS_DROPDOWN_FXV_SHEET = "xls.schema-dropdown-fxv-sheet";
 
     String OUTSERV_ELM_URLPATTERN = "outserv.elm-details-url";
     String OUTSERV_ELM_IDPATTERN = "<ELM_ID>";

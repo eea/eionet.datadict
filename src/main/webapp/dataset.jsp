@@ -877,14 +877,6 @@ else if (mode.equals("add"))
                                     boolean dispXLSOldStructure = dataset!=null && dataset.getDeserializedDisplayDownloadLinks().get(Dataset.DISPLAY_DOWNLOAD_LINKS.MS_EXCEL_OLD_STRUCTURE);
                                     String checkedXLSOldStructure = dataset.getDeserializedDisplayDownloadLinks().get(Dataset.DISPLAY_DOWNLOAD_LINKS.MS_EXCEL_OLD_STRUCTURE)? "checked='checked'" : "";
 
-
-                                    boolean dispXLSDropDownBoxes = dataset!=null && dataset.getDeserializedDisplayDownloadLinks().get(Dataset.DISPLAY_DOWNLOAD_LINKS.MS_EXCEL_DROPDOWN_BOXES);
-                                    String checkedXLSDropDownBoxes = dataset.getDeserializedDisplayDownloadLinks().get(Dataset.DISPLAY_DOWNLOAD_LINKS.MS_EXCEL_DROPDOWN_BOXES)? "checked='checked'" : "";
-
-
-                                    boolean dispXLSwithValidationMetadata = dataset!=null && dataset.getDeserializedDisplayDownloadLinks().get(Dataset.DISPLAY_DOWNLOAD_LINKS.XLS_VALIDATION_METADATA);
-                                    String checkedXLSwithValidationMetadata = dataset.getDeserializedDisplayDownloadLinks().get(Dataset.DISPLAY_DOWNLOAD_LINKS.XLS_VALIDATION_METADATA)? "checked='checked'" : "";
-
                                     boolean dispCSVcodeLists = dataset!=null && dataset.getDeserializedDisplayDownloadLinks().get(Dataset.DISPLAY_DOWNLOAD_LINKS.CODELISTS_CSV);
                                     String checkedCSVcodeLists = dataset!=null && dataset.getDeserializedDisplayDownloadLinks().get(Dataset.DISPLAY_DOWNLOAD_LINKS.CODELISTS_CSV)? "checked='checked'" : "";
 
@@ -1066,32 +1058,6 @@ else if (mode.equals("add"))
                                                     <% }
                                                     }
                                                         
-                                          //Excell Drop down Boxes
-                                                    if (user!=null && SecurityUtil.hasPerm(user, "/datasets", "u")) { %>
-                                                         <li>
-                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetXls?obj_type=dst&amp;obj_act=dd&amp;obj_id=<%=ds_id%>" class="excel" onclick="return warnDatasetStatus('<%=regStatus%>', 'download')">
-                                                                Create an MS Excel template for this dataset with drop-down boxes (BETA)
-                                                                <% if(user!=null && SecurityUtil.hasPerm(user, "/datasets", "u")){ %>
-                                                                <input type="checkbox" name="disp_create_links" value="MS_EXCEL_DROPDOWN_BOXES" <%=checkedXLSDropDownBoxes%> id="MS_EXCEL_DROPDOWN_BOXES" onclick="setDatasetDisplayLinkVisibility(event,'<%=request.getContextPath()%>',<%=ds_id%>,this.id)" />
-                                                                <%}
-                                                                %>
-                                                            </a>
-                                                            <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=excel_dropdown"></a>
-                                                        </li>
-                                                        <%
-                                                    }
-                                                     //Excell Drop down Boxes
-                                                   if(user!=null && !SecurityUtil.hasPerm(user, "/datasets", "u") ){
-                                                    if (dispXLSDropDownBoxes ) { %>
-                                                         <li>
-                                                            <a rel="nofollow" href="<%=request.getContextPath()%>/GetXls?obj_type=dst&amp;obj_act=dd&amp;obj_id=<%=ds_id%>" class="excel" onclick="return warnDatasetStatus('<%=regStatus%>', 'download')">
-                                                                Create an MS Excel template for this dataset with drop-down boxes (BETA)
-                                                            </a>
-                                                            <a class="helpButton" href="<%=request.getContextPath()%>/help.jsp?screen=dataset&amp;area=excel_dropdown"></a>
-                                                        </li>
-                                                        <%
-                                                    }
-                                                 }
                                                     // codelists CSV
                                                     if (user!=null && SecurityUtil.hasPerm(user, "/datasets", "u")) { %>
                                                         <li>

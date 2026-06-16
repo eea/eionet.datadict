@@ -53,7 +53,6 @@ public class Dataset implements Comparable {
         MS_EXCEL(""),
         XLS_VALIDATION_METADATA(""),
         MS_EXCEL_OLD_STRUCTURE(""),
-        MS_EXCEL_DROPDOWN_BOXES(""),
         CODELISTS_CSV(""),
         CODELISTS_XML("");
 

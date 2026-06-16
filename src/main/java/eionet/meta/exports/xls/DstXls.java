@@ -58,19 +58,17 @@ public class DstXls extends TblXls {
      * @param searchEngine
      * @param os
      */
-    public DstXls(DDSearchEngine searchEngine, OutputStream os, boolean withDropDown) {
+    public DstXls(DDSearchEngine searchEngine, OutputStream os) {
         this();
         this.searchEngine = searchEngine;
         this.os = os;
-        this.withDropDown = withDropDown;
     }
     
-    public DstXls(DDSearchEngine searchEngine, OutputStream os, boolean withDropDown,boolean newSchema) {
+    public DstXls(DDSearchEngine searchEngine, OutputStream os, boolean newSchema) {
         this();
         super.newSchema=newSchema;
         this.searchEngine = searchEngine;
         this.os = os;
-        this.withDropDown = withDropDown;
     }
     
 

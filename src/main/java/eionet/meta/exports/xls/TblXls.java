@@ -3,23 +3,13 @@ package eionet.meta.exports.xls;
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DataElement;
 import eionet.meta.DsTable;
-import eionet.meta.FixedValue;
 import eionet.meta.exports.CachableIF;
 import eionet.meta.exports.pdf.PdfUtil;
-import eionet.util.Props;
-import eionet.util.PropsIF;
 import eionet.util.Util;
 import eionet.util.sql.INParameters;
 import eionet.util.sql.SQL;
-import org.apache.poi.hssf.usermodel.DVConstraint;
 import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFDataValidation;
-import org.apache.poi.hssf.usermodel.HSSFName;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.util.CellReference;
-import org.apache.poi.ss.util.CellRangeAddressList;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -41,31 +31,11 @@ public class TblXls extends Xls implements CachableIF {
      * Default file name.
      */
     private static final String DEFAULT_FILE_NAME = "table.xls";
-    /**
-     * Cell name suffix when creating formulas for drop-down items.
-     */
-    private static final String CELL_NAME_SUFFIX_FOR_DROP_DOWN_FORMULA = "hiddenfxv";
 
-    /**
-     * Name of sheet that store fixed values. Value is set from Props.
-     */
-    private String dropDownReferencesHiddenSheetName = null;
-    /**
-     * Hidden sheet to store fixed values for drop-down menu.
-     */
-    private HSSFSheet dropDownReferencesHiddenSheet = null;
-    /**
-     * Hidden sheet row index.
-     */
-    private int dropDownReferencesHiddenSheetNewIndex = 0;
     /**
      * ID for this Xls (it can be table id or dataset id).
      */
     protected String xlsId = null;
-    /**
-     * If excel will have drop downs or not.
-     */
-    protected boolean withDropDown = false;
 
     /**
      * Class constructor.
@@ -92,20 +62,19 @@ public class TblXls extends Xls implements CachableIF {
      * @param searchEngine
      * @param os
      */
-    public TblXls(DDSearchEngine searchEngine, OutputStream os, boolean withDropDown) {
+    public TblXls(DDSearchEngine searchEngine, OutputStream os) {
         this();
         this.searchEngine = searchEngine;
         this.os = os;
-        this.withDropDown = withDropDown;
     }
 
-     public TblXls(DDSearchEngine searchEngine, OutputStream os, boolean withDropDown,boolean newSchema) {
+    public TblXls(DDSearchEngine searchEngine, OutputStream os, boolean newSchema) {
         this();
-        super.newSchema= newSchema;
+        super.newSchema = newSchema;
         this.searchEngine = searchEngine;
         this.os = os;
-        this.withDropDown = withDropDown;
     }
+
     /*
      * (non-Javadoc)
      *
@@ -131,9 +100,6 @@ public class TblXls extends Xls implements CachableIF {
 
         createEmptySheets(xlsId);
         setSchemaUrl();
-        if (this.withDropDown) {
-            createHiddenSheetForDropdownMenuReferences();
-        }
         generateContent(xlsId);
     }
 
@@ -173,21 +139,6 @@ public class TblXls extends Xls implements CachableIF {
             throw new Exception("Table " + tblID + " not found!");
         }
         wb.createSheet(tbl.getIdentifier());
-    }
-
-    /**
-     * Creates a hidden sheet to store drop-down menu items values.
-     */
-    private void createHiddenSheetForDropdownMenuReferences() {
-        this.dropDownReferencesHiddenSheetName = Props.getProperty(PropsIF.XLS_DROPDOWN_FXV_SHEET);
-        this.dropDownReferencesHiddenSheetNewIndex = 0;
-        this.dropDownReferencesHiddenSheet = wb.createSheet(dropDownReferencesHiddenSheetName);
-        this.wb.setSheetHidden(this.wb.getNumberOfSheets() - 1, true); // hide references sheet
-        HSSFRow row = this.dropDownReferencesHiddenSheet.createRow(this.dropDownReferencesHiddenSheetNewIndex);
-        HSSFCell cell = row.createCell(0);
-        cell.setCellValue("Please do not delete or modify this sheet!!! " +
-                "It is used for drop-down items in this file for your convenience.");
-        this.dropDownReferencesHiddenSheetNewIndex++;
     }
 
     /**
@@ -241,48 +192,6 @@ public class TblXls extends Xls implements CachableIF {
         setColWidth(title, index);
         cell.setCellValue(title);
         cell.setCellStyle(getStyle(ElmStyle.class));
-
-        // if element has fixed values and drop-down is active, add a drop-down and validation for the cell
-        if (this.withDropDown && elm.getType().equals("CH1")) {
-            Vector<FixedValue> fxvs = searchEngine.getFixedValues(elm.getID());
-            if (fxvs != null && fxvs.size() > 0) {
-                // create a row for fixed values
-                HSSFRow refRow = dropDownReferencesHiddenSheet.createRow(dropDownReferencesHiddenSheetNewIndex);
-                HSSFCell refCell = refRow.createCell(0);
-                // set a label
-                refCell.setCellValue("Fixed Values of " + title);
-                // add each fxv to a new column
-                for (int i = 0; i < fxvs.size(); i++) {
-                    refCell = refRow.createCell(i + 1);
-                    String value = PdfUtil.processUnicode(fxvs.get(i).getValue());
-                    refCell.setCellValue(value);
-                }
-
-                // create a name cell for formula reference
-                String name = TblXls.CELL_NAME_SUFFIX_FOR_DROP_DOWN_FORMULA + dropDownReferencesHiddenSheetNewIndex;
-                HSSFName namedCell = wb.createName();
-                namedCell.setNameName(name);
-                String endColumnLetter = CellReference.convertNumToColString(fxvs.size());
-                int rowNum = dropDownReferencesHiddenSheetNewIndex + 1; // row num is one greater than index
-                // reference starts from column B because column A is used as a label
-                StringBuilder sb = new StringBuilder();
-                sb.append("'").append(dropDownReferencesHiddenSheetName).append("'!"); // reference sheet name
-                sb.append("$B$").append(rowNum).append(":"); // starting cell ($column$row)
-                sb.append("$").append(endColumnLetter).append("$").append(rowNum); // end cell
-                namedCell.setRefersToFormula(sb.toString());
-
-                // set constraints and drop-down items to current sheet
-                DVConstraint constraintForElement = DVConstraint.createFormulaListConstraint(name);
-                CellRangeAddressList fixedValuesForElement = new CellRangeAddressList(1, Short.MAX_VALUE, index, index); // span all
-                // column
-                HSSFDataValidation dataValidation = new HSSFDataValidation(fixedValuesForElement, constraintForElement);
-                dataValidation.setSuppressDropDownArrow(false);
-                sheet.addValidationData(dataValidation);
-
-                // increment row index by one
-                dropDownReferencesHiddenSheetNewIndex++;
-            }
-        }
     }
 
     /**

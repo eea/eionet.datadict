@@ -222,7 +222,6 @@ public class Props implements PropsIF {
     @SuppressWarnings({"rawtypes", "unchecked"})
     protected void setDefaults(Hashtable defaults) {
         defaults.put(XLS_SCHEMA_URL_SHEET, "DO_NOT_DELETE_THIS_SHEET");
-        defaults.put(XLS_DROPDOWN_FXV_SHEET, "REFS_FOR_DD_ITEMS_DO_NOT_DEL");
         defaults.put(DD_RDF_SCHEMA_URL, "http://dd.eionet.europa.eu/schema.rdf#");
         defaults.put(PREDICATE_RDF_TYPE, "http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
         defaults.put(PREDICATE_RDF_LABEL, "http://www.w3.org/2000/01/rdf-schema#label");

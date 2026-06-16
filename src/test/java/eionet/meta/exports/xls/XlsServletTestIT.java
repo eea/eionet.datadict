@@ -116,7 +116,6 @@ public class XlsServletTestIT extends DDDatabaseTestCase {
         // record for request
         EasyMock.expect(requestMock.getParameter("obj_type")).andReturn("dst");
         EasyMock.expect(requestMock.getParameter("obj_id")).andReturn("4");
-        EasyMock.expect(requestMock.getParameter("obj_act")).andReturn(null);
         EasyMock.expect(requestMock.getParameter("new_schema")).andReturn("true");
 
         // record for response
@@ -150,7 +149,6 @@ public class XlsServletTestIT extends DDDatabaseTestCase {
         // record for request
         EasyMock.expect(requestMock.getParameter("obj_type")).andReturn("dst");
         EasyMock.expect(requestMock.getParameter("obj_id")).andReturn("4");
-        EasyMock.expect(requestMock.getParameter("obj_act")).andReturn("dd");
         EasyMock.expect(requestMock.getParameter("new_schema")).andReturn("true");
 
         // record for response
@@ -184,7 +182,6 @@ public class XlsServletTestIT extends DDDatabaseTestCase {
         // record for request
         EasyMock.expect(requestMock.getParameter("obj_type")).andReturn("tbl");
         EasyMock.expect(requestMock.getParameter("obj_id")).andReturn("5");
-        EasyMock.expect(requestMock.getParameter("obj_act")).andReturn("");
         EasyMock.expect(requestMock.getParameter("new_schema")).andReturn("true");
 
         // record for response
@@ -218,7 +215,6 @@ public class XlsServletTestIT extends DDDatabaseTestCase {
         // record for request
         EasyMock.expect(requestMock.getParameter("obj_type")).andReturn("tbl");
         EasyMock.expect(requestMock.getParameter("obj_id")).andReturn("5");
-        EasyMock.expect(requestMock.getParameter("obj_act")).andReturn("dd");
         EasyMock.expect(requestMock.getParameter("new_schema")).andReturn("true");
         // record for response
         EnvServletOutputStream os = new EnvServletOutputStream();
@@ -394,7 +390,6 @@ public class XlsServletTestIT extends DDDatabaseTestCase {
         // record for request
         EasyMock.expect(requestMock.getParameter("obj_id")).andReturn(objId);
         EasyMock.expect(requestMock.getParameter("obj_type")).andReturn("dst");
-        EasyMock.expect(requestMock.getParameter("obj_act")).andReturn("asdasdads");
         EasyMock.expect(requestMock.getParameter("new_schema")).andReturn("true");
 
         // record for response
@@ -436,7 +431,6 @@ public class XlsServletTestIT extends DDDatabaseTestCase {
         // record for request
         EasyMock.expect(requestMock.getParameter("obj_id")).andReturn(objId);
         EasyMock.expect(requestMock.getParameter("obj_type")).andReturn("tbl");
-        EasyMock.expect(requestMock.getParameter("obj_act")).andReturn("");
         EasyMock.expect(requestMock.getParameter("new_schema")).andReturn("true");
 
         // record for response
