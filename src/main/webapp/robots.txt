@@ -17,3 +17,6 @@ Disallow: /GetImportResults
 Disallow: /CodelistServlet
 Disallow: /GetTableDef
 Disallow: /Subscribe
+Disallow: /vocabularies/
+Disallow: /vocabularyconcept/
+Disallow: /vocabulary/
