@@ -45,13 +45,16 @@ public class PagedRequest {
     private boolean usePaging = true;
 
     public List<Integer> getPossibleResultsPerPage() {
-        return Arrays.asList(new Integer[] {20,50,100,500,1000});
+        return Arrays.asList(20,50,100,500,1000);
     }
 
     /**
      * Returns the offset of the first row for the search result to return.
      */
     public int getOffset() {
+        if (pageNumber <= 0) {
+            pageNumber = 1; // fall-back
+        }
         return (pageNumber - 1) * pageSize;
     }
 
