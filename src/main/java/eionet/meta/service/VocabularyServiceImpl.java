@@ -127,7 +127,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
         try {
             return folderDAO.getFolder(folderId);
         } catch (Exception e) {
-            throw new ServiceException("Failed to get folder: " + e.getMessage(), e);
+            throw new ServiceException("Failed to get folder.", e);
         }
     }
 
@@ -139,7 +139,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
         try {
             return folderDAO.isFolderEmpty(folderId);
         } catch (Exception e) {
-            throw new ServiceException("Failed to check if folder is empty: " + e.getMessage(), e);
+            throw new ServiceException("Failed to check if folder is empty.", e);
         }
     }
 
@@ -151,11 +151,11 @@ public class VocabularyServiceImpl implements IVocabularyService {
     public void deleteFolder(int folderId) throws ServiceException {
         try {
             if (!folderDAO.isFolderEmpty(folderId)) {
-                throw new IllegalStateException("Folder is not empty");
+                throw new IllegalStateException("Folder is not empty.");
             }
             folderDAO.deleteFolder(folderId);
         } catch (Exception e) {
-            throw new ServiceException("Failed to delete folder: " + e.getMessage(), e);
+            throw new ServiceException("Failed to delete folder.", e);
         }
     }
 
@@ -170,7 +170,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
             f.setLabel(folder.getLabel());
             folderDAO.updateFolder(f);
         } catch (Exception e) {
-            throw new ServiceException("Failed to update folder: " + e.getMessage(), e);
+            throw new ServiceException("Failed to update folder.", e);
         }
     }
 
@@ -193,7 +193,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
             }
             return result;
         } catch (Exception e) {
-            throw new ServiceException("Failed to get folders: " + e.getMessage(), e);
+            throw new ServiceException("Failed to get folders.", e);
         }
     }
 
@@ -205,7 +205,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
         try {
             return vocabularyFolderDAO.getVocabularyFolders(userName);
         } catch (Exception e) {
-            throw new ServiceException("Failed to get vocabulary folders: " + e.getMessage(), e);
+            throw new ServiceException("Failed to get vocabulary folders.", e);
         }
     }
 
@@ -222,11 +222,11 @@ public class VocabularyServiceImpl implements IVocabularyService {
             }
             // Validate type
             if (vocabularyFolder.isSiteCodeType() && !vocabularyFolder.isNumericConceptIdentifiers()) {
-                throw new IllegalArgumentException("Site code type vocabulary must have numeric concept identifiers");
+                throw new IllegalArgumentException("Site code type vocabulary must have numeric concept identifiers.");
             }
 
             if (vocabularyFolder.isSiteCodeType() && siteCodeDAO.siteCodeFolderExists()) {
-                throw new IllegalStateException("Vocabulary folder with type 'SITE_CODE' already exists");
+                throw new IllegalStateException("Vocabulary folder with type 'SITE_CODE' already exists.");
             }
 
             if (newFolder != null) {
@@ -248,7 +248,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
             vocabularyFolder.setUserModified(userName);
             return vocabularyFolderDAO.createVocabularyFolder(vocabularyFolder);
         } catch (Exception e) {
-            throw new ServiceException("Failed to create vocabulary folder: " + e.getMessage(), e);
+            throw new ServiceException("Failed to create vocabulary folder.", e);
         }
     }
 
@@ -280,7 +280,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
         try {
             return vocabularyConceptDAO.searchVocabularyConcepts(filter);
         } catch (Exception e) {
-            throw new ServiceException("Failed to get vocabulary concepts: " + e.getMessage(), e);
+            throw new ServiceException("Failed to get vocabulary concepts.", e);
         }
     }
 
@@ -314,7 +314,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
             return vocabularyConceptDAO.createVocabularyConcept(vocabularyFolderId, vocabularyConcept);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
-            throw new ServiceException("Failed to create vocabulary concept: " + e.getMessage(), e);
+            throw new ServiceException("Failed to create vocabulary concept.", e);
         }
     }
 
@@ -357,7 +357,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
             // updateVocabularyConceptAttributes(vocabularyConcept);
             updateVocabularyConceptDataElementValues(vocabularyConcept, handleInverse);
         } catch (Exception e) {
-            throw new ServiceException("Failed to update vocabulary concept: " + e.getMessage(), e);
+            throw new ServiceException("Failed to update vocabulary concept.", e);
         }
     }
 
@@ -440,7 +440,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
             }
             vocabularyConceptDAO.updateVocabularyConcept(vocabularyConcept);
         } catch (Exception e) {
-            throw new ServiceException(e.getMessage(), e);
+            throw new ServiceException("Failed to update vocabulary concept.", e);
         }
     }
 
@@ -493,7 +493,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
             }
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
-            throw new ServiceException("Handling related element bindings failed " + e);
+            throw new ServiceException("Handling related element bindings failed.", e);
         }
     }
 
@@ -544,7 +544,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
                 vocabularyFolderDAO.forceNotationsToIdentifiers(vf.getId());
             }
         } catch (Exception e) {
-            throw new ServiceException("Failed to update vocabulary folder: " + e.getMessage(), e);
+            throw new ServiceException("Failed to update vocabulary folder.", e);
         }
     }
 
@@ -556,7 +556,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
         try {
             vocabularyConceptDAO.deleteVocabularyConcepts(ids);
         } catch (Exception e) {
-            throw new ServiceException("Failed to delete vocabulary concepts: " + e.getMessage(), e);
+            throw new ServiceException("Failed to delete vocabulary concepts.", e);
         }
     }
 
@@ -573,7 +573,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
         try {
             vocabularyConceptDAO.markConceptsInvalid(ids);
         } catch (Exception e) {
-            throw new ServiceException("Failed to mark the concepts obsolete: " + e.getMessage(), e);
+            throw new ServiceException("Failed to mark the concepts obsolete.", e);
         }
     }
 
@@ -585,7 +585,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
         try {
             vocabularyConceptDAO.markConceptsValid(ids);
         } catch (Exception e) {
-            throw new ServiceException("Failed to delete remove obsolete status: " + e.getMessage(), e);
+            throw new ServiceException("Failed to delete remove obsolete status.", e);
         }
     }
 
@@ -602,7 +602,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
             vocabularyFolderDAO.deleteVocabularyFolders(ids, keepRelatedValues);
             attributeDAO.deleteAttributes(ids, DElemAttribute.ParentType.VOCABULARY_FOLDER.toString());
         } catch (Exception e) {
-            throw new ServiceException("Failed to delete vocabulary folders: " + e.getMessage(), e);
+            throw new ServiceException("Failed to delete vocabulary folders.", e);
         }
     }
 
@@ -622,7 +622,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
 
         } catch (Exception e) {
             String parameters = "id=" + vocabularyFolderId;
-            throw new ServiceException("Failed to get vocabulary folder ( " + parameters + "): " + e.getMessage(), e);
+            throw new ServiceException("Failed to get vocabulary folder ( " + parameters + ").", e);
         }
     }
 
@@ -679,7 +679,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
             LOGGER.info("Check-out lasted: " + timer.toString());
             return newVocabularyFolderId;
         } catch (Exception e) {
-            throw new ServiceException("Failed to check-out vocabulary folder: " + e.getMessage(), e);
+            throw new ServiceException("Failed to check-out vocabulary folder.", e);
         }
     }
 
@@ -786,7 +786,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
             LOGGER.info("Check-in lasted: " + timer.toString());
             return originalVocabularyFolderId;
         } catch (Exception e) {
-            throw new ServiceException("Failed to check-in vocabulary folder: " + e.getMessage(), e);
+            throw new ServiceException("Failed to check-in vocabulary folder.", e);
         }
     }
 
@@ -940,7 +940,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
             VocabularyFolder originalVocabularyFolder = vocabularyFolderDAO.getVocabularyFolder(vocabularyFolderId);
 
             if (originalVocabularyFolder.isSiteCodeType()) {
-                throw new IllegalArgumentException("Cannot make copy of vocabulary with type 'SITE_CODE'");
+                throw new IllegalArgumentException("Cannot make copy of vocabulary with type 'SITE_CODE'.");
             }
 
             if (newFolder != null) {
@@ -984,7 +984,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
 
             return newVocabularyFolderId;
         } catch (Exception e) {
-            throw new ServiceException("Failed to create vocabulary folder copy: " + e.getMessage(), e);
+            throw new ServiceException("Failed to create vocabulary folder copy.", e);
         }
     }
 
@@ -1012,7 +1012,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
         try {
             return vocabularyFolderDAO.getVocabularyFolderVersions(continuityId, vocabularyFolderId, userName);
         } catch (Exception e) {
-            throw new ServiceException("Failed to get vocabulary folder versions: " + e.getMessage(), e);
+            throw new ServiceException("Failed to get vocabulary folder versions.", e);
         }
     }
 
@@ -1053,7 +1053,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
             LOGGER.info(String.format("Undoing check out for vocabulary #%d by user %s was completed successfully.", vocabularyFolderId, userName));
             return originalVocabularyFolderId;
         } catch (Exception e) {
-            throw new ServiceException("Failed to undo checkout for vocabulary folder: " + e.getMessage(), e);
+            throw new ServiceException("Failed to undo checkout for vocabulary folder.", e);
         }
     }
 
@@ -1065,7 +1065,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
         try {
             return vocabularyFolderDAO.getVocabularyWorkingCopy(checkedOutCopyId);
         } catch (Exception e) {
-            throw new ServiceException("Failed to get the checked out vocabulary folder: " + e.getMessage(), e);
+            throw new ServiceException("Failed to get the checked out vocabulary folder.", e);
         }
     }
 
@@ -1077,7 +1077,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
         try {
             return folderDAO.isFolderUnique(identifier, excludedId);
         } catch (Exception e) {
-            throw new ServiceException("Failed to check unique folder identifier: " + e.getMessage(), e);
+            throw new ServiceException("Failed to check unique folder identifier.", e);
         }
     }
 
@@ -1090,7 +1090,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
         try {
             return vocabularyFolderDAO.isUniqueVocabularyFolderIdentifier(folderId, identifier, excludedVocabularyFolderIds);
         } catch (Exception e) {
-            throw new ServiceException("Failed to check unique vocabulary identifier: " + e.getMessage(), e);
+            throw new ServiceException("Failed to check unique vocabulary identifier.", e);
         }
     }
 
@@ -1103,7 +1103,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
         try {
             return vocabularyConceptDAO.isUniqueConceptIdentifier(identifier, vocabularyFolderId, vocabularyConceptId);
         } catch (Exception e) {
-            throw new ServiceException("Failed to check unique concept identifier: " + e.getMessage(), e);
+            throw new ServiceException("Failed to check unique concept identifier.", e);
         }
     }
 
@@ -1118,10 +1118,10 @@ public class VocabularyServiceImpl implements IVocabularyService {
             VocabularyFolder vf = vocabularyFolderDAO.getVocabularyFolder(vocabularyFolderId);
 
             if (vf.isWorkingCopy()) {
-                throw new IllegalStateException("Vocabulary folder cannot be checked out");
+                throw new IllegalStateException("Vocabulary folder cannot be checked out.");
             }
             if (!vf.isSiteCodeType()) {
-                throw new IllegalStateException("Vocabulary folder must be site code type");
+                throw new IllegalStateException("Vocabulary folder must be site code type.");
             }
 
             String definition = "Added by " + userName + " on " + Util.formatDateTime(new Date());
@@ -1150,7 +1150,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
             LOGGER.info("Updated dateModified field for vocabulary " + vocabularyFolderId);
 
         } catch (Exception e) {
-            throw new ServiceException("Failed to reserve empty site codes: " + e.getMessage(), e);
+            throw new ServiceException("Failed to reserve empty site codes.", e);
         }
     }
 
@@ -1162,7 +1162,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
         try {
             return vocabularyConceptDAO.getNextIdentifierValue(vocabularyFolderId);
         } catch (Exception e) {
-            throw new ServiceException("Failed to get next concept identifier: " + e.getMessage(), e);
+            throw new ServiceException("Failed to get next concept identifier.", e);
         }
     }
 
@@ -1175,7 +1175,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
         try {
             return vocabularyConceptDAO.checkAvailableIdentifiers(vocabularyFolderId, amount, startingIdentifier);
         } catch (Exception e) {
-            throw new ServiceException("Failed to check available identifiers: " + e.getMessage(), e);
+            throw new ServiceException("Failed to check available identifiers.", e);
         }
     }
 
@@ -1199,7 +1199,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
             se.setErrorParameter(ErrorActionBean.ERROR_TYPE_KEY, ErrorActionBean.ErrorType.NOT_FOUND_404);
             throw se;
         } catch (Exception e) {
-            throw new ServiceException("Failed to get vocabulary concept: " + e.getMessage(), e);
+            throw new ServiceException("Failed to get vocabulary concept.", e);
         }
     }
 
@@ -1227,7 +1227,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
         try {
             return vocabularyConceptDAO.getVocabularyConcept(vocabularyConceptId);
         } catch (Exception e) {
-            throw new ServiceException("Failed to get vocabulary concept: " + e.getMessage(), e);
+            throw new ServiceException("Failed to get vocabulary concept.", e);
         }
     }
 
@@ -1236,7 +1236,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
         try {
             return vocabularyConceptDAO.getConceptsWithAttributeValues(vocabularyFolderId);
         } catch (Exception e) {
-            throw new ServiceException("Failed to get vocabulary concepts: " + e.getMessage(), e);
+            throw new ServiceException("Failed to get vocabulary concepts.", e);
         }
     }
 
@@ -1250,7 +1250,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
 
             return this.vocabularyConceptDAO.getConceptsWithAttributeValues(vocabularyFolderId, conceptStatus, conceptIdentifier, label);
         } catch (Exception e) {
-            throw new ServiceException("Failed to get vocabulary concept: " + e.getMessage(), e);
+            throw new ServiceException("Failed to get vocabulary concept.", e);
         }
     }
 
@@ -1292,7 +1292,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
                     }
                 }
             } catch (IOException e) {
-                LOGGER.error("Unable to ping CR: " + crPingUrl);
+                LOGGER.error("Unable to ping CR: {}", crPingUrl);
                 LOGGER.error(e.getMessage(), e);
             }
         }
@@ -1306,7 +1306,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
         try {
             return vocabularyFolderDAO.getWorkingCopies(userName);
         } catch (Exception e) {
-            throw new ServiceException("Failed to get vocabulary folder working copies: " + e.getMessage(), e);
+            throw new ServiceException("Failed to get vocabulary folder working copies.", e);
         }
     }
 
@@ -1318,7 +1318,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
         try {
             return attributeDAO.getAttributesMetadata(DElemAttribute.typeWeights.get("VCF"));
         } catch (Exception e) {
-            throw new ServiceException("Failed to get vocabulary folder attribute metadata: " + e.getMessage(), e);
+            throw new ServiceException("Failed to get vocabulary folder attribute metadata.", e);
         }
     }
 
@@ -1330,7 +1330,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
         try {
             return vocabularyFolderDAO.getReleasedVocabularyFolders(folderId);
         } catch (Exception e) {
-            throw new ServiceException("Failed to get released vocabulary folders: " + e.getMessage(), e);
+            throw new ServiceException("Failed to get released vocabulary folders.", e);
         }
     }
 
@@ -1342,7 +1342,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
         try {
             return folderDAO.getFolderByIdentifier(folderIdentifier);
         } catch (Exception e) {
-            throw new ServiceException("Failed to get folder by identifier: " + e.getMessage(), e);
+            throw new ServiceException("Failed to get folder by identifier.", e);
         }
     }
 
@@ -1354,7 +1354,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
         try {
             dataElementDAO.addDataElement(vocabularyFolderId, dataElementId);
         } catch (Exception e) {
-            throw new ServiceException("Failed to add data element: " + e.getMessage(), e);
+            throw new ServiceException("Failed to add data element.", e);
         }
     }
 
@@ -1366,7 +1366,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
         try {
             dataElementDAO.removeDataElement(vocabularyFolderId, dataElementId);
         } catch (Exception e) {
-            throw new ServiceException("Failed to remove data element: " + e.getMessage(), e);
+            throw new ServiceException("Failed to remove data element.", e);
         }
     }
 
@@ -1378,7 +1378,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
         try {
             return dataElementDAO.getVocabularyDataElements(vocabularyFolderId);
         } catch (Exception e) {
-            throw new ServiceException("Failed to get data elements: " + e.getMessage(), e);
+            throw new ServiceException("Failed to get data elements.", e);
         }
     }
 
@@ -1390,7 +1390,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
         try {
             return dataElementDAO.vocabularyHasElemendBinding(vocabularyFolderId, dataElementId);
         } catch (Exception e) {
-            throw new ServiceException("Failed to perform element binding existence check: " + e.getMessage(), e);
+            throw new ServiceException("Failed to perform element binding existence check.", e);
         }
 
     }
@@ -1403,7 +1403,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
         try {
             return vocabularyConceptDAO.getConceptsWithValuedElement(dataElementId, vocabularyId);
         } catch (Exception e) {
-            throw new ServiceException("Failed to perform bound element values existence check: " + e.getMessage(), e);
+            throw new ServiceException("Failed to perform bound element values existence check.", e);
         }
 
     }
@@ -1430,11 +1430,9 @@ public class VocabularyServiceImpl implements IVocabularyService {
                 }
 
             }
-
             return nameSpaces;
-
         } catch (DAOException daoe) {
-            throw new ServiceException("Failed to get vocabulary namespaces " + daoe.getMessage(), daoe);
+            throw new ServiceException("Failed to get vocabulary namespaces.", daoe);
         }
     }
 
@@ -1444,9 +1442,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
         DataElement elem = dataElementDAO.getDataElement(elementId);
         Map<String, List<String>> elemAttributeValues =
                 attributeDAO.getAttributeValues(elem.getId(), ParentType.ELEMENT.toString());
-
         elem.setElemAttributeValues(elemAttributeValues);
-
         return elem.getDatatype().equals("reference");
     }
 
@@ -1495,7 +1491,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
         try {
             return vocabularyFolderDAO.searchVocabularies(filter);
         } catch (Exception e) {
-            throw new ServiceException("Failed to get vocabularies: " + e.getMessage(), e);
+            throw new ServiceException("Failed to get vocabularies.", e);
         }
     }
 
@@ -1513,7 +1509,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
             }
             return vocabularyResult;
         } catch (Exception e) {
-            throw new ServiceException("Failed to check if vocabularies can be bound to elements: " + e.getMessage(), e);
+            throw new ServiceException("Failed to check if vocabularies can be bound to elements.", e);
         }
     }
 
@@ -1544,7 +1540,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
 
             return result;
         } catch (Exception e) {
-            throw new ServiceException("Failed to perform concept search: " + e.getMessage(), e);
+            throw new ServiceException("Failed to perform concept search.", e);
         }
     }
 
@@ -1609,9 +1605,9 @@ public class VocabularyServiceImpl implements IVocabularyService {
                         }
                     }
                 }
-            }//end of inner for loop
-        }//end of outer for loop
-    }//end of method fixRelatedLocalRefElementsForImport
+            }
+        }
+    }
 
     @Override
     public int populateEmptyBaseUris(String prefix) throws ServiceException {
@@ -1620,7 +1616,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
         } catch (Exception e) {
             throw new ServiceException(e.getMessage());
         }
-    } // end of method populateEmptyBaseUris
+    }
 
     @Override
     public int changeSitePrefix(String oldSitePrefix, String newSitePrefix) throws ServiceException {
@@ -1629,16 +1625,16 @@ public class VocabularyServiceImpl implements IVocabularyService {
         } catch (Exception e) {
             throw new ServiceException(e.getMessage());
         }
-    } // end of method changeSitePrefix
+    }
 
     @Override
     public List<VocabularyFolder> getRecentlyReleasedVocabularyFolders(int limit) throws ServiceException {
         try {
             return vocabularyFolderDAO.getRecentlyReleasedVocabularyFolders(limit);
         } catch (Exception e) {
-            throw new ServiceException(e.getMessage());
+            throw new ServiceException("Failed to get recently released vocabulary folders.", e);
         }
-    } // end of method getRecentlyReleasedVocabularyFolders
+    }
 
     @Override
     public Map<Integer, List<List<DataElement>>> getVocabularyConceptsDataElementValues(int vocabularyFolderId,
@@ -1652,29 +1648,23 @@ public class VocabularyServiceImpl implements IVocabularyService {
      */
     @Override
     public boolean vocabularyConceptExists(String vocabularySet, String vocabularyIdentifier, String conceptIdentifier) throws ServiceException {
-
         VocabularyFolder vocabulary = getVocabularyFolder(vocabularySet, vocabularyIdentifier, false);
         if (vocabulary != null) {
             VocabularyConcept concept = getVocabularyConcept(vocabulary.getId(), conceptIdentifier, false);
             return concept != null;
         }
-
         return false;
     }
 
     @Override
     @Transactional(rollbackFor = ServiceException.class)
     public void markVocabularyFolderToBeDeleted(Integer vocabularyFolderId) throws ServiceException {
-
         try {
             VocabularyFolder vocabularyFolder = vocabularyFolderDAO.getVocabularyFolder(vocabularyFolderId);
-
             vocabularyFolder.setRegStatus(RegStatus.DEPRECATED);
-
             vocabularyFolderDAO.updateVocabularyFolder(vocabularyFolder);
-
         } catch (Exception e) {
-            throw new ServiceException("Failed to mark vocabulary folder as deprecated: " + e.getMessage(), e);
+            throw new ServiceException("Failed to mark vocabulary folder as deprecated.", e);
         }
 
     }
@@ -1685,7 +1675,7 @@ public class VocabularyServiceImpl implements IVocabularyService {
         try {
             return vocabularyConceptDAO.batchCreateVocabularyConcepts(vocabularyConcepts, batchSize);
         } catch (Exception e) {
-            throw new ServiceException("Failed to batch insert vocabulary concepts: " + e.getMessage(), e);
+            throw new ServiceException("Failed to batch insert vocabulary concepts.", e);
         }
     }
 
@@ -1698,13 +1688,12 @@ public class VocabularyServiceImpl implements IVocabularyService {
             }
             return vocabularyConceptDAO.batchUpdateVocabularyConcepts(vocabularyConcepts, batchSize);
         } catch (Exception e) {
-            throw new ServiceException("Failed to batch update vocabulary concepts: " + e.getMessage(), e);
+            throw new ServiceException("Failed to batch update vocabulary concepts.", e);
         }
     }
 
     @Override
-    public void batchUpdateVocabularyConceptsDataElementValues(List<VocabularyConcept> vocabularyConcepts, int batchSize)
-            throws ServiceException {
+    public void batchUpdateVocabularyConceptsDataElementValues(List<VocabularyConcept> vocabularyConcepts, int batchSize) {
         List<Integer> vocabularyConceptIds = new ArrayList<Integer>();
         for (VocabularyConcept vocabularyConcept : vocabularyConcepts) {
             vocabularyConceptIds.add(vocabularyConcept.getId());
