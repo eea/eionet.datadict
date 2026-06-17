@@ -52,9 +52,6 @@ public class PagedRequest {
      * Returns the offset of the first row for the search result to return.
      */
     public int getOffset() {
-        if (pageNumber <= 0) {
-            pageNumber = 1; // fall-back
-        }
         return (pageNumber - 1) * pageSize;
     }
 
@@ -89,6 +86,9 @@ public class PagedRequest {
      *            the pageNumber to set
      */
     public void setPageNumber(int pageNumber) {
+        if (pageNumber <= 0) {
+            pageNumber = 1; // fall-back
+        }
         this.pageNumber = pageNumber;
     }
 
