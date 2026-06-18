@@ -19,43 +19,23 @@ public enum DataElementSort {
     ID, SHORT_NAME, STATUS, TYPE;
 
     public Comparator<DataElement> getComparator(final boolean descending) {
-        if (this == ID) {
-            return new Comparator<DataElement>() {
-                @Override
-                public int compare(DataElement d1, DataElement d2) {
-                    return descending ? -Integer.valueOf(d1.getID()).compareTo(Integer.valueOf(d2.getID())) : 
-                            Integer.valueOf(d1.getID()).compareTo(Integer.valueOf(d2.getID()));
-                }
-            };
+        final Comparator<DataElement> comparator;
+        switch (this) {
+            case ID:
+                comparator = Comparator.comparingInt(d -> Integer.parseInt(d.getID()));
+                break;
+            case TYPE:
+                comparator = Comparator.comparing(DataElement::getType, String.CASE_INSENSITIVE_ORDER);
+                break;
+            case STATUS:
+                comparator = Comparator.comparing(d -> Util.getStatusSortString(d.getStatus()));
+                break;
+            case SHORT_NAME:
+            default:
+                comparator = Comparator.comparing(DataElement::getShortName, String.CASE_INSENSITIVE_ORDER);
+                break;
         }
-        if (this == SHORT_NAME) {
-            return new Comparator<DataElement>() {
-                @Override
-                public int compare(DataElement d1, DataElement d2) {
-                    return descending ? -d1.getShortName().compareToIgnoreCase(d2.getShortName()) :
-                            d1.getShortName().compareToIgnoreCase(d2.getShortName());
-                }
-            };
-        }
-        if (this == TYPE) {
-            return new Comparator<DataElement>() {
-                @Override
-                public int compare(DataElement d1, DataElement d2) {
-                    return descending ? -d1.getType().compareToIgnoreCase(d2.getType()) : 
-                            d1.getType().compareToIgnoreCase(d2.getType());
-                }
-            };
-        }
-        if (this == STATUS) {
-            return new Comparator<DataElement>() {
-                @Override
-                public int compare(DataElement d1, DataElement d2) {
-                    return descending ? -Util.getStatusSortString(d1.getStatus()).compareTo(Util.getStatusSortString(d2.getStatus())) :
-                            Util.getStatusSortString(d1.getStatus()).compareTo(Util.getStatusSortString(d2.getStatus()));
-                }
-            };
-        }
-        return null;
+        return descending ? comparator.reversed() : comparator;
     }
 
     public static DataElementSort fromString(String name) {

@@ -1,14 +1,15 @@
 /*
  * DataSetSort.java
- * 
+ *
  * Created on Feb 12, 2016
  *            www.eworx.gr
  */
 package eionet.meta.dao.domain;
 
 import eionet.util.Util;
-import java.util.Comparator;
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.Comparator;
 
 /**
  *
@@ -19,40 +20,23 @@ public enum DataSetTableSort {
     NAME, SHORT_NAME, DATASET, DATASET_STATUS;
 
     public Comparator<DataSetTable> getComparator(final boolean descending) {
-        if (this == NAME) {
-            return new Comparator<DataSetTable>() {
-                @Override
-                public int compare(DataSetTable d1, DataSetTable d2) {
-                    return descending ? -d1.getName().compareToIgnoreCase(d2.getName()) : 
-                            d1.getName().compareToIgnoreCase(d2.getName());
-                }
-            };
+        final Comparator<DataSetTable> comparator;
+        switch (this) {
+            case SHORT_NAME:
+                comparator = Comparator.comparing(DataSetTable::getShortName, String.CASE_INSENSITIVE_ORDER);
+                break;
+            case DATASET:
+                comparator = Comparator.comparing(DataSetTable::getDataSetName, String.CASE_INSENSITIVE_ORDER);
+                break;
+            case DATASET_STATUS:
+                comparator = Comparator.comparing(d -> Util.getStatusSortString(d.getDataSetStatus()));
+                break;
+            case NAME:
+            default:
+                comparator = Comparator.comparing(DataSetTable::getName, String.CASE_INSENSITIVE_ORDER);
+                break;
         }
-        if (this == SHORT_NAME) {
-            return new Comparator<DataSetTable>() {
-                @Override
-                public int compare(DataSetTable d1, DataSetTable d2) {
-                    return descending ? -d1.getShortName().compareToIgnoreCase(d2.getShortName()) : 
-                            d1.getShortName().compareToIgnoreCase(d2.getShortName());
-                }
-            };
-        }
-        if (this == DATASET) {
-            return new Comparator<DataSetTable>() {
-                @Override
-                public int compare(DataSetTable d1, DataSetTable d2) {
-                    return descending ? -d1.getDataSetName().compareToIgnoreCase(d2.getDataSetName()) : 
-                            d1.getDataSetName().compareToIgnoreCase(d2.getDataSetName());
-                }
-            };
-        }
-        return new Comparator<DataSetTable>() {
-            @Override
-            public int compare(DataSetTable d1, DataSetTable d2) {
-                return descending ? -Util.getStatusSortString(d1.getDataSetStatus()).compareTo(Util.getStatusSortString(d2.getDataSetStatus())) :
-                        Util.getStatusSortString(d1.getDataSetStatus()).compareTo(Util.getStatusSortString(d2.getDataSetStatus()));
-            }
-        };
+        return descending ? comparator.reversed() : comparator;
     }
 
     public static DataSetTableSort fromString(String name) {
