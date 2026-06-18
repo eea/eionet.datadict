@@ -1,25 +1,5 @@
 package eionet.meta.exports.rdf;
 
-import java.io.Writer;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.text.MessageFormat;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
-
-import com.bea.xml.stream.XMLOutputFactoryBase;
-
 import eionet.meta.DDRuntimeException;
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DataElement;
@@ -31,6 +11,22 @@ import eionet.meta.service.ITableService;
 import eionet.meta.spring.SpringApplicationContext;
 import eionet.util.Props;
 import eionet.util.PropsIF;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+import java.io.Writer;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.text.MessageFormat;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 /**
  *
@@ -44,7 +40,6 @@ public class Rdf {
     public static final String TABLE_TYPE = "table";
     public static final String CODE_LIST_TYPE = "code_list";
 
-    /** */
     private static final String RDF_NS = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
     private static final String RDFS_NS = "http://www.w3.org/2000/01/rdf-schema#";
     private static final String DC_NS = "http://purl.org/dc/elements/1.1/";
@@ -55,7 +50,6 @@ public class Rdf {
     private static final String XML_NS = "http://www.w3.org/XML/1998/namespace";
     private static final String DCTERMS_NS = "http://purl.org/dc/terms/";
 
-    /** */
     private DDSearchEngine searchEngine;
     private String baseUri;
     private DsTable tbl;
@@ -66,21 +60,19 @@ public class Rdf {
     private ITableService tableService;
     private IDataService dataService;
 
-    /** The friendly URI of the namespace representing the table for which the RDF is to be generated. */
+    /**
+     * The friendly URI of the namespace representing the table for which the RDF is to be generated.
+     */
     private String tblNamespaceFriendlyUri;
 
 
     /**
      * Constructs an instance for the given table id, output type and database connection.
      *
-     * @param id
-     *            Table id, may be blank, but in that case the given type must be that of {@link #CODE_LIST_TYPE}.
-     * @param type
-     *            Output type, on of {@link #TABLE_TYPE} or {@link #CODE_LIST_TYPE}.
-     * @param conn
-     *            Database connection.
-     * @throws SQLException
-     *             If database access error happens.
+     * @param id   Table id, may be blank, but in that case the given type must be that of {@link #CODE_LIST_TYPE}.
+     * @param type Output type, on of {@link #TABLE_TYPE} or {@link #CODE_LIST_TYPE}.
+     * @param conn Database connection.
+     * @throws SQLException If database access error happens.
      */
     public Rdf(String id, String type, Connection conn) throws SQLException {
 
@@ -90,14 +82,10 @@ public class Rdf {
     /**
      * Constructs an instance for the given table id, output type and {@link DDSearchEngine}.
      *
-     * @param id
-     *            Table id, may be blank, but in that case the given type must be that of {@link #CODE_LIST_TYPE}.
-     * @param type
-     *            Output type, on of {@link #TABLE_TYPE} or {@link #CODE_LIST_TYPE}.
-     * @param ddSearchEngine
-     *            Instance of {@link DDSearchEngine} to use for database access.
-     * @throws SQLException
-     *             If database access error happens.
+     * @param id             Table id, may be blank, but in that case the given type must be that of {@link #CODE_LIST_TYPE}.
+     * @param type           Output type, on of {@link #TABLE_TYPE} or {@link #CODE_LIST_TYPE}.
+     * @param ddSearchEngine Instance of {@link DDSearchEngine} to use for database access.
+     * @throws SQLException If database access error happens.
      */
     public Rdf(String id, String type, DDSearchEngine ddSearchEngine) throws SQLException {
         this.searchEngine = ddSearchEngine;
@@ -164,15 +152,14 @@ public class Rdf {
     /**
      * Writes RDF output of CommonElement fixed values.
      *
-     * @param writer
-     *            - output  
+     * @param writer - output
      * @throws Exception
-     */ 
+     */
     private void writeCodeList(Writer writer) throws Exception {
         List<eionet.meta.dao.domain.FixedValue> fixedValues = new Vector();
-         
-        if(searchEngine.isFixedValuesVocElement(String.valueOf(id), "elem")){ 
-          List<eionet.meta.FixedValue> metaFixedValues  = searchEngine.getFixedValuesOrderedByValue(String.valueOf(id), "elem");
+
+        if (searchEngine.isFixedValuesVocElement(String.valueOf(id), "elem")) {
+            List<eionet.meta.FixedValue> metaFixedValues = searchEngine.getFixedValuesOrderedByValue(String.valueOf(id), "elem");
             for (eionet.meta.FixedValue metaFixedValue : metaFixedValues) {
                 FixedValue val = new FixedValue();
                 val.setDefaultValue(metaFixedValue.getDefault());
@@ -181,8 +168,8 @@ public class Rdf {
                 val.setValue(metaFixedValue.getValue());
                 fixedValues.add(val);
             }
-           }else{
-                fixedValues = dataService.getDataElementFixedValues(id);
+        } else {
+            fixedValues = dataService.getDataElementFixedValues(id);
         }
         eionet.meta.dao.domain.DataElement dataElement = dataService.getDataElement(id);
         Map<String, List<String>> elemAttributeValues = dataService.getDataElementSimpleAttributeValues(id);
@@ -192,7 +179,7 @@ public class Rdf {
 
         String elemName = elemNameAttr != null ? elemNameAttr.get(0) : identifier;
 
-        XMLOutputFactory factory = XMLOutputFactoryBase.newInstance();
+        XMLOutputFactory factory = XMLOutputFactory.newInstance();
         XMLStreamWriter streamWriter = factory.createXMLStreamWriter(writer);
         streamWriter.writeStartDocument();
 
@@ -216,7 +203,7 @@ public class Rdf {
 
             // rdf:Property declaration
             streamWriter.writeStartElement(RDF_NS, "Property");
-            streamWriter.writeAttribute(RDF_NS,  "about", Integer.toString(id) + "/" + identifier);
+            streamWriter.writeAttribute(RDF_NS, "about", Integer.toString(id) + "/" + identifier);
             streamWriter.writeStartElement(RDFS_NS, "label");
             // FIXME - name
             streamWriter.writeCharacters(elemName);
@@ -283,7 +270,7 @@ public class Rdf {
      */
     private void writeManifest(Writer writer) throws Exception {
 
-        XMLOutputFactory factory = XMLOutputFactoryBase.newInstance();
+        XMLOutputFactory factory = XMLOutputFactory.newInstance();
         XMLStreamWriter streamWriter = factory.createXMLStreamWriter(writer);
         streamWriter.writeStartDocument();
 
@@ -324,7 +311,7 @@ public class Rdf {
             tableName = tbl.getShortName();
         }
 
-        XMLOutputFactory factory = XMLOutputFactoryBase.newInstance();
+        XMLOutputFactory factory = XMLOutputFactory.newInstance();
         XMLStreamWriter streamWriter = factory.createXMLStreamWriter(writer);
         streamWriter.writeStartDocument();
 

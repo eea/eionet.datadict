@@ -14,7 +14,7 @@ pipeline {
 
   stages {
     stage('Project Build') {
-      tools { maven 'maven3'; jdk 'Java8' }
+      tools { maven 'maven3'; jdk 'Java11' }
       steps {
         withCredentials([string(credentialsId: 'jenkins-maven-token', variable: 'GITHUB_TOKEN')]) {
           sh '''#!/usr/bin/env bash
@@ -43,7 +43,7 @@ mvn -B -V -Dmaven.test.skip=true clean package
     // --- UNIT TESTS: embedded/in-memory; no external DB ---
     stage('Unit Tests') {
       when { not { buildingTag() } }
-      tools { maven 'maven3'; jdk 'Java8' }
+      tools { maven 'maven3'; jdk 'Java11' }
       steps {
         sh '''#!/usr/bin/env bash
 set -eux
@@ -152,7 +152,7 @@ echo "MySQL for IT on ${HOST_IP}:${HOST_PORT}"
     // --- INTEGRATION TESTS: connect to the DB started above ---
     stage('Integration Tests') {
       when { not { buildingTag() } }
-      tools { maven 'maven3'; jdk 'Java8' }
+      tools { maven 'maven3'; jdk 'Java11' }
       steps {
         sh '''#!/usr/bin/env bash
 set -eux

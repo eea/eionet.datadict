@@ -11,12 +11,13 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <env>default</env>
-        <java_version>1.8</java_version>
+        <java_version>11</java_version>
         <spring.version>5.3.39</spring.version>
         <spring-security-version>5.8.16</spring-security-version>
         <checkstyle.config.location>${basedir}/doc/checkstyle.xml</checkstyle.config.location>
         <sesame.openrdf.version>2.7.10</sesame.openrdf.version>
         <jackson-version>2.18.3</jackson-version>
+        <aspectj.version>1.9.25.1</aspectj.version>
         <docker.it.skip>false</docker.it.skip>
     </properties>
 
@@ -135,14 +136,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.7.0</version>
+                <version>3.15.0</version>
                 <inherited>true</inherited>
                 <configuration>
                     <verbose>false</verbose>
                     <fork>false</fork>
-                    <compilerVersion>${java_version}</compilerVersion>
-                    <source>${java_version}</source>
-                    <target>${java_version}</target>
+                    <release>${java_version}</release>
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
@@ -207,7 +206,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>2.1.1</version>
+                <version>3.5.1</version>
                 <configuration>
                     <filters>
                         <filter>${basedir}/${env}.properties</filter>
@@ -306,30 +305,6 @@
                                       toFile="${project.build.directory}/test-classes/env.properties"/>
                             </tasks>
                         </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>aspectj-maven-plugin</artifactId>
-                <version>1.8</version>
-                <configuration>
-                    <source>${java_version}</source>
-                    <target>${java_version}</target>
-                    <complianceLevel>${java_version}</complianceLevel>
-                    <showWeaveInfo>false</showWeaveInfo>
-                    <aspectLibraries>
-                        <aspectLibrary>
-                            <groupId>org.springframework</groupId>
-                            <artifactId>spring-aspects</artifactId>
-                        </aspectLibrary>
-                    </aspectLibraries>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
                     </execution>
                 </executions>
             </plugin>
@@ -675,7 +650,12 @@
         <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjrt</artifactId>
-            <version>1.8.7</version>
+            <version>${aspectj.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+            <version>${aspectj.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.persistence</groupId>
@@ -758,17 +738,7 @@
             <artifactId>xmlrpc</artifactId>
             <version>3.1.3</version>
         </dependency>-->
-        <!--Apache xerces: usage cannot found-->
-        <dependency>
-            <groupId>xerces</groupId>
-            <artifactId>xercesImpl</artifactId>
-            <version>2.12.2</version>
-        </dependency>
-        <dependency>
-            <groupId>xerces</groupId>
-            <artifactId>xmlParserAPIs</artifactId>
-            <version>2.6.2</version>
-        </dependency>
+
         <!--Central Authentication Service (CAS) Client-->
         <dependency>
             <groupId>cas</groupId>
@@ -803,7 +773,7 @@
         <dependency>
             <groupId>eionet</groupId>
             <artifactId>acl</artifactId>
-            <version>4.0-SNAPSHOT</version>
+            <version>5.0-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <groupId>log4j</groupId>
@@ -853,17 +823,6 @@
             <groupId>com.eteks</groupId>
             <artifactId>pja</artifactId>
             <version>1.0</version>
-        </dependency>
-        <!-- XML Streaming Api -->
-        <dependency>
-            <groupId>stax</groupId>
-            <artifactId>stax</artifactId>
-            <version>1.2.0</version>
-        </dependency>
-        <dependency>
-            <groupId>stax</groupId>
-            <artifactId>stax-api</artifactId>
-            <version>1.0.1</version>
         </dependency>
 
         <!--Start of log4j dependencies-->
@@ -1163,16 +1122,19 @@
                 </exclusion>
             </exclusions>
         </dependency>
+
+        <dependency>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
+            <version>1.3.5</version>
+            <scope>compile</scope>
+        </dependency>
+
         <!-- Dependency Needed for spring Framework AOP -->
         <dependency>
             <groupId>cglib</groupId>
             <artifactId>cglib</artifactId>
             <version>2.2.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.aspectj</groupId>
-            <artifactId>aspectjweaver</artifactId>
-            <version>1.8.9</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -1238,12 +1200,11 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-pmd-plugin</artifactId>
-                <version>3.14.0</version>
+                <version>3.28.0</version>
                 <configuration>
                     <linkXRef>false</linkXRef>
-                    <sourceEncoding>utf-8</sourceEncoding>
                     <minimumTokens>300</minimumTokens>
-                    <targetJdk>1.6</targetJdk>
+                    <targetJdk>11</targetJdk>
                 </configuration>
             </plugin>
             <plugin>

@@ -19,7 +19,10 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.*;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.*;
@@ -35,8 +38,7 @@ public class AclServiceImpl implements AclService {
     public boolean hasPermission(DDUser user, AclEntity entity, Permission prm) {
         try {
             return SecurityUtil.hasPerm(user, entity.getPath(), prm.getValue());
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
     }
@@ -45,22 +47,20 @@ public class AclServiceImpl implements AclService {
     public boolean hasPermission(DDUser user, AclEntity entity, String entityId, Permission prm) {
         try {
             return SecurityUtil.hasPerm(user, this.getEntityPath(entity, entityId), prm.getValue());
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
     }
-    
+
     @Override
     public void grantAccess(DDUser user, AclEntity entity, String entityId, String description) {
         try {
             AccessController.addAcl(this.getEntityPath(entity, entityId), this.getUserName(user), description);
-        }
-        catch (SignOnException ex) {
+        } catch (SignOnException ex) {
             throw new RuntimeException(ex);
         }
     }
-    
+
     @Override
     public void removeAccessRightsForDeletedEntity(AclEntity entity, String entityId) {
         try {
@@ -84,10 +84,11 @@ public class AclServiceImpl implements AclService {
                 }
             }
             Element groupEntry = document.createElement("member");
-            groupEntry.setAttribute("userid",username);
+            groupEntry.setAttribute("userid", username);
             group.appendChild(groupEntry);
             writeResultToFile(document);
-        } catch (ParserConfigurationException | IOException | SAXException | TransformerException | XPathExpressionException e) {
+        } catch (ParserConfigurationException | IOException | SAXException | TransformerException |
+                 XPathExpressionException e) {
             throw new XmlMalformedException(e.getMessage());
         }
     }
@@ -108,7 +109,8 @@ public class AclServiceImpl implements AclService {
             }
             removeEmptyLines(document);
             writeResultToFile(document);
-        } catch (ParserConfigurationException | IOException | SAXException | TransformerException | XPathExpressionException e) {
+        } catch (ParserConfigurationException | IOException | SAXException | TransformerException |
+                 XPathExpressionException e) {
             throw new XmlMalformedException(e.getMessage());
         }
     }
@@ -154,7 +156,7 @@ public class AclServiceImpl implements AclService {
         String expression = "//group[@id=" + "'" + groupName + "'" + "]";
 
         XPathExpression expr = xpath.compile(expression);
-        NodeList DDAdmingroups =(NodeList) expr.evaluate(document, XPathConstants.NODESET);
+        NodeList DDAdmingroups = (NodeList) expr.evaluate(document, XPathConstants.NODESET);
         return DDAdmingroups.item(0);
     }
 
@@ -169,9 +171,9 @@ public class AclServiceImpl implements AclService {
     protected String getUserName(DDUser user) {
         return user == null ? "" : user.getUserName();
     }
-    
+
     protected String getEntityPath(AclEntity entity, String entityId) {
         return entity.getPath() + "/" + entityId;
     }
-    
+
 }
