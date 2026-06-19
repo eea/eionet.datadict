@@ -2,8 +2,6 @@ package eionet.datadict.aop;
 
 import eionet.datadict.dal.AsyncTaskHistoryDao;
 import eionet.datadict.model.AsyncTaskExecutionEntry;
-import eionet.meta.spring.SpringApplicationContext;
-import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 import org.slf4j.Logger;
@@ -18,29 +16,33 @@ import org.springframework.stereotype.Component;
 @Component
 public class KeepScheduledTaskHistoryAspect {
 
-    private AsyncTaskHistoryDao asyncTaskHistoryDao;
+    private final AsyncTaskHistoryDao asyncTaskHistoryDao;
     private static final Logger LOGGER = LoggerFactory.getLogger(KeepScheduledTaskHistoryAspect.class);
+
+    public KeepScheduledTaskHistoryAspect(AsyncTaskHistoryDao asyncTaskHistoryDao) {
+        this.asyncTaskHistoryDao = asyncTaskHistoryDao;
+    }
 
     @AfterReturning(
             pointcut = "execution(* eionet.datadict.dal.AsyncTaskDao.updateScheduledDate(..))",
             returning = "result")
-    public void persistAsyncTaskEntryHistory(JoinPoint joinPoint, Object result) {
+    public void persistAsyncTaskEntryHistory(AsyncTaskExecutionEntry result) {
+        if (result == null) {
+            return;
+        }
         LOGGER.info("Invocation of Aspect to Store AsyncTaskEntry History upon updating the Scheduled Date of an Async Task Entry.");
-        getAsyncTaskHistoryDao().storeAsyncTaskEntry((AsyncTaskExecutionEntry) result);
+        asyncTaskHistoryDao.storeAsyncTaskEntry(result);
     }
 
     @AfterReturning(
             pointcut = "execution(* eionet.datadict.dal.AsyncTaskDao.updateEndStatus(..))",
             returning = "result")
-    public void updateAsyncTaskEntryHistoryResult(JoinPoint joinPoint, Object result) {
+    public void updateAsyncTaskEntryHistoryResult(AsyncTaskExecutionEntry result) {
+        if (result == null) {
+            return;
+        }
         LOGGER.info("Invocation of Aspect to Update AsyncTaskEntry History upon updating the End Status and Serialized Result of an Async Task Entry.");
-        getAsyncTaskHistoryDao().updateExecutionStatusAndSerializedResult((AsyncTaskExecutionEntry) result);
+        asyncTaskHistoryDao.updateExecutionStatusAndSerializedResult(result);
     }
 
-    public AsyncTaskHistoryDao getAsyncTaskHistoryDao() {
-        if (asyncTaskHistoryDao == null) {
-            this.asyncTaskHistoryDao = SpringApplicationContext.getBean(AsyncTaskHistoryDao.class);
-        }
-        return this.asyncTaskHistoryDao;
-    }
 }

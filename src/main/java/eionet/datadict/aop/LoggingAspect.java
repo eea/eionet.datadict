@@ -16,7 +16,7 @@ public class LoggingAspect {
     @After("eionet.datadict.aop.LoggingAspectExpressions.allOperationsIncluded()")
     public void logQueries(JoinPoint joinPoint) {
         LOGGER.info("Invocation of Aspect to log query.");
-        LOGGER.info("Query run: " +  joinPoint.getArgs()[0]);
+        LOGGER.info("Query run: {}", joinPoint.getArgs()[0]);
     }
 
 }
