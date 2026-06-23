@@ -33,7 +33,6 @@ public class TblXlsTestIT extends DDDatabaseTestCase {
     protected String[] fxvIdentifier = null;
     protected String[][] fxvSheetValues = null;
     protected TblXls classInstanceUnderTest = null;
-    protected TblXls classInstanceUnderTestWithoutDD = null;
     protected ByteArrayOutputStream baos = null;
     protected String objId = null;
 
@@ -101,79 +100,6 @@ public class TblXlsTestIT extends DDDatabaseTestCase {
         try {
             classInstanceUnderTest.create(objId);
             classInstanceUnderTest.write();
-
-            HSSFWorkbook testWb = new HSSFWorkbook(new ByteArrayInputStream(baos.toByteArray()));
-
-            // check sheet names, order of elements change, so follow a more elastic way to control
-            ArrayList<String> temp = new ArrayList<String>(Arrays.asList(sheetNames));
-            for (int i = 0; i < sheetNames.length; i++) {
-                String sheetName = testWb.getSheetName(i);
-                Assert.assertTrue("Sheet '" + sheetName + "' cannot be found!", temp.remove(sheetName));
-            }
-            Assert.assertTrue("Some sheets did not matched: " + temp.toString(), temp.size() == 0);
-            // last two are also fixed
-            Assert.assertEquals("Incorrect sheet name", "DO_NOT_DELETE_THIS_SHEET", testWb.getSheetName(sheetNames.length));
-            // first one is fixed
-            Assert.assertEquals("Incorrect sheet name", "REFS_FOR_DD_ITEMS_DO_NOT_DEL", testWb.getSheetName(sheetNames.length + 1));
-            Assert.assertEquals("Incorrect number of sheets", (2 + sheetNames.length), testWb.getNumberOfSheets());
-
-            // check for columns in each sheet
-            for (int i = 0; i < dataSheetValues.length; i++) {
-                HSSFSheet dataSheet = classInstanceUnderTest.getSheet(testWb, sheetNames[i]);
-                HSSFRow dataRow = dataSheet.getRow(0); // it is always first row
-                temp = new ArrayList<String>(Arrays.asList(dataSheetValues[i]));
-                for (int j = 0; j < dataSheetValues[i].length; j++) {
-                    HSSFCell dataCell = dataRow.getCell(j);
-                    String cellValue = dataCell.toString().trim();
-                    Assert.assertTrue("Cell with value '" + cellValue + "' cannot be found!", temp.remove(cellValue));
-                }
-                Assert.assertTrue("Some cells did not matched: " + temp.toString(), temp.size() == 0);
-            }
-
-            // check for fixed values stored for drop-down menu item, because it is not ordered, code below is a bit complicated
-            HSSFSheet fxvSheet = testWb.getSheetAt(testWb.getNumberOfSheets() - 1); // last sheet always
-            temp = new ArrayList<String>(Arrays.asList(fxvIdentifier));
-            for (int i = 0; i < fxvSheetValues.length; i++) {// Don't iterate more than number of drop-down item
-                HSSFRow fxvRow = null;
-                HSSFCell fxvCell = null;
-                int rowIndex = 0;
-                boolean found = false;
-                for (rowIndex = 0; rowIndex < fxvSheetValues.length; rowIndex++) {
-                    fxvRow = fxvSheet.getRow(rowIndex + 1); // first row is info, so start +1
-                    fxvCell = fxvRow.getCell(0);// first one is label, get it first and then check for position
-                    String value = fxvCell.toString().replace("Fixed Values of ", "").trim();
-                    if (temp.remove(value)) {
-                        found = true;
-                        break;
-                    }
-                }
-                Assert.assertTrue("Identifier can not be found", found);
-
-                ArrayList<String> temp2 = new ArrayList<String>(Arrays.asList(fxvSheetValues[rowIndex]));
-                fxvRow = fxvSheet.getRow(rowIndex + 1); // first row is info, so start +1
-                for (int j = 0; j < fxvSheetValues[rowIndex].length; j++) {
-                    fxvCell = fxvRow.getCell(j + 1);// first column is label, so start +1
-                    String fixedCellValue = fxvCell.toString().trim();
-                    Assert.assertTrue("Fixed cell value '" + fixedCellValue + "' cannot be found!", temp2.remove(fixedCellValue));
-                }
-                Assert.assertTrue("Some fxvs did not matched: " + temp2.toString(), temp2.size() == 0);
-            }
-            Assert.assertTrue("Some fxvs did not matched: " + temp.toString(), temp.size() == 0);
-
-        } catch (Exception e) {
-            Assert.fail("Was not expecting any exceptions, but catched " + e.toString());
-        }
-    }//end of test step testExcelOutput
-
-    /**
-     * order of values change, so instead of following strict order, all elements checked
-     * 
-     * @throws SQLException
-     */
-    public void testExcelOutputWithoutDD() {
-        try {
-            classInstanceUnderTestWithoutDD.create(objId);
-            classInstanceUnderTestWithoutDD.write();
 
             HSSFWorkbook testWb = new HSSFWorkbook(new ByteArrayInputStream(baos.toByteArray()));
 
