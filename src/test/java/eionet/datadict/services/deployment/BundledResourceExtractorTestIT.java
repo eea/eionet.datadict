@@ -1,6 +1,5 @@
 package eionet.datadict.services.deployment;
 
-import eionet.datadict.services.io.impl.ClassPathResourceFileProviderImpl;
 import java.io.File;
 import java.io.IOException;
 import org.junit.Before;
@@ -26,9 +25,6 @@ public class BundledResourceExtractorTestIT {
     @InjectMocks
     private BundledResourceExtractor bundledResourceExtractor;
     
-    @Spy
-    private ClassPathResourceFileProviderImpl classPathResourceFileProvider;
-    
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -48,7 +44,7 @@ public class BundledResourceExtractorTestIT {
         verify(this.bundledResourceExtractor, times(1)).createTempFolder();
         
         verify(this.bundledResourceExtractor, times(18)).copyFileToDirectoryIfNotExists(any(File.class), any(File.class));
-        verify(this.bundledResourceExtractor, times(3)).copyFileToDirectory(any(File.class), any(File.class));
+        verify(this.bundledResourceExtractor, times(1)).copyFileToDirectory(any(File.class), any(File.class));
         verify(this.bundledResourceExtractor, times(1)).copyDirectory(any(File.class), any(File.class));
         
         verify(this.bundledResourceExtractor, times(1)).dirExists(any(File.class));
