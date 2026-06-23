@@ -26,10 +26,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
 import eionet.util.Util;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.stereotype.Service;
 
 import eionet.meta.dao.IDataElementDAO;
@@ -48,41 +49,37 @@ import eionet.meta.service.data.VocabularyConceptResult;
 @Service
 public class VocabularyReferenceMatchServiceImpl implements IVocabularyReferenceMatchService {
 
-    /**
-     * Data elem to job map.
-     */
-    private static Map<String, Class<? extends ReferenceMatchJobChunk>> jobMatchMap =
-            new HashMap<String, Class<? extends ReferenceMatchJobChunk>>();
+    @Autowired
+    private IVocabularyFolderDAO vocabularyFolderDAO;
+    @Autowired
+    private IVocabularyConceptDAO vocabularyConceptDAO;
+    @Autowired
+    private IDataElementDAO dataElementDAO;
 
-    // static block to populate jobMatchMap
-    static {
-        jobMatchMap.put(MatchPotentialReferringElementValues.JOB_IDENTIFIER, MatchPotentialReferringElementValues.class);
-    } // end of static block
+    private Map<String, ReferenceMatchJobChunk> jobInstanceMap;
+
+    @PostConstruct
+    public void init() {
+        jobInstanceMap = new HashMap<>();
+        jobInstanceMap.put(MatchPotentialReferringElementValues.JOB_IDENTIFIER,
+                new MatchPotentialReferringElementValues(vocabularyFolderDAO, vocabularyConceptDAO, dataElementDAO));
+    }
 
     /**
      * {@inheritDoc}
      */
     // @Transactional(rollbackFor = ServiceException.class)
     @Override
-    public List<String> matchReferences(String[] jobIdentifiers) throws ServiceException {
-        List<String> logs = new ArrayList<String>();
+    public List<String> matchReferences(String[] jobIdentifiers) {
+        List<String> logs = new ArrayList<>();
 
-        if (jobIdentifiers != null && jobIdentifiers.length > 0) {
+        if (jobIdentifiers != null) {
             for (String jobChunkIdentifier : jobIdentifiers) {
-                Class<? extends ReferenceMatchJobChunk> clazz = jobMatchMap.get(jobChunkIdentifier);
-                if (clazz != null) {
-                    try {
-                        ReferenceMatchJobChunk jobChunk = clazz.newInstance();
-                        logs.add("Starting " + jobChunkIdentifier);
-                        List<String> internalLogs = jobChunk.execute();
-                        logs.addAll(internalLogs);
-                    } catch (InstantiationException e) {
-                        logs.add("Cannot create job chunk for " + jobChunkIdentifier);
-                        logs.add(e.getMessage());
-                    } catch (IllegalAccessException e) {
-                        logs.add("Cannot create job chunk for " + jobChunkIdentifier);
-                        logs.add(e.getMessage());
-                    }
+                ReferenceMatchJobChunk jobChunk = jobInstanceMap.get(jobChunkIdentifier);
+                if (jobChunk != null) {
+                    logs.add("Starting " + jobChunkIdentifier);
+                    List<String> internalLogs = jobChunk.execute();
+                    logs.addAll(internalLogs);
                 } else {
                     logs.add("No implementation set for " + jobChunkIdentifier);
                 }
@@ -106,33 +103,27 @@ public class VocabularyReferenceMatchServiceImpl implements IVocabularyReference
     /**
      * Job chunk to convert element values to related concept ids.
      */
-    @Configurable
     public static class MatchPotentialReferringElementValues implements ReferenceMatchJobChunk {
         /**
          * Job identifier.
          */
         public static final String JOB_IDENTIFIER = "match:References";
 
-        /**
-         * Vocabulary folder DAO.
-         */
-        @Autowired
-        private IVocabularyFolderDAO vocabularyFolderDAO;
-        /**
-         * Vocabulary concept DAO.
-         */
-        @Autowired
-        private IVocabularyConceptDAO vocabularyConceptDAO;
-        /**
-         * Data element DAO.
-         */
-        @Autowired
-        private IDataElementDAO dataElementDAO;
+        private final IVocabularyFolderDAO vocabularyFolderDAO;
+        private final IVocabularyConceptDAO vocabularyConceptDAO;
+        private final IDataElementDAO dataElementDAO;
+
+        public MatchPotentialReferringElementValues(IVocabularyFolderDAO vocabularyFolderDAO,
+                IVocabularyConceptDAO vocabularyConceptDAO, IDataElementDAO dataElementDAO) {
+            this.vocabularyFolderDAO = vocabularyFolderDAO;
+            this.vocabularyConceptDAO = vocabularyConceptDAO;
+            this.dataElementDAO = dataElementDAO;
+        }
 
         @Override
         public List<String> execute() {
             int numberOfMatchedElementValuesToIds = 0;
-            List<String> logs = new ArrayList<String>();
+            List<String> logs = new ArrayList<>();
             List<DataElement> elements = this.dataElementDAO.getPotentialReferringVocabularyConceptsElements();
             for (DataElement elem : elements) {
                 String elemValue = elem.getAttributeValue();
