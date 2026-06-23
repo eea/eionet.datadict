@@ -97,8 +97,4 @@ public class BundledResourceExtractor {
         }
     }
     
-    protected void copyDirectory(File dir, File destDir) throws IOException {
-        FileUtils.copyDirectory(dir, destDir);
-    }
-    
 }

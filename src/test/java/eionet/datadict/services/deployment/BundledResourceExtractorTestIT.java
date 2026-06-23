@@ -38,7 +38,6 @@ public class BundledResourceExtractorTestIT {
     public void test() throws IOException {
         doReturn(false).when(this.bundledResourceExtractor).dirExists(any(File.class));
         doReturn(true).when(this.bundledResourceExtractor).mkdirs(any(File.class));
-        doNothing().when(this.bundledResourceExtractor).copyDirectory(any(File.class), any(File.class));
         doNothing().when(this.bundledResourceExtractor).copyFileToDirectory(any(File.class), any(File.class));
         doNothing().when(this.bundledResourceExtractor).copyFileToDirectoryIfNotExists(any(File.class), any(File.class));
         
@@ -49,8 +48,7 @@ public class BundledResourceExtractorTestIT {
         
         verify(this.bundledResourceExtractor, times(18)).copyFileToDirectoryIfNotExists(any(File.class), any(File.class));
         verify(this.bundledResourceExtractor, times(1)).copyFileToDirectory(any(File.class), any(File.class));
-        verify(this.bundledResourceExtractor, times(1)).copyDirectory(any(File.class), any(File.class));
-        
+
         verify(this.bundledResourceExtractor, times(1)).dirExists(any(File.class));
         verify(this.bundledResourceExtractor, times(2)).mkdirs(any(File.class));
     }
