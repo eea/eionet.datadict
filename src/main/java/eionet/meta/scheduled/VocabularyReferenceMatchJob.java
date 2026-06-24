@@ -23,13 +23,13 @@ package eionet.meta.scheduled;
 
 import java.util.List;
 
+import eionet.meta.spring.SpringApplicationContext;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import eionet.meta.service.IVocabularyReferenceMatchService;
@@ -56,19 +56,14 @@ public class VocabularyReferenceMatchJob extends AbstractScheduledJob {
      */
     private static final String ELEMENTS_KEY = NAME + "ElementsKey";
 
-    /**
-     * Match service.
-     */
-    @Autowired
-    protected IVocabularyReferenceMatchService service;
-
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         long start = System.currentTimeMillis();
         LOGGER.info("Starting to match references.");
         List<String> strings = null;
         try {
-            strings = service.matchReferences((String[]) jobExecutionContext.getJobDetail().getJobDataMap().get(ELEMENTS_KEY));
+            strings = SpringApplicationContext.getContext().getBean(IVocabularyReferenceMatchService.class)
+                    .matchReferences((String[]) jobExecutionContext.getJobDetail().getJobDataMap().get(ELEMENTS_KEY));
         } catch (ServiceException e) {
             LOGGER.error("Match operation failed: " + e.getMessage());
             throw new JobExecutionException(e);
