@@ -1004,6 +1004,21 @@
             <type>pom</type>
             <version>3.7.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>net.javacrumbs.shedlock</groupId>
+            <artifactId>shedlock-spring</artifactId>
+            <version>4.48.0</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>net.javacrumbs.shedlock</groupId>
+            <artifactId>shedlock-provider-jdbc-template</artifactId>
+            <version>4.48.0</version>
+            <scope>compile</scope>
+        </dependency>
+
         <!-- TEST dependencies -->
         <dependency>
             <groupId>junit</groupId>

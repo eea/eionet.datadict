@@ -5,6 +5,8 @@ import eionet.datadict.dal.CleanMysqlSystemDbLoggingTableDao;
 import eionet.datadict.model.AsyncTaskExecutionEntryHistory;
 import java.util.List;
 
+import net.javacrumbs.shedlock.core.LockAssert;
+import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,17 +30,21 @@ public class FixedTimeScheduledTasks {
         this.cleanMySqlLoggingTableDao = cleanMySqlLoggingTableDao;
     }
 
-    @Scheduled(cron = "0 0 12 1 * *")
+    @Scheduled(cron = "0 0 12 * * SUN")
+    @SchedulerLock(name = "asyncTaskHistoryTableCleanupLock")
     public void schedulePeriodicCleanOfOldDataOnAsyncTaskHistoryTableTask() {
+        LockAssert.assertLocked();
         List<AsyncTaskExecutionEntryHistory> historyEntries = this.asyncTaskHistoryDao.retrieveAllTasksHistory();
         for (AsyncTaskExecutionEntryHistory historyEntry : historyEntries) {
             asyncTaskHistoryDao.deleteOlderTaskHistoryThanLastN(historyEntry.getTaskId(), 10);
         }
-        LOGGER.info("Weekly Scheduled Task To Purge  Data in ASYNC_TASK_ENTRY_HISTORY table and Keep only last 10 records for each Task");
+        LOGGER.info("Weekly Scheduled Task To Purge Data in ASYNC_TASK_ENTRY_HISTORY table and Keep only last 10 records for each Task");
     }
 
-    @Scheduled(cron = "0 0 8 1 * ?")  //runs first day of every month at 8am
+    @Scheduled(cron = "0 0 8 1 * ?") //runs first day of every month at 8am
+    @SchedulerLock(name = "mySqlGeneralLogTableCleanupLock")
     public void schedulePeriodicCleanOfOldDataOnMySqlGeneralLogTableTask() {
+        LockAssert.assertLocked();
         cleanMySqlLoggingTableDao.delete();
         LOGGER.info("Monthly Scheduled Task To Delete Data in mysql.general_log table that are older that one month");
     }
