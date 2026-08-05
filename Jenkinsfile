@@ -22,11 +22,6 @@ set -eux
 mkdir -p ~/.m2
 sed "s/TOKEN/$GITHUB_TOKEN/" m2.settings.tpl.xml > ~/.m2/settings.xml
 
-export logFilePath="$WORKSPACE/build-logs"
-export queryLogRetainAll=false
-export queryLogRetentionDays=30d
-mkdir -p "$logFilePath"
-
 # Fast packaging (no tests here)
 mvn -B -V -Dmaven.test.skip=true clean package
 '''
@@ -47,11 +42,6 @@ mvn -B -V -Dmaven.test.skip=true clean package
       steps {
         sh '''#!/usr/bin/env bash
 set -eux
-# Optional: log4j2 env to avoid noisy init in tests
-export logFilePath="$WORKSPACE/unit-logs"
-export queryLogRetainAll=false
-export queryLogRetentionDays=14d
-mkdir -p "$logFilePath"
 
 mvn -B -V -Denv=unittest -DskipITs=true clean test
 mvn -B -V -Denv=unittest -DskipITs=true pmd:pmd pmd:cpd spotbugs:spotbugs checkstyle:checkstyle jacoco:report
@@ -174,12 +164,6 @@ docker run --rm --network "$NETWORK_NAME" mysql:5.7 mysql -h "${HOST_IP}" -P "${
 export SPRING_DATASOURCE_URL="${IT_JDBC_URL}"
 export SPRING_DATASOURCE_USERNAME="app"
 export SPRING_DATASOURCE_PASSWORD="app"
-
-# Log4j2 env for IT (its config uses ${env:...})
-export logFilePath="$WORKSPACE/it-logs"
-export queryLogRetainAll=false
-export queryLogRetentionDays=14d
-mkdir -p "$logFilePath"
 
 # IMPORTANT:
 # - Run ONLY ITs here (skip UTs).

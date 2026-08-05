@@ -76,13 +76,6 @@ the specific values for your environment. Set these variables for your local tom
 
 Alternatively you can copy the default.properties file and create a local.properties file for development purposes.
 
-###### 2.b Log4j RollingFile appender configuration
-
-Add the following environment variables in tomcat for log4j2 configuration (these variables are used in log4j2.xml):
-A variable with name logFilePath and value a path to a folder where log files will be stored. 
-A variable with name queryLogRetainAll and value=false if log files should be deleted, true otherwise.
-A variable with name queryLogRetentionDays and value the duration for which log files will be retained. Log files older than the specified duration will be deleted.
-
 ##### 3. Deploy on tomcat
 
 Place the resulting $CHECKOUT_HOME/target/datadict.war into Tomcat's webapps directory, and start Tomcat.

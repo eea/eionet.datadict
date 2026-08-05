@@ -1,65 +1,14 @@
 <Configuration>
-    <Properties>
-        <Property name="basePath">${env:logFilePath:-${sys:user.home}/datadict}/logs</Property>
-        <Property name="retainAll">${env:queryLogRetainAll:-false}</Property>
-        <Property name="retentionAge">${env:queryLogRetentionDays:-30d}</Property>
-    </Properties>
-
     <Appenders>
         <Console name="console">
             <PatternLayout>
                 <Pattern>[%d] - [%p] [%c:%L] [u:%X{username}] [si:%X{sessionId}] [%tn] [tid:%tid] : %m%n</Pattern>
             </PatternLayout>
         </Console>
-
-        <RollingFile name="fileLogger"
-                     fileName="${basePath}/datadictLogs.log"
-                     filePattern="${basePath}/datadictLogs_%d{yyyy-MM-dd}-%i.log.gz"
-                     ignoreExceptions="false">
-
-            <PatternLayout>
-                <pattern>[%d] - [%p] [%c:%L] : %m%n</pattern>
-            </PatternLayout>
-            <Policies>
-                <TimeBasedTriggeringPolicy interval="1"/>
-                <SizeBasedTriggeringPolicy size="5000KB"/>
-            </Policies>
-            <DefaultRolloverStrategy max="20">
-                <!--    testMode - boolean - If true, files are not deleted but instead a message is printed to the status -->
-                <Delete basePath="${basePath}/" maxDepth="1" testMode="${retainAll}">
-                    <IfFileName glob="datadictLogs_*.log.gz"/>
-                    <IfLastModified age="${retentionAge}"/>
-                </Delete>
-            </DefaultRolloverStrategy>
-        </RollingFile>
-
-        <Gelf name="GELF" host="logcentral.eea.europa.eu" port="12201"
-              extractStackTrace="true" filterStackTrace="true"
-              originHost="${sys:env.dd.host}" />
     </Appenders>
     <Loggers>
-        <logger name="eionet" level="debug">
-            <AppenderRef ref="fileLogger" level="debug" />
-        </logger>
-        <logger name="eionet.meta.DDSearchEngine" level="info">
-            <AppenderRef ref="fileLogger" level="info" />
-        </logger>
-        <logger name="org.apache" level="info">
-            <AppenderRef ref="fileLogger" level="warn" />
-        </logger>
-        <logger name="org.springframework" level="warn">
-            <AppenderRef ref="fileLogger" level="warn" />
-        </logger>
-        <logger name="org.displaytag" level="warn">
-            <AppenderRef ref="fileLogger" level="warn" />
-        </logger>
-        <logger name="net.sourceforge.stripes" level="warn">
-            <AppenderRef ref="fileLogger" level="warn" />
-        </logger>
         <Root level="info">
             <AppenderRef ref="console" />
-            <AppenderRef ref="GELF" level="info" />
-            <AppenderRef ref="fileLogger" level="info" />
         </Root>
     </Loggers>
 </Configuration>
