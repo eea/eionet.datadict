@@ -849,12 +849,6 @@
             <artifactId>slf4j-api</artifactId>
             <version>1.7.36</version>
         </dependency>
-        <!--GELF-->
-        <dependency>
-            <groupId>biz.paluch.logging</groupId>
-            <artifactId>logstash-gelf</artifactId>
-            <version>1.15.1</version>
-        </dependency>
         <!--End of log4j dependencies-->
 
         <dependency>
