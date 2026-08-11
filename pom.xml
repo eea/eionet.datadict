@@ -16,7 +16,7 @@
         <spring-security-version>5.8.16</spring-security-version>
         <checkstyle.config.location>${basedir}/doc/checkstyle.xml</checkstyle.config.location>
         <sesame.openrdf.version>2.7.10</sesame.openrdf.version>
-        <jackson-version>2.18.6</jackson-version>
+        <jackson-version>2.22.0</jackson-version>
         <aspectj.version>1.9.25.1</aspectj.version>
         <docker.it.skip>false</docker.it.skip>
     </properties>
