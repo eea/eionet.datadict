@@ -1921,8 +1921,8 @@ else if (mode.equals("add"))
 }
 catch (Exception e) {
     if (response.isCommitted())
-        e.printStackTrace(System.out);
-    else{
+        e.printStackTrace();
+    else {
         String msg = e.getMessage();
         ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
         e.printStackTrace(new PrintStream(bytesOut));
@@ -1937,6 +1937,6 @@ catch (Exception e) {
 }
 finally {
     try { if (conn!=null) conn.close();
-    } catch (SQLException e) {System.out.println("epiasa exception to "+e.getMessage());}
+    } catch (SQLException e) {}
 }
 %>

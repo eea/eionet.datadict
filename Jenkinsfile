@@ -14,7 +14,7 @@ pipeline {
 
   stages {
     stage('Project Build') {
-      tools { maven 'maven3'; jdk 'Java11' }
+      tools { maven 'maven3'; jdk 'Java17' }
       steps {
         withCredentials([string(credentialsId: 'jenkins-maven-token', variable: 'GITHUB_TOKEN')]) {
           sh '''#!/usr/bin/env bash
@@ -38,7 +38,7 @@ mvn -B -V -Dmaven.test.skip=true clean package
     // --- UNIT TESTS: embedded/in-memory; no external DB ---
     stage('Unit Tests') {
       when { not { buildingTag() } }
-      tools { maven 'maven3'; jdk 'Java11' }
+      tools { maven 'maven3'; jdk 'Java17' }
       steps {
         sh '''#!/usr/bin/env bash
 set -eux
@@ -142,7 +142,7 @@ echo "MySQL for IT on ${HOST_IP}:${HOST_PORT}"
     // --- INTEGRATION TESTS: connect to the DB started above ---
     stage('Integration Tests') {
       when { not { buildingTag() } }
-      tools { maven 'maven3'; jdk 'Java11' }
+      tools { maven 'maven3'; jdk 'Java17' }
       steps {
         sh '''#!/usr/bin/env bash
 set -eux
@@ -219,7 +219,7 @@ mvn -B -V -Denv=jenkins -DskipUTs=true -Ddocker.skip=true -DskipDocker=true -P '
       steps {
         script {
           withSonarQubeEnv('Sonarqube') {
-            sh '''mvn sonar:sonar -Dsonar.java.source=11 -Dsonar.sources=src/main/java/ -Dsonar.test.exclusions=**/src/test/** -Dsonar.coverage.exclusions=**/src/test/** -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml -Dsonar.java.pmd.reportPaths=target/pmd.xml -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco-unit-cov-report/jacoco.xml,target/site/jacoco-it-cov-report/jacoco.xml -Dsonar.java.spotbugs.reportPaths=target/spotbugsXml.xml -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.token=${SONAR_AUTH_TOKEN} -Dsonar.java.binaries=target/classes -Dsonar.projectKey="${GIT_NAME}" -Dsonar.projectName="${GIT_NAME}"  -Dsonar.branch.name="${GIT_BRANCH}" '''
+            sh '''mvn sonar:sonar -Dsonar.java.source=17 -Dsonar.sources=src/main/java/ -Dsonar.test.exclusions=**/src/test/** -Dsonar.coverage.exclusions=**/src/test/** -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml -Dsonar.java.pmd.reportPaths=target/pmd.xml -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco-unit-cov-report/jacoco.xml,target/site/jacoco-it-cov-report/jacoco.xml -Dsonar.java.spotbugs.reportPaths=target/spotbugsXml.xml -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.token=${SONAR_AUTH_TOKEN} -Dsonar.java.binaries=target/classes -Dsonar.projectKey="${GIT_NAME}" -Dsonar.projectName="${GIT_NAME}"  -Dsonar.branch.name="${GIT_BRANCH}" '''
             sh '''try=2; while [ $try -gt 0 ]; do curl -s -XPOST -u "${SONAR_AUTH_TOKEN}:" "${SONAR_HOST_URL}api/project_tags/set?project=${GIT_NAME}&tags=${SONARQUBE_TAGS}" > set_tags_result; if [ $(grep -ic error set_tags_result ) -eq 0 ]; then try=0; else cat set_tags_result; echo "... Will retry"; sleep 60; try=$(( $try - 1 )); fi; done'''
           }
         }

@@ -1503,7 +1503,7 @@ else if (mode.equals("add"))
 }
 catch (Exception e){
     if (response.isCommitted())
-        e.printStackTrace(System.out);
+        e.printStackTrace();
     else{
         String msg = e.getMessage();
         ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();

@@ -22,7 +22,7 @@ Please download all of these software and install them according to the instruct
 Java, Tomcat, Maven and GIT client.
 
 The necessary versions are as follows:
-* Java 11
+* Java 17
 * Maven 3.6.1 or higher
 * Tomcat 8.5.45 or higher
 * GIT 2.17.1 or higher

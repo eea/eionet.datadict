@@ -262,7 +262,7 @@
     // end the whole page try block
     } catch (Exception e) {
         if (response.isCommitted()) {
-            e.printStackTrace(System.out);
+            e.printStackTrace();
         } else {
             String msg = e.getMessage();
             ByteArrayOutputStream bytesOut = new ByteArrayOutputStream();
