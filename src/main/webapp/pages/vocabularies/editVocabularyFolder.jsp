@@ -334,7 +334,7 @@
                     </td>
                     <td class="simple_attr_value">
                         <stripes:checkbox name="vocabularyFolder.notationsEqualIdentifiers" id="chkNotationsEqualIdentifiers"/>
-                        <stripes:hidden id="prevNotationsEqualIdentifiers" name="prevNotationsEqualIdentifiers" value="${actionBean.vocabularyFolder.notationsEqualIdentifiers}" />
+                        <input type="hidden" id="prevNotationsEqualIdentifiers" name="prevNotationsEqualIdentifiers" value="${actionBean.vocabularyFolder.notationsEqualIdentifiers}" />
                     </td>
                 </tr>
                 <!-- Simple attributes -->
@@ -412,7 +412,6 @@
                 <table class="filter">
                     <stripes:hidden name="vocabularyFolder.folderName" />
                     <stripes:hidden name="vocabularyFolder.workingCopy" />
-                    <stripes:hidden name="origIdentifer" />
                     <stripes:hidden name="vocabularyFolder.identifier" />
                     <tr>
                         <td class="label">

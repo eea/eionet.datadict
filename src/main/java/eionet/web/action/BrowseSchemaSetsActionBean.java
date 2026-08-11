@@ -163,6 +163,10 @@ public class BrowseSchemaSetsActionBean extends AbstractActionBean {
         return false;
     }
 
+    public List<Integer> getSelectedSchemaSets() {
+        return selectedSchemaSets;
+    }
+
     /**
      * Sets the ids of selected schema sets.
      *

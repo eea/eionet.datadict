@@ -116,7 +116,7 @@
             <stripes:hidden name="vocabularyFolder.identifier" />
             <stripes:hidden name="vocabularyFolder.workingCopy" />
             <stripes:hidden id="txtConceptElementId" name="elementId" />
-            <stripes:hidden id = "txtVocabularyId" name="elemVocabularyId" />
+            <input type="hidden" id="txtVocabularyId" name="elemVocabularyId" />
             <c:set var="fieldSize" value="68" />
 
         </div>
@@ -199,7 +199,7 @@
             <stripes:hidden name="vocabularyFolder.identifier" />
             <stripes:hidden name="vocabularyFolder.workingCopy" />
             <!-- this is vocabulary ID, param name is misleading -->
-            <stripes:hidden name="folderId" />
+            <input type="hidden" name="folderId" value="${fn:escapeXml(param.folderId)}" />
             <c:set var="fieldSize" value="68" />
         </div>
 
@@ -251,6 +251,7 @@
                                 <stripes:param name="excludedVocSetLabels" value="${actionBean.excludedVocSetLabels}" />
 
                                 <stripes:param name="relatedConceptsFilter.text" value="${actionBean.relatedConceptsFilter.text}" />
+                                Exclude the vocabulary set from search
                             </stripes:link>
                             <br/>
 

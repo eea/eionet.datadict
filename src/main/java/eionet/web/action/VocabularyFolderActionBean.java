@@ -2136,12 +2136,20 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         this.uploadedFileToImport = uploadedFileToImport;
     }
 
+    public boolean isPurgeVocabularyData() {
+        return purgeVocabularyData;
+    }
+
     /**
      * @param purgeVocabularyData
      *            purge before importing csv
      */
     public void setPurgeVocabularyData(boolean purgeVocabularyData) {
         this.purgeVocabularyData = purgeVocabularyData;
+    }
+
+    public boolean isPurgeBoundElements() {
+        return purgeBoundElements;
     }
 
     /**
