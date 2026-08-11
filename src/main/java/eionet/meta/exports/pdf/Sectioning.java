@@ -126,7 +126,7 @@ public class Sectioning {
         Hashtable hash = new Hashtable();
         hash.put(TITLE, title);
         hash.put(NR, nr);
-        hash.put(LEVEL, new Integer(level));
+        hash.put(LEVEL, level);
         toc.add(hash);
     }
 

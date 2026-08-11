@@ -31,7 +31,7 @@ public class Dataset implements Comparable {
     private Vector simpleAttrs = new Vector();
 
     private int displayCreateLinks = -1;
-    private static Hashtable createLinkWeights = null;
+    private static Hashtable<String, Integer> createLinkWeights = null;
 
     private int sortOrder = 1;
     private String sortString = null;
@@ -247,16 +247,14 @@ public class Dataset implements Comparable {
         }
     }
 
-    public static Hashtable getCreateLinkWeights() {
-
+    public static Hashtable<String, Integer> getCreateLinkWeights() {
         if (createLinkWeights == null) {
-            createLinkWeights = new Hashtable();
-            createLinkWeights.put("PDF", new Integer(1));
-            createLinkWeights.put("XLS", new Integer(2));
-            createLinkWeights.put("XMLINST", new Integer(4));
-            createLinkWeights.put("XMLSCHEMA", new Integer(8));
+            createLinkWeights = new Hashtable<>();
+            createLinkWeights.put("PDF", 1);
+            createLinkWeights.put("XLS", 2);
+            createLinkWeights.put("XMLINST", 4);
+            createLinkWeights.put("XMLSCHEMA", 8);
         }
-
         return createLinkWeights;
     }
 

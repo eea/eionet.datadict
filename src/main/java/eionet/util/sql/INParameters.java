@@ -31,7 +31,7 @@ public class INParameters {
      */
     public String add(Object value, int sqlType) {
         values.add(value);
-        sqlTypes.add(new Integer(sqlType));
+        sqlTypes.add(sqlType);
         return "?";
     }
 

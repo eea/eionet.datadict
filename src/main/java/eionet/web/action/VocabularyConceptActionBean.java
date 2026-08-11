@@ -412,9 +412,9 @@ public class VocabularyConceptActionBean extends AbstractActionBean {
         }
 
         if (!StringUtils.isBlank(vocabularyId)) {
-            int folderId = Integer.valueOf(vocabularyId);
+            int folderId = Integer.parseInt(vocabularyId);
             relatedConceptsFilter.setVocabularyFolderId(folderId);
-            relatedVocabulary = vocabularyService.getVocabularyFolder(Integer.valueOf(vocabularyId));
+            relatedVocabulary = vocabularyService.getVocabularyFolder(Integer.parseInt(vocabularyId));
         }
 
         // In case exclude voc set is clicked exclude another vocabulary set

@@ -601,20 +601,6 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see eionet.meta.exports.pdf.PdfHandout#keepOnOnePage(int)
-     */
-    @Override
-    protected boolean keepOnOnePage(int index) {
-        if (index == vsTableIndex) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
     /**
      * Override of the method for adding a title page
      */

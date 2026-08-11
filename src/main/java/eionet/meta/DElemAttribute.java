@@ -18,30 +18,26 @@ public class DElemAttribute {
 
     public static final String FIELD_ID = "fld-id";
     public static final String FIELD_NAME = "fld-name";
-    public static final String FIELD_DEFN = "fld-defn";
     public static final String FIELD_VALUE = "fld-value";
-
-    public static final String FIELD_PRIORITY_HIGH = "0";
-    public static final String FIELD_PRIORITY_LOW = "1";
 
     public static final String REQUEST_PARAM_PREFIX = "attr_";
     public static final String REQUEST_PARAM_MULTI_PREFIX = "attr_mult_";
 
     public static Hashtable<String, Integer> typeWeights = new Hashtable<String, Integer>();
     static {
-        typeWeights.put("VCF", new Integer(1024)); // vocabulary folder
+        typeWeights.put("VCF", 1024); // vocabulary folder
         //TODO check if this is it used any more:
-        typeWeights.put("VCO", new Integer(512)); // vocabulary concept
-        typeWeights.put(ParentType.SCHEMA_SET.toString(), new Integer(256)); // schema set
-        typeWeights.put(ParentType.SCHEMA.toString(), new Integer(128)); // schema
-        typeWeights.put("TBL", new Integer(64));
-        typeWeights.put("FXV", new Integer(32));
-        typeWeights.put("DCL", new Integer(16));
-        typeWeights.put("DST", new Integer(8));
-        typeWeights.put("AGG", new Integer(4));
-        typeWeights.put("CH3", new Integer(2)); // element vocabulary fixed values - same as for CH1
-        typeWeights.put("CH1", new Integer(2));
-        typeWeights.put("CH2", new Integer(1));
+        typeWeights.put("VCO", 512); // vocabulary concept
+        typeWeights.put(ParentType.SCHEMA_SET.toString(), 256); // schema set
+        typeWeights.put(ParentType.SCHEMA.toString(), 128); // schema
+        typeWeights.put("TBL", 64);
+        typeWeights.put("FXV", 32);
+        typeWeights.put("DCL", 16);
+        typeWeights.put("DST", 8);
+        typeWeights.put("AGG", 4);
+        typeWeights.put("CH3", 2); // element vocabulary fixed values - same as for CH1
+        typeWeights.put("CH1", 2);
+        typeWeights.put("CH2", 1);
     }
 
     private String name = null;

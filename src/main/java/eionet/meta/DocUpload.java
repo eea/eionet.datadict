@@ -89,7 +89,7 @@ public class DocUpload extends HttpServlet {
         } catch (Exception e) {
             if (e instanceof SQLException) {
                 int errCode = ((SQLException) e).getErrorCode();
-                LOGGER.warn(new Integer(errCode).toString());
+                LOGGER.warn(Integer.toString(errCode));
             }
             LOGGER.error(e.getMessage(), e);
             throw new ServletException(e.getMessage() == null ? "" : e.getMessage(), e);

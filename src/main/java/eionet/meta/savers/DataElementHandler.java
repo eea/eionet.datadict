@@ -206,7 +206,7 @@ public class DataElementHandler extends BaseHandler {
                     this.mDatatypeID = attr.getID();
                 }
 
-                this.attrShortNamesById.put(new Integer(attr.getID()), attr.getShortName());
+                this.attrShortNamesById.put(attr.getID(), attr.getShortName());
                 this.attrIdsByShortName.put(attr.getShortName(), attr.getID());
             }
             rdfNamespaceDAO = searchEngine.getSpringContext().getBean(IRdfNamespaceDAO.class);

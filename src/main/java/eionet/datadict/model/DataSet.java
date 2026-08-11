@@ -69,23 +69,12 @@ public class DataSet implements AttributeOwner {
         }
     }
 
-
     public DataSet() {
         super();
     }
 
     public DataSet(Integer id) {
         this.id = id;
-    }
-
-    public static final Map<String, Integer> createLinkWeights;
-
-    static {
-        createLinkWeights = new HashMap<String, Integer>();
-        createLinkWeights.put("PDF", new Integer(1));
-        createLinkWeights.put("XLS", new Integer(2));
-        createLinkWeights.put("XMLINST", new Integer(4));
-        createLinkWeights.put("XMLSCHEMA", new Integer(8));
     }
 
     @Override

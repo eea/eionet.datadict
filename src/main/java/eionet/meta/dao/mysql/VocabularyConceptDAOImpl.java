@@ -665,7 +665,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
                 getNamedParameterJdbcTemplate().query(sql, params, new RowMapper<Integer>() {
                     @Override
                     public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
-                        return new Integer(rs.getInt("VOCABULARY_CONCEPT_ID"));
+                        return rs.getInt("VOCABULARY_CONCEPT_ID");
                     }
                 });
         return resultList;
@@ -1146,7 +1146,7 @@ public class VocabularyConceptDAOImpl extends GeneralDAOImpl implements IVocabul
             getNamedParameterJdbcTemplate().query(sql.toString(), params, new RowMapper<Integer>() {
                 @Override
                 public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
-                    return new Integer(rs.getInt("VOCABULARY_CONCEPT_ID"));
+                    return rs.getInt("VOCABULARY_CONCEPT_ID");
                 }
             });
 

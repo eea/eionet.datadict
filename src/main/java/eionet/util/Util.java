@@ -76,7 +76,7 @@ public final class Util {
     /** Size of buffer for the write() method. */
     private static final int BUF_SIZE = 1024;
     /** Cache of reserved characters in XML to be escaped. */
-    private static Hashtable xmlEscapes = null;
+    private static Hashtable<Character, String> xmlEscapes = null;
     private static String[][] allowedFxvDatatypeConversions = {{"boolean", "string"}, {"date", "string"}, {"float", "string"},
             {"double", "string"}, {"integer", "string"}, {"integer", "float"}, {"integer", "double"}, {"integer", "decimal"},
             {"float", "double"}, {"float", "decimal"}, {"double", "decimal"}, {"decimal", "string"}};
@@ -418,8 +418,8 @@ public final class Util {
 
         StringBuffer buf = new StringBuffer();
         for (int i = 0; i < dstBytes.length; i++) {
-            Byte byteWrapper = new Byte(dstBytes[i]);
-            buf.append(String.valueOf(byteWrapper.intValue()));
+            Byte byteWrapper = dstBytes[i];
+            buf.append(byteWrapper.intValue());
         }
 
         return buf.toString();
@@ -446,7 +446,7 @@ public final class Util {
 
         StringBuffer buf = new StringBuffer();
         for (int i = 0; i < dstBytes.length; i++) {
-            Byte byteWrapper = new Byte(dstBytes[i]);
+            Byte byteWrapper = dstBytes[i];
             int k = byteWrapper.intValue();
             String s = Integer.toHexString(byteWrapper.intValue());
             if (s.length() == 1) {
@@ -615,18 +615,18 @@ public final class Util {
             return in;
         }
 
-        HashSet endChars = new HashSet();
-        endChars.add(new Character('!'));
-        endChars.add(new Character('\''));
-        endChars.add(new Character('('));
-        endChars.add(new Character(')'));
-        endChars.add(new Character('.'));
-        endChars.add(new Character(':'));
-        endChars.add(new Character(';'));
+        HashSet<Character> endChars = new HashSet<>();
+        endChars.add('!');
+        endChars.add('\'');
+        endChars.add('(');
+        endChars.add(')');
+        endChars.add('.');
+        endChars.add(':');
+        endChars.add(';');
 
         for (endIndex = endIndex - 1; endIndex > beginIndex; endIndex--) {
             char c = in.charAt(endIndex);
-            if (!endChars.contains(new Character(c))) {
+            if (!endChars.contains(c)) {
                 break;
             }
         }
@@ -976,7 +976,7 @@ public final class Util {
         if (xmlEscapes == null) {
             setXmlEscapes();
         }
-        Character c = new Character(text.charAt(pos));
+        Character c = text.charAt(pos);
         for (Enumeration e = xmlEscapes.elements(); e.hasMoreElements();) {
             String esc = (String) e.nextElement();
             if (pos + esc.length() < text.length()) {
@@ -1013,12 +1013,12 @@ public final class Util {
     }
 
     private static void setXmlEscapes() {
-        xmlEscapes = new Hashtable();
-        xmlEscapes.put(new Character('&'), "&amp;");
-        xmlEscapes.put(new Character('<'), "&lt;");
-        xmlEscapes.put(new Character('>'), "&gt;");
-        xmlEscapes.put(new Character('"'), "&quot;");
-        xmlEscapes.put(new Character('\''), "&apos;");
+        xmlEscapes = new Hashtable<>();
+        xmlEscapes.put('&', "&amp;");
+        xmlEscapes.put('<', "&lt;");
+        xmlEscapes.put('>', "&gt;");
+        xmlEscapes.put('"', "&quot;");
+        xmlEscapes.put('\'', "&apos;");
     }
 
     /*

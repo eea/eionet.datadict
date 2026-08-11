@@ -48,15 +48,14 @@ public abstract class PdfHandout implements PdfHandoutIF {
     protected DDSearchEngine searchEngine = null;
     protected OutputStream os = null;
 
-    private Vector docElements = new Vector();
+    private Vector<Element> docElements = new Vector<>();
 
     protected HeaderFooter header = null;
     protected HeaderFooter footer = null;
 
-    private Vector pageBreaks = new Vector();
-    private Vector rotates = new Vector();
-    private Vector landscapes = new Vector();
-    private Vector portraits = new Vector();
+    private Vector<Integer> pageBreaks = new Vector<>();
+    private Vector<Integer> landscapes = new Vector<>();
+    private Vector<Integer> portraits = new Vector<>();
 
     protected String logo = null;
 
@@ -113,24 +112,21 @@ public abstract class PdfHandout implements PdfHandoutIF {
             document.newPage();
         }
 
-        int tblCounter = 0;
         float yPos = YPOS_START;
         // add elements to the document
         for (int i = 0; docElements != null && i < docElements.size(); i++) {
+            Element elm = docElements.get(i);
 
-            Element elm = (Element) docElements.get(i);
-
-            if (pageBreaks.contains(new Integer(i))) {
-                if (landscapes.contains(new Integer(i))) {
+            if (pageBreaks.contains(i)) {
+                if (landscapes.contains(i)) {
                     document.setPageSize(PageSize.A4.rotate());
-                } else if (portraits.contains(new Integer(i))) {
+                } else if (portraits.contains(i)) {
                     document.setPageSize(PageSize.A4);
                 }
                 document.newPage();
             }
 
             if (elm instanceof ImgRaw) {
-
                 ImgRaw img = (ImgRaw) elm;
                 float h = img.getScaledHeight();
                 if (yPos < h + IMG_FIT_RESERVE) {
@@ -166,32 +162,20 @@ public abstract class PdfHandout implements PdfHandoutIF {
     }
 
     protected void insertPageBreak() {
-        pageBreaks.add(new Integer(docElements.size()));
+        pageBreaks.add(docElements.size());
     }
 
-    /*
-     * protected void rotatePage() { rotates.add(new Integer(docElements.size())); insertPageBreak(); }
-     */
-
     protected void pageToLandscape() {
-        landscapes.add(new Integer(docElements.size()));
+        landscapes.add(docElements.size());
         insertPageBreak();
     }
 
     protected void pageToPortrait() {
-        portraits.add(new Integer(docElements.size()));
+        portraits.add(docElements.size());
         insertPageBreak();
     }
 
-    /*
-     *
-     */
-    protected boolean keepOnOnePage(int index) {
-        return false;
-    }
-
     protected void setHeader(String title) throws Exception {
-
         StringBuffer buf = new StringBuffer("European Environment Agency");
 
         Phrase phr = new Phrase();
