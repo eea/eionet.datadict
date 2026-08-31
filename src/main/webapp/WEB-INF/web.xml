@@ -147,7 +147,12 @@
         <filter-name>ResponseOverrideFilter</filter-name>
         <filter-class>org.displaytag.filter.ResponseOverrideFilter</filter-class>
     </filter>
-    
+
+    <filter>
+        <filter-name>rpcRouterLoggingFilter</filter-name>
+        <filter-class>eionet.meta.filters.RpcRouterLoggingFilter</filter-class>
+    </filter>
+
     <!-- Filter Mappings -->
     <filter-mapping>
         <filter-name>StripesFilter</filter-name>
@@ -245,6 +250,11 @@
     <filter-mapping>
         <filter-name>ResponseOverrideFilter</filter-name>
         <url-pattern>/vocabulary/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>rpcRouterLoggingFilter</filter-name>
+        <url-pattern>/rpcrouter</url-pattern>
     </filter-mapping>
 
     <!-- servlets -->

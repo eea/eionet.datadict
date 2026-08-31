@@ -5,14 +5,12 @@ import eionet.meta.Dataset;
 import eionet.meta.DsTable;
 import eionet.util.Util;
 import eionet.util.sql.ConnectionUtil;
-import eionet.web.action.AbstractActionBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
@@ -53,7 +51,7 @@ public class OutService {
     @SuppressWarnings("rawtypes")
     @Deprecated
     public Vector getParametersByActivityID(String activityId) throws Exception {
-
+        LOGGER.info("XML-RPC call to getParametersByActivityID method");
         // The method is deprecated, so just send an empty vector.
         return new Vector();
     }
@@ -77,7 +75,7 @@ public class OutService {
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     public Vector getDSTables() throws Exception {
-
+        LOGGER.info("XML-RPC call to getDSTables method");
         Connection conn = null;
         try {
             conn = ConnectionUtil.getConnection();
@@ -125,7 +123,7 @@ public class OutService {
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     public Hashtable getDatasetWithReleaseInfo(String objType, String objId) throws Exception {
-
+        LOGGER.info("XML-RPC call to getDatasetWithReleaseInfo method");
         // validate objType
         if (objType == null || (!objType.equals("dst") && !objType.equals("tbl"))) {
             throw new IllegalArgumentException("Missing or invalid objType!");
