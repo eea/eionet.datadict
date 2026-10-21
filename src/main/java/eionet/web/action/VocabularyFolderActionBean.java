@@ -21,30 +21,12 @@
 
 package eionet.web.action;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
-import eionet.datadict.dal.AsyncTaskDao;
-import eionet.datadict.dal.AsyncTaskHistoryDao;
 import eionet.datadict.errors.BadFormatException;
 import eionet.datadict.errors.ConceptWithoutNotationException;
-import eionet.datadict.errors.EmptyParameterException;
 import eionet.datadict.errors.ResourceNotFoundException;
-import eionet.datadict.infrastructure.asynctasks.AsyncTaskDataSerializer;
-import eionet.datadict.infrastructure.asynctasks.AsyncTaskExecutionError;
 import eionet.datadict.infrastructure.asynctasks.AsyncTaskManager;
-import eionet.datadict.model.AsyncTaskExecutionEntry;
-import eionet.datadict.model.AsyncTaskExecutionEntryHistory;
-import eionet.datadict.model.Attribute;
-import eionet.datadict.model.DataDictEntity;
-import eionet.datadict.model.enums.Enumerations;
-import eionet.datadict.model.enums.Enumerations.SchedulingIntervalUnit;
-import eionet.datadict.model.enums.Enumerations.VocabularyRdfPurgeOption;
-import eionet.datadict.services.AttributeService;
-import eionet.datadict.services.data.AttributeDataService;
 import eionet.datadict.services.stripes.FileBeanDecompressor;
-import eionet.datadict.util.ScheduledTaskResolver;
 import eionet.datadict.web.asynctasks.*;
-import eionet.datadict.web.viewmodel.ScheduledTaskView;
 import eionet.meta.dao.domain.*;
 import eionet.meta.exports.json.VocabularyJSONOutputHelper;
 import eionet.meta.exports.rdf.InspireCodelistXmlWriter;
@@ -58,7 +40,6 @@ import net.sourceforge.stripes.validation.ValidationMethod;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.validator.routines.EmailValidator;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -97,34 +78,6 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     private static final String BOUND_ELEMENT_FILTER_JSP = "/pages/vocabularies/boundElementFilter.jsp";
 
     /**
-     *Page responsible for scheduling the RDF import for a Vocabulary
-     */
-    private static final String SCHEDULE_VOCABULARY_SYNC = "/pages/vocabularies/scheduleVocabularySync.jsp";
-
-     /**
-     *Page showing the scheduled jobs queue and past job execution attempts
-     */
-    private static final String SCHEDULED_JOBS_VIEW = "/pages/vocabularies/viewScheduledJobs.jsp";
-
-     /**
-     *Page showing the scheduled Task past execution attempts 
-     */
-    private static final String SCHEDULED_TASK_HISTORY_VIEW = "/pages/vocabularies/viewScheduledTaskHistory.jsp";
-
-    
-    /**
-     * Page to view the details of a scheduled task
-     */
-    private static final String SCHEDULED_TASK_DETAILS = "/pages/vocabularies/scheduledTaskDetails.jsp";
-   
-    /**
-     * Page to view the details of a scheduled task History
-     */
-    private static final String  SCHEDULED_TASK_HISTORY_DETAILS = "/pages/vocabularies/scheduledTaskHistoryDetails.jsp"; 
-   
-    private static final String EDIT_SCHEDULED_TASK_DETAILS = "/pages/vocabularies/editScheduledTaskDetails.jsp";
-    
-    /**
      * Popup div's id prefix on jsp page.
      */
     private static final String EDIT_DIV_ID_PREFIX = "editConceptDiv";
@@ -149,8 +102,6 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      */
     private static final String FOLDER_CHOICE_NEW = "new";
 
-    private static final String VOCABULARY_RDF_IMPORT_FROM_URL_TASK_CLASS_NAME = "eionet.datadict.web.asynctasks.VocabularyRdfImportFromUrlTask";
-
     static {
         RESERVED_VOCABULARY_EVENTS = new ArrayList<String>();
         RESERVED_VOCABULARY_EVENTS.add("view");
@@ -171,7 +122,6 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         RESERVED_VOCABULARY_EVENTS.add("uploadCsv");
         RESERVED_VOCABULARY_EVENTS.add("uploadRdf");
         RESERVED_VOCABULARY_EVENTS.add("json");
-        RESERVED_VOCABULARY_EVENTS.add("createSyncSchedule");
     }
 
     /**
@@ -199,12 +149,6 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      */
     @SpringBean
     private IVocabularyService vocabularyService;
-    
-    @SpringBean
-    private AttributeService attributeService;
-
-    @SpringBean
-    private AttributeDataService attributeDataService;
 
     /**
      * Site code service.
@@ -237,23 +181,9 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
 
     @SpringBean
     private AsyncTaskManager asyncTaskManager;
-    
-    
-    
-    @SpringBean
-    private AsyncTaskDao asyncTaskDao;
-
-    @SpringBean
-    private AsyncTaskHistoryDao asyncTaskHistoryDao;
 
     @SpringBean
     private FileBeanDecompressor fileBeanDecompressor;
-    
-    @SpringBean
-    private ScheduledTaskResolver scheduledTaskResolver;
-    
-    @SpringBean
-    private AsyncTaskDataSerializer asyncTaskDataSerializer;
 
     @SpringBean
     private DataElementsService dataElementsService;
@@ -421,34 +351,6 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
      * List of columns for filter
      */
     private List<String> columns = new ArrayList<String>();
-
-    /**
-     *
-     *Schedule Vocabulary Synchronization  Parameters 
-     **/
-    private String vocabularyRdfUrl ;
-    
-    private String emails;
-    
-    private Integer scheduleInterval;
-    
-    private List<AsyncTaskExecutionEntry> asyncTaskEntries;
-
-    private List<AsyncTaskExecutionEntryHistory> asyncTaskEntriesHistory;
-    
-    private List<ScheduledTaskView> futureScheduledTaskViews = new ArrayList<ScheduledTaskView>();
-    
-    private List<ScheduledTaskView> scheduledTaskHistoryViews = new ArrayList<ScheduledTaskView>();
-    
-    private EmailValidator emailValidator = EmailValidator.getInstance();
-
-    private String scheduledTaskId;
-    
-    private String scheduledTaskHistoryId;
-    
-    private ScheduledTaskView scheduledTaskView;
-
-    private SchedulingIntervalUnit schedulingIntervalUnit;
 
     /***
      *This Field is mandatory if one wishes to redirect the user to the Generic Datadict Error page.
@@ -933,173 +835,6 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     }
 
     /**
-     * 
-     * Display page to schedule a new synchronization of vocabulary or redirect to edit page if a scheduled job for this vocabulary already exists.
-     *
-     * @return resolution
-     */
-    public Resolution scheduleSynchronization() throws ServiceException, ResourceNotFoundException {
-        vocabularyFolder = vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(), vocabularyFolder.isWorkingCopy());
-
-        AsyncTaskExecutionEntry existingTaskEntry = asyncTaskDao.getVocabularyRdfImportTaskEntryByVocabularyName(vocabularyFolder.getIdentifier());
-        if (existingTaskEntry != null) {
-            this.scheduledTaskId = existingTaskEntry.getTaskId();
-            return this.editScheduledJob();
-        }
-
-        setRdfPurgeOption(1);
-        setSchedulingIntervalUnit(SchedulingIntervalUnit.DAY);
-        return new ForwardResolution(SCHEDULE_VOCABULARY_SYNC);
-    }
-       
-    /**
-     * View A specific Scheduled Task's Details
-     */
-    public Resolution viewScheduledTaskDetails() throws ResourceNotFoundException {
-        AsyncTaskExecutionEntry entry = asyncTaskManager.getTaskEntry(scheduledTaskId);
-        scheduledTaskView = new ScheduledTaskView();
-        scheduledTaskView.setDetails(entry);
-        scheduledTaskView.setType(scheduledTaskResolver.resolveTaskTypeFromTaskClassName(entry.getTaskClassName()));
-        scheduledTaskView.setTaskParameters(asyncTaskDataSerializer.deserializeParameters(entry.getSerializedParameters()));
-        if (this.extractExceptionMessageFromErrorResult(entry.getSerializedResult()) != null) {
-            scheduledTaskView.setTaskResult("Error:" +this.extractExceptionMessageFromErrorResult(entry.getSerializedResult()));
-        } else {
-            scheduledTaskView.setTaskResult(asyncTaskDataSerializer.deserializeResult(entry.getSerializedResult()));
-        }
-        return new ForwardResolution(SCHEDULED_TASK_DETAILS);
-    }
-
-    /**
-     * View A specific Scheduled Task's History Details
-     *
-     */
-    public Resolution viewScheduledTaskHistoryDetails() {
-        AsyncTaskExecutionEntryHistory entryHistory = asyncTaskManager.getTaskEntryHistory(scheduledTaskHistoryId);
-        scheduledTaskView = new ScheduledTaskView();
-        scheduledTaskView.setDetails(entryHistory);
-        scheduledTaskView.setType(scheduledTaskResolver.resolveTaskTypeFromTaskClassName(entryHistory.getTaskClassName()));
-        scheduledTaskView.setTaskParameters(asyncTaskDataSerializer.deserializeParameters(entryHistory.getSerializedParameters()));
-        if (this.extractExceptionMessageFromErrorResult(entryHistory.getSerializedResult()) != null) {
-            scheduledTaskView.setTaskResult("Error: "+this.extractExceptionMessageFromErrorResult(entryHistory.getSerializedResult()));
-        } else {
-            scheduledTaskView.setTaskResult(asyncTaskDataSerializer.deserializeResult(entryHistory.getSerializedResult()));
-        }
-        return new ForwardResolution(SCHEDULED_TASK_HISTORY_DETAILS);
-    }
-    
-    /**
-     * View the page to edit a Scheduled Job 
-     **/
-    public Resolution editScheduledJob() throws ServiceException, ResourceNotFoundException {
-        AsyncTaskExecutionEntry entry = asyncTaskManager.getTaskEntry(scheduledTaskId);
-        if (entry.getTaskClassName().equals(VOCABULARY_RDF_IMPORT_FROM_URL_TASK_CLASS_NAME)) {
-            scheduledTaskView = new ScheduledTaskView();
-            scheduledTaskView.setDetails(entry);
-            scheduledTaskView.setType(scheduledTaskResolver.resolveTaskTypeFromTaskClassName(entry.getTaskClassName()));
-            scheduledTaskView.setTaskParameters(asyncTaskDataSerializer.deserializeParameters(entry.getSerializedParameters()));
-            Map<String, Object> parameters = asyncTaskDataSerializer.deserializeParameters(entry.getSerializedParameters());
-            this.vocabularyRdfUrl = (String) parameters.get(VocabularyRdfImportFromUrlTask.PARAM_RDF_FILE_URL);
-            this.emails = (String) parameters.get(VocabularyRdfImportFromUrlTask.PARAM_NOTIFIERS_EMAILS);
-            this.rdfPurgeOption = Enumerations.VocabularyRdfPurgeOption.valueOf((String)parameters.get(VocabularyRdfImportFromUrlTask.PARAM_RDF_PURGE_OPTION)).getRdfPurgeOption();
-            this.missingConceptsAction = (IVocabularyImportService.MissingConceptsAction) parameters.get(VocabularyRdfImportFromUrlTask.PARAM_MISSING_CONCEPTS_ACTION);
-            this.scheduleInterval = (Integer) parameters.get(VocabularyRdfImportFromUrlTask.PARAM_SCHEDULE_INTERVAL);
-            this.schedulingIntervalUnit = (SchedulingIntervalUnit) parameters.get(VocabularyRdfImportFromUrlTask.PARAM_SCHEDULE_INTERVAL_UNIT);
-            scheduledTaskView.setTaskResult(asyncTaskDataSerializer.deserializeResult(entry.getSerializedResult()));
-            vocabularyFolder = vocabularyService.getVocabularyFolder((String) parameters.get(VocabularyRdfImportFromUrlTask.PARAM_VOCABULARY_SET_IDENTIFIER),
-                    (String) parameters.get(VocabularyRdfImportFromUrlTask.PARAM_VOCABULARY_IDENTIFIER), false);
-        }
-        return new ForwardResolution(EDIT_SCHEDULED_TASK_DETAILS);
-    }
-
-    public Resolution viewScheduledJobs() throws ServiceException {
-        asyncTaskEntries = asyncTaskManager.getAllScheduledTaskEntries();
-        for (AsyncTaskExecutionEntry entry : asyncTaskEntries) {
-            ScheduledTaskView taskView = new ScheduledTaskView();
-            taskView.setType(scheduledTaskResolver.resolveTaskTypeFromTaskClassName(entry.getTaskClassName()));
-            taskView.setDetails(entry);
-            taskView.setAdditionalDetails(scheduledTaskResolver.extractImportUrlFromVocabularyImportTask(entry));
-            taskView.setTaskParameters(asyncTaskDataSerializer.deserializeParameters(entry.getSerializedParameters()));
-            futureScheduledTaskViews.add(taskView);
-        }
-        return new ForwardResolution(SCHEDULED_JOBS_VIEW);
-    }
-    
-    /**
-     *View all previous execution attempts of a scheduled job
-     **/
-    public Resolution viewScheduledJobHistory() throws ServiceException {
-        asyncTaskEntriesHistory = asyncTaskManager.retrieveLimitedTaskHistoryByTaskId(scheduledTaskId, 10);
-        for (AsyncTaskExecutionEntryHistory historyEntry : asyncTaskEntriesHistory) {
-            ScheduledTaskView taskView = new ScheduledTaskView();
-            taskView.setType(scheduledTaskResolver.resolveTaskTypeFromTaskClassName(historyEntry.getTaskClassName()));
-            taskView.setDetails(historyEntry);
-            taskView.setAdditionalDetails(scheduledTaskResolver.extractImportUrlFromVocabularyImportTask(historyEntry));
-            taskView.setTaskParameters(asyncTaskDataSerializer.deserializeParameters(historyEntry.getSerializedParameters()));
-            taskView.setAsyncTaskExecutionEntryHistoryId(historyEntry.getId());
-            scheduledTaskHistoryViews.add(taskView);
-        }
-        return new ForwardResolution(SCHEDULED_TASK_HISTORY_VIEW);
-    }
-
-    
-    /**
-     * Schedule Synchronization of Vocabularies
-     * @return resolution
-     */
-    public Resolution createScheduledJob() throws ServiceException {
-           try {
-            vocabularyFolder = vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(), vocabularyFolder.isWorkingCopy());
-        } catch (ServiceException e) {
-            e.setErrorParameter(ErrorActionBean.ERROR_TYPE_KEY, ErrorActionBean.ErrorType.INVALID_INPUT);
-            throw e;
-        } catch (Exception e) {
-            ErrorResolution error = new ErrorResolution(HttpURLConnection.HTTP_INTERNAL_ERROR);
-            error.setErrorMessage(e.getMessage());
-            return error;
-        }
-
-        Map<String, Object> paramsBundle = VocabularyRdfImportFromUrlTask.createParamsBundle(
-                vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(), scheduleInterval, schedulingIntervalUnit, 
-                vocabularyRdfUrl, emails, VocabularyRdfPurgeOption.translateRDFPurgeOptionNumberToEnum(rdfPurgeOption), missingConceptsAction);
-
-        this.asyncTaskManager.scheduleTask(VocabularyRdfImportFromUrlTask.class, paramsBundle, schedulingIntervalUnit.getMinutes() * scheduleInterval);
-        return new RedirectResolution(VocabularyFolderActionBean.class, "viewScheduledJobs");
-    }
-
-    /**
-     * Update an existing scheduled Job
-     * @return resolution
-     */
-    public Resolution updateScheduledJob() throws ServiceException {
-           try {
-            vocabularyFolder = vocabularyService.getVocabularyFolder(vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(),vocabularyFolder.isWorkingCopy());
-        } catch (ServiceException e) {
-            e.setErrorParameter(ErrorActionBean.ERROR_TYPE_KEY, ErrorActionBean.ErrorType.INVALID_INPUT);
-            throw e;
-        } catch (Exception e) {
-            ErrorResolution error = new ErrorResolution(HttpURLConnection.HTTP_INTERNAL_ERROR);
-            error.setErrorMessage(e.getMessage());
-            return error;
-        }
-
-        Map<String, Object> paramsBundle = VocabularyRdfImportFromUrlTask.createParamsBundle(
-                vocabularyFolder.getFolderName(), vocabularyFolder.getIdentifier(), scheduleInterval, schedulingIntervalUnit, 
-                vocabularyRdfUrl, emails, VocabularyRdfPurgeOption.translateRDFPurgeOptionNumberToEnum(rdfPurgeOption), missingConceptsAction);
-
-        this.asyncTaskManager.updateScheduledTask(VocabularyRdfImportFromUrlTask.class, paramsBundle, schedulingIntervalUnit.getMinutes() * scheduleInterval, scheduledTaskId);
-        return new RedirectResolution(VocabularyFolderActionBean.class, "viewScheduledJobs");
-    }
-
-    /**
-     * Delete a Scheduled Job 
-     **/
-    public Resolution deleteScheduledJob(){
-        asyncTaskManager.deleteTask(scheduledTaskId);
-        return new RedirectResolution(VocabularyFolderActionBean.class, "viewScheduledJobs");
-    }
-
-
-    /**
      * Validates check out.
      *
      * @throws ServiceException
@@ -1391,46 +1126,6 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         }
     }
 
-    
-    /***
-     * Validate Schedule Synchronization of a Vocabulary 
-     **/
-    @ValidationMethod(on = {"createScheduledJob", "updateScheduledJob"})
-    public void ValidateCreateOrUpdateScheduledJob() throws ServiceException {
-        if (vocabularyFolder.getId() == 0) {
-            if (!isCreateRight()) {
-                addGlobalValidationError("No permission to create new vocabulary");
-            }
-        } else if (!isUpdateRight()) {
-            addGlobalValidationError("No permission to modify vocabulary");
-        }
-        if (StringUtils.isNotEmpty(vocabularyRdfUrl)) {
-            if (!Util.isURL(vocabularyRdfUrl)) {
-                addGlobalValidationError("Provided Vocabulary Rdf URL is not a valid URL. \n The allowed schemes are: "
-                        + "http, https, ftp, mailto, tel and urn. ");
-            }
-        } else {
-            addGlobalValidationError("RDF URL cannot be Empty.");
-        }
-        if (StringUtils.isEmpty(emails)) {
-            addGlobalValidationError("You should provide at least one valid Email Address");
-        }
-        if (StringUtils.isNotEmpty(emails)) {
-            String[] emailsArray = emails.split(",");
-            for (String email : emailsArray) {
-                if (!emailValidator.isValid(email)) {
-                    addGlobalValidationError("Email Address:" + email + " is not valid");
-                }
-            }
-        }
-        if (scheduleInterval == null || scheduleInterval == 0) {
-            addGlobalValidationError("Please Specify a valid number for Schedule Intervals");
-        }
-        if (isValidationErrors()) {
-            folders = vocabularyService.getFolders(getUserName(), null);
-            initFilter();
-        }
-    }
 
     /**
      * Navigates to vocabulary folders list.
@@ -2248,88 +1943,6 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
         this.columns = columns;
     }
 
-    public void setSchedulingIntervalUnit(SchedulingIntervalUnit schedulingIntervalUnit) {
-        this.schedulingIntervalUnit = schedulingIntervalUnit;
-    }
-
-    public SchedulingIntervalUnit getSchedulingIntervalUnit() {
-        return schedulingIntervalUnit;
-    }
-
-    public String getVocabularyRdfUrl() {
-        return vocabularyRdfUrl;
-    }
-
-    public void setVocabularyRdfUrl(String vocabularyRdfUrl) {
-        this.vocabularyRdfUrl = vocabularyRdfUrl;
-    }
-
-    public String getEmails() {
-        return emails;
-    }
-
-    public void setEmails(String emails) {
-        this.emails = emails;
-    }
-
-    public Integer getScheduleInterval() {
-        return scheduleInterval;
-    }
-
-    public void setScheduleInterval(Integer scheduleInterval) {
-        this.scheduleInterval= scheduleInterval;
-    }
-
-    public List<AsyncTaskExecutionEntry> getAsyncTaskEntries() {
-        return asyncTaskEntries;
-    }
-
-    public void setAsyncTaskEntries(List<AsyncTaskExecutionEntry> asyncTaskEntries) {
-        this.asyncTaskEntries = asyncTaskEntries;
-    }
-
-    public List<AsyncTaskExecutionEntryHistory> getAsyncTaskEntriesHistory() {
-        return asyncTaskEntriesHistory;
-    }
-
-    public void setAsyncTaskEntriesHistory(List<AsyncTaskExecutionEntryHistory> asyncTaskEntriesHistory) {
-        this.asyncTaskEntriesHistory = asyncTaskEntriesHistory;
-    }
-
-
-    public List<ScheduledTaskView> getFutureScheduledTaskViews() {
-        return futureScheduledTaskViews;
-    }
-
-    public void setFutureScheduledTaskViews(List<ScheduledTaskView> futureScheduledTaskViews) {
-        this.futureScheduledTaskViews = futureScheduledTaskViews;
-    }
-
-
-    public List<ScheduledTaskView> getScheduledTaskHistoryViews() {
-        return scheduledTaskHistoryViews;
-    }
-
-    public void setScheduledTaskHistoryViews(List<ScheduledTaskView> scheduledTaskHistoryViews) {
-        this.scheduledTaskHistoryViews = scheduledTaskHistoryViews;
-    }
-
-    public String getScheduledTaskId() {
-        return scheduledTaskId;
-    }
-
-    public void setScheduledTaskId(String scheduledTaskId) {
-        this.scheduledTaskId = scheduledTaskId;
-    }
-
-    public ScheduledTaskView getScheduledTaskView() {
-        return scheduledTaskView;
-    }
-
-    public void setScheduledTaskView(ScheduledTaskView scheduledTaskView) {
-        this.scheduledTaskView = scheduledTaskView;
-    }
-
     public String getErrorTypeMsg() {
         return errorTypeMsg;
     }
@@ -2337,56 +1950,5 @@ public class VocabularyFolderActionBean extends AbstractActionBean {
     public void setErrorTypeMsg(String errorTypeMsg) {
         this.errorTypeMsg = errorTypeMsg;
     }
-
-    public String getScheduledTaskHistoryId() {
-        return scheduledTaskHistoryId;
-    }
-
-    public void setScheduledTaskHistoryId(String scheduledTaskHistoryId) {
-        this.scheduledTaskHistoryId = scheduledTaskHistoryId;
-    }
-
-    /**
-     * @param taskResult the desirialised Async Task Result
-     * @return the Exception error message, or null if no exception or error
-     * message found in the Task Result.
-     *
-     */
-    public String extractExceptionMessageFromErrorResult(Object taskResult) {
-        Gson gson = new Gson();
-        try {
-            Map<String, String> results = gson.fromJson((String) taskResult, Map.class);
-
-            if (results != null && results.get("@class").equals(AsyncTaskExecutionError.class.getCanonicalName())) {
-                return results.get(AsyncTaskExecutionError.MESSAGE);
-            } else {
-                return null;
-            }
-        } catch (JsonSyntaxException e) {
-            LOGGER.info("Async Task Result Not in Json Format");
-        } catch (Exception e) {
-            LOGGER.info("Async Task Result Not in Json Format");
-        }
-        return null;
-    }
-
-    public Integer getVocabularyBinding(int attributeId) {
-       return attributeDataService.getVocabularyBinding(attributeId);
-    }
-
-    public List<VocabularyConcept> getVocabularyConcepts(int attributeId) throws ResourceNotFoundException, EmptyParameterException {
-        DataDictEntity ddEntity = new DataDictEntity(vocabularyFolder.getId(), DataDictEntity.Entity.VCF);
-        return attributeService.getAttributeVocabularyConcepts(attributeId, ddEntity, Attribute.ValueInheritanceMode.NONE);
-    }
-
-    public VocabularyFolder getVocabularyBindingFolder(int attributeId) throws ServiceException {
-        Integer boundVocabularyId = getVocabularyBinding(attributeId);
-        if (boundVocabularyId != null) {
-            return vocabularyService.getVocabularyFolder(boundVocabularyId);
-        }
-        return null;
-    }
-
-
 
 }

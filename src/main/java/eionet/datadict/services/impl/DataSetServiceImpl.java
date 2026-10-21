@@ -11,7 +11,6 @@ import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.errors.XmlExportException;
 import eionet.datadict.model.Attribute;
 import eionet.datadict.model.AttributeValue;
-import eionet.datadict.model.DataDictEntity;
 import eionet.datadict.model.DataSet;
 import eionet.datadict.model.DatasetTable;
 import eionet.datadict.services.DataSetService;
@@ -29,7 +28,6 @@ import eionet.datadict.services.data.DataSetDataService;
 import eionet.datadict.services.data.DatasetTableDataService;
 import eionet.datadict.util.DateUtils;
 import eionet.meta.dao.domain.DatasetRegStatus;
-import eionet.meta.dao.domain.VocabularyConcept;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -151,16 +149,7 @@ public class DataSetServiceImpl implements DataSetService {
         for (AttributeValue attributeValue : attributeValues) {
             Attribute attribute = this.attributeDataService.getAttribute(attributeValue.getAttributeId());
 
-            if (attribute != null && attribute.getDisplayType().equals(Attribute.DisplayType.VOCABULARY)) {
-
-                List<VocabularyConcept> concepts = this.attributeDataService.getVocabularyConceptsAsAttributeValues(attribute.getId(), new DataDictEntity(dataset.getId(), DataDictEntity.Entity.DS), Attribute.ValueInheritanceMode.NONE);
-                for (VocabularyConcept concept : concepts) {
-                    attributeValue.setValue(concept.getLabel());
-                    Element attributeElement = doc.createElement(attribute.getNamespace().getShortName().concat(":").replace("_", "").concat(attribute.getShortName()).replace(" ", ""));
-                    attributeElement.appendChild(doc.createTextNode(attributeValue.getValue()));
-                    documentation.appendChild(attributeElement);
-                }
-            } else if (attribute != null) {
+            if (attribute != null) {
                 Element attributeElement = doc.createElement(attribute.getNamespace().getShortName().concat(":").replace("_", "").concat(attribute.getShortName()).replace(" ", ""));
                 attributeElement.appendChild(doc.createTextNode(attributeValue.getValue()));
                 documentation.appendChild(attributeElement);

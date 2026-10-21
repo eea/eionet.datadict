@@ -15,7 +15,6 @@ import eionet.datadict.model.DataDictEntity;
 import eionet.datadict.model.Namespace;
 import eionet.datadict.model.RdfNamespace;
 import eionet.datadict.util.data.DataConverter;
-import eionet.meta.dao.domain.VocabularyFolder;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
@@ -45,12 +44,11 @@ public class AttributeDaoImpl extends JdbcDaoBase implements AttributeDao {
         String sql = "select "
                 + "M_ATTRIBUTE.*, "
                 + "NAMESPACE.*, "
-                + "M_ATTRIBUTE_VOCABULARY.VOCABULARY_ID, T_RDF_NAMESPACE.ID AS RDF_ID, T_RDF_NAMESPACE.URI AS RDF_URI, T_RDF_NAMESPACE.NAME_PREFIX as RDF_PREFIX "
+                + "T_RDF_NAMESPACE.ID AS RDF_ID, T_RDF_NAMESPACE.URI AS RDF_URI, T_RDF_NAMESPACE.NAME_PREFIX as RDF_PREFIX "
                 + "FROM "
                 + "M_ATTRIBUTE "
                 + "LEFT JOIN T_RDF_NAMESPACE ON T_RDF_NAMESPACE.ID = M_ATTRIBUTE.RDF_PROPERTY_NAMESPACE_ID "
                 + "LEFT JOIN NAMESPACE ON NAMESPACE.NAMESPACE_ID = M_ATTRIBUTE.NAMESPACE_ID "
-                + "LEFT JOIN M_ATTRIBUTE_VOCABULARY ON M_ATTRIBUTE_VOCABULARY.M_ATTRIBUTE_ID =  M_ATTRIBUTE.M_ATTRIBUTE_ID "
                 + "WHERE M_ATTRIBUTE.M_ATTRIBUTE_ID = :id";
 
         Map<String, Object> params = new HashMap<String, Object>();
@@ -135,19 +133,6 @@ public class AttributeDaoImpl extends JdbcDaoBase implements AttributeDao {
     }
 
     @Override
-    public void updateVocabularyBinding(int attributeId, int vocabularyId) {
-        String sql = "insert into M_ATTRIBUTE_VOCABULARY "
-                + "(M_ATTRIBUTE_ID, VOCABULARY_ID) "
-                + "values (:attrDefId, :vocId) "
-                + "on duplicate key update "
-                + "VOCABULARY_ID=VALUES(VOCABULARY_ID)";
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("attrDefId", attributeId);
-        params.put("vocId", vocabularyId);
-        getNamedParameterJdbcTemplate().update(sql, params);
-    }
-
-    @Override
     public int countAttributeValues(int attributeId) {
         String sql = "select count(Distinct(PARENT_TYPE), DATAELEM_ID) from ATTRIBUTE where M_ATTRIBUTE_ID = :id and not PARENT_TYPE = ''";
         Map<String, Object> params = new HashMap<String, Object>();
@@ -160,14 +145,6 @@ public class AttributeDaoImpl extends JdbcDaoBase implements AttributeDao {
         String sql = "delete from M_ATTRIBUTE where M_ATTRIBUTE_ID = :id";
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("id", id);
-        this.getNamedParameterJdbcTemplate().update(sql, params);
-    }
-
-    @Override
-    public void deleteVocabularyBinding(int attributeId) {
-        String sql = "delete from M_ATTRIBUTE_VOCABULARY where M_ATTRIBUTE_ID = :id";
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("id", attributeId);
         this.getNamedParameterJdbcTemplate().update(sql, params);
     }
 
@@ -192,18 +169,6 @@ public class AttributeDaoImpl extends JdbcDaoBase implements AttributeDao {
             }
         }
         return map;
-    }
-
-    @Override
-    public Integer getVocabularyBinding(int attributeId) {
-        String sql = "select VOCABULARY_ID from M_ATTRIBUTE_VOCABULARY where M_ATTRIBUTE_ID = :attributeId";
-        Map<String, Object> params = this.createParameterMap();
-        params.put("attributeId", attributeId);
-        try {
-            return this.getNamedParameterJdbcTemplate().queryForObject(sql, params, Integer.class);
-        } catch (IncorrectResultSizeDataAccessException ex) {
-            return null;
-        }
     }
 
     @Override
@@ -310,14 +275,6 @@ public class AttributeDaoImpl extends JdbcDaoBase implements AttributeDao {
                 rdfNamespace.setId(rdfNamespaceId);
                 attribute.setRdfNamespace(rdfNamespace);
                 this.readRdfNamespace(rs, attribute);
-            }
-
-            int vocabularyId = rs.getInt("VOCABULARY_ID");
-
-            if (!rs.wasNull()) {
-                VocabularyFolder vocabulary = new VocabularyFolder();
-                vocabulary.setId(vocabularyId);
-                attribute.setVocabulary(vocabulary);
             }
 
             return attribute;

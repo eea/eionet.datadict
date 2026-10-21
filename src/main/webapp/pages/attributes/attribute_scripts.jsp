@@ -5,25 +5,13 @@
 
         function showOnChange(elem, currentDisplayType) {
 
-            document.getElementById('vocabulary').style.display = 'none';
             document.getElementById('select').style.display = 'none';
 
             if (elem.value == currentDisplayType) {
-                if (currentDisplayType == 'VOCABULARY') {
-                    document.getElementById('vocabulary').style.display = "inline";
-                } else if (currentDisplayType == 'SELECT') {
+                if (currentDisplayType == 'SELECT') {
                     document.getElementById('select').style.display = "inline";
                 }
             }
-        }
-        
-        function validateEmptyVocab () {
-            var selectedId = document.getElementById('radio');
-            if (!selectedId || 0 === selectedId.length) {
-                alert("Please select a vocabulary!");
-                return false;
-            }
-            else return true;
         }
         
         function validateMandatoryEditorFields () {

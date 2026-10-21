@@ -26,7 +26,6 @@ import com.lowagie.text.Image;
 import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPTable;
-import eionet.datadict.model.DataDictEntity;
 
 import eionet.meta.DDSearchEngine;
 import eionet.meta.DElemAttribute;
@@ -143,7 +142,6 @@ public class DstPdfGuideline extends PdfHandout implements CachableIF {
         fileName = datasetInstance.getIdentifier() + FILE_EXT;
 
         Vector v = searchEngine.getAttributes(dstId, "DS");
-        populateVocabularyAttributes(v, Integer.parseInt(dstId), DataDictEntity.Entity.DS);
         datasetInstance.setSimpleAttributes(v);
 
         v = searchEngine.getDatasetTables(dstId, true);

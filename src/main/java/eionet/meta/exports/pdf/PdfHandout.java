@@ -22,17 +22,10 @@ import com.lowagie.text.pdf.PdfContentByte;
 import com.lowagie.text.pdf.PdfPageEventHelper;
 import com.lowagie.text.pdf.PdfTemplate;
 import com.lowagie.text.pdf.PdfWriter;
-import eionet.datadict.errors.EmptyParameterException;
-import eionet.datadict.errors.ResourceNotFoundException;
-import eionet.datadict.model.DataDictEntity;
 
 import eionet.meta.DDSearchEngine;
-import eionet.meta.DElemAttribute;
-import eionet.meta.dao.domain.VocabularyConcept;
 import eionet.meta.savers.Parameters;
 import eionet.util.Util;
-import java.util.Iterator;
-import java.util.List;
 
 public abstract class PdfHandout implements PdfHandoutIF {
 
@@ -358,28 +351,6 @@ public abstract class PdfHandout implements PdfHandoutIF {
         return (address.replaceAll("\\s+", "") + PdfHandout.GO_TO_SUFFIX);
     }// end of static method getLocalDestinationAddressFor
 
-    public void populateVocabularyAttributes(Vector<DElemAttribute> attributes, Integer entityId, DataDictEntity.Entity entityType) 
-            throws ResourceNotFoundException, EmptyParameterException {
-        populateVocabularyAttributes(attributes, entityId, entityType, false);
-    }
-
-    public void populateVocabularyAttributes(Vector<DElemAttribute> attributes, Integer entityId, DataDictEntity.Entity entityType, boolean isCommonElement) 
-            throws ResourceNotFoundException, EmptyParameterException {
-        for (Iterator<DElemAttribute> it = attributes.iterator(); it.hasNext();) {
-            DElemAttribute attribute = it.next();
-            String displayType = attribute.getDisplayType();
-            if (displayType != null && displayType.equals("vocabulary")) {
-                DataDictEntity ddEntity = new DataDictEntity(entityId, entityType);
-                List<VocabularyConcept> vocabularyConcepts = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attribute.getID()), ddEntity, isCommonElement ? "0" : attribute.getInheritable());
-                if (vocabularyConcepts == null || vocabularyConcepts.isEmpty()) {
-                    it.remove();
-                } else {
-                    attribute.setVocabularyBinding(searchEngine.getVocabulary(vocabularyConcepts.get(0).getVocabularyId()));
-                    attribute.setVocabularyConcepts(vocabularyConcepts);
-                }
-            }
-        }
-    }
 
 }// end of class PdfHandout
 

@@ -2,19 +2,15 @@ package eionet.datadict.services.data.impl;
 
 import eionet.datadict.dal.AttributeDao;
 import eionet.datadict.dal.AttributeValueDao;
-import eionet.datadict.dal.VocabularyDao;
 import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.model.Attribute;
-import eionet.datadict.model.DataDictEntity;
 import eionet.meta.dao.IFixedValueDAO;
 import eionet.meta.dao.domain.FixedValue;
-import eionet.meta.dao.domain.VocabularyFolder;
 import java.util.ArrayList;
 import static org.junit.Assert.assertNotNull;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
-import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -28,9 +24,6 @@ import org.unitils.spring.annotation.SpringApplicationContext;
 public class AttributeDataServiceTestIT extends UnitilsJUnit4 {
 
     @Mock
-    VocabularyFolder vocabulary;
-    
-    @Mock
     Attribute attribute;
     
     @Mock
@@ -38,9 +31,6 @@ public class AttributeDataServiceTestIT extends UnitilsJUnit4 {
     
     @Mock
     AttributeValueDao attributeValueDao;
-    
-    @Mock
-    VocabularyDao vocabularyDao;
     
     @Mock
     IFixedValueDAO fixedValueDao;
@@ -55,23 +45,10 @@ public class AttributeDataServiceTestIT extends UnitilsJUnit4 {
     }
     
     @Test
-    public void testGetAttributeWithNoVocabulary() throws ResourceNotFoundException {
+    public void testGetAttribute() throws ResourceNotFoundException {
         Mockito.doReturn(attribute).when(attributeDao).getById(anyInt());
-        Mockito.doReturn(null).when(attribute).getVocabulary();
         assertNotNull(attributeDataService.getAttribute(0));
         Mockito.verify(attributeDao, times(1)).getById(0);
-    }
-    
-    @Test
-    public void testGetAttributeWithVocabulary() throws ResourceNotFoundException {
-        Mockito.doReturn(attribute).when(attributeDao).getById(anyInt());
-        Mockito.doReturn(vocabulary).when(attribute).getVocabulary();
-        Mockito.doReturn(vocabulary).when(vocabularyDao).getPlainVocabularyById(anyInt());
-        Mockito.doNothing().when(attribute).setVocabulary(any(VocabularyFolder.class));
-        assertNotNull(attributeDataService.getAttribute(0));
-        Mockito.verify(attributeDao).getById(0);
-        Mockito.verify(vocabularyDao).getPlainVocabularyById(0);
-        Mockito.verify(attribute).setVocabulary(vocabulary);
     }
     
     @Test(expected = ResourceNotFoundException.class)
@@ -101,39 +78,19 @@ public class AttributeDataServiceTestIT extends UnitilsJUnit4 {
     }
     
     @Test
-    public void testUpdateAttributeWithNullVocabulary() {
+    public void testUpdateAttribute() {
         Mockito.doNothing().when(attributeDao).update(attribute);
-        Mockito.doReturn(null).when(attribute).getVocabulary();
-        Mockito.doNothing().when(attributeDao).deleteVocabularyBinding(anyInt());
-        Mockito.doReturn(0).when(attribute).getId();
         attributeDataService.updateAttribute(attribute);
         Mockito.verify(attributeDao, times(1)).update(attribute);
-        Mockito.verify(attributeDao, times(1)).deleteVocabularyBinding(0);
-    }
-    
-    @Test
-    public void testUpdateAttributeWithVocabulary() {
-        Mockito.doNothing().when(attributeDao).update(attribute);
-        Mockito.doReturn(vocabulary).when(attribute).getVocabulary();
-        Mockito.doNothing().when(attributeDao).updateVocabularyBinding(anyInt(), anyInt());
-        Mockito.doReturn(0).when(attribute).getId();
-        Mockito.doReturn(0).when(vocabulary).getId();
-        
-        attributeDataService.updateAttribute(attribute);
-        
-        Mockito.verify(attributeDao, times(1)).update(attribute);
-        Mockito.verify(attributeDao, times(1)).updateVocabularyBinding(0, 0);
     }
     
     @Test
     public void testDeleteAttributeById() {
         Mockito.doNothing().when(attributeDao).deleteValues(0);
-        Mockito.doNothing().when(attributeDao).deleteVocabularyBinding(0);
         Mockito.doNothing().when(attributeDao).delete(0);
         Mockito.doNothing().when(fixedValueDao).deleteAll(FixedValue.OwnerType.ATTRIBUTE, 0);
         attributeDataService.deleteAttributeById(0);
         Mockito.verify(attributeDao, times(1)).deleteValues(0);
-        Mockito.verify(attributeDao, times(1)).deleteVocabularyBinding(0);
         Mockito.verify(attributeDao, times(1)).delete(0);
         Mockito.verify(fixedValueDao, times(1)).deleteAll(FixedValue.OwnerType.ATTRIBUTE, 0);
     }
@@ -143,21 +100,6 @@ public class AttributeDataServiceTestIT extends UnitilsJUnit4 {
         Mockito.doReturn(2).when(attributeDao).countAttributeValues(0);
         attributeDataService.countAttributeValues(0);
         Mockito.verify(attributeDao, times(1)).countAttributeValues(0);
-    }
-    
-    @Test
-    public void testSetNewVocabularyToAttributeObject() throws ResourceNotFoundException {
-        Mockito.doNothing().when(attribute).setVocabulary(any(VocabularyFolder.class));
-        Mockito.doReturn(vocabulary).when(vocabularyDao).getPlainVocabularyById(0);
-        attributeDataService.setNewVocabularyToAttributeObject(attribute, 0);
-        Mockito.verify(attribute).setVocabulary(vocabulary);
-    }
-    
-    @Test
-    public void testDeleteVocabularyBInding() {
-        Mockito.doNothing().when(attributeDao).deleteVocabularyBinding(0);
-        attributeDataService.deleteVocabularyBinding(0);
-        Mockito.verify(attributeDao, times(1)).deleteVocabularyBinding(0);
     }
     
     @Test
@@ -173,16 +115,5 @@ public class AttributeDataServiceTestIT extends UnitilsJUnit4 {
         attributeDataService.getFixedValues(0);
         Mockito.verify(fixedValueDao, times(1)).getValueByOwner(FixedValue.OwnerType.ATTRIBUTE, 0);
     }
-    
-    @Test
-    public void testDeleteAllAttributeValues() {
-        Mockito.doNothing().when(attributeValueDao).deleteAllAttributeValues(anyInt());
-        Mockito.doNothing().when(attributeValueDao).deleteAllAttributeValues(anyInt(), any(DataDictEntity.class));
-        
-        attributeDataService.deleteAllAttributeValues(0);
-        Mockito.verify(attributeValueDao, times(1)).deleteAllAttributeValues(0);   
-        attributeDataService.deleteAllAttributeValues(anyInt(), new DataDictEntity(anyInt(), DataDictEntity.Entity.DS));
-        Mockito.verify(attributeValueDao, times(1)).deleteAllAttributeValues(anyInt(), any(DataDictEntity.class));
-    }
-    
+
 }

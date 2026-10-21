@@ -70,13 +70,6 @@
                         </li>
                     </c:if>
                     <c:if test="${not actionBean.vocabularyFolder.workingCopy}">
-                        <li class="maintain">
-                            <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="scheduleSynchronization"> 
-                                <stripes:param name="vocabularyFolder.folderName" value="${actionBean.vocabularyFolder.folderName}" />
-                                <stripes:param name="vocabularyFolder.identifier" value="${actionBean.vocabularyFolder.identifier}" />
-                                Schedule  synchronization
-                            </stripes:link>
-                        </li>
                         <li class="checkout">
                             <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="checkOut">
                                 <stripes:param name="vocabularyFolder.id" value="${actionBean.vocabularyFolder.id}" />
@@ -205,32 +198,13 @@
                         <tr>
                             <th scope="row" class="scope-row simple_attr_title">${attrMeta.label}</th>
                             <td class="simple_attr_value">
-                                <c:choose>
-                                    <c:when test="${attrMeta.inputType=='vocabulary'}">
-                                        <c:set var="vocabularyConcepts" value="${actionBean.getVocabularyConcepts(attrMeta.attributeId)}" />
-                                        <c:set var="vocabularyBindingFolder" value="${actionBean.getVocabularyBindingFolder(attrMeta.attributeId)}" />
-                                        <c:if test="${not empty vocabularyConcepts}">
-                                            <ul class="stripedmenu">
-                                                <c:forEach var="vocabularyConcept" items="${vocabularyConcepts}">
-                                                    <li>
-                                                        <stripes:link href="/vocabularyconcept/${vocabularyBindingFolder.folderName}/${vocabularyBindingFolder.identifier}/${vocabularyConcept.identifier}/view" title="${vocabularyConcept.label}">
-                                                            <c:out value="${vocabularyConcept.label}"/>
-                                                        </stripes:link>
-                                                    </li>
-                                                </c:forEach>
-                                            </ul>
-                                        </c:if>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <ul class="stripedmenu">
-                                            <c:forEach var="attr" items="${attributeValues}" varStatus="innerLoop">
-                                                <li>
-                                                    <span style="white-space:pre-wrap"><c:out value="${attr.value}" /></span>
-                                                </li>
-                                            </c:forEach>
-                                        </ul>
-                                    </c:otherwise>
-                                </c:choose>
+                                <ul class="stripedmenu">
+                                    <c:forEach var="attr" items="${attributeValues}" varStatus="innerLoop">
+                                        <li>
+                                            <span style="white-space:pre-wrap"><c:out value="${attr.value}" /></span>
+                                        </li>
+                                    </c:forEach>
+                                </ul>
                             </td>
                         </tr>
                     </c:if>

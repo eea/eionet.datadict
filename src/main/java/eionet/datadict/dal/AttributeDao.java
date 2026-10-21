@@ -45,35 +45,11 @@ public interface AttributeDao {
     public void update(Attribute attribute);
     
     /**
-     * Updates the binding between an attribute and a vocabulary with given ids.
-     * 
-     * @param attributeId the id of the attribute to be updated.
-     * @param vocabularyId the id of the vocabulary to be bound with the attribute.
-     */
-    public void updateVocabularyBinding(int attributeId, int vocabularyId);
-    
-    /**
-     * Fetches the vocabulary associated with the attribute with the given id
-     * 
-     * @param attributeId the id of the attribute whose vocabulary binding is to be found.
-     * @return the id of the vocabulary associated to the attribute with the given id 
-     * or null if no such vocabulary is found.
-     */
-    public Integer getVocabularyBinding(int attributeId);
-    
-    /**
      * Deletes an attribute with the given id.
      *
      * @param id the id of the attribute to be deleted.
      */
     public void delete(int id);
-    
-    /**
-     * Removes any vocabulary bindings of an attribute with a given id.
-     * 
-     * @param attributeId the id of the attribute whose vocabulary bindings to be removed..
-     */
-    public void deleteVocabularyBinding(int attributeId);
     
     /**
      * Deletes all values of an attribute with a given id.

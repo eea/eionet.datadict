@@ -4,10 +4,8 @@ import eionet.datadict.errors.EmptyParameterException;
 import eionet.datadict.model.Attribute;
 import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.model.AttributeValue;
-import eionet.datadict.model.Attribute.ValueInheritanceMode;
 import eionet.datadict.model.DataDictEntity;
 import eionet.meta.dao.domain.FixedValue;
-import eionet.meta.dao.domain.VocabularyConcept;
 import java.util.List;
 import java.util.Map;
 
@@ -68,32 +66,6 @@ public interface AttributeDataService {
             throws ResourceNotFoundException, EmptyParameterException;
     
     /**
-     * Fetches the vocabulary concepts which are attribute values of the attribute with the given id, owned by the specified owner.
-     * 
-     * @param attributeId the id of the attribute 
-     * @param attributeOwner
-     * @return
-     * @throws ResourceNotFoundException
-     * @throws EmptyParameterException 
-     */
-    List<VocabularyConcept>  getVocabularyConceptsAsOriginalAttributeValues(int attributeId, DataDictEntity attributeOwner) 
-            throws ResourceNotFoundException, EmptyParameterException;
-    
-    List<VocabularyConcept>  getVocabularyConceptsAsInheritedAttributeValues(int attributeId, DataDictEntity attributeOwner) 
-            throws ResourceNotFoundException, EmptyParameterException;
-
-    List<VocabularyConcept>  getVocabularyConceptsAsAttributeValues(int attributeId, DataDictEntity attributeOwner, ValueInheritanceMode inheritanceMode) 
-            throws ResourceNotFoundException, EmptyParameterException;
-    
-    /**
-     * Fetches the id of the vocabulary linked to the attribute with the given id.
-     * 
-     * @param attributeId the id of the attribute whose vocabulary binding is to be fetched.
-     * @return an {@link Integer} corresponding to the vocabulary.
-     */
-    Integer getVocabularyBinding(int attributeId);
-    
-    /**
      * Counts the attribute values of the attribute with the given id.
      * 
      * @param attributeId the id of the attribute whose values are to be counted.
@@ -108,16 +80,7 @@ public interface AttributeDataService {
      * @return a [@link List} of {@link FixedValue} objects.
      */
     List<FixedValue> getFixedValues(int attributeId);
-    
-    /**
-     * Adds a list of attribute values for the attribute with the given id.
-     *
-     * @param attributeId the id of the attribute whose values are added.
-     * @param owner the {@link DataDictEntity} who owns the attribute values.
-     * @param values the values to be saved for the attribute with the given id.
-     */
-    void createAttributeValues(int attributeId, DataDictEntity ownerEntity, List<String> values);
-    
+
     /**
      * Creates the given attribute.
      * 
@@ -141,44 +104,12 @@ public interface AttributeDataService {
     void deleteAttributeById(int attributeId);
     
     /**
-     * Deletes the vocabulary binding of the attribute with the given id.
-     * 
-     * @param attributeId the id of the attribute to be deleted.
-     */
-    void deleteVocabularyBinding(int attributeId);
-    
-    /**
      * Deletes all fixed values corresponding to the attribute with the given id.
      * 
      * @param attributeId the id of the attribute whose fixed values are to be deleted.
      */
     void deleteRelatedFixedValues(int attributeId);
-    
 
-    /**
-     * Deletes the attribute value with the specified value of the attribute with the given id owned by the specified owner.
-     * 
-     * @param attributeId the id of the attribute whose attribute value is to be deleted.
-     * @param ownerEntity the owner of the attribute value to be deleted.
-     * @param value the value of the attribute value to be deleted.
-     */
-    void deleteAttributeValue(int attributeId, DataDictEntity ownerEntity, String value);
-    
-    /**
-     * Deletes all attribute values of the attribute with the given id, owned by the specified owner.
-     * 
-     * @param attributeId
-     * @param owner 
-     */
-    void deleteAllAttributeValues(int attributeId, DataDictEntity owner);
-    
-    /**
-     * Deletes all attribute values of the attribute with the given id.
-     * 
-     * @param attributeId 
-     */
-    void deleteAllAttributeValues(int attributeId);
-    
      /**
      * Fetches information about all DD concepts for which the attribute of a given id has attribute values.
      * 
@@ -186,17 +117,6 @@ public interface AttributeDataService {
      * @return a {@link java.util.Map} containing {@link DataDictEntity$Entity} keys and Integer values.
      */
     Map<DataDictEntity.Entity, Integer> getDistinctTypesWithAttributeValues(int attributeId);
-    
-    /**
-     * Creates a new temporary vocabulary link between the given attribute and the vocabulary with the given id.
-     * 
-     * @param attribute
-     * @param vocabularyId
-     * @return
-     * TODO--->review this method.
-     * @throws ResourceNotFoundException 
-     */
-    Attribute setNewVocabularyToAttributeObject(Attribute attribute, int vocabularyId) throws ResourceNotFoundException;
     
     List<Attribute> getAllByDatasetId(int datasetId);
 }
