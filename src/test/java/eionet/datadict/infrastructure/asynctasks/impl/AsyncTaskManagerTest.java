@@ -8,15 +8,12 @@ import eionet.datadict.infrastructure.asynctasks.AsyncTaskManagementException;
 import eionet.datadict.model.AsyncTaskExecutionEntry;
 import eionet.datadict.model.AsyncTaskExecutionEntryHistory;
 import eionet.datadict.model.AsyncTaskExecutionStatus;
-import eionet.datadict.web.asynctasks.VocabularyRdfImportFromUrlTask;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -48,11 +45,7 @@ import org.quartz.ListenerManager;
 import org.quartz.Matcher;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
-import org.quartz.SimpleScheduleBuilder;
-import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
-import static org.quartz.TriggerBuilder.newTrigger;
-import org.quartz.TriggerKey;
 import org.quartz.impl.matchers.GroupMatcher;
 
 public class AsyncTaskManagerTest {
@@ -351,45 +344,6 @@ public class AsyncTaskManagerTest {
     }
 
     @Test
-    public void testScheduleTask() throws SchedulerException {
-        final Class<VocabularyRdfImportFromUrlTask> taskType = VocabularyRdfImportFromUrlTask.class;
-        final Map<String, Object> taskParams = new HashMap<String, Object>();
-        taskParams.put("param1", 1);
-        Integer scheduleIntervalMinutes = 10;
-        doNothing().when(this.asyncTaskManager).createTaskEntry(any(JobKey.class), any(String.class), any(Map.class));
-        this.asyncTaskManager.scheduleTask(taskType, taskParams, scheduleIntervalMinutes);
-        verify(this.asyncJobKeyBuilder, times(1)).createNew();
-        ArgumentCaptor<JobDetail> jobDetailCaptor = ArgumentCaptor.forClass(JobDetail.class);
-        ArgumentCaptor<SimpleTrigger> triggerCaptor = ArgumentCaptor.forClass(SimpleTrigger.class);
-        verify(this.scheduler, times(1)).scheduleJob(jobDetailCaptor.capture(), triggerCaptor.capture());
-        JobDetail capturedJobDetail = jobDetailCaptor.getValue();
-        SimpleTrigger capturedTrigger = triggerCaptor.getValue();
-        assertThat(capturedJobDetail.getJobClass(), is(equalTo((Class) AsyncJob.class)));
-        assertThat(capturedTrigger.getJobKey(), is(equalTo(capturedJobDetail.getKey())));
-        assertThat(capturedTrigger.getRepeatInterval(), is(equalTo(TimeUnit.MINUTES.toMillis(scheduleIntervalMinutes.longValue()))));
-        AsyncJobDataMapAdapter dataMapAdapter = new AsyncJobDataMapAdapter(capturedJobDetail.getJobDataMap());
-        assertThat(dataMapAdapter.getTaskType(), is(equalTo((Class) taskType)));
-        assertThat(dataMapAdapter.getParameters(), is(equalTo(taskParams)));
-        verify(this.asyncTaskManager, times(1)).createTaskEntry(capturedJobDetail.getKey(), dataMapAdapter.getTaskTypeName(), dataMapAdapter.getParameters());
-        verify(this.asyncJobKeyBuilder, times(1)).getTaskId(capturedJobDetail.getKey());
-    }
-
-    @Test
-    public void testGetAllScheduledTaskEntries() {
-        AsyncTaskExecutionEntry entry1 = new AsyncTaskExecutionEntry();
-        entry1.setTaskId("1");
-        AsyncTaskExecutionEntry entry2 = new AsyncTaskExecutionEntry();
-        entry1.setTaskId("2");
-        List<AsyncTaskExecutionEntry> taskEntries = new LinkedList<AsyncTaskExecutionEntry>();
-        taskEntries.add(entry1);
-        taskEntries.add(entry2);
-        when(this.asyncTaskDao.getAllEntriesByTaskClassNames(any(Set.class))).thenReturn(taskEntries);
-        List<AsyncTaskExecutionEntry> allEntries = this.asyncTaskManager.getAllScheduledTaskEntries();
-        verify(this.asyncTaskDao, times(1)).getAllEntriesByTaskClassNames(any(Set.class));
-        Assert.assertEquals(taskEntries, allEntries);
-    }
-
-    @Test
     public void testGetAllScheduledTaskEntriesHistory() {
         AsyncTaskExecutionEntry entry1 = new AsyncTaskExecutionEntry();
         entry1.setTaskId("1");
@@ -431,42 +385,6 @@ public class AsyncTaskManagerTest {
         verify(this.asyncTaskDao, times(1)).delete(entry);
     }
 
-    @Test
-    public void testUpdateScheduledTask() throws SchedulerException {
-        final Class<VocabularyRdfImportFromUrlTask> taskType = VocabularyRdfImportFromUrlTask.class;
-        final Map<String, Object> taskParams = new HashMap<String, Object>();
-        String taskId = "22624";
-        AsyncTaskExecutionEntry entry = new AsyncTaskExecutionEntry();
-        entry.setTaskId(taskId);
-        Integer intervalMinutes = 80;
-        taskParams.put("param1", 1);
-        SimpleTrigger trigger = newTrigger()
-                .withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInMinutes(intervalMinutes).repeatForever()
-                        .withMisfireHandlingInstructionIgnoreMisfires()).withIdentity(new TriggerKey("some Trigger"))
-                .build();
-        List<Trigger> triggers = new ArrayList<Trigger>();
-        triggers.add(trigger);
-        doReturn(triggers).when(this.scheduler).getTriggersOfJob(any(JobKey.class));
-        when(this.asyncTaskDao.getFullEntry(taskId)).thenReturn(entry);
-        this.asyncTaskManager.updateScheduledTask(taskType, taskParams, intervalMinutes, taskId);
-        verify(this.asyncJobKeyBuilder, times(1)).create(taskId);
-        ArgumentCaptor<JobDetail> jobDetailCaptor = ArgumentCaptor.forClass(JobDetail.class);
-        ArgumentCaptor<TriggerKey> triggerKeyCaptor = ArgumentCaptor.forClass(TriggerKey.class);
-        ArgumentCaptor<SimpleTrigger> triggerCaptor = ArgumentCaptor.forClass(SimpleTrigger.class);
-        verify(this.scheduler, times(1)).addJob(jobDetailCaptor.capture(), any(Boolean.class));
-        verify(this.scheduler, times(1)).rescheduleJob(triggerKeyCaptor.capture(), triggerCaptor.capture());
-        JobDetail capturedJobDetail = jobDetailCaptor.getValue();
-        SimpleTrigger capturedTrigger = triggerCaptor.getValue();
-        TriggerKey triggerKey = triggerKeyCaptor.getValue();
-        assertThat(capturedJobDetail.getJobClass(), is(equalTo((Class) AsyncJob.class)));
-        assertThat(capturedTrigger.getJobKey(), is(equalTo(capturedJobDetail.getKey())));
-        assertThat(capturedTrigger.getRepeatInterval(), is(equalTo(TimeUnit.MINUTES.toMillis(intervalMinutes.longValue()))));
-        assertThat(triggerKey, is(equalTo(triggers.get(0).getKey())));
-        verify(this.asyncTaskDao, times(1)).getFullEntry(taskId);
-        verify(this.asyncTaskDao, times(1)).updateTaskParameters(entry);
-        verify(this.asyncJobKeyBuilder, times(1)).getTaskId(capturedJobDetail.getKey());
-    }
-    
     @Test
     public void testGetTaskEntryHistoryByTaskId() {
         AsyncTaskExecutionEntry entry = new AsyncTaskExecutionEntry();

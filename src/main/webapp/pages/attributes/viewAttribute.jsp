@@ -73,26 +73,6 @@
                 </td>
                 <c:set var="rowStatus" value="${rowStatus + 1}" />
             </tr>
-            <c:if test="${actionBean.attribute.displayType == 'VOCABULARY'}">
-                <tr class="${(rowStatus + 1) % 2 != 0 ? 'odd' : 'even'}">
-                    <th scope="row" class="scope-row">
-                        Vocabulary
-                    </th>
-                    <td>
-                        <c:choose>
-                            <c:when test="${not empty actionBean.attribute.vocabulary}">
-                                <stripes:link href="${actionBean.contextPath}/vocabulary/${actionBean.attribute.vocabulary.folderLabel}/${actionBean.attribute.vocabulary.identifier}/view">
-                                    <c:out value="${actionBean.attribute.vocabulary.label}" />
-                                </stripes:link>
-                            </c:when>
-                            <c:otherwise>
-                                <em>None</em>
-                            </c:otherwise>
-                        </c:choose>
-                    </td>
-                </tr>
-                <c:set var="rowStatus" value="${rowStatus + 1}" />
-            </c:if>
             <c:if test="${actionBean.attribute.displayType == 'SELECT'}">
                 <tr class="${(rowStatus + 1) % 2 != 0 ? 'odd' : 'even'}">
                     <th scope="row" class="scope-row">

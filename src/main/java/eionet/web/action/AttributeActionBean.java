@@ -45,21 +45,20 @@ public class AttributeActionBean extends AbstractActionBean {
     private List<FixedValue> fixedValues;
     private Map<DataDictEntity.Entity, Integer> entityTypesWithAttributeValues;
     private int attributeValuesCount;
-    private String vocabularyId;
     
     /**
      * Validates the attribute.id request parameter (must be a numeric value). 
      * 
      * @throws BadRequestException 
      */
-    @Before(stages=LifecycleStage.BindingAndValidation, on={"save", "edit", "delete", "confirmDelete", "removeVocabularyBinding"})
+    @Before(stages=LifecycleStage.BindingAndValidation, on={"save", "edit", "delete", "confirmDelete"})
     public void checkForNumericAttributeID() throws BadRequestException{
         String attributeId = this.getContext().getRequestParameter("attribute.id");
         if (!StringUtils.isNumeric(attributeId)) throw new BadRequestException(" Bad Request:"+ attributeId +" is not a proper identifier for attributes.");
     }
     
     //http://stripes-users.narkive.com/ZQ071553/repopulating-drop-downs-after-validation-error
-    @Before(stages=LifecycleStage.BindingAndValidation, on={"add", "edit","save", "revmoveVocabularyBinding"})
+    @Before(stages=LifecycleStage.BindingAndValidation, on={"add", "edit","save"})
     public void populateSelectListsInterceptor() {
         this.namespaces = this.namespaceDataService.getAttributeNamespaces();
         this.rdfNamespaces = this.rdfNamespaceDataService.getRdfNamespaces();
@@ -150,10 +149,6 @@ public class AttributeActionBean extends AbstractActionBean {
 
         attribute = attributeDataService.getAttribute(attribute.getId());
 
-        if (vocabularyId!= null) {
-            attribute = attributeDataService.setNewVocabularyToAttributeObject(attribute, Integer.parseInt(vocabularyId));
-        }
-        
         if (this.namespaces==null || this.namespaces.isEmpty()) {
             this.namespaces = this.namespaceDataService.getAttributeNamespaces();
         }
@@ -163,22 +158,6 @@ public class AttributeActionBean extends AbstractActionBean {
         }
         
         return new ForwardResolution ("/pages/attributes/attributeEditor.jsp");
-    }
-    
-    /**
-     * Handle requests for the editVocabulary event. Is responsible for detecting whether the vocabulary binding to an attribute is to be updated.
-     * 
-     * @return
-     * @throws UserAuthenticationException
-     * @throws UserAuthorizationException
-     * @throws ResourceNotFoundException
-     * @throws BadRequestException 
-     */
-    public Resolution editVocabulary() throws UserAuthenticationException, UserAuthorizationException, ResourceNotFoundException, BadRequestException {
-        if (getRequestParameter("vocabularyId")!= null ) {
-            vocabularyId = getRequestParameter("vocabularyId");
-        }
-        return edit();
     }
     
     /**
@@ -276,43 +255,6 @@ public class AttributeActionBean extends AbstractActionBean {
     public Resolution reset() {
         return new RedirectResolution("/attribute/edit/"+attribute.getId());
     }
-     
-    /**
-     * Handles requests for the removeVocabularyBindig event. Is responsible for removing a vocabulary binding of an attribute with the given id.
-     * 
-     * @return A {@link  ForwardResolution} to the edit page.
-     * @throws UserAuthenticationException
-     * @throws UserAuthorizationException
-     * @throws ResourceNotFoundException 
-     */
-    public Resolution removeVocabularyBinding() throws UserAuthenticationException, UserAuthorizationException, ResourceNotFoundException {
-        DDUser user = this.getUser();
-        
-        if (user == null) {
-            throw new UserAuthenticationException("You must be signed in in order to edit attrubutes.");
-        }
-        
-        if(!this.aclService.hasPermission(user, AclEntity.ATTRIBUTE, "s"+attribute.getId(), Permission.UPDATE)){
-            throw new UserAuthorizationException("You are not allowed to edit this attribute");
-        }
-        
-        this.attribute = attributeDataService.getAttribute(attribute.getId());
-        this.attribute.setVocabulary(null);
-        
-        if (this.namespaces==null || this.namespaces.isEmpty()){
-            this.namespaces = this.namespaceDataService.getAttributeNamespaces();
-        }
-        
-        if (this.rdfNamespaces==null || this.rdfNamespaces.isEmpty()){
-            this.rdfNamespaces = this.rdfNamespaceDataService.getRdfNamespaces();
-        }
-        
-        return new ForwardResolution ("/pages/attributes/attributeEditor.jsp");
-    }
-
-    protected String getRequestParameter(String paramName) {
-        return this.getContext().getRequestParameter(paramName);
-    }
 
     // ------ ActionBean bean access ---------
     
@@ -402,10 +344,6 @@ public class AttributeActionBean extends AbstractActionBean {
 
     public void setEntityTypesWithAttributeValues(Map<DataDictEntity.Entity, Integer> entityTypesWithAttributeValues) {
         this.entityTypesWithAttributeValues = entityTypesWithAttributeValues;
-    }
- 
-    public void setVocabularyId(String vocabularyId) {
-        this.vocabularyId = vocabularyId;
     }
 
 }

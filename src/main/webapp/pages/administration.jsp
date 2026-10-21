@@ -14,13 +14,6 @@
             <c:if test="${ddfn:userHasPermission(actionBean.user, '/cleanup', 'x')}">
                 <li><stripes:link href="/cleanup">Cleanup</stripes:link></li>
             </c:if>
-             <c:if test="${ddfn:userHasPermission(actionBean.user, '/vocabularies', 'i')}">
-                <li>
-                    <stripes:link beanclass="eionet.web.action.VocabularyFolderActionBean" event="viewScheduledJobs"> 
-                       View scheduled jobs
-                    </stripes:link>
-                </li>
-             </c:if>
             <c:if test="${ddfn:userHasPermission(actionBean.user, '/generateJWTToken', 'x')}">
                 <li><stripes:link href="/generateJWTToken">Generate JWT Token</stripes:link></li>
             </c:if>

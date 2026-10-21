@@ -89,13 +89,6 @@ public class AttributeDaoTestIT {
     }
 
     @Test
-    public void testGetByIdForVocabularyBinding() {
-        Attribute attribute40 = this.attributeDao.getById(40);
-        assertNotNull(attribute40.getVocabulary());
-        assertEquals(1, attribute40.getVocabulary().getId());
-    }
-
-    @Test
     public void testExists() {
         assertTrue(attributeDao.exists(37));
     }
@@ -157,24 +150,6 @@ public class AttributeDaoTestIT {
     }
 
     @Test
-    public void testUpdateVocabularyBindingSimple() {
-        this.attributeDao.updateVocabularyBinding(37, 1);
-        Attribute attribute37 = this.attributeDao.getById(37);
-
-        assertNotNull(attribute37.getVocabulary());
-        assertEquals(1, attribute37.getVocabulary().getId());
-    }
-
-    @Test
-    public void testUpdateVocabularyBindingDuplicateKey() {
-        this.attributeDao.updateVocabularyBinding(40, 2);
-        Attribute attribute40 = this.attributeDao.getById(40);
-
-        assertNotNull(attribute40.getVocabulary());
-        assertEquals(2, attribute40.getVocabulary().getId());
-    }
-
-    @Test
     public void testCountAttributeValues() {
         int count = this.attributeDao.countAttributeValues(37);
         assertEquals(6, count);
@@ -187,23 +162,9 @@ public class AttributeDaoTestIT {
     }
 
     @Test
-    public void testDeleteVocabularyBinding() {
-        this.attributeDao.deleteVocabularyBinding(40);
-        Attribute attribute40 = this.attributeDao.getById(40);
-        assertNull(attribute40.getVocabulary());
-    }
-
-    @Test
     public void testDeleteValues() {
         this.attributeDao.deleteValues(37);
         assertEquals(0, this.attributeDao.countAttributeValues(37));
-    }
-
-    @Test
-    public void testGetVocabularyBinding() {
-        Integer expectedVocabularyID = 1;
-        Integer actualVocabularyID = this.attributeDao.getVocabularyBinding(37);
-        assertEquals(expectedVocabularyID, actualVocabularyID);
     }
 
     @Test

@@ -1,5 +1,3 @@
-<%@page import="eionet.meta.dao.domain.VocabularyConcept"%>
-<%@page import="eionet.datadict.model.DataDictEntity"%>
 <%@page import="eionet.meta.dao.mysql.DataElementDAOImpl"%>
 <%@page import="eionet.meta.dao.domain.InferenceRule"%>
 <%@page import="eionet.meta.notif.Subscriber"%>
@@ -995,10 +993,6 @@
             o = document.forms["form1"].idfier;
             if (o!=null && o.value.length == 0) return false;
 
-            if ($("#form1 .vocabularyAttributeMandatoryValidationError").length) {
-                return false;
-            }
-
             var elems = document.forms["form1"].elements;
             for (var i=0; elems!=null && i<elems.length; i++){
                 var elem = elems[i];
@@ -1877,10 +1871,6 @@
                                                         String dispType = attribute.getDisplayType();
                                                         if (dispType == null)
                                                             continue;
-                                                        
-                                                        if (dispType.equals("vocabulary") && mode.equals("add")) {
-                                                            continue;
-                                                        }
 
                                                         boolean dispFor = type == null ? attribute
                                                                 .displayFor("CH2") : attribute.displayFor(type);
@@ -1987,68 +1977,8 @@
 
                                                     <!-- dynamic attribute value display -->
                                                     <td class="simple_attr_value"><%
-                                                                if(dispType.equals("vocabulary")) {
-                                                                    DataDictEntity ddEntity = new DataDictEntity(Integer.parseInt(delem_id), DataDictEntity.Entity.E);
-                                                                    if(mode.equals("view")){
-                                                                        List<VocabularyConcept> concepts = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity, (elmCommon? "0" : attribute.getInheritable()));
-                                                                        if (concepts!=null && !concepts.isEmpty()) { %>
-                                                                            <ul class="stripedmenu">
-                                                                            <%
-                                                                                VocabularyFolder vf = null;
-                                                                                for (VocabularyConcept vocabularyConcept : concepts) {
-                                                                                    if (vf == null) {
-                                                                                        vf = searchEngine.getVocabulary(vocabularyConcept.getVocabularyId());
-                                                                                    }
-                                                                            %>
-                                                                                <li>
-                                                                                    <a href="<%=request.getContextPath()%>/vocabularyconcept/<%=Util.processForDisplay(vf.getFolderName())%>/<%=Util.processForDisplay(vf.getIdentifier())%>/<%=Util.processForDisplay(vocabularyConcept.getIdentifier())%>">
-                                                                                        <%=vocabularyConcept.getLabel()%>
-                                                                                    </a>
-                                                                                </li>
-                                                                            <%}%>
-                                                                            </ul>
-                                                                    <%
-                                                                        }
-                                                                    } else if (mode.equals("edit")) {
-                                                                        if (inherit){
-                                                                            List<VocabularyConcept> inheritedValues = searchEngine.getInheritedAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity);
-                                                                            if(inheritedValues!=null && !inheritedValues.isEmpty()){
-                                                                            %>
-                                                                                <c:set var="inheritable" value="<%=attribute.getInheritable()%>" />
-                                                                                <c:choose>
-                                                                                    <c:when test="${inheritable eq '2'}">
-                                                                                        <c:out value="Overriding parent level values: "/>
-                                                                                    </c:when>
-                                                                                    <c:when test="${inheritable eq '1'}">
-                                                                                        <c:out value="Inherited from parent level: "/>
-                                                                                    </c:when>
-                                                                                </c:choose>
-                                                                                <c:forEach var="value" items="<%=inheritedValues%>" varStatus="count">
-                                                                                    <div><c:out value="${value.label}"/><c:if test="${!count.last}">, </c:if><div>
-                                                                                </c:forEach>
-                                                                                </br>
-                                                                          <%}
-                                                                        }
-                                                                        if (searchEngine.existsVocabularyBinding(Integer.parseInt(attrID))) {
-                                                                            List<VocabularyConcept> concepts = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity, "0");
-                                                                            if(concepts!=null && !concepts.isEmpty()) { %>
-                                                                                <ul class="stripedmenu">
-                                                                                    <c:forEach var="concept" items="<%=concepts%>" varStatus="count">
-                                                                                        <li><c:out value="${concept.label}"/></li>
-                                                                                    </c:forEach>
-                                                                                </ul>
-                                                                            <%}%>
-                                                                            <a href="<%=request.getContextPath()%>/vocabularyvalues/attribute/<%=attrID%>/dataelement/<%=dataElement.getID()%>">[Manage links to the vocabulary]</a>
-                                                                            <% if (attribute.isMandatory() && !inherit && (concepts == null || concepts.isEmpty())) { %>
-                                                                                <input type="hidden" class="vocabularyAttributeMandatoryValidationError" />
-                                                                            <%}%>
-                                                                        <%} else {%>
-                                                                            [Manage links to the vocabulary]
-                                                                        <%}
-                                                                  }%>
-                                                              <%}
                                                         // handle image attribute first
-                                                                else if (dispType.equals("image")) {
+                                                                if (dispType.equals("image")) {
 
                                                                     if (!imagesQuicklinkSet) {
                                                     %>
@@ -2083,9 +2013,17 @@
                                                                             }
                                                                             // if view mode or Datatype in edit mode, display simple text
                                                                             else if (mode.equals("view")) {
-                                                                %>
-                                                            <%=Util.processForDisplay(attrValue)%><%
-                                                                }
+                                                                                Vector viewValues = getValues(attrID, mode, dataElement, newDataElement);
+                                                                                if (dispMultiple && dispType.equals("textarea") && viewValues != null) {
+                                                                                    for (int k=0; k<viewValues.size(); k++) {
+                                                                                        if (k>0) out.print("<br/>");
+                                                                                            %><%=Util.processForDisplay((String)viewValues.get(k))%><%
+                                                                                    }
+                                                                                } else {
+                                                                                                                %>
+                                                                                        <%=Util.processForDisplay(attrValue)%><%
+                                                                                }
+                                                                            }
                                                                         // if non-view mode, display input
                                                                         else {
                                                                             // inherited value(s)
@@ -2217,25 +2155,7 @@
                                                                     </select>
                                                                     <a class="helpButton" href="<%=request.getContextPath()%>/fixedvalues/attr/<%=attrID%>"></a>
                                                                     <%
-                                                                        } else if (dispType.equals("vocabulary")) {
-                                                                                DataDictEntity ddEntity = new DataDictEntity(Integer.parseInt(delem_id), DataDictEntity.Entity.E);
-                                                                                if (searchEngine.existsVocabularyBinding(Integer.parseInt(attrID))) {
-                                                                                  List<VocabularyConcept> concepts = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity, "0");
-                                                                                  if(concepts!=null && !concepts.isEmpty()) { %>
-                                                                                    <ul class="stripedmenu">
-                                                                                        <c:forEach var="concept" items="<%=concepts%>" varStatus="count">
-                                                                                            <li><c:out value="${concept.label}"/></li>
-                                                                                        </c:forEach>
-                                                                                    </ul>
-                                                                              <%}%>
-                                                                              <a href="<%=request.getContextPath()%>/vocabularyvalues/attribute/<%=attrID%>/dataelement/<%=dataElement.getID()%>">[Manage links to the vocabulary]</a>
-                                                                              <% if (attribute.isMandatory() && !inherit && (concepts == null || concepts.isEmpty())) { %>
-                                                                                <input type="hidden" class="vocabularyAttributeMandatoryValidationError" />
-                                                                              <%}%>
-                                                                            <%} else {%>
-                                                                                [Manage links to the vocabulary]
-                                                                            <%}
-                                                                    }else {%>
+                                                                        } else {%>
                                                                     Unknown display type!<%
                                                                         }
                                                                                     }

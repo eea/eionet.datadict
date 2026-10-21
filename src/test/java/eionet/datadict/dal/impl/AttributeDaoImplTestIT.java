@@ -72,7 +72,6 @@ public class AttributeDaoImplTestIT {
   
         when(resultSet.getInt("M_ATTRIBUTE.NAMESPACE_ID")).thenReturn(1);
         when(resultSet.getInt("M_ATTRIBUTE.RDF_PROPERTY_NAMESPACE_ID")).thenReturn(1);
-        when(resultSet.getInt("VOCABULARY_ID")).thenReturn(1);
         
         Mockito.doNothing().when(rowMapper).readNamespace(any(ResultSet.class), any(Attribute.class));
         Mockito.doNothing().when(rowMapper).readRdfNamespace(any(ResultSet.class), any(Attribute.class));
@@ -95,7 +94,6 @@ public class AttributeDaoImplTestIT {
         
         assertNotNull(attributeRes.getNamespace());
         assertNotNull(attributeRes.getRdfNamespace());
-        assertNotNull(attributeRes.getVocabulary());
     }
     
     @Test
@@ -140,7 +138,6 @@ public class AttributeDaoImplTestIT {
         assertEquals("image", converter.convert(DisplayType.IMAGE));
         assertEquals("text", converter.convert(DisplayType.TEXT));
         assertEquals("textarea", converter.convert(DisplayType.TEXTAREA));
-        assertEquals("vocabulary", converter.convert(DisplayType.VOCABULARY));
     }
    
     @Test
@@ -167,7 +164,6 @@ public class AttributeDaoImplTestIT {
         assertEquals(DisplayType.IMAGE, converter.convertBack("image"));
         assertEquals(DisplayType.TEXT, converter.convertBack("text"));
         assertEquals(DisplayType.TEXTAREA, converter.convertBack("textarea"));
-        assertEquals(DisplayType.VOCABULARY, converter.convertBack("vocabulary"));
     }
     
     @Test

@@ -18,18 +18,6 @@ public interface AsyncTaskManager {
     AsyncTaskExecutionEntry getTaskEntry(String taskId)
             throws AsyncTaskManagementException, ResourceNotFoundException;
 
-    <T> String scheduleTask(Class<T> taskType, Map<String, Object> parameters, Integer intervalMinutes);
-
-    <T> String updateScheduledTask(Class<T> taskType, Map<String, Object> parameters, Integer intervalMinutes, String taskId);
-
-    /**
-     * Responsible for returning all AsyncTaskEntries that are scheduled to run
-     * repeatedly based on a specific interval. It will not return any
-     * Asynchronous Tasks.
-     *
-     */
-    List<AsyncTaskExecutionEntry> getAllScheduledTaskEntries();
-
     /**
      * Returns all Task Entries in the Task Entry History table
      *

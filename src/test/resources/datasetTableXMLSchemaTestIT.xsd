@@ -40,7 +40,7 @@
          <xs:documentation xml:lang="en">
             <isoattrs:Name>Reporting Entity Unique Code</isoattrs:Name>
             <isoattrs:Definition>A single character Unique code assigned by the Member State to each Reporting Entity.</isoattrs:Definition>
-            <ddattrs:Responsible>4051083</ddattrs:Responsible>
+            <ddattrs:Responsible>Test User</ddattrs:Responsible>
          </xs:documentation>
       </xs:annotation>
       <xs:simpleType>
@@ -55,7 +55,7 @@
          <xs:documentation xml:lang="en">
             <isoattrs:Name>Airport Name</isoattrs:Name>
             <isoattrs:Definition>Name of Major Airport (with more than 50 000 movements per year)</isoattrs:Definition>
-            <ddattrs:Responsible>4051083</ddattrs:Responsible>
+            <ddattrs:Responsible>Test User</ddattrs:Responsible>
          </xs:documentation>
       </xs:annotation>
       <xs:simpleType>
@@ -70,7 +70,7 @@
          <xs:documentation xml:lang="en">
             <isoattrs:Name>ICAO Code</isoattrs:Name>
             <isoattrs:Definition>The airport code defined by the International Civil Aviation Organization</isoattrs:Definition>
-            <ddattrs:Responsible>4051083</ddattrs:Responsible>
+            <ddattrs:Responsible>Test User</ddattrs:Responsible>
          </xs:documentation>
       </xs:annotation>
       <xs:simpleType>
@@ -85,7 +85,7 @@
          <xs:documentation xml:lang="en">
             <isoattrs:Name>Annual Traffic</isoattrs:Name>
             <isoattrs:Definition>The number of movements in a year at the airport.</isoattrs:Definition>
-            <ddattrs:Responsible>4051083</ddattrs:Responsible>
+            <ddattrs:Responsible>Test User</ddattrs:Responsible>
          </xs:documentation>
       </xs:annotation>
       <xs:simpleType>
@@ -101,7 +101,7 @@
             <isoattrs:Definition>Geographical co-ordinate in decimal degrees  the longitudinal location of the airport.</isoattrs:Definition>
             <ddattrs:Methodology>Longitude  decimal degrees  as defined in the EEA GIS Guide (degrees west must be indicated with a minus sign).</ddattrs:Methodology>
             <ddattrs:PublicOrInternal>undefined</ddattrs:PublicOrInternal>
-            <ddattrs:Responsible>4051083</ddattrs:Responsible>
+            <ddattrs:Responsible>Test User</ddattrs:Responsible>
          </xs:documentation>
       </xs:annotation>
       <xs:simpleType>
@@ -119,7 +119,7 @@
             <isoattrs:Definition>Geographical co-ordinate in decimal degrees  the latitudinal location of the airport.</isoattrs:Definition>
             <ddattrs:Methodology>Latitude  decimal degrees  as defined in the EEA GIS Guide.</ddattrs:Methodology>
             <ddattrs:PublicOrInternal>undefined</ddattrs:PublicOrInternal>
-            <ddattrs:Responsible>4051083</ddattrs:Responsible>
+            <ddattrs:Responsible>Test User</ddattrs:Responsible>
          </xs:documentation>
       </xs:annotation>
       <xs:simpleType>
@@ -137,7 +137,7 @@
             <isoattrs:Definition>Textual coordinate system name used by the Member States to derive the node.</isoattrs:Definition>
             <ddattrs:Methodology>Options: Choose between ETRS89  WGS84 or add another one.</ddattrs:Methodology>
             <ddattrs:PublicOrInternal>undefined</ddattrs:PublicOrInternal>
-            <ddattrs:Responsible>4051083</ddattrs:Responsible>
+            <ddattrs:Responsible>Test User</ddattrs:Responsible>
          </xs:documentation>
       </xs:annotation>
       <xs:simpleType>
