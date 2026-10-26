@@ -2869,4 +2869,8 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
         <comment>Refs #308988 Drop the table linking attributes to vocabularies</comment>
         <dropTable tableName="M_ATTRIBUTE_VOCABULARY"/>
     </changeSet>
+    <changeSet id="rev-213" author="bbris">
+        <comment>Refs #308988 Drop the unused ASYNC_TASK_ENTRY_HISTORY table</comment>
+        <dropTable tableName="ASYNC_TASK_ENTRY_HISTORY"/>
+    </changeSet>
 </databaseChangeLog>

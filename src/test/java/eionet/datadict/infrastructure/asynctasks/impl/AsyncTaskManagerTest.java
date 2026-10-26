@@ -1,18 +1,13 @@
 package eionet.datadict.infrastructure.asynctasks.impl;
 
 import eionet.datadict.dal.AsyncTaskDao;
-import eionet.datadict.dal.AsyncTaskHistoryDao;
 import eionet.datadict.dal.QuartzSchedulerDao;
 import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.infrastructure.asynctasks.AsyncTaskManagementException;
 import eionet.datadict.model.AsyncTaskExecutionEntry;
-import eionet.datadict.model.AsyncTaskExecutionEntryHistory;
 import eionet.datadict.model.AsyncTaskExecutionStatus;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -20,7 +15,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
-import org.junit.Assert;
 import static org.junit.Assert.fail;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -62,9 +56,6 @@ public class AsyncTaskManagerTest {
     private JobListener asyncJobListener;
     @Spy
     private AsyncTaskDataSerializerImpl asyncTaskDataSerializer;
-
-    @Mock
-    private AsyncTaskHistoryDao asyncTaskHistoryDao;
 
     @InjectMocks
     @Spy
@@ -344,36 +335,6 @@ public class AsyncTaskManagerTest {
     }
 
     @Test
-    public void testGetAllScheduledTaskEntriesHistory() {
-        AsyncTaskExecutionEntry entry1 = new AsyncTaskExecutionEntry();
-        entry1.setTaskId("1");
-        AsyncTaskExecutionEntryHistory hEntry1 = new AsyncTaskExecutionEntryHistory(entry1);
-        AsyncTaskExecutionEntry entry2 = new AsyncTaskExecutionEntry();
-        entry1.setTaskId("2");
-        AsyncTaskExecutionEntryHistory hEntry2 = new AsyncTaskExecutionEntryHistory(entry2);
-        List<AsyncTaskExecutionEntryHistory> entriesHistory = new LinkedList<AsyncTaskExecutionEntryHistory>();
-        entriesHistory.add(hEntry1);
-        entriesHistory.add(hEntry2);
-        when(this.asyncTaskHistoryDao.retrieveAllTasksHistory()).thenReturn(entriesHistory);
-        List<AsyncTaskExecutionEntryHistory> allEntriesHistoryToBeTested = this.asyncTaskManager.getTaskEntriesHistory();
-        verify(this.asyncTaskHistoryDao, times(1)).retrieveAllTasksHistory();
-        Assert.assertEquals(entriesHistory, allEntriesHistoryToBeTested);
-    }
-
-    @Test
-    public void testGetTaskEntryHistory() {
-        AsyncTaskExecutionEntry entry = new AsyncTaskExecutionEntry();
-        String taskId = "22";
-        entry.setTaskId(taskId);
-        AsyncTaskExecutionEntryHistory hEntry = new AsyncTaskExecutionEntryHistory(entry);
-        hEntry.setId(Long.parseLong("1"));
-        when(this.asyncTaskHistoryDao.retrieveTaskHistoryById("1")).thenReturn(hEntry);
-        AsyncTaskExecutionEntryHistory result = this.asyncTaskManager.getTaskEntryHistory("1");
-        assertThat(result, is(equalTo(hEntry)));
-        verify(this.asyncTaskHistoryDao, times(1)).retrieveTaskHistoryById("1");
-    }
-
-    @Test
     public void testDeleteTask() throws SchedulerException {
         AsyncTaskExecutionEntry entry = new AsyncTaskExecutionEntry();
         String taskId = "22";
@@ -383,21 +344,5 @@ public class AsyncTaskManagerTest {
         verify(this.asyncJobKeyBuilder, times(1)).create(taskId);
         verify(this.scheduler, times(1)).deleteJob(any(JobKey.class));
         verify(this.asyncTaskDao, times(1)).delete(entry);
-    }
-
-    @Test
-    public void testGetTaskEntryHistoryByTaskId() {
-        AsyncTaskExecutionEntry entry = new AsyncTaskExecutionEntry();
-        String taskId = "22";
-        entry.setTaskId(taskId);
-        AsyncTaskExecutionEntryHistory hEntry = new AsyncTaskExecutionEntryHistory(entry);
-        hEntry.setId(Long.parseLong("1"));
-        AsyncTaskExecutionEntryHistory hEntry2 = new AsyncTaskExecutionEntryHistory(entry);
-        hEntry2.setId(Long.parseLong("2"));
-        List<AsyncTaskExecutionEntryHistory> expectedTaskEntryHistory = new ArrayList<AsyncTaskExecutionEntryHistory>();
-        when(this.asyncTaskHistoryDao.retrieveTaskHistoryByTaskId(taskId)).thenReturn(expectedTaskEntryHistory);
-        List<AsyncTaskExecutionEntryHistory> actualTaskEntryHistory = this.asyncTaskManager.getTaskEntryHistoryByTaskId(taskId);
-        verify(this.asyncTaskManager,times(1)).getTaskEntryHistoryByTaskId(taskId);
-        Assert.assertEquals(expectedTaskEntryHistory, actualTaskEntryHistory);
     }
 }

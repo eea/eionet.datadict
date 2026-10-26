@@ -1,7 +1,6 @@
 package eionet.datadict.infrastructure.asynctasks.impl;
 
 import eionet.datadict.dal.AsyncTaskDao;
-import eionet.datadict.dal.AsyncTaskHistoryDao;
 import eionet.datadict.dal.QuartzSchedulerDao;
 import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.infrastructure.asynctasks.AsyncTask;
@@ -9,10 +8,8 @@ import eionet.datadict.infrastructure.asynctasks.AsyncTaskDataSerializer;
 import eionet.datadict.infrastructure.asynctasks.AsyncTaskManager;
 import eionet.datadict.infrastructure.asynctasks.AsyncTaskManagementException;
 import eionet.datadict.model.AsyncTaskExecutionEntry;
-import eionet.datadict.model.AsyncTaskExecutionEntryHistory;
 import eionet.datadict.model.AsyncTaskExecutionStatus;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 import org.quartz.JobBuilder;
@@ -44,20 +41,18 @@ public class AsyncTaskManagerImpl implements AsyncTaskManager {
     private final QuartzSchedulerDao quartzSchedulerDao;
     private final JobListener asyncJobListener;
     private final AsyncTaskDataSerializer asyncTaskDataSerializer;
-    private final AsyncTaskHistoryDao asyncTaskHistoryDao;
 
     @Autowired
     public AsyncTaskManagerImpl(@Qualifier("jobScheduler") Scheduler scheduler,
             @Qualifier("asyncJobListener") JobListener asyncJobListener,
             AsyncJobKeyBuilder asyncJobKeyBuilder, AsyncTaskDao asyncTaskDao,
-            QuartzSchedulerDao quartzSchedulerDao, AsyncTaskDataSerializer asyncTaskDataSerializer, AsyncTaskHistoryDao asyncTaskHistoryDao) {
+            QuartzSchedulerDao quartzSchedulerDao, AsyncTaskDataSerializer asyncTaskDataSerializer) {
         this.scheduler = scheduler;
         this.asyncJobKeyBuilder = asyncJobKeyBuilder;
         this.asyncTaskDao = asyncTaskDao;
         this.quartzSchedulerDao = quartzSchedulerDao;
         this.asyncJobListener = asyncJobListener;
         this.asyncTaskDataSerializer = asyncTaskDataSerializer;
-        this.asyncTaskHistoryDao = asyncTaskHistoryDao;
     }
 
     @PostConstruct
@@ -173,11 +168,6 @@ public class AsyncTaskManagerImpl implements AsyncTaskManager {
     }
 
     @Override
-    public List<AsyncTaskExecutionEntryHistory> getTaskEntriesHistory() {
-        return this.asyncTaskHistoryDao.retrieveAllTasksHistory();
-    }
-
-    @Override
     public void deleteTask(String taskId) {
         JobKey key = this.asyncJobKeyBuilder.create(taskId);
         try {
@@ -187,20 +177,5 @@ public class AsyncTaskManagerImpl implements AsyncTaskManager {
         } catch (SchedulerException ex) {
             throw new AsyncTaskManagementException(ex);
         }
-    }
-
-    @Override
-    public AsyncTaskExecutionEntryHistory getTaskEntryHistory(String id) {
-        return this.asyncTaskHistoryDao.retrieveTaskHistoryById(id);
-    }
-
-    @Override
-    public List<AsyncTaskExecutionEntryHistory> getTaskEntryHistoryByTaskId(String taskId) {
-        return asyncTaskHistoryDao.retrieveTaskHistoryByTaskId(taskId);
-    }
-
-    @Override
-    public List<AsyncTaskExecutionEntryHistory> retrieveLimitedTaskHistoryByTaskId(String taskId, int limit) {
-        return asyncTaskHistoryDao.retrieveLimitedTaskHistoryByTaskId(taskId, limit);
     }
 }

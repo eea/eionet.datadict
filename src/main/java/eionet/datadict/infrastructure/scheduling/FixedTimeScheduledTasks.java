@@ -1,9 +1,6 @@
 package eionet.datadict.infrastructure.scheduling;
 
-import eionet.datadict.dal.AsyncTaskHistoryDao;
 import eionet.datadict.dal.CleanMysqlSystemDbLoggingTableDao;
-import eionet.datadict.model.AsyncTaskExecutionEntryHistory;
-import java.util.List;
 
 import net.javacrumbs.shedlock.core.LockAssert;
 import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
@@ -21,24 +18,11 @@ import org.springframework.stereotype.Service;
 public class FixedTimeScheduledTasks {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FixedTimeScheduledTasks.class);
-    private final AsyncTaskHistoryDao asyncTaskHistoryDao;
     private final CleanMysqlSystemDbLoggingTableDao cleanMySqlLoggingTableDao;
 
     @Autowired
-    public FixedTimeScheduledTasks(AsyncTaskHistoryDao asyncTaskHistoryDao, CleanMysqlSystemDbLoggingTableDao cleanMySqlLoggingTableDao) {
-        this.asyncTaskHistoryDao = asyncTaskHistoryDao;
+    public FixedTimeScheduledTasks(CleanMysqlSystemDbLoggingTableDao cleanMySqlLoggingTableDao) {
         this.cleanMySqlLoggingTableDao = cleanMySqlLoggingTableDao;
-    }
-
-    @Scheduled(cron = "0 0 12 * * SUN")
-    @SchedulerLock(name = "asyncTaskHistoryTableCleanupLock")
-    public void schedulePeriodicCleanOfOldDataOnAsyncTaskHistoryTableTask() {
-        LockAssert.assertLocked();
-        List<AsyncTaskExecutionEntryHistory> historyEntries = this.asyncTaskHistoryDao.retrieveAllTasksHistory();
-        for (AsyncTaskExecutionEntryHistory historyEntry : historyEntries) {
-            asyncTaskHistoryDao.deleteOlderTaskHistoryThanLastN(historyEntry.getTaskId(), 10);
-        }
-        LOGGER.info("Weekly Scheduled Task To Purge Data in ASYNC_TASK_ENTRY_HISTORY table and Keep only last 10 records for each Task");
     }
 
     @Scheduled(cron = "0 0 8 1 * ?") //runs first day of every month at 8am
