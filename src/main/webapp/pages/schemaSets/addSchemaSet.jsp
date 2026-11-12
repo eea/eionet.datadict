@@ -33,7 +33,7 @@
                 </tr>
                 <c:forEach items="${actionBean.attributes}" var="attributesEntry">
                     <c:set var="attribute" value="${attributesEntry.value}"/>
-                    <c:if test="${attribute.mandatory && attribute.displayType!='vocabulary'}">
+                    <c:if test="${attribute.mandatory}">
                         <tr>
                             <th scope="row" class="scope-row simple_attr_title">
                                 <c:out value="${attribute.shortName}"/>

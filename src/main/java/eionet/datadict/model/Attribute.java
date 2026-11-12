@@ -1,7 +1,6 @@
 package eionet.datadict.model;
 
 import eionet.datadict.model.enums.Enumerations.AttributeDataType;
-import eionet.meta.dao.domain.VocabularyFolder;
 import java.util.EnumSet;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
@@ -46,8 +45,7 @@ public class Attribute {
         TEXT("Text box"),
         TEXTAREA("Text area"),
         SELECT("Select box"),
-        IMAGE("Image"),
-        VOCABULARY("Vocabulary");
+        IMAGE("Image");
         
         private final String label;
         
@@ -134,8 +132,6 @@ public class Attribute {
     @ManyToOne
     private Namespace namespace;
     private RdfNamespace rdfNamespace;
-    
-    private VocabularyFolder vocabulary;
 
     public Integer getId() {
         return id;
@@ -272,13 +268,5 @@ public class Attribute {
     public void setRdfNamespace(RdfNamespace rdfNamespace) {
         this.rdfNamespace = rdfNamespace;
     }
-
-    public VocabularyFolder getVocabulary() {
-        return vocabulary;
-    }
-
-    public void setVocabulary(VocabularyFolder vocabulary) {
-        this.vocabulary = vocabulary;
-    }    
     
 }

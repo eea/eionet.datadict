@@ -338,7 +338,7 @@ public class DatasetHandler extends BaseHandler {
         stmt.executeUpdate();
         stmt.close();
 
-        deleteAttributes(true);
+        deleteAttributes();
         processAttributes();
     }
     
@@ -480,7 +480,7 @@ public class DatasetHandler extends BaseHandler {
         }
 
         // delete dataset dependencies
-        deleteAttributes(false);
+        deleteAttributes();
         deleteCache();
         deleteDocs();
         deleteTablesAndElements();
@@ -649,20 +649,16 @@ public class DatasetHandler extends BaseHandler {
         return nsHandler.getLastInsertID();
     }
 
-    private void deleteAttributes(boolean isForUpdate) throws SQLException {
+    private void deleteAttributes() throws SQLException {
 
         ResultSet rs = null;
         PreparedStatement stmt = null;
         INParameters inParams = new INParameters();
         try {
-            // find out image and vocabulary attributes, so as to skip them later
-            
+            // find out image attributes, so as to skip them later
             StringBuffer buf = new StringBuffer("select M_ATTRIBUTE_ID ");
             buf.append("from M_ATTRIBUTE where DISP_TYPE='image'");
-            
-            if (isForUpdate) {
-                buf.append("or DISP_TYPE='vocabulary'");
-            }
+
             stmt = SQL.preparedStatement(buf.toString(), inParams, conn);
             rs = stmt.executeQuery();
 
@@ -684,7 +680,7 @@ public class DatasetHandler extends BaseHandler {
                 buf.append(inParams.add(ds_ids[i], Types.INTEGER));
             }
             buf.append(") and PARENT_TYPE='DS'");
-            // skip image and vocabulary attributes
+            // skip image attributes
             for (int i = 0; i < skipDeletionAttrs.size(); i++) {
                 buf.append(" and M_ATTRIBUTE_ID<>").append((String) skipDeletionAttrs.get(i));
             }

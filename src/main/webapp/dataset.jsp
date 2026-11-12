@@ -1,6 +1,3 @@
-<%@page import="eionet.meta.dao.domain.VocabularyFolder"%>
-<%@page import="eionet.meta.dao.domain.VocabularyConcept"%>
-<%@page import="eionet.datadict.model.DataDictEntity"%>
 <%@page import="org.apache.commons.lang3.StringUtils"%>
 <%@page import="eionet.meta.notif.Subscriber"%>
 <%@page contentType="text/html;charset=UTF-8" import="java.io.*,java.util.*,java.sql.*,eionet.meta.*,eionet.meta.savers.*,eionet.util.*,eionet.util.sql.ConnectionUtil"%>
@@ -564,10 +561,6 @@
 
             var o = document.forms["form1"].ds_name;
             if (o!=null && o.value.length == 0) return false;
-
-            if ($("#form1 .vocabularyAttributeMandatoryValidationError").length) {
-                return false;
-            }
 
             var elems = document.forms["form1"].elements;
             for (var i=0; elems!=null && i<elems.length; i++) {
@@ -1422,9 +1415,6 @@ else if (mode.equals("add"))
                                                 if (mode.equals("view") && (attrValue == null || attrValue.length() == 0))
                                                     continue;
 
-                                                if (dispType.equals("vocabulary") && mode.equals("add")){
-                                                    continue;
-                                                }
                                                 //displayed++; - done below
 
                                                 String width  = attribute.getDisplayWidth();
@@ -1459,41 +1449,21 @@ else if (mode.equals("add"))
                                                         <%
 
                                                         // if mode is 'view', display simple a text, otherwise an input
-                                                        if (mode.equals("view") && dispType.equals("vocabulary")) {
-                                                            DataDictEntity ddEntity = new DataDictEntity(Integer.parseInt(ds_id), DataDictEntity.Entity.DS);
-                                                            List<VocabularyConcept> vocabularyConcepts = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity, attribute.getInheritable());
-                                                            if(vocabularyConcepts != null && !vocabularyConcepts.isEmpty()) { %>
-                                                                <ul class="stripedmenu">
-                                                                <%
-                                                                    VocabularyFolder vf = null;
-                                                                    for (VocabularyConcept vocabularyConcept : vocabularyConcepts) {
-                                                                        if (vf == null) {
-                                                                            vf = searchEngine.getVocabulary(vocabularyConcept.getVocabularyId());
-                                                                        }
-                                                                %>
-                                                                    <li>
-                                                                        <a href="<%=request.getContextPath()%>/vocabularyconcept/<%=Util.processForDisplay(vf.getFolderName())%>/<%=Util.processForDisplay(vf.getIdentifier())%>/<%=Util.processForDisplay(vocabularyConcept.getIdentifier())%>">
-                                                                            <%=vocabularyConcept.getLabel()%>
-                                                                        </a>
-                                                                    </li>
-                                                                <%}%>
-                                                                </ul>
-                                                        <%
-                                                            }
-                                                        } else if (mode.equals("view")) {
-                                                            if (dispMultiple) {
-                                                                for (int k=0; multiValues!=null && k<multiValues.size(); k++) {
-                                                                    attrValue = (String)multiValues.get(k);
-                                                                    %><%if (k>0)%>, <%;%><%=Util.processForDisplay(attrValue)%><%
-                                                                }
-                                                            }
+                                                        if (mode.equals("view")) {
+                                                                if (dispMultiple) {
+                                                                    String separator = dispType.equals("textarea") ? "<br/>" : ", ";
+                                                                    for (int k=0; multiValues!=null && k<multiValues.size(); k++) {
+                                                                        attrValue = (String)multiValues.get(k);
+                                                                        %><%if (k>0) out.print(separator);%><%=Util.processForDisplay(attrValue)%><%
+                                                        }
+                                                    }
                                                             else{ %>
                                                                 <%=Util.processForDisplay(attrValue)%> <%
                                                             }
                                                         }
                                                         else{ // start display input
 
-                                                            if (dispMultiple && !dispType.equals("vocabulary")) { // mutliple display
+                                                            if (dispMultiple) { // mutliple display
 
                                                                 Vector allPossibleValues = null;
                                                                 if (dispType.equals("select"))
@@ -1536,25 +1506,7 @@ else if (mode.equals("add"))
                                                                 </div>
                                                                 <%
                                                             }
-                                                            else if (dispType.equals("vocabulary")){
-                                                                if (searchEngine.existsVocabularyBinding(Integer.parseInt(attrID))) { %>
-                                                                  <%DataDictEntity ddEntity = new DataDictEntity(Integer.parseInt(ds_id), DataDictEntity.Entity.DS);
-                                                                    List<VocabularyConcept> vocabularyConcepts = searchEngine.getAttributeVocabularyConcepts(Integer.parseInt(attrID), ddEntity, attribute.getInheritable());
-                                                                    if (vocabularyConcepts != null && !vocabularyConcepts.isEmpty()) {%>
-                                                                        <ul class="stripedmenu">
-                                                                            <c:forEach var="vocabularyConcept" items="<%=vocabularyConcepts%>" varStatus="count">
-                                                                                <li><c:out value="${vocabularyConcept.label}"/></li>
-                                                                            </c:forEach>
-                                                                        </ul>
-                                                                    <%}%>
-                                                                    <a href="<%=request.getContextPath()%>/vocabularyvalues/attribute/<%=attrID%>/dataset/<%=dataset.getID()%>">[Manage links to the vocabulary]</a>
-                                                                    <% if (attribute.isMandatory() && (vocabularyConcepts == null || vocabularyConcepts.isEmpty())) { %>
-                                                                        <input type="hidden" class="vocabularyAttributeMandatoryValidationError" />
-                                                                    <%}%>
-                                                              <%} else {%>
-                                                                    [Manage links to the vocabulary]
-                                                              <%}
-                                                            } else{ // no multiple display
+                                                            else{ // no multiple display
 
                                                                 if (dispType.equals("text")) {
                                                                     if (attrValue!=null) {
@@ -1609,13 +1561,7 @@ else if (mode.equals("add"))
 
                                                                     </a>
                                                                     <%
-                                                                } else if (dispType.equals("vocabulary")){
-                                                                        if (searchEngine.existsVocabularyBinding(Integer.parseInt(attrID))){%>
-                                                                            <a href="<%=request.getContextPath()%>/vocabularyvalues/attribute/<%=attrID%>/dataset/<%=dataset.getID()%>">[Manage links to the vocabulary]</a>
-                                                                        <% } else {%>
-                                                                            [Manage links to the vocabulary]
-                                                                        <%}
-                                                                    }else {%>
+                                                                } else {%>
                                                                     Unknown display type!<%
                                                                 }
 

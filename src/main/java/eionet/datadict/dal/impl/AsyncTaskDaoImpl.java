@@ -6,17 +6,14 @@ import eionet.datadict.dal.impl.converters.ExecutionStatusToByteConverter;
 import eionet.datadict.model.AsyncTaskExecutionEntry;
 import eionet.datadict.commons.util.IterableUtils;
 import eionet.datadict.commons.sql.ResultSetUtils;
-import eionet.datadict.web.asynctasks.VocabularyRdfImportFromUrlTask;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
 @Repository("asyncTaskDao")
@@ -132,26 +129,6 @@ public class AsyncTaskDaoImpl extends JdbcDaoBase implements AsyncTaskDao {
         params.put("taskId", entry.getTaskId());
         params.put("serializedParameters", entry.getSerializedParameters());
         this.getNamedParameterJdbcTemplate().update(sql, params);
-    }
-
-    @Override
-    public AsyncTaskExecutionEntry getVocabularyRdfImportTaskEntryByVocabularyName(String vocabularyIdentifier) {
-        String sql = "select * from ASYNC_TASK_ENTRY where TASK_CLASS_NAME = :taskClassName AND SERIALIZED_PARAMETERS like :likeQuery";
-        String vocabularyIdentifierLikeQuery = "%\"" + VocabularyRdfImportFromUrlTask.PARAM_VOCABULARY_IDENTIFIER + "\":\"" + vocabularyIdentifier + "\"%";
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("taskClassName", VocabularyRdfImportFromUrlTask.class.getCanonicalName());
-        params.put("likeQuery", vocabularyIdentifierLikeQuery);
-        List<AsyncTaskExecutionEntry> results = this.getNamedParameterJdbcTemplate().query(sql, params, new ResultEntryRowMapper());
-        return IterableUtils.firstOrDefault(results);
-    }
-
-    @Override
-    public List<AsyncTaskExecutionEntry> getAllEntriesByTaskClassNames(Set<String> taskClassNames) {
-        MapSqlParameterSource parameters = new MapSqlParameterSource();
-        parameters.addValue("taskClassNames", taskClassNames);
-        List<AsyncTaskExecutionEntry> results = this.getNamedParameterJdbcTemplate().query("SELECT * FROM ASYNC_TASK_ENTRY WHERE TASK_CLASS_NAME IN (:taskClassNames)",
-                parameters, new ResultEntryRowMapper());
-        return results;
     }
 
     protected class StatusEntryRowMapper implements RowMapper<AsyncTaskExecutionEntry> {

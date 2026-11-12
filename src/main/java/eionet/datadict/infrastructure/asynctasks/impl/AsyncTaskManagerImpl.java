@@ -1,7 +1,6 @@
 package eionet.datadict.infrastructure.asynctasks.impl;
 
 import eionet.datadict.dal.AsyncTaskDao;
-import eionet.datadict.dal.AsyncTaskHistoryDao;
 import eionet.datadict.dal.QuartzSchedulerDao;
 import eionet.datadict.errors.ResourceNotFoundException;
 import eionet.datadict.infrastructure.asynctasks.AsyncTask;
@@ -9,14 +8,9 @@ import eionet.datadict.infrastructure.asynctasks.AsyncTaskDataSerializer;
 import eionet.datadict.infrastructure.asynctasks.AsyncTaskManager;
 import eionet.datadict.infrastructure.asynctasks.AsyncTaskManagementException;
 import eionet.datadict.model.AsyncTaskExecutionEntry;
-import eionet.datadict.model.AsyncTaskExecutionEntryHistory;
 import eionet.datadict.model.AsyncTaskExecutionStatus;
-import eionet.datadict.web.asynctasks.VocabularyRdfImportFromUrlTask;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import javax.annotation.PostConstruct;
 import org.quartz.JobBuilder;
 import org.quartz.JobDataMap;
@@ -25,8 +19,6 @@ import org.quartz.JobKey;
 import org.quartz.JobListener;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
-import org.quartz.SimpleScheduleBuilder;
-import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import static org.quartz.TriggerBuilder.newTrigger;
@@ -49,20 +41,18 @@ public class AsyncTaskManagerImpl implements AsyncTaskManager {
     private final QuartzSchedulerDao quartzSchedulerDao;
     private final JobListener asyncJobListener;
     private final AsyncTaskDataSerializer asyncTaskDataSerializer;
-    private final AsyncTaskHistoryDao asyncTaskHistoryDao;
 
     @Autowired
     public AsyncTaskManagerImpl(@Qualifier("jobScheduler") Scheduler scheduler,
             @Qualifier("asyncJobListener") JobListener asyncJobListener,
             AsyncJobKeyBuilder asyncJobKeyBuilder, AsyncTaskDao asyncTaskDao,
-            QuartzSchedulerDao quartzSchedulerDao, AsyncTaskDataSerializer asyncTaskDataSerializer, AsyncTaskHistoryDao asyncTaskHistoryDao) {
+            QuartzSchedulerDao quartzSchedulerDao, AsyncTaskDataSerializer asyncTaskDataSerializer) {
         this.scheduler = scheduler;
         this.asyncJobKeyBuilder = asyncJobKeyBuilder;
         this.asyncTaskDao = asyncTaskDao;
         this.quartzSchedulerDao = quartzSchedulerDao;
         this.asyncJobListener = asyncJobListener;
         this.asyncTaskDataSerializer = asyncTaskDataSerializer;
-        this.asyncTaskHistoryDao = asyncTaskHistoryDao;
     }
 
     @PostConstruct
@@ -178,50 +168,6 @@ public class AsyncTaskManagerImpl implements AsyncTaskManager {
     }
 
     @Override
-    public <T> String scheduleTask(Class<T> taskType, Map<String, Object> parameters, Integer intervalMinutes) {
-        if (taskType == null) {
-            throw new IllegalArgumentException("Task type cannot be null.");
-        }
-        AsyncJobDataMapAdapter dataMapAdapter = new AsyncJobDataMapAdapter(new JobDataMap());
-        dataMapAdapter.setTaskType(taskType);
-        if (parameters != null) {
-            dataMapAdapter.putParameters(parameters);
-        }
-
-        JobKey jobKey = this.asyncJobKeyBuilder.createNew();
-        JobDetail jobDetail = JobBuilder.newJob(AsyncJob.class)
-                .withIdentity(jobKey)
-                .setJobData(dataMapAdapter.getDataMap())
-                .build();
-
-        SimpleTrigger trigger = newTrigger()
-                .withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInMinutes(intervalMinutes).repeatForever()
-                        .withMisfireHandlingInstructionIgnoreMisfires())
-                .forJob(jobDetail.getKey())
-                .build();
-        try {
-            this.scheduler.scheduleJob(jobDetail, trigger);
-        } catch (SchedulerException ex) {
-            throw new AsyncTaskManagementException(ex);
-        }
-        this.createTaskEntry(jobKey, dataMapAdapter.getTaskTypeName(), dataMapAdapter.getParameters());
-        return this.asyncJobKeyBuilder.getTaskId(jobKey);
-    }
-
-    @Override
-    public List<AsyncTaskExecutionEntry> getAllScheduledTaskEntries() {
-        Set<String> scheduledTasksClassNames = new HashSet<String>();
-        scheduledTasksClassNames.add(VocabularyRdfImportFromUrlTask.class.getCanonicalName());
-        List<AsyncTaskExecutionEntry> asyncTaskEntries = this.asyncTaskDao.getAllEntriesByTaskClassNames(scheduledTasksClassNames);
-        return asyncTaskEntries;
-    }
-
-    @Override
-    public List<AsyncTaskExecutionEntryHistory> getTaskEntriesHistory() {
-        return this.asyncTaskHistoryDao.retrieveAllTasksHistory();
-    }
-
-    @Override
     public void deleteTask(String taskId) {
         JobKey key = this.asyncJobKeyBuilder.create(taskId);
         try {
@@ -231,56 +177,5 @@ public class AsyncTaskManagerImpl implements AsyncTaskManager {
         } catch (SchedulerException ex) {
             throw new AsyncTaskManagementException(ex);
         }
-    }
-
-    @Override
-    public AsyncTaskExecutionEntryHistory getTaskEntryHistory(String id) {
-        return this.asyncTaskHistoryDao.retrieveTaskHistoryById(id);
-    }
-
-    @Override
-    public <T> String updateScheduledTask(Class<T> taskType, Map<String, Object> parameters, Integer intervalMinutes, String taskId) {
-
-        if (taskType == null) {
-            throw new IllegalArgumentException("Task type cannot be null.");
-        }
-        AsyncJobDataMapAdapter dataMapAdapter = new AsyncJobDataMapAdapter(new JobDataMap());
-        dataMapAdapter.setTaskType(taskType);
-        if (parameters != null) {
-            dataMapAdapter.putParameters(parameters);
-        }
-
-        JobKey jobKey = this.asyncJobKeyBuilder.create(taskId);
-        JobDetail jobDetail = JobBuilder.newJob(AsyncJob.class)
-                .withIdentity(jobKey)
-                .setJobData(dataMapAdapter.getDataMap()).storeDurably()
-                .build();
-
-        SimpleTrigger trigger = newTrigger()
-                .withSchedule(SimpleScheduleBuilder.simpleSchedule().withIntervalInMinutes(intervalMinutes).repeatForever()
-                        .withMisfireHandlingInstructionIgnoreMisfires())
-                .forJob(jobDetail.getKey())
-                .build();
-        try {
-            List<Trigger> triggers = (List<Trigger>) this.scheduler.getTriggersOfJob(jobKey);
-            this.scheduler.addJob(jobDetail, true);
-            this.scheduler.rescheduleJob(triggers.get(0).getKey(), trigger);
-        } catch (SchedulerException ex) {
-            throw new AsyncTaskManagementException(ex);
-        }
-        AsyncTaskExecutionEntry existingEntry = this.asyncTaskDao.getFullEntry(taskId);
-        existingEntry.setSerializedParameters(this.asyncTaskDataSerializer.serializeParameters(parameters));
-        this.asyncTaskDao.updateTaskParameters(existingEntry);
-        return this.asyncJobKeyBuilder.getTaskId(jobKey);
-    }
-
-    @Override
-    public List<AsyncTaskExecutionEntryHistory> getTaskEntryHistoryByTaskId(String taskId) {
-        return asyncTaskHistoryDao.retrieveTaskHistoryByTaskId(taskId);
-    }
-
-    @Override
-    public List<AsyncTaskExecutionEntryHistory> retrieveLimitedTaskHistoryByTaskId(String taskId, int limit) {
-        return asyncTaskHistoryDao.retrieveLimitedTaskHistoryByTaskId(taskId, limit);
     }
 }

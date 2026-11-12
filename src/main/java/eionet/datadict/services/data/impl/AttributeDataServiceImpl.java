@@ -4,7 +4,6 @@ import eionet.datadict.dal.AttributeDao;
 import eionet.datadict.dal.AttributeValueDao;
 import eionet.datadict.dal.DataElementDao;
 import eionet.datadict.dal.DatasetTableDao;
-import eionet.datadict.dal.VocabularyDao;
 import eionet.datadict.errors.EmptyParameterException;
 import eionet.datadict.model.Attribute;
 import eionet.datadict.services.data.AttributeDataService;
@@ -13,16 +12,11 @@ import eionet.datadict.model.AttributeValue;
 import eionet.datadict.model.DataDictEntity;
 import eionet.datadict.model.Attribute.ValueInheritanceMode;
 import eionet.meta.dao.IFixedValueDAO;
-import eionet.meta.dao.IVocabularyConceptDAO;
 import eionet.meta.dao.domain.FixedValue;
-import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.dao.domain.VocabularyFolder;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.apache.commons.collections.ListUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,22 +27,17 @@ public class AttributeDataServiceImpl implements AttributeDataService {
 
     private final AttributeDao attributeDao;
     private final AttributeValueDao attributeValueDao;
-    private final VocabularyDao vocabularyDao;
-    private final IVocabularyConceptDAO vocabularyConceptDAO;
     private final IFixedValueDAO fixedValueDao;
     private final DatasetTableDao datasetTableDao;
     private final DataElementDao dataElementDao;
-    
+
     @Autowired
     public AttributeDataServiceImpl
-        (AttributeDao attributeDao, AttributeValueDao attributeValueDao, VocabularyDao vocabularyDao, 
-                IVocabularyConceptDAO vocabularyConceptDAO, IFixedValueDAO fixedValueDao, 
-                DatasetTableDao datasetTableDao, DataElementDao dataElementDao) {
+        (AttributeDao attributeDao, AttributeValueDao attributeValueDao,
+                IFixedValueDAO fixedValueDao, DatasetTableDao datasetTableDao, DataElementDao dataElementDao) {
         this.attributeDao = attributeDao;
         this.attributeValueDao = attributeValueDao;
-        this.vocabularyDao = vocabularyDao;
         this.fixedValueDao = fixedValueDao;
-        this.vocabularyConceptDAO = vocabularyConceptDAO;
         this.datasetTableDao = datasetTableDao;
         this.dataElementDao = dataElementDao;
     }
@@ -61,13 +50,7 @@ public class AttributeDataServiceImpl implements AttributeDataService {
         if (attribute == null) {
             throw new ResourceNotFoundException("Attribute with id: " + id + " does not exist.");
         }
-        
-        if (attribute.getVocabulary() != null) {
-            VocabularyFolder voc = attribute.getVocabulary();
-            voc = vocabularyDao.getPlainVocabularyById(voc.getId());
-            attribute.setVocabulary(voc);
-        }
-        
+
         return attribute;
     }
 
@@ -90,19 +73,12 @@ public class AttributeDataServiceImpl implements AttributeDataService {
     @Transactional
     public void updateAttribute(Attribute attribute) {
         this.attributeDao.update(attribute);
-        if (attribute.getVocabulary() != null) {
-            this.attributeDao.updateVocabularyBinding(attribute.getId(), attribute.getVocabulary().getId());
-        }
-        else {
-            this.attributeDao.deleteVocabularyBinding(attribute.getId());
-        }
     }
-    
+
     @Override
     @Transactional
     public void deleteAttributeById(int attributeId) {
         this.attributeDao.deleteValues(attributeId);
-        this.attributeDao.deleteVocabularyBinding(attributeId);
         this.fixedValueDao.deleteAll(FixedValue.OwnerType.ATTRIBUTE, attributeId);
         this.attributeDao.delete(attributeId);
     }
@@ -113,21 +89,10 @@ public class AttributeDataServiceImpl implements AttributeDataService {
     }
      
     @Override
-    public Attribute setNewVocabularyToAttributeObject(Attribute attribute, int vocabularyId) throws ResourceNotFoundException {
-        attribute.setVocabulary(this.vocabularyDao.getPlainVocabularyById(vocabularyId));
-        return attribute;
-    }
-
-    @Override
     public Map<DataDictEntity.Entity, Integer> getDistinctTypesWithAttributeValues(int attributeId) {
         return this.attributeDao.getConceptsWithAttributeValues(attributeId);
     }
     
-    @Override
-    public void deleteVocabularyBinding(int attributeId){
-        this.attributeDao.deleteVocabularyBinding(attributeId);
-    }
-
     @Override
     public void deleteRelatedFixedValues(int attributeId) {
         this.fixedValueDao.deleteAll(FixedValue.OwnerType.ATTRIBUTE, attributeId);
@@ -141,58 +106,6 @@ public class AttributeDataServiceImpl implements AttributeDataService {
     @Override
     public List<AttributeValue> getOriginalAttributeValues(int attributeId, DataDictEntity ddEntity) {
         return this.attributeValueDao.getByAttributeAndOwner(attributeId, ddEntity);
-    }
-    
-    @Override
-    @Transactional
-    public List<VocabularyConcept> getVocabularyConceptsAsAttributeValues(int attributeId, DataDictEntity attributeOwner, ValueInheritanceMode inheritanceMode) 
-            throws ResourceNotFoundException, EmptyParameterException {
-       
-        List<AttributeValue> attributeValues = getAttributeValues(attributeId, attributeOwner, inheritanceMode);
-        return convertAttributeValuesToVocabularyConcepts(attributeValues);
-    }
-    
-    @Override
-    @Transactional
-    public List<VocabularyConcept> getVocabularyConceptsAsOriginalAttributeValues(int attributeId, DataDictEntity attributeOwner) 
-            throws ResourceNotFoundException, EmptyParameterException {
-       
-        List<AttributeValue> attributeValues = getOriginalAttributeValues(attributeId, attributeOwner);
-        return convertAttributeValuesToVocabularyConcepts(attributeValues);
-    }
-    
-    @Override
-    @Transactional
-    public List<VocabularyConcept> getVocabularyConceptsAsInheritedAttributeValues(int attributeId, DataDictEntity attributeOwner) 
-            throws ResourceNotFoundException, EmptyParameterException {
-       
-        List<AttributeValue> attributeValues = getInheritedAttributeValues(attributeId, attributeOwner);
-        return convertAttributeValuesToVocabularyConcepts(attributeValues);
-    }
-    
-    @Override
-    public void deleteAttributeValue(int attributeId, DataDictEntity ddEntity, String value) {
-        this.attributeValueDao.deleteAttributeValue(attributeId, ddEntity, value);
-    }
-
-    @Override
-    public void deleteAllAttributeValues(int attributeId, DataDictEntity ddEntity) {
-        this.attributeValueDao.deleteAllAttributeValues(attributeId, ddEntity);
-    }
-
-    @Override
-    public void deleteAllAttributeValues(int attributeId) {
-        this.attributeValueDao.deleteAllAttributeValues(attributeId);
-    }
-    
-    @Override
-    public void createAttributeValues(int attributeId, DataDictEntity ownerEntity, List<String> values) {
-       this.attributeValueDao.addAttributeValues(attributeId, ownerEntity, values);
-    }
-
-    @Override
-    public Integer getVocabularyBinding(int attributeId) {
-        return this.attributeDao.getVocabularyBinding(attributeId);
     }
 
     @Override
@@ -273,20 +186,6 @@ public class AttributeDataServiceImpl implements AttributeDataService {
         }
 
         return ListUtils.union(listA, listB);
-    }
-
-    protected List<VocabularyConcept> convertAttributeValuesToVocabularyConcepts(List<AttributeValue> attributeValues) {
-        if (attributeValues.isEmpty()) {
-            return Collections.EMPTY_LIST;
-        }
-        List<Integer> conceptIds = new ArrayList<>();
-        for (AttributeValue attributeValue : attributeValues) {
-            Integer conceptId = NumberUtils.toInt(attributeValue.getValue(), 0);
-            if (conceptId > 0) {
-                conceptIds.add(conceptId);
-            }
-        }
-        return vocabularyConceptDAO.getVocabularyConcepts(conceptIds);
     }
 
     @Override

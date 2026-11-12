@@ -2855,4 +2855,22 @@ xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liqui
             </column>
         </createTable>
     </changeSet>
+    <changeSet id="rev-211" author="giannisPs">
+        <comment>Refs #308988 Remove the 'vocabulary' display type from attributes</comment>
+        <sql>
+            UPDATE M_ATTRIBUTE SET DISP_TYPE='textarea', DISP_MULTIPLE='1' WHERE DISP_TYPE='vocabulary';
+        </sql>
+        <modifyDataType tableName="M_ATTRIBUTE"
+                        columnName="DISP_TYPE"
+                        newDataType="enum('text','textarea','select','image')"/>
+        <addDefaultValue tableName="M_ATTRIBUTE" columnName="DISP_TYPE" defaultValue="text"/>
+    </changeSet>
+    <changeSet id="rev-212" author="giannisPs">
+        <comment>Refs #308988 Drop the table linking attributes to vocabularies</comment>
+        <dropTable tableName="M_ATTRIBUTE_VOCABULARY"/>
+    </changeSet>
+    <changeSet id="rev-213" author="bbris">
+        <comment>Refs #308988 Drop the unused ASYNC_TASK_ENTRY_HISTORY table</comment>
+        <dropTable tableName="ASYNC_TASK_ENTRY_HISTORY"/>
+    </changeSet>
 </databaseChangeLog>

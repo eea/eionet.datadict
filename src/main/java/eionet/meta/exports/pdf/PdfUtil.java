@@ -9,7 +9,6 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 
 import com.eteks.awt.PJAToolkit;
-import com.lowagie.text.Anchor;
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Element;
 import com.lowagie.text.Font;
@@ -23,10 +22,7 @@ import eionet.meta.DElemAttribute;
 import eionet.meta.DataElement;
 import eionet.meta.DsTable;
 import eionet.meta.FixedValue;
-import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.dao.domain.util.FixedValuesOrdinalComparator;
-import eionet.util.StringEncoder;
 import eionet.util.UnicodeEscapes;
 import eionet.util.Util;
 import java.util.Collections;
@@ -134,27 +130,21 @@ public class PdfUtil {
                 DElemAttribute attribute = (DElemAttribute) attributes.get(key);
                 String displayName = attribute.getName();
                 List<String> values = new ArrayList<>();
-                List<String> links = new ArrayList<>();
                 String displayType = attribute.getDisplayType();
                 if (displayType != null && displayType.equals("image")) {
                     // JH201103 - skip image attributes, will be treated later
                     continue;
                 }
 
-                if (displayType != null && displayType.equals("vocabulary")) {
-                    for (VocabularyConcept vocabularyConcept : attribute.getVocabularyConcepts()) {
-                        values.add(vocabularyConcept.getLabel());
-                        String baseUri = VocabularyFolder.getBaseUri(attribute.getVocabularyBinding());
-                        if (!baseUri.endsWith("/") && !baseUri.endsWith("#") && !baseUri.endsWith(":")) {
-                            baseUri += "/";
-                        }
-                        String link = StringEncoder.encodeToIRI(baseUri + vocabularyConcept.getIdentifier());
-                        links.add(link);
+                if (attribute.getValue() == null) {
+                    continue;
+                }
+                if ("textarea".equals(displayType) && "1".equals(attribute.getDisplayMultiple()) && attribute.getValues() != null) {
+                    values = new ArrayList<>();
+                    for (Object multiValue : attribute.getValues()) {
+                        values.addAll(Arrays.asList(((String) multiValue).split("\n")));
                     }
                 } else {
-                    if (attribute.getValue() == null) {
-                        continue;
-                    }
                     values = Arrays.asList(attribute.getValue().split("\n"));
                 }
 
@@ -163,13 +153,7 @@ public class PdfUtil {
                     String value = PdfUtil.rmvCR((String) values.get(i));
                     nameCell = new PdfPCell(new Phrase(displayName, Fonts.get(Fonts.ATTR_TITLE)));
 
-                    if (displayType != null && displayType.equals("vocabulary")) {
-                        Anchor anchor = new Anchor(new Chunk(value, Fonts.get(Fonts.ANCHOR)));
-                        anchor.setReference(links.get(i));
-                        valueCell = new PdfPCell(anchor);
-                    } else {
-                        valueCell = new PdfPCell(process(value, Fonts.get(Fonts.CELL_VALUE)));
-                    }
+                    valueCell = new PdfPCell(process(value, Fonts.get(Fonts.CELL_VALUE)));
 
                     valueCell.setLeading(9 * 1.2f, 0);
 

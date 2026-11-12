@@ -2,7 +2,6 @@ package eionet.datadict.web.asynctasks;
 
 import eionet.datadict.infrastructure.asynctasks.AsyncTask;
 import eionet.datadict.model.enums.Enumerations;
-import static eionet.datadict.web.asynctasks.VocabularyRdfImportFromUrlTask.PARAM_RDF_PURGE_OPTION;
 import eionet.meta.dao.IVocabularyFolderDAO;
 import eionet.meta.dao.domain.VocabularyFolder;
 import eionet.meta.service.IRDFVocabularyImportService;
@@ -54,6 +53,7 @@ public class VocabularyRdfImportFromApiTask implements AsyncTask {
     public static final String PARAM_UPLOAD_ACTION = "uploadAction";
     public static final String PARAM_MISSING_CONCEPTS_ACTION = "missingConceptsAction";
     public static final String PARAM_NOTIFIERS_EMAILS = "emails";
+    public static final String PARAM_RDF_PURGE_OPTION = "rdfPurgeOption";
 
     public static Map<String, Object> createParamsBundle(String base64EncodedCompressedRdf,
             String vocabularySetIdentifier, String vocabularyIdentifier,

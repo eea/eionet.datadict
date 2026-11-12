@@ -22,6 +22,8 @@
             <isoattrs:Definition>Major roads, major railways, major airports and agglomerations designated by MS and concerned by 1st implementation step</isoattrs:Definition>
             <isoattrs:Keyword>Noise</isoattrs:Keyword>
             <ddattrs:Version>1</ddattrs:Version>
+            <ddattrs:obligation>Noise mapping (https://rod.eionet.europa.eu/obligations/1)</ddattrs:obligation>
+            <ddattrs:Responsible>Test User</ddattrs:Responsible>
          </xs:documentation>
       </xs:annotation>
       <xs:complexType>

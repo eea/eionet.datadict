@@ -66,8 +66,7 @@ public class Enumerations {
         TEXT("text", "Text box"),
         TEXTAREA("textarea", "Text area"),
         SELECT("select", "Select box"),
-        IMAGE("image", "Image"),
-        VOCABULARY("vocabulary", "Vocabulary");
+        IMAGE("image", "Image");
 
         private final String value;
         private final String displayLabel;

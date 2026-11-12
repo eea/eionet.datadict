@@ -1,7 +1,6 @@
 
 package eionet.meta.exports.schema;
 
-import eionet.datadict.model.DataDictEntity;
 import java.io.PrintWriter;
 import java.util.Vector;
 
@@ -28,7 +27,6 @@ public class DstSchema extends Schema {
         if (ds != null) {
 
             Vector v = searchEngine.getAttributes(dsID, "DS");
-            processAttributeValues(v,  new DataDictEntity(Integer.parseInt(dsID), DataDictEntity.Entity.DS));
             ds.setSimpleAttributes(v);
             v = searchEngine.getDatasetTables(dsID, true);
             ds.setTables(v);

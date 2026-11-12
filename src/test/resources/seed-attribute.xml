@@ -816,13 +816,6 @@
   
   <FXV FXV_ID="1297" OWNER_ID="37" OWNER_TYPE="attr" VALUE="Economic development" IS_DEFAULT="N" DEFINITION="DEF" SHORT_DESC="DESC"/>
   
-  <!-- Lines that intend to test attribute-vocabulary bindings -->
-  <VOCABULARY_SET ID="1" IDENTIFIER="common" LABEL="Common" />
-  <VOCABULARY VOCABULARY_ID="1" CONTINUITY_ID="123" IDENTIFIER="test_vocabulary1" LABEL="test1" REG_STATUS="Draft" DATE_MODIFIED="2014-06-21 06:48:20" WORKING_COPY="0" WORKING_USER="Admin" CHECKEDOUT_COPY_ID="9" FOLDER_ID="1" BASE_URI="http://test.tripledev.ee/datadict/vocabulary/common/test_vocabulary1/"/>
-  <VOCABULARY VOCABULARY_ID="2" CONTINUITY_ID="123" IDENTIFIER="test_vocabulary2" LABEL="test2" REG_STATUS="Draft" DATE_MODIFIED="2014-06-21 06:48:20" WORKING_COPY="0" WORKING_USER="Admin" CHECKEDOUT_COPY_ID="9" FOLDER_ID="1" BASE_URI="http://test.tripledev.ee/datadict/vocabulary/common/test_vocabulary2/"/>
-
-  <M_ATTRIBUTE_VOCABULARY M_ATTRIBUTE_ID="37" VOCABULARY_ID="1"/>
-  <M_ATTRIBUTE_VOCABULARY M_ATTRIBUTE_ID="40" VOCABULARY_ID="1"/>
   
 
   

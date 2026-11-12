@@ -1,13 +1,10 @@
 package eionet.meta;
 
-import eionet.meta.dao.domain.VocabularyConcept;
-import eionet.meta.dao.domain.VocabularyFolder;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Vector;
 
 import eionet.util.Util;
-import java.util.List;
 
 /**
  *
@@ -73,9 +70,6 @@ public class DElemAttribute {
     private int rdfNamespaceId;
     private String rdfPropertyName;
     private String rdfPropertyUri;
-
-    private VocabularyFolder vocabularyBinding;  // for attributes with vocabulary values
-    private List<VocabularyConcept> vocabularyConcepts;  // for attributes with vocabulary values
 
     public DElemAttribute(String id, String name, String shortName, String value) {
         this.id = id;
@@ -629,22 +623,6 @@ public class DElemAttribute {
         public static ParentType getDefault() {
             return ParentType.ELEMENT;
         }
-    }
-
-    public VocabularyFolder getVocabularyBinding() {
-        return vocabularyBinding;
-    }
-
-    public void setVocabularyBinding(VocabularyFolder vocabularyBinding) {
-        this.vocabularyBinding = vocabularyBinding;
-    }
-
-    public List<VocabularyConcept> getVocabularyConcepts() {
-        return vocabularyConcepts;
-    }
-
-    public void setVocabularyConcepts(List<VocabularyConcept> vocabularyConcepts) {
-        this.vocabularyConcepts = vocabularyConcepts;
     }
 
 }

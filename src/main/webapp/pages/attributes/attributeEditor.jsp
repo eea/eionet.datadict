@@ -66,44 +66,10 @@
                                 <stripes:option label="-Do not display at all-" value=""/>
                                 <stripes:options-enumeration enum="eionet.datadict.model.Attribute$DisplayType" label="label"/>
                             </stripes:select>
-                            <c:set var="vocab_display_style" value ="display: none"/>
                             <c:set var="select_display_style" value="display: none"/>
-                            <c:if test="${not empty actionBean.attribute.id and actionBean.attribute.displayType == 'VOCABULARY'}">
-                                <c:set var="vocab_display_style" value="display: inline"/>
-                            </c:if>
                             <c:if test="${not empty actionBean.attribute.id and actionBean.attribute.displayType == 'SELECT'}">
                                 <c:set var="select_display_style" value="display: inline"/>
                             </c:if>
-                            <div id="vocabulary" style="${vocab_display_style}">
-                                &nbsp;
-                                <stripes:link href="${actionBean.contextPath}/vocabularies/selectVocabulary">
-                                    <stripes:param name="attrId" value="${actionBean.attribute.id}"/>
-                                    <img src="<stripes:url value="/images/edit.gif" />" alt="Edit vocabulary" name="Edit vocabulary" title="Edit vocabulary binding"/>
-                                </stripes:link>
-                                &nbsp;
-                                <stripes:link beanclass="eionet.web.action.AttributeActionBean" event="removeVocabularyBinding">
-                                    <stripes:param name="attribute.id" value="${actionBean.attribute.id}"/>
-                                    <img src="<stripes:url value="/images/delete.gif" />" alt="Remove vocabulary" name="Remove vocabulary" title="Remove vocabulary binding"/>
-                                </stripes:link>
-                                <br />
-                                <div class="smallfont">
-                                    Current:
-                                    <c:choose>
-                                        <c:when test="${not empty actionBean.attribute.vocabulary}">
-                                            <stripes:link href="${actionBean.contextPath}/vocabulary/${actionBean.attribute.vocabulary.folderLabel}/${actionBean.attribute.vocabulary.identifier}/view">
-                                                <c:out value="${actionBean.attribute.vocabulary.label}"/>
-                                            </stripes:link>
-                                            <stripes:hidden name="attribute.vocabulary.folderLabel"/>
-                                            <stripes:hidden name="attribute.vocabulary.identifier"/>
-                                            <stripes:hidden name="attribute.vocabulary.label"/>
-                                            <stripes:hidden name="attribute.vocabulary.id"/>
-                                        </c:when>
-                                        <c:otherwise>
-                                            <em>None</em>
-                                        </c:otherwise>
-                                    </c:choose>
-                                </div>
-                            </div>
                             <div id="select" style="${select_display_style}">
                                 &nbsp;<span class="smallfont"><a href="${actionBean.contextPath}/fixedvalues/attr/${actionBean.attribute.id}/edit">
                                       <b>FIXED VALUES</b></a></span>
