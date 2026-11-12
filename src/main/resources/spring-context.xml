@@ -113,6 +113,8 @@
         connections after 8 hours. -->
         <property name="validationQuery" value="SELECT 1"/>
         <property name="testOnBorrow" value="true"/>
+        <property name="maxTotal" value="10"/>
+        <property name="maxWaitMillis" value="10000"/>
     </bean>
     
     <bean id="nonTxDataSource" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
